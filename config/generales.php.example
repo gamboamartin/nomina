@@ -1,0 +1,14 @@
+<?php
+namespace config;
+class generales{
+    public string $path_base;
+    public string $session_id = '';
+
+    public function __construct(){
+        $this->path_base = getcwd();
+        $this->path_base .= '/';
+        if(isset($_GET['session_id'])){
+            $this->session_id = $_GET['session_id'];
+        }
+    }
+}

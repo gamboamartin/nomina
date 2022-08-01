@@ -1,0 +1,62 @@
+{
+  "name": "gamboa.martin/nomina",
+  "description": "Nomina",
+  "type": "library",
+  "license": "GPL-3.0-or-later",
+  "authors": [
+    {
+      "name": "Martin Gamboa",
+      "email": "gamboa.martin@gmail.com"
+    }
+  ],
+
+    "autoload": {
+        "psr-4": {
+          "gamboamartin\\nomina\\controllers\\": "controllers",
+          "config\\": "config/",
+          "models\\": "orm",
+          "tests\\": "tests/",
+          "links\\": "links/",
+          "html\\": "templates/directivas/"
+
+        }
+    },
+    "require": {
+
+        "ext-imagick": "*",
+        "ext-pdo": "*",
+        "ext-dom": "*",
+        "ext-soap": "*",
+        "ext-intl": "*",
+        "ext-zip": "*",
+      "ext-calendar": "*",
+        "phpmailer/phpmailer": "^6.3",
+      "ext-gd": "*",
+      "ext-exif": "*",
+        "chillerlan/php-qrcode": "^4.3",
+      "ext-zlib": "*",
+      "ext-sockets": "*",
+      "ext-curl": "*",
+      "ext-simplexml": "*",
+      "ext-fileinfo": "*",
+        "tomsgu/pdf-merger": "^0.3.0",
+        "spatie/dropbox-api": "^1.19",
+        "gamboa.martin/administrador": "^1.0.0",
+        "gamboa.martin/base_modelos": "dev-main",
+        "gamboa.martin/calculo": "dev-main",
+        "gamboa.martin/errores": "^1.0.0",
+        "gamboa.martin/compresor": "dev-main",
+        "gamboa.martin/validacion": "dev-main",
+        "gamboa.martin/plugins": "dev-main",
+        "gamboa.martin/test": "dev-main",
+        "gamboa.martin/configuraciones": "dev-main",
+        "gamboa.martin/template": "dev-main",
+        "gamboa.martin/template_1": "dev-main",
+        "gamboa.martin/system": "dev-main",
+        "gamboa.martin/services": "dev-main"
+
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^9.5"
+    }
+}

@@ -1,0 +1,9 @@
+<?php
+namespace config;
+
+class database{
+    public string $db_name = 'db:name'; //Name database
+    public string $db_user = 'db_user'; // User database
+    public string $db_password = 'db_password'; // Pass database
+    public string $db_host = 'db_host'; // Host Database
+}
