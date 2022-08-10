@@ -53,8 +53,8 @@
         "gamboa.martin/template": "dev-main",
         "gamboa.martin/template_1": "dev-main",
         "gamboa.martin/system": "dev-main",
-        "gamboa.martin/services": "dev-main"
-
+        "gamboa.martin/services": "dev-main",
+        "gamboa.martin/js_base": "dev-master"
     },
     "require-dev": {
         "phpunit/phpunit": "^9.5"
