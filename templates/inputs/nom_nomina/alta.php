@@ -2,6 +2,7 @@
 <?php use config\views; ?>
 <?php echo $controlador->inputs->codigo; ?>
 <?php echo $controlador->inputs->codigo_bis; ?>
+<?php echo $controlador->inputs->descripcion; ?>
 <?php echo $controlador->inputs->version; ?>
 <?php echo $controlador->inputs->serie; ?>
 <?php echo $controlador->inputs->folio; ?>
