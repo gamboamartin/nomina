@@ -90,7 +90,7 @@ class nom_nomina_html extends html_controler {
             return $this->error->error(mensaje: 'Error al generar selects',data:  $selects);
         }
 
-        $texts = $this->texts_alta(row_upd: new stdClass(),value_vacio: false);
+        $texts = $this->texts_alta(row_upd: $row_upd,value_vacio: false);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al generar texts',data:  $texts);
         }
