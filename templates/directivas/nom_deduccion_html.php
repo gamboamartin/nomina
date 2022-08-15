@@ -10,6 +10,7 @@ use gamboamartin\system\html_controler;
 use models\cat_sat_tipo_percepcion_nom;
 use models\com_sucursal;
 use models\em_empleado;
+use models\nom_deduccion;
 use models\nom_percepcion;
 use PDO;
 use stdClass;
@@ -133,10 +134,10 @@ class nom_deduccion_html extends html_controler {
 
     public function select_nom_deduccion_id(int $cols, bool $con_registros, int $id_selected, PDO $link): array|string
     {
-        $modelo = new nom_percepcion(link: $link);
+        $modelo = new nom_deduccion(link: $link);
 
         $select = $this->select_catalogo(cols:$cols,con_registros:$con_registros,id_selected:$id_selected,
-            modelo: $modelo,label: 'Percepcion',required: true);
+            modelo: $modelo,label: 'Deduccion',required: true);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al generar select', data: $select);
         }
