@@ -23,6 +23,7 @@ class nom_nomina_html extends html_controler {
         $controler->inputs->select->dp_calle_pertenece_id = $inputs->selects->dp_calle_pertenece_id;
         $controler->inputs->select->org_sucursal_id = $inputs->selects->org_sucursal_id;
         $controler->inputs->select->em_empleado_id = $inputs->selects->em_empleado_id;
+        $controler->inputs->select->fc_cfd_id = $inputs->selects->fc_cfd_id;
         $controler->inputs->version = $inputs->texts->version;
         $controler->inputs->serie = $inputs->texts->serie;
         $controler->inputs->folio = $inputs->texts->folio;
@@ -282,6 +283,13 @@ class nom_nomina_html extends html_controler {
             return $this->error->error(mensaje: 'Error al generar select',data:  $select);
         }
         $selects->em_empleado_id = $select;
+
+        $select = (new fc(html:$this->html_base))->select_em_empleado_id(
+            cols: 12, con_registros:true, id_selected:-1,link: $link);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al generar select',data:  $select);
+        }
+        $selects->fc_cfd_id = $select;
 
         return $selects;
     }
