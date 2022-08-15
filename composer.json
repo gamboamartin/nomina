@@ -59,7 +59,10 @@
       "gamboa.martin/cat_sat": "dev-main",
       "gamboa.martin/js_base": "dev-master",
       "gamboa.martin/im_registro_patronal": "dev-main",
-      "gamboa.martin/empleado": "dev-main"
+      "gamboa.martin/empleado": "dev-main",
+      "gamboa.martin/comercial": "dev-master",
+      "gamboa.martin/documento": "dev-master",
+      "gamboa.martin/facturacion": "dev-main"
     },
     "require-dev": {
         "phpunit/phpunit": "^9.5"

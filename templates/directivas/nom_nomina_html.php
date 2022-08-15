@@ -8,6 +8,7 @@ use gamboamartin\nomina\controllers\controlador_nom_nomina;
 use gamboamartin\system\html_controler;
 use models\com_sucursal;
 use models\em_empleado;
+use models\fc_cfd;
 use models\nom_nomina;
 use PDO;
 use stdClass;
@@ -284,7 +285,7 @@ class nom_nomina_html extends html_controler {
         }
         $selects->em_empleado_id = $select;
 
-        $select = (new fc(html:$this->html_base))->select_em_empleado_id(
+        $select = (new fc_cfd_html(html:$this->html_base))->select_fc_cfd_id(
             cols: 12, con_registros:true, id_selected:-1,link: $link);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al generar select',data:  $select);
@@ -339,6 +340,13 @@ class nom_nomina_html extends html_controler {
             return $this->error->error(mensaje: 'Error al generar select',data:  $select);
         }
         $selects->em_empleado_id = $select;
+
+        $select = (new fc_cfd_html(html:$this->html_base))->select_fc_cfd_id(
+            cols: 12, con_registros:true, id_selected:$row_upd->fc_cfd_id,link: $link);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al generar select',data:  $select);
+        }
+        $selects->fc_cfd_id = $select;
 
         return $selects;
     }
