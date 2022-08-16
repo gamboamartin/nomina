@@ -20,6 +20,7 @@ use stdClass;
 
 class controlador_nom_nomina extends system {
 
+    public string $link_nom_nomina_alta_bd = '';
     public function __construct(PDO $link, html $html = new \gamboamartin\template_1\html(),
                                 stdClass $paths_conf = new stdClass()){
         $modelo = new nom_nomina(link: $link);
@@ -28,6 +29,7 @@ class controlador_nom_nomina extends system {
         parent::__construct(html:$html_, link: $link,modelo:  $modelo, obj_link: $obj_link, paths_conf: $paths_conf);
 
         $this->titulo_lista = 'Nominas';
+        $this->link_nom_nomina_alta_bd =$obj_link->links->nom_nomina->alta_bd;
     }
 
     public function alta(bool $header, bool $ws = false): array|string
