@@ -30,6 +30,21 @@ class nom_nomina_html extends html_controler {
         return $controler->inputs;
     }
 
+    private function asigna_inputs_crea_nomina(controlador_nom_nomina $controler, stdClass $inputs): array|stdClass
+    {
+        $controler->inputs->select = new stdClass();
+        $controler->inputs->select->org_sucursal_id = $inputs->selects->org_sucursal_id;
+        $controler->inputs->select->em_empleado_id = $inputs->selects->em_empleado_id;
+        $controler->inputs->rfc = $inputs->texts->rfc;
+        $controler->inputs->ap = $inputs->texts->ap;
+        $controler->inputs->am = $inputs->texts->am;
+        $controler->inputs->nombre = $inputs->texts->nombre;
+        $controler->inputs->curp = $inputs->texts->curp;
+        $controler->inputs->nss = $inputs->texts->nss;
+
+        return $controler->inputs;
+    }
+
     public function genera_inputs_alta(controlador_nom_nomina $controler, PDO $link): array|stdClass
     {
         $inputs = $this->init_alta(link: $link);
@@ -38,6 +53,21 @@ class nom_nomina_html extends html_controler {
 
         }
         $inputs_asignados = $this->asigna_inputs(controler:$controler, inputs: $inputs);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al asignar inputs',data:  $inputs_asignados);
+        }
+
+        return $inputs_asignados;
+    }
+
+    public function genera_inputs_crea_nomina(controlador_nom_nomina $controler, PDO $link): array|stdClass
+    {
+        $inputs = $this->init_alta_crea_nomina(link: $link);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al generar inputs',data:  $inputs);
+
+        }
+        $inputs_asignados = $this->asigna_inputs_crea_nomina(controler:$controler, inputs: $inputs);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al asignar inputs',data:  $inputs_asignados);
         }
@@ -69,6 +99,25 @@ class nom_nomina_html extends html_controler {
         }
 
         $texts = $this->texts_alta(row_upd: new stdClass(), value_vacio: true);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al generar texts',data:  $texts);
+        }
+
+        $alta_inputs = new stdClass();
+        $alta_inputs->selects = $selects;
+        $alta_inputs->texts = $texts;
+
+        return $alta_inputs;
+    }
+
+    private function init_alta_crea_nomina(PDO $link): array|stdClass
+    {
+        $selects = $this->selects_alta_crea_nomina(link: $link);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al generar selects',data:  $selects);
+        }
+
+        $texts = $this->texts_alta_crea_nomina(row_upd: new stdClass(), value_vacio: true);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al generar texts',data:  $texts);
         }
@@ -235,6 +284,27 @@ class nom_nomina_html extends html_controler {
         return $selects;
     }
 
+    private function selects_alta_crea_nomina(PDO $link): array|stdClass
+    {
+        $selects = new stdClass();
+
+        $select = (new org_sucursal_html(html:$this->html_base))->select_org_sucursal_id(
+            cols: 12, con_registros:true, id_selected:-1,link: $link);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al generar select',data:  $select);
+        }
+        $selects->org_sucursal_id = $select;
+
+        $select = (new em_empleado_html(html:$this->html_base))->select_em_empleado_id(
+            cols: 12, con_registros:true, id_selected:-1,link: $link);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al generar select',data:  $select);
+        }
+        $selects->em_empleado_id = $select;
+
+        return $selects;
+    }
+
     private function selects_modifica(PDO $link, stdClass $row_upd): array|stdClass
     {
         $selects = new stdClass();
@@ -317,6 +387,50 @@ class nom_nomina_html extends html_controler {
             return $this->error->error(mensaje: 'Error al generar input',data:  $in_fecha_pago);
         }
         $texts->fecha_pago = $in_fecha_pago;
+
+        return $texts;
+    }
+
+    private function texts_alta_crea_nomina(stdClass $row_upd, bool $value_vacio, stdClass $params = new stdClass()): array|stdClass
+    {
+        $texts = new stdClass();
+
+        $in_rfc = (new em_empleado_html(html:$this->html_base))->input_rfc(cols: 6,row_upd:  $row_upd,value_vacio:  $value_vacio);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al generar input',data:  $in_rfc);
+        }
+        $texts->rfc = $in_rfc;
+
+        $in_ap = (new em_empleado_html(html:$this->html_base))->input_ap(cols: 6,row_upd:  $row_upd,value_vacio:  $value_vacio);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al generar input',data:  $in_ap);
+        }
+        $texts->ap = $in_ap;
+
+        $in_am = (new em_empleado_html(html:$this->html_base))->input_am(cols: 6,row_upd:  $row_upd,value_vacio:  $value_vacio);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al generar input',data:  $in_am);
+        }
+        $texts->am = $in_am;
+
+        $in_nombre = (new em_empleado_html(html:$this->html_base))->input_nombre(cols: 6,row_upd:  $row_upd,value_vacio:  $value_vacio);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al generar input',data:  $in_nombre);
+        }
+        $texts->nombre = $in_nombre;
+
+        $in_curp = (new em_empleado_html(html:$this->html_base))->input_curp(cols: 6,row_upd:  $row_upd,value_vacio:  $value_vacio);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al generar input',data:  $in_curp);
+        }
+        $texts->curp = $in_curp;
+
+        $in_nss = (new em_empleado_html(html:$this->html_base))->input_nss(cols: 6,row_upd:  $row_upd,value_vacio:  $value_vacio);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al generar input',data:  $in_nss);
+        }
+        $texts->nss = $in_nss;
+
 
         return $texts;
     }
