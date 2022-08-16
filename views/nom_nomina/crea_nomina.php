@@ -14,12 +14,9 @@
 
                         <?php echo $controlador->inputs->select->org_sucursal_id; ?>
                         <?php echo $controlador->inputs->select->em_empleado_id; ?>
-                        <?php echo $controlador->inputs->ap; ?>
-                        <?php echo $controlador->inputs->am; ?>
                         <?php echo $controlador->inputs->rfc; ?>
                         <?php echo $controlador->inputs->curp; ?>
                         <?php echo $controlador->inputs->nss; ?>
-
 
                         <?php include (new views())->ruta_templates.'botons/submit/alta_bd_otro.php';?>
 

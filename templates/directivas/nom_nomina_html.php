@@ -395,7 +395,7 @@ class nom_nomina_html extends html_controler {
     {
         $texts = new stdClass();
 
-        $in_rfc = (new em_empleado_html(html:$this->html_base))->input_rfc(cols: 6,row_upd:  $row_upd,value_vacio:  $value_vacio);
+        $in_rfc = (new em_empleado_html(html:$this->html_base))->input_rfc(cols: 6,row_upd:  $row_upd,value_vacio:  $value_vacio, disabled: true);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al generar input',data:  $in_rfc);
         }
@@ -419,13 +419,13 @@ class nom_nomina_html extends html_controler {
         }
         $texts->nombre = $in_nombre;
 
-        $in_curp = (new em_empleado_html(html:$this->html_base))->input_curp(cols: 6,row_upd:  $row_upd,value_vacio:  $value_vacio);
+        $in_curp = (new em_empleado_html(html:$this->html_base))->input_curp(cols: 6,row_upd:  $row_upd,value_vacio:  $value_vacio, disabled: true);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al generar input',data:  $in_curp);
         }
         $texts->curp = $in_curp;
 
-        $in_nss = (new em_empleado_html(html:$this->html_base))->input_nss(cols: 6,row_upd:  $row_upd,value_vacio:  $value_vacio);
+        $in_nss = (new em_empleado_html(html:$this->html_base))->input_nss(cols: 6,row_upd:  $row_upd,value_vacio:  $value_vacio, disabled: true);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al generar input',data:  $in_nss);
         }
