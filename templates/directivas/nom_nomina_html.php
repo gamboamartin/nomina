@@ -18,20 +18,15 @@ class nom_nomina_html extends html_controler {
     private function asigna_inputs(controlador_nom_nomina $controler, stdClass $inputs): array|stdClass
     {
         $controler->inputs->select = new stdClass();
-        $controler->inputs->select->cat_sat_moneda_id = $inputs->selects->cat_sat_moneda_id;
-        $controler->inputs->select->cat_sat_metodo_pago_id = $inputs->selects->cat_sat_metodo_pago_id;
-        $controler->inputs->select->cat_sat_tipo_de_comprobante_id = $inputs->selects->cat_sat_tipo_de_comprobante_id;
         $controler->inputs->select->dp_calle_pertenece_id = $inputs->selects->dp_calle_pertenece_id;
-        $controler->inputs->select->org_sucursal_id = $inputs->selects->org_sucursal_id;
         $controler->inputs->select->em_empleado_id = $inputs->selects->em_empleado_id;
         $controler->inputs->select->fc_factura_id = $inputs->selects->fc_factura_id;
-        $controler->inputs->version = $inputs->texts->version;
-        $controler->inputs->serie = $inputs->texts->serie;
-        $controler->inputs->folio = $inputs->texts->folio;
-        $controler->inputs->fecha = $inputs->texts->fecha;
-        $controler->inputs->tipo_cambio = $inputs->texts->tipo_cambio;
-        $controler->inputs->exportacion = $inputs->texts->exportacion;
-
+        $controler->inputs->select->cat_sat_tipo_nomina_id = $inputs->selects->cat_sat_tipo_nomina_id;
+        $controler->inputs->select->im_registro_patronal_id = $inputs->selects->im_registro_patronal_id;
+        $controler->inputs->num_dias_pagados = $inputs->texts->num_dias_pagados;
+        $controler->inputs->fecha_inicial_pago = $inputs->texts->fecha_inicial_pago;
+        $controler->inputs->fecha_final_pago = $inputs->texts->fecha_final_pago;
+        $controler->inputs->fecha_pago = $inputs->texts->fecha_pago;
         return $controler->inputs;
     }
 
@@ -114,14 +109,14 @@ class nom_nomina_html extends html_controler {
         return $inputs;
     }
 
-    public function input_version(int $cols, stdClass $row_upd, bool $value_vacio): array|string
+    public function input_num_dias_pagados(int $cols, stdClass $row_upd, bool $value_vacio): array|string
     {
         $valida = $this->directivas->valida_cols(cols: $cols);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al validar columnas', data: $valida);
         }
 
-        $html =$this->directivas->input_text_required(disable: false,name: 'version',place_holder: 'Version',
+        $html =$this->directivas->input_text_required(disable: false,name: 'num_dias_pagados',place_holder: 'Nº dias pagados',
             row_upd: $row_upd, value_vacio: $value_vacio);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al generar input', data: $html);
@@ -135,14 +130,14 @@ class nom_nomina_html extends html_controler {
         return $div;
     }
 
-    public function input_serie(int $cols, stdClass $row_upd, bool $value_vacio): array|string
+    public function input_fecha_inicial_pago(int $cols, stdClass $row_upd, bool $value_vacio): array|string
     {
         $valida = $this->directivas->valida_cols(cols: $cols);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al validar columnas', data: $valida);
         }
 
-        $html =$this->directivas->input_text_required(disable: false,name: 'serie',place_holder: 'Serie',
+        $html =$this->directivas->fecha_required(disable: false,name: 'fecha_inicial_pago',place_holder: 'Fecha inicial pago',
             row_upd: $row_upd, value_vacio: $value_vacio);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al generar input', data: $html);
@@ -156,14 +151,14 @@ class nom_nomina_html extends html_controler {
         return $div;
     }
 
-    public function input_folio(int $cols, stdClass $row_upd, bool $value_vacio): array|string
+    public function input_fecha_final_pago(int $cols, stdClass $row_upd, bool $value_vacio): array|string
     {
         $valida = $this->directivas->valida_cols(cols: $cols);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al validar columnas', data: $valida);
         }
 
-        $html =$this->directivas->input_text_required(disable: false,name: 'folio',place_holder: 'Folio',
+        $html =$this->directivas->fecha_required(disable: false,name: 'fecha_final_pago',place_holder: 'Fecha final pago',
             row_upd: $row_upd, value_vacio: $value_vacio);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al generar input', data: $html);
@@ -177,56 +172,14 @@ class nom_nomina_html extends html_controler {
         return $div;
     }
 
-    public function input_fecha(int $cols, stdClass $row_upd, bool $value_vacio): array|string
+    public function input_fecha_pago(int $cols, stdClass $row_upd, bool $value_vacio): array|string
     {
         $valida = $this->directivas->valida_cols(cols: $cols);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al validar columnas', data: $valida);
         }
 
-        $html =$this->directivas->fecha_required(disable: false,name: 'fecha',place_holder: 'Fecha',
-            row_upd: $row_upd, value_vacio: $value_vacio);
-        if(errores::$error){
-            return $this->error->error(mensaje: 'Error al generar input', data: $html);
-        }
-
-        $div = $this->directivas->html->div_group(cols: $cols,html:  $html);
-        if(errores::$error){
-            return $this->error->error(mensaje: 'Error al integrar div', data: $div);
-        }
-
-        return $div;
-    }
-
-    public function input_tipo_cambio(int $cols, stdClass $row_upd, bool $value_vacio): array|string
-    {
-        $valida = $this->directivas->valida_cols(cols: $cols);
-        if(errores::$error){
-            return $this->error->error(mensaje: 'Error al validar columnas', data: $valida);
-        }
-
-        $html =$this->directivas->input_text_required(disable: false,name: 'tipo_cambio',place_holder: 'Tipo cambio',
-            row_upd: $row_upd, value_vacio: $value_vacio);
-        if(errores::$error){
-            return $this->error->error(mensaje: 'Error al generar input', data: $html);
-        }
-
-        $div = $this->directivas->html->div_group(cols: $cols,html:  $html);
-        if(errores::$error){
-            return $this->error->error(mensaje: 'Error al integrar div', data: $div);
-        }
-
-        return $div;
-    }
-
-    public function input_exportacion(int $cols, stdClass $row_upd, bool $value_vacio): array|string
-    {
-        $valida = $this->directivas->valida_cols(cols: $cols);
-        if(errores::$error){
-            return $this->error->error(mensaje: 'Error al validar columnas', data: $valida);
-        }
-
-        $html =$this->directivas->input_text_required(disable: false,name: 'exportacion',place_holder: 'Exportacion',
+        $html =$this->directivas->fecha_required(disable: false,name: 'fecha_pago',place_holder: 'Fecha pago',
             row_upd: $row_upd, value_vacio: $value_vacio);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al generar input', data: $html);
@@ -244,40 +197,12 @@ class nom_nomina_html extends html_controler {
     {
         $selects = new stdClass();
 
-        $select = (new cat_sat_moneda_html(html:$this->html_base))->select_cat_sat_moneda_id(
-            cols: 6, con_registros:true, id_selected:-1,link: $link);
-        if(errores::$error){
-            return $this->error->error(mensaje: 'Error al generar select',data:  $select);
-        }
-        $selects->cat_sat_moneda_id = $select;
-
-        $select = (new cat_sat_metodo_pago_html(html:$this->html_base))->select_cat_sat_metodo_pago_id(
-            cols: 6, con_registros:true, id_selected:-1,link: $link);
-        if(errores::$error){
-            return $this->error->error(mensaje: 'Error al generar select',data:  $select);
-        }
-        $selects->cat_sat_metodo_pago_id = $select;
-
-        $select = (new cat_sat_tipo_de_comprobante_html(html:$this->html_base))->select_cat_sat_tipo_de_comprobante_id(
-            cols: 6, con_registros:true, id_selected:-1,link: $link);
-        if(errores::$error){
-            return $this->error->error(mensaje: 'Error al generar select',data:  $select);
-        }
-        $selects->cat_sat_tipo_de_comprobante_id = $select;
-
         $select = (new dp_calle_pertenece_html(html:$this->html_base))->select_dp_calle_pertenece_id(
             cols: 6, con_registros:true, id_selected:-1,link: $link);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al generar select',data:  $select);
         }
         $selects->dp_calle_pertenece_id = $select;
-
-        $select = (new org_sucursal_html(html:$this->html_base))->select_org_sucursal_id(
-            cols: 12, con_registros:true, id_selected:-1,link: $link);
-        if(errores::$error){
-            return $this->error->error(mensaje: 'Error al generar select',data:  $select);
-        }
-        $selects->org_sucursal_id = $select;
 
         $select = (new em_empleado_html(html:$this->html_base))->select_em_empleado_id(
             cols: 12, con_registros:true, id_selected:-1,link: $link);
@@ -287,11 +212,25 @@ class nom_nomina_html extends html_controler {
         $selects->em_empleado_id = $select;
 
         $select = (new fc_factura_html(html:$this->html_base))->select_fc_factura_id(
-            cols: 12, con_registros:true, id_selected:-1,link: $link);
+            cols: 6, con_registros:true, id_selected:-1,link: $link);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al generar select',data:  $select);
         }
         $selects->fc_factura_id = $select;
+
+        $select = (new cat_sat_tipo_nomina_html(html:$this->html_base))->select_cat_sat_tipo_nomina_id(
+            cols: 6, con_registros:true, id_selected:-1,link: $link);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al generar select',data:  $select);
+        }
+        $selects->cat_sat_tipo_nomina_id = $select;
+
+        $select = (new im_registro_patronal_html(html:$this->html_base))->select_im_registro_patronal_id(
+            cols: 6, con_registros:true, id_selected:-1,link: $link);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al generar select',data:  $select);
+        }
+        $selects->im_registro_patronal_id = $select;
 
         return $selects;
     }
@@ -300,40 +239,12 @@ class nom_nomina_html extends html_controler {
     {
         $selects = new stdClass();
 
-        $select = (new cat_sat_moneda_html(html:$this->html_base))->select_cat_sat_moneda_id(
-            cols: 6, con_registros:true, id_selected:$row_upd->cat_sat_moneda_id,link: $link);
-        if(errores::$error){
-            return $this->error->error(mensaje: 'Error al generar select',data:  $select);
-        }
-        $selects->cat_sat_moneda_id = $select;
-
-        $select = (new cat_sat_metodo_pago_html(html:$this->html_base))->select_cat_sat_metodo_pago_id(
-            cols: 6, con_registros:true, id_selected:$row_upd->cat_sat_metodo_pago_id,link: $link);
-        if(errores::$error){
-            return $this->error->error(mensaje: 'Error al generar select',data:  $select);
-        }
-        $selects->cat_sat_metodo_pago_id = $select;
-
-        $select = (new cat_sat_tipo_de_comprobante_html(html:$this->html_base))->select_cat_sat_tipo_de_comprobante_id(
-            cols: 6, con_registros:true, id_selected:$row_upd->cat_sat_tipo_de_comprobante_id,link: $link);
-        if(errores::$error){
-            return $this->error->error(mensaje: 'Error al generar select',data:  $select);
-        }
-        $selects->cat_sat_tipo_de_comprobante_id = $select;
-
         $select = (new dp_calle_pertenece_html(html:$this->html_base))->select_dp_calle_pertenece_id(
-            cols: 12, con_registros:true, id_selected:$row_upd->dp_calle_pertenece_id,link: $link);
+            cols: 6, con_registros:true, id_selected:$row_upd->dp_calle_pertenece_id,link: $link);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al generar select',data:  $select);
         }
         $selects->dp_calle_pertenece_id = $select;
-
-        $select = (new org_sucursal_html(html:$this->html_base))->select_org_sucursal_id(
-            cols: 12, con_registros:true, id_selected:$row_upd->org_sucursal_id,link: $link);
-        if(errores::$error){
-            return $this->error->error(mensaje: 'Error al generar select',data:  $select);
-        }
-        $selects->org_sucursal_id = $select;
 
         $select = (new em_empleado_html(html:$this->html_base))->select_em_empleado_id(
             cols: 12, con_registros:true, id_selected:$row_upd->em_empleado_id,link: $link);
@@ -343,11 +254,26 @@ class nom_nomina_html extends html_controler {
         $selects->em_empleado_id = $select;
 
         $select = (new fc_factura_html(html:$this->html_base))->select_fc_factura_id(
-            cols: 12, con_registros:true, id_selected:$row_upd->fc_factura_id,link: $link);
+            cols: 6, con_registros:true, id_selected:$row_upd->fc_factura_id,link: $link);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al generar select',data:  $select);
         }
         $selects->fc_factura_id = $select;
+
+
+        $select = (new cat_sat_tipo_nomina_html(html:$this->html_base))->select_cat_sat_tipo_nomina_id(
+            cols: 6, con_registros:true, id_selected:$row_upd->cat_sat_tipo_nomina_id,link: $link);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al generar select',data:  $select);
+        }
+        $selects->cat_sat_tipo_nomina_id = $select;
+
+        $select = (new im_registro_patronal_html(html:$this->html_base))->select_im_registro_patronal_id(
+            cols: 6, con_registros:true, id_selected:$row_upd->im_registro_patronal_id,link: $link);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al generar select',data:  $select);
+        }
+        $selects->im_registro_patronal_id = $select;
 
         return $selects;
     }
@@ -368,41 +294,29 @@ class nom_nomina_html extends html_controler {
     {
         $texts = new stdClass();
 
-        $in_version= $this->input_version(cols: 6,row_upd:  $row_upd,value_vacio:  $value_vacio);
+        $in_num_dias_pagados = $this->input_num_dias_pagados(cols: 6,row_upd:  $row_upd,value_vacio:  $value_vacio);
         if(errores::$error){
-            return $this->error->error(mensaje: 'Error al generar input',data:  $in_version);
+            return $this->error->error(mensaje: 'Error al generar input',data:  $in_num_dias_pagados);
         }
-        $texts->version = $in_version;
+        $texts->num_dias_pagados = $in_num_dias_pagados;
 
-        $in_serie = $this->input_serie(cols: 6,row_upd:  $row_upd,value_vacio:  $value_vacio);
+        $in_fecha_inicial_pago = $this->input_fecha_inicial_pago(cols: 6,row_upd:  $row_upd,value_vacio:  $value_vacio);
         if(errores::$error){
-            return $this->error->error(mensaje: 'Error al generar input',data:  $in_serie);
+            return $this->error->error(mensaje: 'Error al generar input',data:  $in_fecha_inicial_pago);
         }
-        $texts->serie = $in_serie;
+        $texts->fecha_inicial_pago = $in_fecha_inicial_pago;
 
-        $in_folio = $this->input_folio(cols: 6,row_upd:  $row_upd,value_vacio:  $value_vacio);
+        $in_fecha_final_pago = $this->input_fecha_final_pago(cols: 6,row_upd:  $row_upd,value_vacio:  $value_vacio);
         if(errores::$error){
-            return $this->error->error(mensaje: 'Error al generar input',data:  $in_folio);
+            return $this->error->error(mensaje: 'Error al generar input',data:  $in_fecha_final_pago);
         }
-        $texts->folio = $in_folio;
+        $texts->fecha_final_pago = $in_fecha_final_pago;
 
-        $in_fecha= $this->input_fecha(cols: 6,row_upd:  $row_upd,value_vacio:  $value_vacio);
+        $in_fecha_pago = $this->input_fecha_pago(cols: 6,row_upd:  $row_upd,value_vacio:  $value_vacio);
         if(errores::$error){
-            return $this->error->error(mensaje: 'Error al generar input',data:  $in_fecha);
+            return $this->error->error(mensaje: 'Error al generar input',data:  $in_fecha_pago);
         }
-        $texts->fecha = $in_fecha;
-
-        $in_tipo_cambio= $this->input_tipo_cambio(cols: 6,row_upd:  $row_upd,value_vacio:  $value_vacio);
-        if(errores::$error){
-            return $this->error->error(mensaje: 'Error al generar input',data:  $in_tipo_cambio);
-        }
-        $texts->tipo_cambio = $in_tipo_cambio;
-
-        $in_exportacion = $this->input_exportacion(cols: 6,row_upd:  $row_upd,value_vacio:  $value_vacio);
-        if(errores::$error){
-            return $this->error->error(mensaje: 'Error al generar input',data:  $in_exportacion);
-        }
-        $texts->exportacion = $in_exportacion;
+        $texts->fecha_pago = $in_fecha_pago;
 
         return $texts;
     }

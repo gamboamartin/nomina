@@ -6,7 +6,7 @@
         <div class="row">
             <div class="col-lg-12">
                 <div class="widget  widget-box box-container form-main widget-form-cart" id="form">
-                    <form method="post" action="<?php echo $controlador->link_org_sucursal_alta_bd; ?>" class="form-additional">
+                    <form method="post" action="<?php echo $controlador->link_nom_nomina_alta_bd; ?>" class="form-additional">
 
                         <?php include (new views())->ruta_templates."head/title.php"; ?>
                         <?php include (new views())->ruta_templates."head/subtitulo.php"; ?>
