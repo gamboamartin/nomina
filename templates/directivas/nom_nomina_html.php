@@ -49,6 +49,10 @@ class nom_nomina_html extends html_controler
         $controler->inputs->fecha_inicial_pago = $inputs->texts->fecha_inicial_pago;
         $controler->inputs->fecha_final_pago = $inputs->texts->fecha_final_pago;
         $controler->inputs->fecha_pago = $inputs->texts->fecha_pago;
+        $controler->inputs->num_dias_pagados = $inputs->texts->num_dias_pagados;
+        $controler->inputs->salario_diario = $inputs->texts->salario_diario;
+        $controler->inputs->salario_diario_integrado = $inputs->texts->salario_diario_integrado;
+
         return $controler->inputs;
     }
 
@@ -463,7 +467,7 @@ class nom_nomina_html extends html_controler
         }
         $texts->nss = $in_nss;
 
-        $in_folio = (new fc_factura_html(html: $this->html_base))->input_folio(cols: 4, row_upd: $row_upd,
+        $in_folio = (new fc_factura_html(html: $this->html_base))->input_folio(cols: 6, row_upd: $row_upd,
             value_vacio: $value_vacio);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al generar input', data: $in_folio);
@@ -472,7 +476,7 @@ class nom_nomina_html extends html_controler
 
         $row_upd->fecha = date('Y-m-d');
 
-        $in_fecha = (new fc_factura_html(html: $this->html_base))->input_fecha(cols: 4, row_upd: $row_upd,
+        $in_fecha = (new fc_factura_html(html: $this->html_base))->input_fecha(cols: 6, row_upd: $row_upd,
             value_vacio: false);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al generar input', data: $in_fecha);
@@ -496,6 +500,26 @@ class nom_nomina_html extends html_controler
             return $this->error->error(mensaje: 'Error al generar input', data: $in_fecha_pago);
         }
         $texts->fecha_pago = $in_fecha_pago;
+
+        $in_num_dias_pagados = $this->input_num_dias_pagados(cols: 4, row_upd: $row_upd, value_vacio: $value_vacio);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al generar input', data: $in_num_dias_pagados);
+        }
+        $texts->num_dias_pagados = $in_num_dias_pagados;
+
+        $in_salario_diario = (new em_empleado_html(html: $this->html_base))->input_salario_diario(cols: 4,
+            row_upd: $row_upd,value_vacio: $value_vacio);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al generar input', data: $in_salario_diario);
+        }
+        $texts->salario_diario = $in_salario_diario;
+
+        $in_salario_diario_integrado = (new em_empleado_html(html: $this->html_base))->input_salario_diario_integrado(
+            cols: 4, row_upd: $row_upd, value_vacio: $value_vacio);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al generar input', data: $in_salario_diario_integrado);
+        }
+        $texts->salario_diario_integrado = $in_salario_diario_integrado;
 
         return $texts;
     }
