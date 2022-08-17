@@ -4,6 +4,8 @@ let sl_nom_empleado = $("#em_empleado_id");
 let txt_rfc = $('#rfc');
 let txt_curp = $('#curp');
 let txt_nss = $('#nss');
+let txt_salario_diario = $('#salario_diario');
+let txt_salario_diario_integrado = $('#salario_diario_integrado');
 
 
 sl_nom_empleado.change(function(){
@@ -13,9 +15,13 @@ sl_nom_empleado.change(function(){
     let rfc = selected.data('em_empleado_rfc');
     let curp = selected.data('em_empleado_curp');
     let nss = selected.data('em_empleado_nss');
+    let salario_diario = selected.data('em_empleado_salario_diario');
+    let salario_diario_integrado = selected.data('em_empleado_salario_diario_integrado');
 
     txt_rfc.val(rfc);
     txt_curp.val(curp);
     txt_nss.val(nss);
+    txt_salario_diario.val(salario_diario);
+    txt_salario_diario_integrado.val(salario_diario_integrado);
 });
 

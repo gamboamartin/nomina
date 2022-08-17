@@ -508,14 +508,14 @@ class nom_nomina_html extends html_controler
         $texts->num_dias_pagados = $in_num_dias_pagados;
 
         $in_salario_diario = (new em_empleado_html(html: $this->html_base))->input_salario_diario(cols: 4,
-            row_upd: $row_upd,value_vacio: $value_vacio);
+            row_upd: $row_upd,value_vacio: $value_vacio, disabled: true);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al generar input', data: $in_salario_diario);
         }
         $texts->salario_diario = $in_salario_diario;
 
         $in_salario_diario_integrado = (new em_empleado_html(html: $this->html_base))->input_salario_diario_integrado(
-            cols: 4, row_upd: $row_upd, value_vacio: $value_vacio);
+            cols: 4, row_upd: $row_upd, value_vacio: $value_vacio, disabled: true);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al generar input', data: $in_salario_diario_integrado);
         }
