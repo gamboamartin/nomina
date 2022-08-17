@@ -46,6 +46,7 @@ class nom_nomina_html extends html_controler
         $controler->inputs->curp = $inputs->texts->curp;
         $controler->inputs->nss = $inputs->texts->nss;
         $controler->inputs->folio = $inputs->texts->folio;
+        $controler->inputs->fecha_inicio_rel_laboral = $inputs->texts->fecha_inicio_rel_laboral;
         $controler->inputs->fecha = $inputs->texts->fecha;
         $controler->inputs->fecha_inicial_pago = $inputs->texts->fecha_inicial_pago;
         $controler->inputs->fecha_final_pago = $inputs->texts->fecha_final_pago;
@@ -475,16 +476,23 @@ class nom_nomina_html extends html_controler
         }
         $texts->nss = $in_nss;
 
-        $in_folio = (new fc_factura_html(html: $this->html_base))->input_folio(cols: 6, row_upd: $row_upd,
+        $in_folio = (new fc_factura_html(html: $this->html_base))->input_folio(cols: 4, row_upd: $row_upd,
             value_vacio: $value_vacio);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al generar input', data: $in_folio);
         }
         $texts->folio = $in_folio;
 
+        $in_fecha_inicio_rel_laboral= (new em_empleado_html(html: $this->html_base))->input_fecha_inicio_rel_laboral(cols: 4,
+            row_upd: $row_upd, value_vacio: false,disabled: true);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al generar input', data: $in_fecha_inicio_rel_laboral);
+        }
+        $texts->fecha_inicio_rel_laboral = $in_fecha_inicio_rel_laboral;
+
         $row_upd->fecha = date('Y-m-d');
 
-        $in_fecha = (new fc_factura_html(html: $this->html_base))->input_fecha(cols: 6, row_upd: $row_upd,
+        $in_fecha = (new fc_factura_html(html: $this->html_base))->input_fecha(cols: 4, row_upd: $row_upd,
             value_vacio: false);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al generar input', data: $in_fecha);

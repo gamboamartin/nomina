@@ -19,6 +19,7 @@
                         <?php echo $controlador->inputs->nss; ?>
                         <?php echo $controlador->inputs->folio; ?>
                         <?php echo $controlador->inputs->fecha; ?>
+                        <?php echo $controlador->inputs->fecha_inicio_rel_laboral; ?>
                         <?php echo $controlador->inputs->select->cat_sat_tipo_nomina_id; ?>
                         <?php echo $controlador->inputs->select->cat_sat_periodicidad_pago_nom_id; ?>
                         <?php echo $controlador->inputs->fecha_pago; ?>
