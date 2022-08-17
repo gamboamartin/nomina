@@ -17,6 +17,8 @@
                         <?php echo $controlador->inputs->rfc; ?>
                         <?php echo $controlador->inputs->curp; ?>
                         <?php echo $controlador->inputs->nss; ?>
+                        <?php echo $controlador->inputs->folio; ?>
+                        <?php echo $controlador->inputs->fecha; ?>
 
                         <?php include (new views())->ruta_templates.'botons/submit/alta_bd_otro.php';?>
 
