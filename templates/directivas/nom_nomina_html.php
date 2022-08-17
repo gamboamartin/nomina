@@ -38,6 +38,7 @@ class nom_nomina_html extends html_controler
         $controler->inputs->select->org_sucursal_id = $inputs->selects->org_sucursal_id;
         $controler->inputs->select->em_empleado_id = $inputs->selects->em_empleado_id;
         $controler->inputs->select->cat_sat_tipo_nomina_id = $inputs->selects->cat_sat_tipo_nomina_id;
+        $controler->inputs->select->cat_sat_periodicidad_pago_nom_id = $inputs->selects->cat_sat_periodicidad_pago_nom_id;
         $controler->inputs->rfc = $inputs->texts->rfc;
         $controler->inputs->ap = $inputs->texts->ap;
         $controler->inputs->am = $inputs->texts->am;
@@ -318,11 +319,18 @@ class nom_nomina_html extends html_controler
         $selects->em_empleado_id = $select;
 
         $select = (new cat_sat_tipo_nomina_html(html: $this->html_base))->select_cat_sat_tipo_nomina_id(
-            cols: 12, con_registros: true, id_selected: -1, link: $link);
+            cols: 6, con_registros: true, id_selected: -1, link: $link);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al generar select', data: $select);
         }
         $selects->cat_sat_tipo_nomina_id = $select;
+
+        $select = (new cat_sat_periodicidad_pago_nom_html(html: $this->html_base))->select_cat_sat_periodicidad_pago_nom_id(
+            cols: 6, con_registros: true, id_selected: -1, link: $link);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al generar select', data: $select);
+        }
+        $selects->cat_sat_periodicidad_pago_nom_id = $select;
 
         return $selects;
     }

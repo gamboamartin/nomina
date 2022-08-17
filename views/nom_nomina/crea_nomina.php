@@ -20,6 +20,7 @@
                         <?php echo $controlador->inputs->folio; ?>
                         <?php echo $controlador->inputs->fecha; ?>
                         <?php echo $controlador->inputs->select->cat_sat_tipo_nomina_id; ?>
+                        <?php echo $controlador->inputs->select->cat_sat_periodicidad_pago_nom_id; ?>
                         <?php echo $controlador->inputs->fecha_pago; ?>
                         <?php echo $controlador->inputs->fecha_inicial_pago; ?>
                         <?php echo $controlador->inputs->fecha_final_pago; ?>
