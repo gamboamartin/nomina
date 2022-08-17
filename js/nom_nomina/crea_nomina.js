@@ -10,6 +10,8 @@ let txt_salario_diario = $('#salario_diario');
 let txt_salario_diario_integrado = $('#salario_diario_integrado');
 let txt_fecha_inicio_rel_laboral = $('#fecha_inicio_rel_laboral');
 let txt_num_dias_pagados = $('#num_dias_pagados');
+let txt_fecha_inicial_pago = $('#fecha_inicial_pago');
+let txt_fecha_final_pago = $('#fecha_final_pago');
 
 sl_nom_empleado.change(function(){
     let selected = $(this).find('option:selected');
@@ -27,13 +29,67 @@ sl_nom_empleado.change(function(){
     txt_salario_diario.val(salario_diario);
     txt_salario_diario_integrado.val(salario_diario_integrado);
     txt_fecha_inicio_rel_laboral.val(fecha_inicio_rel_laboral);
+
+    let fechaInicioRelLaboral = new Date(txt_fecha_inicio_rel_laboral.val());
+    let fechaInicialPago = new Date(txt_fecha_inicial_pago.val());
+
+    if(fechaInicioRelLaboral > fechaInicialPago){
+        txt_fecha_inicial_pago.val(fecha_inicio_rel_laboral);
+    }
 });
 
 sl_cat_sat_periodicidad_pago_nom.change(function(){
     let selected = $(this).find('option:selected');
-
     let num_dias_pagados = selected.data('cat_sat_periodicidad_pago_nom_n_dias');
 
+    let fechaFinal
+
+    if (selected.val() !== '') {
+         fechaFinal = fecha(txt_fecha_inicial_pago, num_dias_pagados)
+    } else {
+         fechaFinal = fecha(txt_fecha_inicial_pago)
+    }
     txt_num_dias_pagados.val(num_dias_pagados);
+    txt_fecha_final_pago.val(fechaFinal)
 });
+
+txt_fecha_inicial_pago.change(function() {
+    let selected = sl_cat_sat_periodicidad_pago_nom.find('option:selected');
+    let num_dias_pagados = selected.data('cat_sat_periodicidad_pago_nom_n_dias');
+
+    let fechaFinal
+
+    if (selected.val() !== '') {
+        fechaFinal = fecha(txt_fecha_inicial_pago, num_dias_pagados)
+    } else {
+        num_dias_pagados = (txt_num_dias_pagados.val() !== '') ? txt_num_dias_pagados.val() : 1
+        fechaFinal = fecha(txt_fecha_inicial_pago, num_dias_pagados)
+    }
+    txt_fecha_final_pago.val(fechaFinal)
+});
+
+txt_num_dias_pagados.change(function() {
+    let selected = sl_cat_sat_periodicidad_pago_nom.find('option:selected');
+    let num_dias_pagados = selected.data('cat_sat_periodicidad_pago_nom_n_dias');
+
+    let fechaFinal
+
+    if (selected.val() !== '') {
+        fechaFinal = fecha(txt_fecha_inicial_pago, num_dias_pagados)
+    } else {
+        num_dias_pagados = (txt_num_dias_pagados.val() !== '') ? txt_num_dias_pagados.val() : 1
+        fechaFinal = fecha(txt_fecha_inicial_pago, num_dias_pagados)
+    }
+    txt_fecha_final_pago.val(fechaFinal)
+});
+
+let fecha = (fechaInicio, numDias = 1) => {
+
+    var fechaInicial = new Date(fechaInicio.val());
+    var fechaFinal   = new Date(fechaInicio.val());
+    var dias = parseInt(numDias);
+
+    fechaFinal.setDate(fechaInicial.getDate() + dias);
+    return fechaFinal.getFullYear() + "-" +  ('0' + (fechaFinal.getMonth()+1)).slice(-2) + "-" + ('0' + fechaFinal.getDate()).slice(-2);
+};
 
