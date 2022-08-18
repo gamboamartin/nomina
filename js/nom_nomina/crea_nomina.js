@@ -12,6 +12,7 @@ let txt_fecha_inicio_rel_laboral = $('#fecha_inicio_rel_laboral');
 let txt_num_dias_pagados = $('#num_dias_pagados');
 let txt_fecha_inicial_pago = $('#fecha_inicial_pago');
 let txt_fecha_final_pago = $('#fecha_final_pago');
+let txt_subtotal = $('#subtotal');
 
 sl_nom_empleado.change(function(){
     let selected = $(this).find('option:selected');
@@ -36,6 +37,9 @@ sl_nom_empleado.change(function(){
     if(fechaInicioRelLaboral > fechaInicialPago){
         txt_fecha_inicial_pago.val(fecha_inicio_rel_laboral);
     }
+
+    let sub_Total = subTotal(txt_salario_diario.val(),txt_num_dias_pagados.val())
+    txt_subtotal.val(sub_Total)
 });
 
 sl_cat_sat_periodicidad_pago_nom.change(function(){
@@ -51,6 +55,8 @@ sl_cat_sat_periodicidad_pago_nom.change(function(){
     }
     txt_num_dias_pagados.val(num_dias_pagados);
     txt_fecha_final_pago.val(fechaFinal)
+    let sub_Total = subTotal(txt_salario_diario.val(),txt_num_dias_pagados.val())
+    txt_subtotal.val(sub_Total)
 });
 
 txt_fecha_inicial_pago.change(function() {
@@ -81,6 +87,8 @@ txt_num_dias_pagados.change(function() {
         fechaFinal = fecha(txt_fecha_inicial_pago, num_dias_pagados)
     }
     txt_fecha_final_pago.val(fechaFinal)
+    let sub_Total = subTotal(txt_salario_diario.val(),txt_num_dias_pagados.val())
+    txt_subtotal.val(sub_Total)
 });
 
 let fecha = (fechaInicio, numDias = 1) => {
@@ -91,5 +99,9 @@ let fecha = (fechaInicio, numDias = 1) => {
 
     fechaFinal.setDate(fechaInicial.getDate() + dias);
     return fechaFinal.getFullYear() + "-" +  ('0' + (fechaFinal.getMonth()+1)).slice(-2) + "-" + ('0' + fechaFinal.getDate()).slice(-2);
+};
+
+let subTotal = (salario = 0, diasPagados = 0,) => {
+   return salario * diasPagados
 };
 

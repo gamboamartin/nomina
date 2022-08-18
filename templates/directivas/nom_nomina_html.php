@@ -54,6 +54,7 @@ class nom_nomina_html extends html_controler
         $controler->inputs->num_dias_pagados = $inputs->texts->num_dias_pagados;
         $controler->inputs->salario_diario = $inputs->texts->salario_diario;
         $controler->inputs->salario_diario_integrado = $inputs->texts->salario_diario_integrado;
+        $controler->inputs->subtotal = $inputs->texts->subtotal;
 
         return $controler->inputs;
     }
@@ -542,6 +543,14 @@ class nom_nomina_html extends html_controler
             return $this->error->error(mensaje: 'Error al generar input', data: $in_salario_diario_integrado);
         }
         $texts->salario_diario_integrado = $in_salario_diario_integrado;
+
+
+        $in_subtotal = (new fc_factura_html(html: $this->html_base))->input_subtotal(
+            cols: 6, row_upd: $row_upd, value_vacio: false, disabled: true);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al generar input', data: $in_subtotal);
+        }
+        $texts->subtotal = $in_subtotal;
 
         return $texts;
     }

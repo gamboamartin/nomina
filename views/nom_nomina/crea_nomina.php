@@ -28,6 +28,7 @@
                         <?php echo $controlador->inputs->num_dias_pagados; ?>
                         <?php echo $controlador->inputs->salario_diario; ?>
                         <?php echo $controlador->inputs->salario_diario_integrado; ?>
+                        <?php echo $controlador->inputs->subtotal; ?>
 
                         <?php include (new views())->ruta_templates.'botons/submit/alta_bd_otro.php';?>
 
