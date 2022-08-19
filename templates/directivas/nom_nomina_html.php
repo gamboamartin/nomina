@@ -35,7 +35,7 @@ class nom_nomina_html extends html_controler
     private function asigna_inputs_crea_nomina(controlador_nom_nomina $controler, stdClass $inputs): array|stdClass
     {
         $controler->inputs->select = new stdClass();
-        $controler->inputs->select->org_sucursal_id = $inputs->selects->org_sucursal_id;
+        $controler->inputs->select->im_registro_patronal_id = $inputs->selects->im_registro_patronal_id;
         $controler->inputs->select->em_empleado_id = $inputs->selects->em_empleado_id;
         $controler->inputs->select->cat_sat_tipo_nomina_id = $inputs->selects->cat_sat_tipo_nomina_id;
         $controler->inputs->select->cat_sat_periodicidad_pago_nom_id = $inputs->selects->cat_sat_periodicidad_pago_nom_id;
@@ -306,12 +306,12 @@ class nom_nomina_html extends html_controler
     {
         $selects = new stdClass();
 
-        $select = (new org_sucursal_html(html: $this->html_base))->select_org_sucursal_id(
+        $select = (new im_registro_patronal_html(html: $this->html_base))->select_im_registro_patronal_id(
             cols: 12, con_registros: true, id_selected: -1, link: $link);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al generar select', data: $select);
         }
-        $selects->org_sucursal_id = $select;
+        $selects->im_registro_patronal_id = $select;
 
         $select = (new em_empleado_html(html: $this->html_base))->select_em_empleado_id(
             cols: 12, con_registros: true, id_selected: -1, link: $link);
