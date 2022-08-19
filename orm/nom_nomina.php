@@ -31,7 +31,8 @@ class nom_nomina extends modelo
             return $this->error->error(mensaje: 'Error al generar registros', data: $registros);
         }
 
-        $regisros_factura = $this->genera_registro_factura(registros: $registros['fc_fcd']);
+        $regisros_factura = $this->genera_registro_factura(registros: $registros['fc_fcd'],
+            empleado_sucursal: $registros['nom_rel_empleado_sucursal']);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al generar registros de factura', data: $regisros_factura);
         }
@@ -79,19 +80,26 @@ class nom_nomina extends modelo
             return $this->error->error(mensaje: 'Error al generar registros de empleado ', data: $em_empleado);
         }
 
-        $regisros = array('im_registro_patronal' => $im_registro_patronal, 'em_empleado' => $em_empleado,
-            'fc_fcd' => $fc_fcd_id);
+        $filtro['em_empleado_id'] = $this->registro['em_empleado_id'];
+        $nom_rel_empleado_sucursal = (new nom_rel_empleado_sucursal($this->link))->filtro_and( filtro: $filtro);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al generar registros de empleado ucursal ',
+                data: $nom_rel_empleado_sucursal);
+        }
 
-        return $regisros;
+        $registros = array('im_registro_patronal' => $im_registro_patronal, 'em_empleado' => $em_empleado,
+            'fc_fcd' => $fc_fcd_id, 'nom_rel_empleado_sucursal' => $nom_rel_empleado_sucursal);
+
+        return $registros;
     }
 
-    private function genera_registro_factura(mixed $registros): array
+    private function genera_registro_factura(mixed $registros, mixed $empleado_sucursal): array
     {
         $folio = $this->registro['folio'];
         $serie = $registros->fc_cfd_serie;
         $fecha = $this->registro['fecha'];
         $fc_cfd_id = $registros->fc_cfd_id;
-        $com_sucursal_id = 1;
+        $com_sucursal_id = $empleado_sucursal->registros[0]['nom_rel_empleado_sucursal_com_sucursal_id'];
         $cat_sat_forma_pago_id = 1;
         $cat_sat_metodo_pago_id = 1;
         $cat_sat_moneda_id = 1;
@@ -124,6 +132,26 @@ class nom_nomina extends modelo
             $registros['em_empleado']->em_empleado_rfc, $fc_factura->registro['fc_factura_codigo']);
 
         $registro = $this->asigna_campo(registro: $this->registro, campo: "descripcion", campos_asignar: $asignar);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al asignar descripcion', data: $registro);
+        }
+        $this->registro = $registro;
+
+        $registro = $this->asigna_campo(registro: $this->registro, campo: "descripcion_select", campos_asignar: $asignar);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al asignar descripcion', data: $registro);
+        }
+        $this->registro = $registro;
+
+        $asignar = array($fc_factura->registro['fc_factura_codigo'], $registros['em_empleado']->em_empleado_rfc);
+
+        $registro = $this->asigna_campo(registro: $this->registro, campo: "alias", campos_asignar: $asignar);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al asignar descripcion', data: $registro);
+        }
+        $this->registro = $registro;
+
+        $registro = $this->asigna_campo(registro: $this->registro, campo: "codigo_bis", campos_asignar: $asignar);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al asignar descripcion', data: $registro);
         }
