@@ -1,114 +1,163 @@
 <?php
+
 namespace models;
+
 use base\orm\modelo;
 use gamboamartin\errores\errores;
 use html\im_registro_patronal_html;
 use PDO;
 use stdClass;
 
-class nom_nomina extends modelo{
+class nom_nomina extends modelo
+{
 
-    public function __construct(PDO $link){
+    public function __construct(PDO $link)
+    {
         $tabla = __CLASS__;
-        $columnas = array($tabla=>false, 'dp_calle_pertenece'=>$tabla, 'dp_calle' => 'dp_calle_pertenece',
-            'dp_colonia_postal'=>'dp_calle_pertenece', 'dp_colonia'=>'dp_colonia_postal', 'dp_cp'=>'dp_colonia_postal',
-            'dp_municipio'=>'dp_cp', 'dp_estado'=>'dp_municipio','dp_pais'=>'dp_estado',
-            'em_empleado'=>$tabla);
+        $columnas = array($tabla => false, 'dp_calle_pertenece' => $tabla, 'dp_calle' => 'dp_calle_pertenece',
+            'dp_colonia_postal' => 'dp_calle_pertenece', 'dp_colonia' => 'dp_colonia_postal', 'dp_cp' => 'dp_colonia_postal',
+            'dp_municipio' => 'dp_cp', 'dp_estado' => 'dp_municipio', 'dp_pais' => 'dp_estado',
+            'em_empleado' => $tabla);
         $campos_obligatorios = array();
 
-        parent::__construct(link: $link,tabla:  $tabla, campos_obligatorios: $campos_obligatorios,
+        parent::__construct(link: $link, tabla: $tabla, campos_obligatorios: $campos_obligatorios,
             columnas: $columnas);
-    }
-
-    private function inserta_factura(array $registro): array|stdClass
-    {
-        $r_alta_factura = (new fc_factura($this->link))->alta_registro(registro: $registro);
-        if(errores::$error){
-            return $this->error->error(mensaje: 'Error al dar de alta la factura', data: $r_alta_factura);
-        }
-        return $r_alta_factura;
     }
 
     public function alta_bd(): array|stdClass
     {
-        $regisros_factura = array( 'folio'   => $this->registro['folio'],
-                                   'serie'   => 3,
-                                   'fecha'   => $this->registro['fecha'],
-                                   'fc_cfd_id'   => 1,
-                                   'com_sucursal_id'   => 1,
-                                   'cat_sat_forma_pago_id'   => 1,
-                                   'cat_sat_metodo_pago_id'   => 1,
-                                   'cat_sat_moneda_id'   => 1,
-                                   'com_tipo_cambio_id'   => 1,
-                                   'cat_sat_uso_cfdi_id'   => 1,
-                                   'cat_sat_tipo_de_comprobante_id'   => 1);
+        $registros = $this->genera_registros();
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al generar registros', data: $registros);
+        }
 
+        $regisros_factura = $this->genera_registro_factura(registros: $registros['fc_fcd']);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al generar registros de factura', data: $regisros_factura);
+        }
 
         $r_alta_factura = $this->inserta_factura(registro: $regisros_factura);
-        if(errores::$error){
+        if (errores::$error) {
             return $this->error->error(mensaje: 'Error al dar de alta la factura', data: $r_alta_factura);
         }
 
-
-
-        $this->registro = $this->limpia_campos($this->registro, array('folio', 'fecha', 'cat_sat_periodicidad_pago_nom_id'));
-        if(errores::$error){
+        $this->registro = $this->limpia_campos(registro: $this->registro,
+            campos_limpiar: array('folio', 'fecha', 'cat_sat_periodicidad_pago_nom_id'));
+        if (errores::$error) {
             return $this->error->error(mensaje: 'Error al limpiar campos', data: $this->registro);
         }
 
-
-        $im_registro_patronal = $this->registros_por_id(new im_registro_patronal($this->link),
-            $this->registro['im_registro_patronal_id']);
-        $em_empleado = $this->registros_por_id(new em_empleado($this->link),
-            $this->registro['em_empleado_id']);
-
-
-
-        $campos_asignar = array($im_registro_patronal->im_registro_patronal_org_sucursal_id,
-            $r_alta_factura->registro['fc_factura_serie'],$r_alta_factura->registro['fc_factura_folio']);
-
-        $registro = $this->asigna_campo(registro: $this->registro, campo: "codigo", campos_asignar: $campos_asignar);
-        if(errores::$error){
-            return $this->error->error(mensaje: 'Error al asignar codigo', data: $registro);
+        $this->registro = $this->genera_registro_nomina(registros: $registros, fc_factura: $r_alta_factura);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al generar registros de nomina', data: $this->registro);
         }
-        $this->registro = $registro;
-
-        $campos_asignar = array($em_empleado->em_empleado_id,$em_empleado->em_empleado_nombre,
-            $em_empleado->em_empleado_ap,$em_empleado->em_empleado_am,
-            $em_empleado->em_empleado_rfc,$this->registro['codigo']);
-
-        $registro = $this->asigna_campo(registro: $this->registro, campo: "descripcion", campos_asignar: $campos_asignar);
-        if(errores::$error){
-            return $this->error->error(mensaje: 'Error al asignar descripcion', data: $registro);
-        }
-        $this->registro = $registro;
-
-        $this->registro['fc_factura_id'] = $r_alta_factura->registro_id;
-
 
         $r_alta_bd = parent::alta_bd(); // TODO: Change the autogenerated stub
-        if(errores::$error){
+        if (errores::$error) {
             return $this->error->error(mensaje: 'Error al insertar nomina', data: $r_alta_bd);
         }
         return $r_alta_bd;
     }
 
+    private function genera_registros(): array
+    {
+        $im_registro_patronal = $this->registros_por_id(new im_registro_patronal($this->link),
+            $this->registro['im_registro_patronal_id']);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al generar registros de registro patronal',
+                data: $im_registro_patronal);
+        }
+
+        $fc_fcd_id = $this->registros_por_id(new fc_cfd($this->link),
+            $im_registro_patronal->im_registro_patronal_fc_fcd_id);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al generar registros de fcd', data: $fc_fcd_id);
+        }
+
+        $em_empleado = $this->registros_por_id(new em_empleado($this->link), $this->registro['em_empleado_id']);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al generar registros de empleado ', data: $em_empleado);
+        }
+
+        $regisros = array('im_registro_patronal' => $im_registro_patronal, 'em_empleado' => $em_empleado,
+            'fc_fcd' => $fc_fcd_id);
+
+        return $regisros;
+    }
+
+    private function genera_registro_factura(mixed $registros): array
+    {
+        $folio = $this->registro['folio'];
+        $serie = $registros->fc_cfd_serie;
+        $fecha = $this->registro['fecha'];
+        $fc_cfd_id = $registros->fc_cfd_id;
+        $com_sucursal_id = 1;
+        $cat_sat_forma_pago_id = 1;
+        $cat_sat_metodo_pago_id = 1;
+        $cat_sat_moneda_id = 1;
+        $com_tipo_cambio_id = 1;
+        $cat_sat_uso_cfdi_id = 1;
+        $cat_sat_tipo_de_comprobante_id = 1;
+
+        $regisro_factura = array('folio' => $folio, 'serie' => $serie, 'fecha' => $fecha,
+            'fc_cfd_id' => $fc_cfd_id, 'com_sucursal_id' => $com_sucursal_id,
+            'cat_sat_forma_pago_id' => $cat_sat_forma_pago_id, 'cat_sat_metodo_pago_id' => $cat_sat_metodo_pago_id,
+            'cat_sat_moneda_id' => $cat_sat_moneda_id, 'com_tipo_cambio_id' => $com_tipo_cambio_id,
+            'cat_sat_uso_cfdi_id' => $cat_sat_uso_cfdi_id, 'cat_sat_tipo_de_comprobante_id' => $cat_sat_tipo_de_comprobante_id);
+
+        return $regisro_factura;
+    }
+
+    private function genera_registro_nomina(mixed $registros, mixed $fc_factura) : array{
+
+        $asignar = array($registros['fc_fcd']->org_sucursal_id,
+            $fc_factura->registro['fc_factura_serie'], $fc_factura->registro['fc_factura_folio']);
+
+        $registro = $this->asigna_campo(registro: $this->registro, campo: "codigo", campos_asignar: $asignar);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al asignar codigo', data: $registro);
+        }
+        $this->registro = $registro;
+
+        $asignar = array($registros['em_empleado']->em_empleado_id, $registros['em_empleado']->em_empleado_nombre,
+            $registros['em_empleado']->em_empleado_ap, $registros['em_empleado']->em_empleado_am,
+            $registros['em_empleado']->em_empleado_rfc, $fc_factura->registro['fc_factura_codigo']);
+
+        $registro = $this->asigna_campo(registro: $this->registro, campo: "descripcion", campos_asignar: $asignar);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al asignar descripcion', data: $registro);
+        }
+        $this->registro = $registro;
+
+        $this->registro['fc_factura_id'] = $fc_factura->registro_id;
+
+        return $this->registro;
+    }
+
     private function limpia_campos(array $registro, array $campos_limpiar): array
     {
-        foreach ($campos_limpiar as $valor){
-            if(isset($registro[$valor])) {
+        foreach ($campos_limpiar as $valor) {
+            if (isset($registro[$valor])) {
                 unset($registro[$valor]);
             }
         }
         return $registro;
     }
 
+    private function inserta_factura(array $registro): array|stdClass
+    {
+        $r_alta_factura = (new fc_factura($this->link))->alta_registro(registro: $registro);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al dar de alta la factura', data: $r_alta_factura);
+        }
+        return $r_alta_factura;
+    }
 
     private function asigna_campo(array $registro, string $campo, array $campos_asignar): array
     {
-        if(!isset($registro[$campo])) {
+        if (!isset($registro[$campo])) {
             $valor_generado = $this->genera_valor_campo(campos_asignar: $campos_asignar);
-            if(errores::$error){
+            if (errores::$error) {
                 return $this->error->error(mensaje: 'Error al asignar el campo', data: $valor_generado);
             }
             $registro[$campo] = $valor_generado;
@@ -118,11 +167,11 @@ class nom_nomina extends modelo{
 
     private function asigna_codigo_nomina(array $registro): array
     {
-        if(!isset($registro['codigo'])) {
+        if (!isset($registro['codigo'])) {
 
             $codigo = $this->codigo_nomina(org_sucursal_id: $registro['org_sucursal_id'],
                 registro: $registro);
-            if(errores::$error){
+            if (errores::$error) {
                 return $this->error->error(mensaje: 'Error al generar codigo', data: $codigo);
             }
 
@@ -133,11 +182,11 @@ class nom_nomina extends modelo{
 
     private function asigna_descripcion_nomina(array $registro): array
     {
-        if(!isset($registro['descripcion'])) {
+        if (!isset($registro['descripcion'])) {
 
             $descripcion = $this->descripcion_nomina(em_empleado_id: $registro['em_empleado_id'],
                 registro: $registro);
-            if(errores::$error){
+            if (errores::$error) {
                 return $this->error->error(mensaje: 'Error al generar descripcion', data: $descripcion);
             }
             $registro['descripcion'] = $descripcion;
@@ -149,21 +198,21 @@ class nom_nomina extends modelo{
     {
 
         $org_sucursal = (new org_sucursal($this->link))->registro(registro_id: $org_sucursal_id, retorno_obj: true);
-        if(errores::$error){
+        if (errores::$error) {
             return $this->error->error(mensaje: 'Error al obtener sucursal', data: $org_sucursal);
         }
 
         $codigo = $this->genera_codigo_nomina(org_sucursal: $org_sucursal, registro: $registro);
-        if(errores::$error){
+        if (errores::$error) {
             return $this->error->error(mensaje: 'Error al generar codigo', data: $codigo);
         }
         return $codigo;
     }
 
-    private function registros_por_id(modelo $entidad,int $id): array|stdClass
+    private function registros_por_id(modelo $entidad, int $id): array|stdClass
     {
         $data = $entidad->registro(registro_id: $id, retorno_obj: true);
-        if(errores::$error){
+        if (errores::$error) {
             return $this->error->error(mensaje: 'Error al obtener los registros', data: $data);
         }
         return $data;
@@ -177,12 +226,12 @@ class nom_nomina extends modelo{
     private function descripcion_nomina(int $em_empleado_id, array $registro): array|string
     {
         $em_empleado = (new em_empleado($this->link))->registro(registro_id: $em_empleado_id, retorno_obj: true);
-        if(errores::$error){
+        if (errores::$error) {
             return $this->error->error(mensaje: 'Error al obtener empleado', data: $em_empleado);
         }
 
         $descripcion = $this->genera_descripcion(em_empleado: $em_empleado, registro: $registro);
-        if(errores::$error){
+        if (errores::$error) {
             return $this->error->error(mensaje: 'Error al generar descripcion', data: $descripcion);
         }
         return $descripcion;
@@ -198,10 +247,10 @@ class nom_nomina extends modelo{
     private function genera_descripcion(stdClass $em_empleado, array $registro): string
     {
         return $em_empleado->em_empleado_id .
-               $em_empleado->em_empleado_nombre .
-               $em_empleado->em_empleado_ap .
-               $em_empleado->em_empleado_am.
-               $em_empleado->em_empleado_rfc;
+            $em_empleado->em_empleado_nombre .
+            $em_empleado->em_empleado_ap .
+            $em_empleado->em_empleado_am .
+            $em_empleado->em_empleado_rfc;
     }
 
 
