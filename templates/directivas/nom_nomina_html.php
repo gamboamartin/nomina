@@ -39,6 +39,7 @@ class nom_nomina_html extends html_controler
         $controler->inputs->select->em_empleado_id = $inputs->selects->em_empleado_id;
         $controler->inputs->select->cat_sat_tipo_nomina_id = $inputs->selects->cat_sat_tipo_nomina_id;
         $controler->inputs->select->cat_sat_periodicidad_pago_nom_id = $inputs->selects->cat_sat_periodicidad_pago_nom_id;
+        $controler->inputs->select->em_cuenta_bancaria_id = $inputs->selects->em_cuenta_bancaria_id;
         $controler->inputs->rfc = $inputs->texts->rfc;
         $controler->inputs->ap = $inputs->texts->ap;
         $controler->inputs->am = $inputs->texts->am;
@@ -333,6 +334,13 @@ class nom_nomina_html extends html_controler
             return $this->error->error(mensaje: 'Error al generar select', data: $select);
         }
         $selects->cat_sat_periodicidad_pago_nom_id = $select;
+
+        $select = (new em_cuenta_bancaria_html(html: $this->html_base))->select_em_cuenta_bancaria_id(
+            cols: 12, con_registros: true, id_selected: -1, link: $link);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al generar select', data: $select);
+        }
+        $selects->em_cuenta_bancaria_id = $select;
 
         return $selects;
     }
