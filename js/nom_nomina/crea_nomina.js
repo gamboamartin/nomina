@@ -1,7 +1,14 @@
+function getParameterByName(name) {
+    name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+    const regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
+        results = regex.exec(location.search);
+    return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
+}
+
+let session_id = getParameterByName('session_id');
 
 let sl_nom_empleado = $("#em_empleado_id");
 let sl_cat_sat_periodicidad_pago_nom = $("#cat_sat_periodicidad_pago_nom_id");
-
 
 let txt_rfc = $('#rfc');
 let txt_curp = $('#curp');
@@ -13,6 +20,7 @@ let txt_num_dias_pagados = $('#num_dias_pagados');
 let txt_fecha_inicial_pago = $('#fecha_inicial_pago');
 let txt_fecha_final_pago = $('#fecha_final_pago');
 let txt_subtotal = $('#subtotal');
+
 
 sl_nom_empleado.change(function(){
     let selected = $(this).find('option:selected');
@@ -40,6 +48,26 @@ sl_nom_empleado.change(function(){
 
     let sub_Total = subTotal(txt_salario_diario.val(),txt_num_dias_pagados.val())
     txt_subtotal.val(sub_Total)
+
+    em_empleado_id = $(this).val();
+
+    let url = "index.php?seccion=em_cuenta_bancaria&ws=1&accion=get_cuentas_bancarias&em_empleado_id="+em_empleado_id+"&session_id="+session_id;
+
+    $.ajax({
+        type: 'GET',
+        url: url,
+    }).done(function( data ) {
+        console.log(data);
+
+    }).fail(function (jqXHR, textStatus, errorThrown){
+        alert('Error al ejecutar');
+        console.log(jqXHR);
+    });
+
+
+    console.log("aaaaaaaa");
+
+    console.log(url)
 });
 
 sl_cat_sat_periodicidad_pago_nom.change(function(){
@@ -91,6 +119,8 @@ txt_num_dias_pagados.change(function() {
     txt_subtotal.val(sub_Total)
 });
 
+
+
 let fecha = (fechaInicio, numDias = 1) => {
 
     var fechaInicial = new Date(fechaInicio.val());
@@ -104,4 +134,6 @@ let fecha = (fechaInicio, numDias = 1) => {
 let subTotal = (salario = 0, diasPagados = 0,) => {
    return salario * diasPagados
 };
+
+
 
