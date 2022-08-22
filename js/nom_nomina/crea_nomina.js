@@ -1,14 +1,9 @@
-function getParameterByName(name) {
-    name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
-    const regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
-        results = regex.exec(location.search);
-    return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
-}
-
+let url = getAbsolutePath();
 let session_id = getParameterByName('session_id');
 
 let sl_nom_empleado = $("#em_empleado_id");
 let sl_cat_sat_periodicidad_pago_nom = $("#cat_sat_periodicidad_pago_nom_id");
+let sl_em_cuenta_bancaria_id = $("#em_cuenta_bancaria_id");
 
 let txt_rfc = $('#rfc');
 let txt_curp = $('#curp');
@@ -59,15 +54,22 @@ sl_nom_empleado.change(function(){
     }).done(function( data ) {
         console.log(data);
 
+        sl_em_cuenta_bancaria_id.empty();
+        integra_new_option("#em_cuenta_bancaria_id",'Seleccione una cuenta bancaria','-1');
+
+        $.each(data.registros, function( index, em_cuenta_bancaria ) {
+            integra_new_option("#em_cuenta_bancaria_id",em_cuenta_bancaria.bn_banco_descripcion_select+' '+em_cuenta_bancaria.em_cuenta_bancaria_num_cuenta,em_cuenta_bancaria.em_cuenta_bancaria_id);
+        });
+
+
+        sl_em_cuenta_bancaria_id.selectpicker('refresh');
+
     }).fail(function (jqXHR, textStatus, errorThrown){
         alert('Error al ejecutar');
         console.log(jqXHR);
     });
 
 
-    console.log("aaaaaaaa");
-
-    console.log(url)
 });
 
 sl_cat_sat_periodicidad_pago_nom.change(function(){
