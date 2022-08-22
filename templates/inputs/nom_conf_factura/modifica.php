@@ -4,6 +4,7 @@
 <?php echo $controlador->inputs->codigo; ?>
 <?php echo $controlador->inputs->codigo_bis; ?>
 <?php echo $controlador->inputs->descripcion; ?>
+<?php echo $controlador->inputs->descripcion_select; ?>
 <?php echo $controlador->inputs->select->cat_sat_forma_pago_id; ?>
 <?php echo $controlador->inputs->select->cat_sat_metodo_pago_id; ?>
 <?php echo $controlador->inputs->select->cat_sat_moneda_id; ?>
