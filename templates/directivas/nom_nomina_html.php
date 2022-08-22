@@ -29,6 +29,9 @@ class nom_nomina_html extends html_controler
         $controler->inputs->fecha_inicial_pago = $inputs->texts->fecha_inicial_pago;
         $controler->inputs->fecha_final_pago = $inputs->texts->fecha_final_pago;
         $controler->inputs->fecha_pago = $inputs->texts->fecha_pago;
+
+        $controler->inputs->folio = $inputs->texts->folio;
+        $controler->inputs->fecha = $inputs->texts->fecha;
         return $controler->inputs;
     }
 
