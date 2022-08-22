@@ -419,6 +419,22 @@ class nom_nomina_html extends html_controler
         }
         $texts->fecha_inicial_pago = $in_fecha_inicial_pago;
 
+        $in_folio = (new fc_factura_html(html: $this->html_base))->input_folio(cols: 6, row_upd: $row_upd,
+            value_vacio: $value_vacio);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al generar input', data: $in_folio);
+        }
+        $texts->folio = $in_folio;
+
+        $row_upd->fecha = date('Y-m-d');
+
+        $in_fecha = (new fc_factura_html(html: $this->html_base))->input_fecha(cols: 6, row_upd: $row_upd,
+            value_vacio: false);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al generar input', data: $in_fecha);
+        }
+        $texts->fecha = $in_fecha;
+
         $in_fecha_final_pago = $this->input_fecha_final_pago(cols: 6, row_upd: $row_upd, value_vacio: $value_vacio);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al generar input', data: $in_fecha_final_pago);
