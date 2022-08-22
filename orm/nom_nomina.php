@@ -42,6 +42,16 @@ class nom_nomina extends modelo
             return $this->error->error(mensaje: 'Error al dar de alta la factura', data: $r_alta_factura);
         }
 
+        $regisros_cfd_partida = $this->genera_registro_cfd_partida(fc_factura: $r_alta_factura);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al generar registros de cfd partida', data: $regisros_cfd_partida);
+        }
+
+        $r_alta_cfd_partida  = $this->inserta_cfd_partida(registro: $regisros_cfd_partida);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al dar de alta cfd partida', data: $r_alta_cfd_partida);
+        }
+
         $this->registro = $this->limpia_campos(registro: $this->registro,
             campos_limpiar: array('folio', 'fecha', 'cat_sat_periodicidad_pago_nom_id'));
         if (errores::$error) {
@@ -116,6 +126,28 @@ class nom_nomina extends modelo
         return $regisro_factura;
     }
 
+    private function genera_registro_cfd_partida(mixed $fc_factura) : array{
+
+        $codigo = 1;
+        $descripcion = 1;
+        $descripcion_select = 1;
+        $alias = 1;
+        $codigo_bis = 1;
+        $com_producto_id = 1;
+        $cantidad = 1;
+        $valor_unitario= 1;
+        $descuento = 1;
+        $fc_factura_id= $fc_factura->registro['fc_factura_id'];
+
+        $regisro_cfd_partida = array('codigo' => $codigo, 'descripcion' => $descripcion, 'descripcion_select' => $descripcion_select,
+            'alias' => $alias, 'codigo_bis' => $codigo_bis,
+            'com_producto_id' => $com_producto_id, 'cantidad' => $cantidad,
+            'valor_unitario' => $valor_unitario, 'descuento' => $descuento,
+            'fc_factura_id' => $fc_factura_id);
+
+        return $regisro_cfd_partida;
+    }
+
     private function genera_registro_nomina(mixed $registros, mixed $fc_factura) : array{
 
         $asignar = array($registros['fc_fcd']->org_sucursal_id,
@@ -170,6 +202,15 @@ class nom_nomina extends modelo
             }
         }
         return $registro;
+    }
+
+    private function inserta_cfd_partida(array $registro): array|stdClass
+    {
+        $r_alta_cfd_partida = (new fc_cfd_partida($this->link))->alta_registro(registro: $registro);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al dar de alta cfd partida', data: $r_alta_cfd_partida);
+        }
+        return $r_alta_cfd_partida;
     }
 
     private function inserta_factura(array $registro): array|stdClass

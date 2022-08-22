@@ -1,4 +1,5 @@
 let url = getAbsolutePath();
+
 let session_id = getParameterByName('session_id');
 
 let sl_nom_empleado = $("#em_empleado_id");
@@ -120,7 +121,6 @@ txt_num_dias_pagados.change(function() {
     let sub_Total = subTotal(txt_salario_diario.val(),txt_num_dias_pagados.val())
     txt_subtotal.val(sub_Total)
 });
-
 
 
 let fecha = (fechaInicio, numDias = 1) => {
