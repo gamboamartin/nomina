@@ -10,6 +10,7 @@ use gamboamartin\system\html_controler;
 use models\com_sucursal;
 use models\em_empleado;
 use models\fc_cfd;
+use models\fc_factura;
 use models\nom_nomina;
 use PDO;
 use stdClass;
@@ -44,9 +45,6 @@ class nom_nomina_html extends html_controler
         $controler->inputs->select->cat_sat_periodicidad_pago_nom_id = $inputs->selects->cat_sat_periodicidad_pago_nom_id;
         $controler->inputs->select->em_cuenta_bancaria_id = $inputs->selects->em_cuenta_bancaria_id;
         $controler->inputs->rfc = $inputs->texts->rfc;
-        $controler->inputs->ap = $inputs->texts->ap;
-        $controler->inputs->am = $inputs->texts->am;
-        $controler->inputs->nombre = $inputs->texts->nombre;
         $controler->inputs->curp = $inputs->texts->curp;
         $controler->inputs->nss = $inputs->texts->nss;
         $controler->inputs->folio = $inputs->texts->folio;
@@ -154,7 +152,7 @@ class nom_nomina_html extends html_controler
             return $this->error->error(mensaje: 'Error al generar selects', data: $selects);
         }
 
-        $texts = $this->texts_alta_crea_nomina(row_upd: $row_upd, value_vacio: false, params: $params);
+        $texts = $this->texts_modifica_crea_nomina(link: $link, row_upd: $row_upd, value_vacio: false, params: $params);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al generar texts', data: $texts);
         }
@@ -350,6 +348,7 @@ class nom_nomina_html extends html_controler
 
     private function selects_selects_modifica_crea_nomina(PDO $link, stdClass $row_upd): array|stdClass
     {
+
         $selects = new stdClass();
 
         $select = (new im_registro_patronal_html(html: $this->html_base))->select_im_registro_patronal_id(
@@ -503,27 +502,6 @@ class nom_nomina_html extends html_controler
         }
         $texts->rfc = $in_rfc;
 
-        $in_ap = (new em_empleado_html(html: $this->html_base))->input_ap(cols: 6, row_upd: $row_upd,
-            value_vacio: $value_vacio);
-        if (errores::$error) {
-            return $this->error->error(mensaje: 'Error al generar input', data: $in_ap);
-        }
-        $texts->ap = $in_ap;
-
-        $in_am = (new em_empleado_html(html: $this->html_base))->input_am(cols: 6, row_upd: $row_upd,
-            value_vacio: $value_vacio);
-        if (errores::$error) {
-            return $this->error->error(mensaje: 'Error al generar input', data: $in_am);
-        }
-        $texts->am = $in_am;
-
-        $in_nombre = (new em_empleado_html(html: $this->html_base))->input_nombre(cols: 6, row_upd: $row_upd,
-            value_vacio: $value_vacio);
-        if (errores::$error) {
-            return $this->error->error(mensaje: 'Error al generar input', data: $in_nombre);
-        }
-        $texts->nombre = $in_nombre;
-
         $in_curp = (new em_empleado_html(html: $this->html_base))->input_curp(cols: 4, row_upd: $row_upd,
             value_vacio: $value_vacio, disabled: true);
         if (errores::$error) {
@@ -612,6 +590,133 @@ class nom_nomina_html extends html_controler
         }
         $texts->salario_diario_integrado = $in_salario_diario_integrado;
 
+        $in_subtotal = (new fc_factura_html(html: $this->html_base))->input_subtotal(
+            cols: 6, row_upd: $row_upd, value_vacio: false, disabled: true);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al generar input', data: $in_subtotal);
+        }
+        $texts->subtotal = $in_subtotal;
+
+        return $texts;
+    }
+
+    private function texts_modifica_crea_nomina(PDO $link,stdClass $row_upd, bool $value_vacio, stdClass $params = new stdClass()):
+    array|stdClass
+    {
+        $fc_factura = (new nom_nomina($link))->registros_por_id(entidad:  new fc_factura($link), id: $row_upd->fc_factura_id);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al generar registros de factura ', data: $fc_factura);
+        }
+
+        $em_empleado = (new nom_nomina($link))->registros_por_id(entidad:  new em_empleado($link), id: $row_upd->em_empleado_id);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al generar registros de empleado ', data: $em_empleado);
+        }
+
+        $texts = new stdClass();
+
+        $row_upd->rfc = $em_empleado->em_empleado_rfc;
+
+        $in_rfc = (new em_empleado_html(html: $this->html_base))->input_rfc(cols: 4, row_upd: $row_upd,
+            value_vacio: $value_vacio, disabled: true);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al generar input', data: $in_rfc);
+        }
+        $texts->rfc = $in_rfc;
+
+        $row_upd->curp = $em_empleado->em_empleado_curp;
+
+        $in_curp = (new em_empleado_html(html: $this->html_base))->input_curp(cols: 4, row_upd: $row_upd,
+            value_vacio: $value_vacio, disabled: true);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al generar input', data: $in_curp);
+        }
+        $texts->curp = $in_curp;
+
+        $row_upd->nss = $em_empleado->em_empleado_nss;
+
+        $in_nss = (new em_empleado_html(html: $this->html_base))->input_nss(cols: 4, row_upd: $row_upd,
+            value_vacio: $value_vacio, disabled: true);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al generar input', data: $in_nss);
+        }
+        $texts->nss = $in_nss;
+
+        $in_nss = (new em_empleado_html(html: $this->html_base))->input_nss(cols: 4, row_upd: $row_upd,
+            value_vacio: $value_vacio, disabled: true);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al generar input', data: $in_nss);
+        }
+        $texts->nss = $in_nss;
+
+        $row_upd->folio = $fc_factura->fc_factura_folio;
+
+        $in_folio = (new fc_factura_html(html: $this->html_base))->input_folio(cols: 4, row_upd: $row_upd,
+            value_vacio: $value_vacio);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al generar input', data: $in_folio);
+        }
+        $texts->folio = $in_folio;
+
+        $row_upd->fecha_inicio_rel_laboral = date('Y-m-d',strtotime($em_empleado->em_empleado_fecha_inicio_rel_laboral));
+
+        $in_fecha_inicio_rel_laboral= (new em_empleado_html(html: $this->html_base))->input_fecha_inicio_rel_laboral(cols: 4,
+            row_upd: $row_upd, value_vacio: false,disabled: true);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al generar input', data: $in_fecha_inicio_rel_laboral);
+        }
+        $texts->fecha_inicio_rel_laboral = $in_fecha_inicio_rel_laboral;
+
+        $row_upd->fecha = date('Y-m-d',strtotime($fc_factura->fc_factura_fecha));
+
+        $in_fecha = (new fc_factura_html(html: $this->html_base))->input_fecha(cols: 4, row_upd: $row_upd,
+            value_vacio: false);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al generar input', data: $in_fecha);
+        }
+        $texts->fecha = $in_fecha;
+
+        $in_fecha_inicial_pago = $this->input_fecha_inicial_pago(cols: 4, row_upd: $row_upd, value_vacio: false);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al generar input', data: $in_fecha_inicial_pago);
+        }
+        $texts->fecha_inicial_pago = $in_fecha_inicial_pago;
+
+        $in_fecha_final_pago = $this->input_fecha_final_pago(cols: 4, row_upd: $row_upd, value_vacio: false);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al generar input', data: $in_fecha_final_pago);
+        }
+        $texts->fecha_final_pago = $in_fecha_final_pago;
+
+        $in_fecha_pago = $this->input_fecha_pago(cols: 4, row_upd: $row_upd, value_vacio: false);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al generar input', data: $in_fecha_pago);
+        }
+        $texts->fecha_pago = $in_fecha_pago;
+
+        $in_num_dias_pagados = $this->input_num_dias_pagados(cols: 4, row_upd: $row_upd, value_vacio: $value_vacio);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al generar input', data: $in_num_dias_pagados);
+        }
+        $texts->num_dias_pagados = $in_num_dias_pagados;
+
+        $row_upd->salario_diario = $em_empleado->em_empleado_salario_diario;
+
+        $in_salario_diario = (new em_empleado_html(html: $this->html_base))->input_salario_diario(cols: 4,
+            row_upd: $row_upd,value_vacio: $value_vacio, disabled: true);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al generar input', data: $in_salario_diario);
+        }
+        $texts->salario_diario = $in_salario_diario;
+
+        $row_upd->salario_diario_integrado = $em_empleado->em_empleado_salario_diario_integrado;
+
+        $in_salario_diario_integrado = (new em_empleado_html(html: $this->html_base))->input_salario_diario_integrado(
+            cols: 4, row_upd: $row_upd, value_vacio: $value_vacio, disabled: true);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al generar input', data: $in_salario_diario_integrado);
+        }
+        $texts->salario_diario_integrado = $in_salario_diario_integrado;
 
         $in_subtotal = (new fc_factura_html(html: $this->html_base))->input_subtotal(
             cols: 6, row_upd: $row_upd, value_vacio: false, disabled: true);

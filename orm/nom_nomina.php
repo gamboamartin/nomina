@@ -303,7 +303,7 @@ class nom_nomina extends modelo
         return $codigo;
     }
 
-    private function registros_por_id(modelo $entidad, int $id): array|stdClass
+    public function registros_por_id(modelo $entidad, int $id): array|stdClass
     {
         $data = $entidad->registro(registro_id: $id, retorno_obj: true);
         if (errores::$error) {
