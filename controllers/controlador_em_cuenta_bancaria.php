@@ -12,7 +12,4 @@ namespace gamboamartin\nomina\controllers;
 
 class controlador_em_cuenta_bancaria extends \gamboamartin\empleado\controllers\controlador_em_cuenta_bancaria {
 
-
-
-
 }

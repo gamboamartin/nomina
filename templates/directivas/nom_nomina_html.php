@@ -101,7 +101,7 @@ class nom_nomina_html extends html_controler
             return $this->error->error(mensaje: 'Error al generar inputs', data: $inputs);
 
         }
-        $inputs_asignados = $this->asigna_inputs(controler: $controler, inputs: $inputs);
+        $inputs_asignados = $this->asigna_inputs_crea_nomina(controler: $controler, inputs: $inputs);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al asignar inputs', data: $inputs_asignados);
         }
@@ -149,12 +149,12 @@ class nom_nomina_html extends html_controler
 
     private function init_modifica(PDO $link, stdClass $row_upd, stdClass $params = new stdClass()): array|stdClass
     {
-        $selects = $this->selects_modifica(link: $link, row_upd: $row_upd);
+        $selects = $this->selects_selects_modifica_crea_nomina(link: $link, row_upd: $row_upd);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al generar selects', data: $selects);
         }
 
-        $texts = $this->texts_alta(row_upd: $row_upd, value_vacio: false, params: $params);
+        $texts = $this->texts_alta_crea_nomina(row_upd: $row_upd, value_vacio: false, params: $params);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al generar texts', data: $texts);
         }
@@ -348,6 +348,48 @@ class nom_nomina_html extends html_controler
         return $selects;
     }
 
+    private function selects_selects_modifica_crea_nomina(PDO $link, stdClass $row_upd): array|stdClass
+    {
+        $selects = new stdClass();
+
+        $select = (new im_registro_patronal_html(html: $this->html_base))->select_im_registro_patronal_id(
+            cols: 6, con_registros: true, id_selected: $row_upd->im_registro_patronal_id, link: $link);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al generar select', data: $select);
+        }
+        $selects->im_registro_patronal_id = $select;
+
+        $select = (new em_empleado_html(html: $this->html_base))->select_em_empleado_id(
+            cols: 6, con_registros: true, id_selected: $row_upd->em_empleado_id, link: $link);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al generar select', data: $select);
+        }
+        $selects->em_empleado_id = $select;
+
+        $select = (new cat_sat_tipo_nomina_html(html: $this->html_base))->select_cat_sat_tipo_nomina_id(
+            cols: 6, con_registros: true, id_selected: $row_upd->cat_sat_tipo_nomina_id, link: $link);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al generar select', data: $select);
+        }
+        $selects->cat_sat_tipo_nomina_id = $select;
+
+        $select = (new cat_sat_periodicidad_pago_nom_html(html: $this->html_base))->select_cat_sat_periodicidad_pago_nom_id(
+            cols: 6, con_registros: true, id_selected: -1, link: $link);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al generar select', data: $select);
+        }
+        $selects->cat_sat_periodicidad_pago_nom_id = $select;
+
+        $select = (new em_cuenta_bancaria_html(html: $this->html_base))->select_em_cuenta_bancaria_id(
+            cols: 12, con_registros: true, id_selected: $row_upd->em_cuenta_bancaria_id, link: $link);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al generar select', data: $select);
+        }
+        $selects->em_cuenta_bancaria_id = $select;
+
+        return $selects;
+    }
+
     private function selects_modifica(PDO $link, stdClass $row_upd): array|stdClass
     {
         $selects = new stdClass();
@@ -372,7 +414,6 @@ class nom_nomina_html extends html_controler
             return $this->error->error(mensaje: 'Error al generar select', data: $select);
         }
         $selects->fc_factura_id = $select;
-
 
         $select = (new cat_sat_tipo_nomina_html(html: $this->html_base))->select_cat_sat_tipo_nomina_id(
             cols: 6, con_registros: true, id_selected: $row_upd->cat_sat_tipo_nomina_id, link: $link);
