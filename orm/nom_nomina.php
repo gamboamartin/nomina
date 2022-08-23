@@ -32,7 +32,7 @@ class nom_nomina extends modelo
         }
 
         $regisros_factura = $this->genera_registro_factura(registros: $registros['fc_fcd'],
-            empleado_sucursal: $registros['nom_rel_empleado_sucursal']);
+            empleado_sucursal: $registros['nom_rel_empleado_sucursal'],cat_sat: $registros['nom_conf_empleado']);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al generar registros de factura', data: $regisros_factura);
         }
@@ -90,6 +90,12 @@ class nom_nomina extends modelo
             return $this->error->error(mensaje: 'Error al generar registros de empleado ', data: $em_empleado);
         }
 
+        $nom_conf_empleado = $this->registros_por_id(new nom_conf_empleado($this->link), $this->registro['em_empleado_id']);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al generar registros de conf factura',
+                data: $nom_conf_empleado);
+        }
+
         $filtro['em_empleado_id'] = $this->registro['em_empleado_id'];
         $nom_rel_empleado_sucursal = (new nom_rel_empleado_sucursal($this->link))->filtro_and( filtro: $filtro);
         if (errores::$error) {
@@ -97,25 +103,27 @@ class nom_nomina extends modelo
                 data: $nom_rel_empleado_sucursal);
         }
 
+
         $registros = array('im_registro_patronal' => $im_registro_patronal, 'em_empleado' => $em_empleado,
-            'fc_fcd' => $fc_fcd_id, 'nom_rel_empleado_sucursal' => $nom_rel_empleado_sucursal);
+            'fc_fcd' => $fc_fcd_id, 'nom_rel_empleado_sucursal' => $nom_rel_empleado_sucursal,
+            'nom_conf_empleado' => $nom_conf_empleado);
 
         return $registros;
     }
 
-    private function genera_registro_factura(mixed $registros, mixed $empleado_sucursal): array
+    private function genera_registro_factura(mixed $registros, mixed $empleado_sucursal, mixed $cat_sat): array
     {
         $folio = $this->registro['folio'];
         $serie = $registros->fc_cfd_serie;
         $fecha = $this->registro['fecha'];
         $fc_cfd_id = $registros->fc_cfd_id;
         $com_sucursal_id = $empleado_sucursal->registros[0]['nom_rel_empleado_sucursal_com_sucursal_id'];
-        $cat_sat_forma_pago_id = 1;
-        $cat_sat_metodo_pago_id = 1;
-        $cat_sat_moneda_id = 1;
-        $com_tipo_cambio_id = 1;
-        $cat_sat_uso_cfdi_id = 1;
-        $cat_sat_tipo_de_comprobante_id = 1;
+        $cat_sat_forma_pago_id = $cat_sat->nom_conf_factura_cat_sat_forma_pago_id;
+        $cat_sat_metodo_pago_id = $cat_sat->nom_conf_factura_cat_sat_metodo_pago_id;
+        $cat_sat_moneda_id = $cat_sat->nom_conf_factura_cat_sat_moneda_id;
+        $com_tipo_cambio_id = $cat_sat->nom_conf_factura_com_tipo_cambio_id;
+        $cat_sat_uso_cfdi_id = $cat_sat->nom_conf_factura_cat_sat_uso_cfdi_id;
+        $cat_sat_tipo_de_comprobante_id = $cat_sat->nom_conf_factura_cat_sat_tipo_de_comprobante_id;
 
         $regisro_factura = array('folio' => $folio, 'serie' => $serie, 'fecha' => $fecha,
             'fc_cfd_id' => $fc_cfd_id, 'com_sucursal_id' => $com_sucursal_id,
