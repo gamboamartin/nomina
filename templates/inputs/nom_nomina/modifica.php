@@ -25,3 +25,66 @@
 <?php echo $controlador->inputs->salario_diario_integrado; ?>
 <?php echo $controlador->inputs->subtotal; ?>
 <?php include (new views())->ruta_templates.'botons/submit/alta_bd_otro.php';?>
+
+<div class="control-group btn-alta">
+    <div class="controls">
+        <?php include 'templates/botons/nom_nomina_crea_nomina.php';?>
+    </div>
+</div>
+
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+
+            <div class="widget widget-box box-container widget-mylistings">
+
+                <div class="">
+                    <div class="widget-header">
+                        <h2>Percepciones</h2>
+                    </div>
+
+                    <table class="table table-striped footable-sort" data-sorting="true">
+                        <th>Id</th>
+                        <th>Codigo</th>
+                        <th>Descripcion</th>
+                        <th>Modifica</th>
+                        <th>Elimina</th>
+
+                        <tbody>
+
+                        </tbody>
+                    </table>
+                </div>
+            </div> <!-- /. widget-table-->
+        </div><!-- /.center-content -->
+    </div>
+</div>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+
+            <div class="widget widget-box box-container widget-mylistings">
+
+                <div class="">
+                    <div class="widget-header">
+                        <h2>Deducciones</h2>
+                    </div>
+
+                    <table class="table table-striped footable-sort" data-sorting="true">
+                        <th>Id</th>
+                        <th>Codigo</th>
+                        <th>Descripcion</th>
+                        <th>Modifica</th>
+                        <th>Elimina</th>
+
+                        <tbody>
+
+                        </tbody>
+                    </table>
+                </div>
+            </div> <!-- /. widget-table-->
+        </div><!-- /.center-content -->
+    </div>
+</div>
