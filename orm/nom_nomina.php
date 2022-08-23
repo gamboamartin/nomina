@@ -70,6 +70,24 @@ class nom_nomina extends modelo
         return $r_alta_bd;
     }
 
+    private function get_sucursal_by_empleado(int $em_empleado_id){
+        $filtro['em_empleado.id'] = $em_empleado_id;
+        $nom_rel_empleado_sucursal = (new nom_rel_empleado_sucursal($this->link))->filtro_and( filtro: $filtro);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al generar registros de empleado sucursal ',
+                data: $nom_rel_empleado_sucursal);
+        }
+        if((int)$nom_rel_empleado_sucursal->n_registros === 0){
+            return $this->error->error(mensaje: 'Error no existe sucursal relacionada con empleado',
+                data: $nom_rel_empleado_sucursal);
+        }
+        if((int)$nom_rel_empleado_sucursal->n_registros > 1){
+            return $this->error->error(mensaje: 'Error de integridad solo puede existir un empleado por sucursal',
+                data: $nom_rel_empleado_sucursal);
+        }
+        return $nom_rel_empleado_sucursal->registros[0];
+    }
+
     private function genera_registros(): array
     {
         $im_registro_patronal = $this->registros_por_id(new im_registro_patronal($this->link),
@@ -96,10 +114,9 @@ class nom_nomina extends modelo
                 data: $nom_conf_empleado);
         }
 
-        $filtro['em_empleado_id'] = $this->registro['em_empleado_id'];
-        $nom_rel_empleado_sucursal = (new nom_rel_empleado_sucursal($this->link))->filtro_and( filtro: $filtro);
+        $nom_rel_empleado_sucursal = $this->get_sucursal_by_empleado(em_empleado_id: $this->registro['em_empleado_id']);
         if (errores::$error) {
-            return $this->error->error(mensaje: 'Error al generar registros de empleado ucursal ',
+            return $this->error->error(mensaje: 'Error al obtener sucursal de empleado para cfdi',
                 data: $nom_rel_empleado_sucursal);
         }
 
@@ -117,7 +134,7 @@ class nom_nomina extends modelo
         $serie = $registros->fc_cfd_serie;
         $fecha = $this->registro['fecha'];
         $fc_cfd_id = $registros->fc_cfd_id;
-        $com_sucursal_id = $empleado_sucursal->registros[0]['nom_rel_empleado_sucursal_com_sucursal_id'];
+        $com_sucursal_id = $empleado_sucursal['com_sucursal_id'];
         $cat_sat_forma_pago_id = $cat_sat->nom_conf_factura_cat_sat_forma_pago_id;
         $cat_sat_metodo_pago_id = $cat_sat->nom_conf_factura_cat_sat_metodo_pago_id;
         $cat_sat_moneda_id = $cat_sat->nom_conf_factura_cat_sat_moneda_id;
