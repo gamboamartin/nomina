@@ -136,11 +136,11 @@ class nom_nomina extends modelo
 
     private function genera_registro_cfd_partida(mixed $fc_factura) : array{
 
-        $codigo = 1;
-        $descripcion = 1;
-        $descripcion_select = 1;
-        $alias = 1;
-        $codigo_bis = 1;
+        $codigo = rand();
+        $descripcion = rand();
+        $descripcion_select = rand();
+        $alias = rand();
+        $codigo_bis = rand();
         $com_producto_id = 1;
         $cantidad = 1;
         $valor_unitario= 1;
