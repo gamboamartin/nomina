@@ -52,9 +52,21 @@
                         <th>Elimina</th>
 
                         <tbody>
-
+                        <?php foreach ($controlador->percepciones->registros as $percepcion){?>
+                            <tr>
+                                <td><?php echo $percepcion['nom_percepcion_id']; ?></td>
+                                <td><?php echo $percepcion['nom_percepcion_codigo']; ?></td>
+                                <td><?php echo $percepcion['nom_percepcion_descripcion']; ?></td>
+                                <td><?php echo $percepcion['link_modifica']; ?></td>
+                                <td><?php echo $percepcion['link_elimina']; ?></td>
+                            </tr>
+                        <?php } ?>
                         </tbody>
                     </table>
+                    <div class="box-body">
+                        * Total registros: <?php echo $controlador->percepciones->n_registros; ?><br />
+                        * Fecha Hora: <?php echo $controlador->fecha_hoy; ?>
+                    </div>
                 </div>
             </div> <!-- /. widget-table-->
         </div><!-- /.center-content -->
@@ -80,9 +92,22 @@
                         <th>Elimina</th>
 
                         <tbody>
-
+                            <?php foreach ($controlador->deducciones->registros as $deduccion){?>
+                                <tr>
+                                    <td><?php echo $deduccion['nom_deduccion_id']; ?></td>
+                                    <td><?php echo $deduccion['nom_deduccion_codigo']; ?></td>
+                                    <td><?php echo $deduccion['nom_deduccion_descripcion']; ?></td>
+                                    <td><?php echo $deduccion['link_modifica']; ?></td>
+                                    <td><?php echo $deduccion['link_elimina']; ?></td>
+                                </tr>
+                            <?php } ?>
                         </tbody>
                     </table>
+                    <div class="box-body">
+                        * Total registros: <?php echo $controlador->deducciones->n_registros; ?><br />
+                        * Fecha Hora: <?php echo $controlador->fecha_hoy; ?>
+                    </div>
+
                 </div>
             </div> <!-- /. widget-table-->
         </div><!-- /.center-content -->
