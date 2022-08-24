@@ -41,30 +41,5 @@
         </div>
     </div>
 
-    <div class="container">
-        <div class="row">
-            <div class="col-md-12">
-
-                <div class="widget widget-box box-container widget-mylistings">
-
-                    <div class="">
-                        <table class="table table-striped footable-sort" data-sorting="true">
-                            <th>Id</th>
-                            <th>Codigo</th>
-                            <th>Descripcion</th>
-                            <th>Modifica</th>
-                            <th>Elimina</th>
-
-                            <tbody>
-
-                            </tbody>
-                        </table>
-                    </div>
-                </div> <!-- /. widget-table-->
-            </div><!-- /.center-content -->
-        </div>
-    </div>
-
-
 </main>
 
