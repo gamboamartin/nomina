@@ -30,9 +30,28 @@ class nom_nomina_html extends html_controler
         $controler->inputs->fecha_inicial_pago = $inputs->texts->fecha_inicial_pago;
         $controler->inputs->fecha_final_pago = $inputs->texts->fecha_final_pago;
         $controler->inputs->fecha_pago = $inputs->texts->fecha_pago;
-
         $controler->inputs->folio = $inputs->texts->folio;
         $controler->inputs->fecha = $inputs->texts->fecha;
+        return $controler->inputs;
+    }
+
+    private function asigna_inputs_nueva_percepcion(controlador_nom_nomina $controler, stdClass $inputs): array|stdClass
+    {
+        $controler->inputs->select = new stdClass();
+        $controler->inputs->select->nom_nomina_id = $inputs->selects->nom_nomina_id;
+        $controler->inputs->select->nom_percepcion_id = $inputs->selects->nom_percepcion_id;
+        $controler->inputs->importe_gravado = $inputs->texts->importe_gravado;
+        $controler->inputs->importe_exento = $inputs->texts->importe_exento;
+        return $controler->inputs;
+    }
+
+    private function asigna_inputs_nueva_deduccion(controlador_nom_nomina $controler, stdClass $inputs): array|stdClass
+    {
+        $controler->inputs->select = new stdClass();
+        $controler->inputs->select->nom_nomina_id = $inputs->selects->nom_nomina_id;
+        $controler->inputs->select->nom_deduccion_id = $inputs->selects->nom_deduccion_id;
+        $controler->inputs->importe_gravado = $inputs->texts->importe_gravado;
+        $controler->inputs->importe_exento = $inputs->texts->importe_exento;
         return $controler->inputs;
     }
 
@@ -71,6 +90,36 @@ class nom_nomina_html extends html_controler
 
         }
         $inputs_asignados = $this->asigna_inputs(controler: $controler, inputs: $inputs);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al asignar inputs', data: $inputs_asignados);
+        }
+
+        return $inputs_asignados;
+    }
+
+    public function genera_inputs_nueva_percepcion(controlador_nom_nomina $controler, PDO $link): array|stdClass
+    {
+        $inputs = (new nom_par_percepcion_html(html: $this->html_base))->init_alta(link: $link);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al generar inputs', data: $inputs);
+
+        }
+        $inputs_asignados = $this->asigna_inputs_nueva_percepcion(controler: $controler, inputs: $inputs);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al asignar inputs', data: $inputs_asignados);
+        }
+
+        return $inputs_asignados;
+    }
+
+    public function genera_inputs_nueva_deduccion(controlador_nom_nomina $controler, PDO $link): array|stdClass
+    {
+        $inputs = (new nom_par_deduccion_html(html: $this->html_base))->init_alta(link: $link);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al generar inputs', data: $inputs);
+
+        }
+        $inputs_asignados = $this->asigna_inputs_nueva_deduccion(controler: $controler, inputs: $inputs);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al asignar inputs', data: $inputs_asignados);
         }

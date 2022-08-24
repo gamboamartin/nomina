@@ -16,6 +16,7 @@ use gamboamartin\system\system;
 use gamboamartin\template\html;
 use html\com_sucursal_html;
 use html\nom_nomina_html;
+use html\nom_par_percepcion_html;
 use html\org_sucursal_html;
 use html\selects;
 use models\nom_nomina;
@@ -28,6 +29,8 @@ use stdClass;
 class controlador_nom_nomina extends system {
 
     public string $link_nom_nomina_alta_bd = '';
+    public string $link_nom_par_percepcion_alta_bd = '';
+    public string $link_nom_par_deduccion_alta_bd = '';
     public int $nom_nomina_id = -1;
     public stdClass $paths_conf;
     public stdClass $deducciones;
@@ -42,7 +45,9 @@ class controlador_nom_nomina extends system {
         parent::__construct(html:$html_, link: $link,modelo:  $modelo, obj_link: $obj_link, paths_conf: $paths_conf);
 
         $this->titulo_lista = 'Nominas';
-        $this->link_nom_nomina_alta_bd =$obj_link->links->nom_nomina->alta_bd;
+        $this->link_nom_nomina_alta_bd = $obj_link->links->nom_nomina->alta_bd;
+        $this->link_nom_par_percepcion_alta_bd = $obj_link->links->nom_par_percepcion->alta_bd;
+        $this->link_nom_par_deduccion_alta_bd = $obj_link->links->nom_par_deduccion->alta_bd;
         $this->paths_conf = $paths_conf;
         $this->nom_nomina_id = $this->registro_id;
     }
@@ -106,7 +111,7 @@ class controlador_nom_nomina extends system {
             return $this->retorno_error(mensaje: 'Error al generar template',data:  $r_alta, header: $header,ws:$ws);
         }
 
-        $inputs = (new nom_nomina_html(html: $this->html_base))->genera_inputs_crea_nomina(controler: $this, link: $this->link);
+        $inputs = (new nom_nomina_html(html: $this->html_base))->genera_inputs_nueva_percepcion(controler: $this, link: $this->link);
         if(errores::$error){
             $error = $this->errores->error(mensaje: 'Error al generar inputs',data:  $inputs);
             print_r($error);
@@ -122,7 +127,7 @@ class controlador_nom_nomina extends system {
             return $this->retorno_error(mensaje: 'Error al generar template',data:  $r_alta, header: $header,ws:$ws);
         }
 
-        $inputs = (new nom_nomina_html(html: $this->html_base))->genera_inputs_crea_nomina(controler: $this, link: $this->link);
+        $inputs = (new nom_nomina_html(html: $this->html_base))->genera_inputs_nueva_deduccion(controler: $this, link: $this->link);
         if(errores::$error){
             $error = $this->errores->error(mensaje: 'Error al generar inputs',data:  $inputs);
             print_r($error);
