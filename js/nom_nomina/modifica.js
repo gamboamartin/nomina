@@ -19,12 +19,12 @@ let txt_subtotal = $('#subtotal');
 
 $(function() {
 
-    let selected = sl_nom_empleado.find('option:selected');
-    let em_empleado_id = selected.val();
+    //let selected = sl_nom_empleado.find('option:selected');
+    //let em_empleado_id = selected.val();
 
-    let url = "index.php?seccion=em_cuenta_bancaria&ws=1&accion=get_cuentas_bancarias&em_empleado_id="+em_empleado_id+"&session_id="+session_id;
+    //let url = "index.php?seccion=em_cuenta_bancaria&ws=1&accion=get_cuentas_bancarias&em_empleado_id="+em_empleado_id+"&session_id="+session_id;
 
-    getData(url,getCuentasBancariasEmpleado);
+    //getData(url,getCuentasBancariasEmpleado);
 
 });
 

@@ -53,7 +53,7 @@ class nom_nomina extends modelo
         }
 
         $this->registro = $this->limpia_campos(registro: $this->registro,
-            campos_limpiar: array('folio', 'fecha', 'cat_sat_periodicidad_pago_nom_id'));
+            campos_limpiar: array('folio', 'fecha'));
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al limpiar campos', data: $this->registro);
         }

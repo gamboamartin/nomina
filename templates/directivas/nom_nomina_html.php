@@ -44,6 +44,8 @@ class nom_nomina_html extends html_controler
         $controler->inputs->select->cat_sat_tipo_nomina_id = $inputs->selects->cat_sat_tipo_nomina_id;
         $controler->inputs->select->cat_sat_periodicidad_pago_nom_id = $inputs->selects->cat_sat_periodicidad_pago_nom_id;
         $controler->inputs->select->em_cuenta_bancaria_id = $inputs->selects->em_cuenta_bancaria_id;
+        $controler->inputs->codigo = $inputs->texts->codigo;
+        $controler->inputs->codigo_bis = $inputs->texts->codigo_bis;
         $controler->inputs->rfc = $inputs->texts->rfc;
         $controler->inputs->curp = $inputs->texts->curp;
         $controler->inputs->nss = $inputs->texts->nss;
@@ -373,14 +375,15 @@ class nom_nomina_html extends html_controler
         $selects->cat_sat_tipo_nomina_id = $select;
 
         $select = (new cat_sat_periodicidad_pago_nom_html(html: $this->html_base))->select_cat_sat_periodicidad_pago_nom_id(
-            cols: 6, con_registros: true, id_selected: -1, link: $link);
+            cols: 6, con_registros: true, id_selected: $row_upd->cat_sat_periodicidad_pago_nom_id, link: $link);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al generar select', data: $select);
         }
         $selects->cat_sat_periodicidad_pago_nom_id = $select;
 
+        $filtro['em_empleado.id'] = $row_upd->em_empleado_id;
         $select = (new em_cuenta_bancaria_html(html: $this->html_base))->select_em_cuenta_bancaria_id(
-            cols: 12, con_registros: true, id_selected: $row_upd->em_cuenta_bancaria_id, link: $link);
+            cols: 12, con_registros: true, id_selected: $row_upd->em_cuenta_bancaria_id, link: $link,filtro: $filtro);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al generar select', data: $select);
         }
@@ -494,6 +497,20 @@ class nom_nomina_html extends html_controler
     array|stdClass
     {
         $texts = new stdClass();
+
+        $in_codigo = $this->input_codigo(cols: 4, row_upd:  $row_upd,value_vacio:  $value_vacio,
+            disabled: true);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al generar input',data:  $in_codigo);
+        }
+        $texts->codigo = $in_codigo;
+
+        $in_codigo_bis = $this->input_codigo_bis(cols: 4,row_upd:  $row_upd,value_vacio:  $value_vacio,
+            disabled:true);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al generar input',data:  $in_codigo_bis);
+        }
+        $texts->codigo_bis = $in_codigo_bis;
 
         $in_rfc = (new em_empleado_html(html: $this->html_base))->input_rfc(cols: 4, row_upd: $row_upd,
             value_vacio: $value_vacio, disabled: true);
@@ -614,6 +631,20 @@ class nom_nomina_html extends html_controler
         }
 
         $texts = new stdClass();
+
+        $in_codigo = $this->input_codigo(cols: 4, row_upd:  $row_upd,value_vacio:  $value_vacio,
+            disabled: true);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al generar input',data:  $in_codigo);
+        }
+        $texts->codigo = $in_codigo;
+
+        $in_codigo_bis = $this->input_codigo_bis(cols: 4,row_upd:  $row_upd,value_vacio:  $value_vacio,
+            disabled:true);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al generar input',data:  $in_codigo_bis);
+        }
+        $texts->codigo_bis = $in_codigo_bis;
 
         $row_upd->rfc = $em_empleado->em_empleado_rfc;
 
