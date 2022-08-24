@@ -39,6 +39,16 @@ class controlador_nom_conf_factura extends system {
 
         $this->titulo_lista = 'Configuracion Factura';
 
+        $btns = (new nom_conf_factura_html(html: $this->html_base))->btns_views();
+
+        if(errores::$error){
+            $error = $this->errores->error(mensaje: 'Error al generar botones',data:  $btns);
+            print_r($error);
+            exit;
+        }
+
+        $this->btns = $btns;
+
         $this->total_items_sections = 1;
 
         $this->actions_number['alta'] = 1;

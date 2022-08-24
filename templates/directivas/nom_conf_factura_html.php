@@ -29,6 +29,33 @@ class nom_conf_factura_html extends html_controler {
 
         return $controler->inputs;
     }
+    private function btn_next_action(string $label, string $value): array|string
+    {
+
+        $btn = $this->directivas->btn_action_next_div(label: $label, value: $value);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al generar btn', data: $btn);
+        }
+
+        return $btn;
+
+    }
+
+    public function btns_views(): array
+    {
+        $btns = array();
+        $btn_modifica = $this->btn_next_action(label: 'Guarda', value: 'modifica');
+
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al generar boton',data:  $btn_modifica);
+
+        }
+        $btns['sub_guarda'] = $btn_modifica;
+
+
+
+        return $btns;
+    }
 
     public function genera_inputs_alta(controlador_nom_conf_factura $controler, PDO $link): array|stdClass
     {
