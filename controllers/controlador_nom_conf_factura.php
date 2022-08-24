@@ -38,6 +38,16 @@ class controlador_nom_conf_factura extends system {
         parent::__construct(html:$html_, link: $link,modelo:  $modelo, obj_link: $obj_link, paths_conf: $paths_conf);
 
         $this->titulo_lista = 'Configuracion Factura';
+
+        $this->total_items_sections = 1;
+
+        $this->actions_number['alta'] = 1;
+        $this->actions_number['modifica'] = 1;
+
+
+        if(isset($this->actions_number[$this->accion])){
+            $this->number_active = $this->actions_number[$this->accion];
+        }
     }
 
     public function alta(bool $header, bool $ws = false): array|string
