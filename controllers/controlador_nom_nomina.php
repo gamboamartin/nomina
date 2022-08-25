@@ -128,7 +128,18 @@ class controlador_nom_nomina extends system {
             return $this->retorno_error(mensaje: 'Error al generar template',data:  $r_alta, header: $header,ws:$ws);
         }
 
-        $inputs = (new nom_nomina_html(html: $this->html_base))->genera_inputs_nueva_percepcion(controler: $this, link: $this->link);
+        $params = new stdClass();
+        $params->nom_nomina_id = new stdClass();
+        $params->nom_nomina_id->cols = 12;
+        $params->nom_nomina_id->disabled = true;
+        $params->nom_nomina_id->filtro = array('nom_nomina.id'=>$this->registro_id);
+
+        $params->nom_percepcion_id = new stdClass();
+        $params->nom_percepcion_id->cols = 12;
+
+
+        $inputs = (new nom_nomina_html(html: $this->html_base))->genera_inputs_nueva_percepcion(controler: $this,
+            link: $this->link, params: $params);
         if(errores::$error){
             $error = $this->errores->error(mensaje: 'Error al generar inputs',data:  $inputs);
             print_r($error);
@@ -146,6 +157,8 @@ class controlador_nom_nomina extends system {
         if(isset($_POST['btn_action_next'])){
             unset($_POST['btn_action_next']);
         }
+
+        $_POST['nom_nomina_id'] = $this->registro_id;
 
         $r_alta_nom_par_percepcion = (new nom_par_percepcion($this->link))->alta_registro(registro: $_POST);
         if(errores::$error){
@@ -166,8 +179,8 @@ class controlador_nom_nomina extends system {
             $retorno = (new actions())->retorno_alta_bd(registro_id: $this->registro_id, seccion: $this->tabla,
                 siguiente_view: $siguiente_view);
             if(errores::$error){
-                return $this->retorno_error(mensaje: 'Error al dar de alta registro', data: $alta_percepcion, header:  true,
-                    ws: $ws);
+                return $this->retorno_error(mensaje: 'Error al dar de alta registro',
+                    data: $r_alta_nom_par_percepcion, header:  true, ws: $ws);
             }
             header('Location:'.$retorno);
             exit;

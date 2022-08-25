@@ -97,9 +97,12 @@ class nom_nomina_html extends html_controler
         return $inputs_asignados;
     }
 
-    public function genera_inputs_nueva_percepcion(controlador_nom_nomina $controler, PDO $link): array|stdClass
+    public function genera_inputs_nueva_percepcion(controlador_nom_nomina $controler, PDO $link, 
+                                                   stdClass $params = new stdClass()): array|stdClass
     {
-        $inputs = (new nom_par_percepcion_html(html: $this->html_base))->init_alta(link: $link, nom_nomina_id: $controler->registro_id);
+        
+        $inputs = (new nom_par_percepcion_html(html: $this->html_base))->init_alta(
+            link: $link, nom_nomina_id: $controler->registro_id, params: $params);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al generar inputs', data: $inputs);
 
@@ -483,12 +486,13 @@ class nom_nomina_html extends html_controler
         return $selects;
     }
 
-    public function select_nom_nomina_id(int $cols, bool $con_registros, int $id_selected, PDO $link): array|string
+    public function select_nom_nomina_id(int $cols, bool $con_registros, int $id_selected, PDO $link,
+                                         bool $disabled = false, array $filtro = array()): array|string
     {
         $modelo = new nom_nomina(link: $link);
 
         $select = $this->select_catalogo(cols: $cols, con_registros: $con_registros, id_selected: $id_selected,
-            modelo: $modelo, label: 'Nomina', required: true);
+            modelo: $modelo, disabled: $disabled, filtro: $filtro, label: 'Nomina', required: true);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al generar select', data: $select);
         }
