@@ -48,24 +48,10 @@ class nom_par_percepcion extends modelo{
             return $this->error->error(mensaje: 'Error al insertar percepcion', data: $r_alta_bd);
         }
 
-        $total_gravado = (new nom_nomina($this->link))->total_gravado(nom_nomina_id: $r_alta_bd->registro_id);
-        if(errores::$error){
-            return $this->error->error(mensaje: 'Error al calcular total gravado', data: $total_gravado);
-        }
 
-        if($total_gravado >0.0) {
-
-            $nom_par_percepcion = $this->registro(registro_id: $r_alta_bd->registro_id, retorno_obj: true);
-            if (errores::$error) {
-                return $this->error->error(mensaje: 'Error al obtener nom_par_percepcion', data: $nom_par_percepcion);
-            }
-
-            $isr = (new nom_nomina($this->link))->isr(
-                cat_sat_periodicidad_pago_nom_id: $nom_par_percepcion->cat_sat_periodicidad_pago_nom_id,
-                monto: $total_gravado, fecha: $nom_par_percepcion->nom_nomina_fecha_final_pago);
-            if (errores::$error) {
-                return $this->error->error(mensaje: 'Error al obtener isr', data: $isr);
-            }
+        $isr = $this->calcula_isr_nomina(nom_par_percepcion_id: $r_alta_bd->registro_id);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al obtener isr', data: $isr);
         }
 
 
@@ -187,6 +173,27 @@ class nom_par_percepcion extends modelo{
        return $registro;
     }
 
+    private function calcula_isr_nomina(int $nom_par_percepcion_id): float|array
+    {
+        $isr = 0.0;
+        $total_gravado = (new nom_nomina($this->link))->total_gravado(nom_nomina_id: $nom_par_percepcion_id);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al calcular total gravado', data: $total_gravado);
+        }
+
+        if($total_gravado >0.0) {
+
+            $isr = $this->isr_total_nomina_por_percepcion(
+                nom_par_percepcion_id: $nom_par_percepcion_id, total_gravado: $total_gravado);
+            if (errores::$error) {
+                return $this->error->error(mensaje: 'Error al obtener isr', data: $isr);
+            }
+
+        }
+
+        return $isr;
+    }
+
     private function codigo_alta(stdClass $nom_nomina, array $registro): array|string
     {
         $codigo = $registro['nom_nomina_id'];
@@ -268,6 +275,23 @@ class nom_par_percepcion extends modelo{
             return $this->error->error(mensaje: 'Error al obtener descripcion', data: $descripcion);
         }
         return $descripcion;
+    }
+
+    private function isr_total_nomina_por_percepcion(int $nom_par_percepcion_id, string $total_gravado): float|array
+    {
+        $nom_par_percepcion = $this->registro(registro_id: $nom_par_percepcion_id, retorno_obj: true);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al obtener nom_par_percepcion', data: $nom_par_percepcion);
+        }
+
+        $isr = (new nom_nomina($this->link))->isr(
+            cat_sat_periodicidad_pago_nom_id: $nom_par_percepcion->cat_sat_periodicidad_pago_nom_id,
+            monto: $total_gravado, fecha: $nom_par_percepcion->nom_nomina_fecha_final_pago);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al obtener isr', data: $isr);
+        }
+
+        return $isr;
     }
 
     private function total_percepcion(array $registro): float|array
