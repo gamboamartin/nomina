@@ -247,6 +247,33 @@ class nom_nomina extends modelo
         return $r_alta_factura;
     }
 
+    public function isr(int $cat_sat_periodicidad_pago_nom_id, float|int $monto){
+        if($cat_sat_periodicidad_pago_nom_id<=0){
+            return $this->error->error(mensaje: 'Error $cat_sat_periodicidad_pago_nom_id debe ser mayor a 0',
+                data: $cat_sat_periodicidad_pago_nom_id);
+        }
+
+        $filtro['cat_sat_periodicidad_pago_nom.id'] = $cat_sat_periodicidad_pago_nom_id;
+        
+
+        $filtro_especial = $this->filtro_especial_isr(monto: $monto);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al obtener filtro', data: $filtro_especial);
+        }
+
+
+
+        $r_isr = (new cat_sat_isr($this->link))->filtro_and(filtro: $filtro, filtro_especial: $filtro_especial);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al obtener isr', data: $r_isr);
+        }
+
+        return $r_isr;
+
+
+
+    }
+
     private function asigna_campo(array $registro, string $campo, array $campos_asignar): array
     {
         if (!isset($registro[$campo])) {
@@ -301,6 +328,21 @@ class nom_nomina extends modelo
             return $this->error->error(mensaje: 'Error al generar codigo', data: $codigo);
         }
         return $codigo;
+    }
+
+    private function filtro_especial_isr(float $monto): array
+    {
+        $filtro_especial[0][(string)$monto]['operador'] = '>=';
+        $filtro_especial[0][(string)$monto]['valor'] = 'cat_sat_isr.limite_inferior';
+        $filtro_especial[0][(string)$monto]['comparacion'] = 'AND';
+        $filtro_especial[0][(string)$monto]['valor_es_campo'] = true;
+
+        $filtro_especial[1][(string)$monto]['operador'] = '<=';
+        $filtro_especial[1][(string)$monto]['valor'] = 'cat_sat_isr.limite_superior';
+        $filtro_especial[1][(string)$monto]['comparacion'] = 'AND';
+        $filtro_especial[1][(string)$monto]['valor_es_campo'] = true;
+
+        return $filtro_especial;
     }
 
     public function registros_por_id(modelo $entidad, int $id): array|stdClass
