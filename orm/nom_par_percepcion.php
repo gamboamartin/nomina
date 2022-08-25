@@ -48,13 +48,10 @@ class nom_par_percepcion extends modelo{
             return $this->error->error(mensaje: 'Error al insertar percepcion', data: $r_alta_bd);
         }
 
-
         $isr = $this->calcula_isr_nomina(nom_par_percepcion_id: $r_alta_bd->registro_id);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al obtener isr', data: $isr);
         }
-
-
 
         return $r_alta_bd;
     }
@@ -173,7 +170,13 @@ class nom_par_percepcion extends modelo{
        return $registro;
     }
 
-    private function calcula_isr_nomina(int $nom_par_percepcion_id): float|array
+    /**
+     * Calcula el isr de una nomina
+     * @param int $nom_par_percepcion_id Identifcador del modelo
+     * @return float|array
+     * @version 0.67.1
+     */
+    PUBLIC function calcula_isr_nomina(int $nom_par_percepcion_id): float|array
     {
         $isr = 0.0;
         $total_gravado = (new nom_nomina($this->link))->total_gravado(nom_nomina_id: $nom_par_percepcion_id);

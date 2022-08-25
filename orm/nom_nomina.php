@@ -394,6 +394,11 @@ class nom_nomina extends modelo
         return $codigo;
     }
 
+    /**
+     * @param float $monto
+     * @param string $fecha
+     * @return array
+     */
     private function filtro_especial_isr(float $monto, string $fecha = ''): array
     {
         if($fecha === ''){
@@ -487,6 +492,12 @@ class nom_nomina extends modelo
         return $r_nom_par_percepcion->registros_obj;
     }
 
+    /**
+     * Obtiene el total gravado de una nomina
+     * @param int $nom_nomina_id Nomina a verificar
+     * @return float|array
+     * @version 0.67.1
+     */
     public function total_gravado(int $nom_nomina_id): float|array
     {
         $campos = array();
