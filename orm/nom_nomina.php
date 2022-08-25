@@ -334,8 +334,6 @@ class nom_nomina extends modelo
         return $r_isr->registros_obj[0];
     }
 
-
-
     private function inserta_cfd_partida(array $registro): array|stdClass
     {
         $r_alta_cfd_partida = (new fc_cfd_partida($this->link))->alta_registro(registro: $registro);
@@ -378,9 +376,7 @@ class nom_nomina extends modelo
 
         return $isr;
 
-
     }
-
 
     private function codigo_nomina(int $org_sucursal_id, array $registro): array|string
     {
@@ -478,6 +474,30 @@ class nom_nomina extends modelo
             $em_empleado->em_empleado_ap .
             $em_empleado->em_empleado_am .
             $em_empleado->em_empleado_rfc;
+    }
+
+    private function get_percepciones(int $nom_nomina_id): array
+    {
+        $filtro['nom_nomina.id'] = $nom_nomina_id;
+        $r_nom_par_percepcion = (new nom_par_percepcion($this->link))->filtro_and(filtro:$filtro);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al obtener nomina_partida_percepcion', data: $r_nom_par_percepcion);
+        }
+        return $r_nom_par_percepcion->registros_obj;
+    }
+
+    public function total_gravado(int $nom_nomina_id): float|array
+    {
+        $campos = array();
+        $campos['total_importe_gravado'] = 'nom_par_percepcion.importe_gravado';
+        $filtro['nom_nomina.id'] = $nom_nomina_id;
+        $r_nom_par_percepcion = (new nom_par_percepcion($this->link))->suma(campos: $campos,filtro: $filtro);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al obtener percepciones', data: $r_nom_par_percepcion);
+        }
+
+        return round($r_nom_par_percepcion['total_importe_gravado'],2);
+
     }
 
 
