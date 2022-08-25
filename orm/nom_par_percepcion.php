@@ -32,74 +32,38 @@ class nom_par_percepcion extends modelo{
             return $this->error->error(mensaje: 'Error al validar registro', data: $valida);
         }
 
-        if(!isset($this->registro['codigo'])){
-
-            $nom_nomina = (new nom_nomina($this->link))->registro(registro_id: $this->registro['nom_nomina_id'],
-                retorno_obj: true);
-            if(errores::$error){
-                return $this->error->error(mensaje: 'Error al obtener $nom_nomina', data: $nom_nomina);
-            }
-
-            $codigo = $this->registro['nom_nomina_id'];
-            $codigo .= '-';
-            $codigo .= $nom_nomina->cat_sat_periodicidad_pago_nom_id;
-            $codigo .= '-';
-            $codigo .= $nom_nomina->em_empleado_rfc;
-            $codigo .= '-';
-            $codigo .= $nom_nomina->im_registro_patronal_id;
-            $codigo .= '-';
-            try {
-                $codigo .= random_int(10, 99) . random_int(10, 99) . random_int(10, 99) . random_int(10, 99);
-            }
-            catch (Throwable $e){
-                return $this->error->error(mensaje: 'Error al generar codigo random', data: $e);
-            }
-
-            $this->registro['codigo'] = $codigo;
-
+        $registro = $this->asigna_codigo(registro: $this->registro);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al asignar codigo', data: $registro);
         }
+        $this->registro = $registro;
 
-        if(!isset($this->registro['descripcion'])){
-
-            $nom_nomina = (new nom_nomina($this->link))->registro(registro_id: $this->registro['nom_nomina_id'],
-                retorno_obj: true);
-            if(errores::$error){
-                return $this->error->error(mensaje: 'Error al obtener $nom_nomina', data: $nom_nomina);
-            }
-
-            $descripcion = $this->registro['nom_nomina_id'];
-            $descripcion .= '-';
-            $descripcion .= $nom_nomina->cat_sat_periodicidad_pago_nom_descripcion;
-            $descripcion .= '-';
-            $descripcion .= $nom_nomina->em_empleado_rfc;
-            $descripcion .= '-';
-            $descripcion .= $nom_nomina->im_registro_patronal_descripcion;
-            $descripcion .= '-';
-            try {
-                $descripcion .= random_int(10, 99) . random_int(10, 99) . random_int(10, 99) . random_int(10, 99);
-            }
-            catch (Throwable $e){
-                return $this->error->error(mensaje: 'Error al generar codigo random', data: $e);
-            }
-
-            $this->registro['descripcion'] = $descripcion;
-
+        $registro = $this->asigna_descripcion(registro: $this->registro);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al asignar descripcion', data: $registro);
         }
+        $this->registro = $registro;
 
-        if(!isset($this->registro['descripcion_select'])){
-
-            $this->registro['descripcion_select'] = $this->registro['descripcion'];
+        $registro = $this->asigna_descripcion_select(registro: $this->registro);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al asignar descripcion_select', data: $registro);
         }
-        if(!isset($this->registro['alias'])){
+        $this->registro = $registro;
 
-            $this->registro['alias'] = $this->registro['descripcion'];
-
+        $registro = $this->asigna_alias(registro: $this->registro);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al asignar descripcion_select', data: $registro);
         }
+        $this->registro = $registro;
 
-        if(!isset($this->registro['codigo_bis'])){
-
-            $this->registro['codigo_bis'] = $this->registro['codigo'];
+        $registro = $this->asigna_codigo_bis(registro: $this->registro);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al asignar descripcion_select', data: $registro);
         }
+        $this->registro = $registro;
+
+
+
         if(!isset($this->registro['importe_gravado'])){
 
             $this->registro['importe_gravado'] = 0;
@@ -125,5 +89,145 @@ class nom_par_percepcion extends modelo{
         }
 
         return $r_alta_bd;
+    }
+
+    private function asigna_alias(array $registro): array
+    {
+        if(!isset($registro['alias'])){
+
+            $registro['alias'] = $registro['descripcion'];
+
+        }
+        return $registro;
+    }
+
+    private function asigna_codigo(array $registro): array
+    {
+        if(!isset($registro['codigo'])){
+
+            $codigo = $this->genera_codigo(nom_nomina_id: $registro['nom_nomina_id'], registro: $registro);
+            if(errores::$error){
+                return $this->error->error(mensaje: 'Error al obtener codigo', data: $codigo);
+            }
+            $registro['codigo'] = $codigo;
+        }
+        return $registro;
+    }
+
+    private function asigna_codigo_bis(array $registro
+    ): array
+    {
+        if(!isset($registro['codigo_bis'])){
+
+            $registro['codigo_bis'] = $registro['codigo'];
+        }
+        return $registro;
+    }
+
+    private function asigna_descripcion(array $registro): array
+    {
+        if(!isset($registro['descripcion'])){
+
+            $descripcion = $this->genera_descripcion(nom_nomina_id: $registro['nom_nomina_id'], registro: $registro);
+            if(errores::$error){
+                return $this->error->error(mensaje: 'Error al obtener descripcion', data: $descripcion);
+            }
+
+            $registro['descripcion'] = $descripcion;
+
+        }
+        return $registro;
+    }
+
+    private function asigna_descripcion_select(array $registro): array
+    {
+        if(!isset($registro['descripcion_select'])){
+
+            $registro['descripcion_select'] = $registro['descripcion'];
+        }
+        return $registro;
+    }
+
+    private function codigo_alta(stdClass $nom_nomina, array $registro): array|string
+    {
+        $codigo = $registro['nom_nomina_id'];
+        $codigo .= '-';
+        $codigo .= $nom_nomina->cat_sat_periodicidad_pago_nom_id;
+        $codigo .= '-';
+        $codigo .= $nom_nomina->em_empleado_rfc;
+        $codigo .= '-';
+        $codigo .= $nom_nomina->im_registro_patronal_id;
+        $codigo .= '-';
+
+
+        $codigo_random = $this->codigo_random();
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al obtener codigo random', data: $codigo_random);
+        }
+
+        $codigo.=$codigo_random;
+
+        return $codigo;
+    }
+
+    private function codigo_random(): array|string
+    {
+        try {
+            $codigo = random_int(10, 99) . random_int(10, 99) . random_int(10, 99) . random_int(10, 99);
+        }
+        catch (Throwable $e){
+            return $this->error->error(mensaje: 'Error al generar codigo random', data: $e);
+        }
+        return $codigo;
+    }
+
+    private function descripcion_alta(stdClass $nom_nomina, array $registro): array|string
+    {
+        $descripcion = $registro['nom_nomina_id'];
+        $descripcion .= '-';
+        $descripcion .= $nom_nomina->cat_sat_periodicidad_pago_nom_descripcion;
+        $descripcion .= '-';
+        $descripcion .= $nom_nomina->em_empleado_rfc;
+        $descripcion .= '-';
+        $descripcion .= $nom_nomina->im_registro_patronal_descripcion;
+        $descripcion .= '-';
+
+        $descripcion_random = $this->codigo_random();
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al obtener descripcion', data: $descripcion_random);
+        }
+        $descripcion.=$descripcion_random;
+
+        return $descripcion;
+    }
+
+    private function genera_codigo(int $nom_nomina_id, array $registro): array|string
+    {
+        $nom_nomina = (new nom_nomina($this->link))->registro(registro_id: $nom_nomina_id,
+            retorno_obj: true);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al obtener $nom_nomina', data: $nom_nomina);
+        }
+
+        $codigo = $this->codigo_alta(nom_nomina: $nom_nomina, registro: $registro);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al obtener codigo', data: $codigo);
+        }
+        return $codigo;
+    }
+
+    private function genera_descripcion(int $nom_nomina_id, array $registro): array|string
+    {
+        $nom_nomina = (new nom_nomina($this->link))->registro(registro_id: $nom_nomina_id,
+            retorno_obj: true);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al obtener $nom_nomina', data: $nom_nomina);
+        }
+
+        $descripcion = $this->descripcion_alta(nom_nomina: $nom_nomina, registro: $registro);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al obtener descripcion', data: $descripcion);
+        }
+        return $descripcion;
     }
 }
