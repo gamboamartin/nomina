@@ -70,6 +70,24 @@ class nom_nomina extends modelo
         return $r_alta_bd;
     }
 
+    private function asigna_campo(array $registro, string $campo, array $campos_asignar): array
+    {
+        if (!isset($registro[$campo])) {
+            $valor_generado = $this->genera_valor_campo(campos_asignar: $campos_asignar);
+            if (errores::$error) {
+                return $this->error->error(mensaje: 'Error al asignar el campo', data: $valor_generado);
+            }
+            $registro[$campo] = $valor_generado;
+        }
+        return $registro;
+    }
+
+    private function diferencia_li(float|int $monto, stdClass $row_isr): float
+    {
+        $diferencia_li = $monto - $row_isr->cat_sat_isr_limite_inferior;
+        return round($diferencia_li, 2);
+    }
+
     private function get_sucursal_by_empleado(int $em_empleado_id){
         $filtro['em_empleado.id'] = $em_empleado_id;
         $nom_rel_empleado_sucursal = (new nom_rel_empleado_sucursal($this->link))->filtro_and( filtro: $filtro);
@@ -275,7 +293,10 @@ class nom_nomina extends modelo
             return $this->error->error(mensaje: 'Error al obtener isr', data: $row_isr);
         }
 
-        
+        $diferencia_li = $this->diferencia_li(monto:$monto,row_isr:  $row_isr);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al obtener diferencia limite inferior', data: $diferencia_li);
+        }
 
 
         return $row_isr;
@@ -284,17 +305,7 @@ class nom_nomina extends modelo
 
     }
 
-    private function asigna_campo(array $registro, string $campo, array $campos_asignar): array
-    {
-        if (!isset($registro[$campo])) {
-            $valor_generado = $this->genera_valor_campo(campos_asignar: $campos_asignar);
-            if (errores::$error) {
-                return $this->error->error(mensaje: 'Error al asignar el campo', data: $valor_generado);
-            }
-            $registro[$campo] = $valor_generado;
-        }
-        return $registro;
-    }
+
 
     private function asigna_codigo_nomina(array $registro): array
     {
