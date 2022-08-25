@@ -38,9 +38,9 @@ class nom_nominaTest extends test {
         $resultado = $nomina->isr($cat_sat_periodicidad_pago_nom_id, $monto);
 
 
-        $this->assertIsObject($resultado);
+        $this->assertIsFloat($resultado);
         $this->assertNotTrue(errores::$error);
-        $this->assertEquals('1', $resultado->cat_sat_isr_id);
+        $this->assertEquals(0.0, $resultado);
 
         errores::$error = false;
 
@@ -48,13 +48,76 @@ class nom_nominaTest extends test {
         $_GET['accion'] = 'lista';
         $_SESSION['grupo_id'] = 1;
         $_GET['session_id'] = '1';
-        $nomina = new nom_nomina($this->link);
+
 
         $cat_sat_periodicidad_pago_nom_id = 1;
         $monto = 179.97	;
         $resultado = $nomina->isr($cat_sat_periodicidad_pago_nom_id, $monto);
+        $this->assertIsFloat($resultado);
+        $this->assertNotTrue(errores::$error);
+        $this->assertEquals(10.57, $resultado);
 
-        print_r($resultado);exit;
+
+        errores::$error = false;
+
+        $_GET['seccion'] = 'cat_sat_tipo_persona';
+        $_GET['accion'] = 'lista';
+        $_SESSION['grupo_id'] = 1;
+        $_GET['session_id'] = '1';
+
+
+        $cat_sat_periodicidad_pago_nom_id = 1;
+        $monto = 10685.7	;
+        $resultado = $nomina->isr($cat_sat_periodicidad_pago_nom_id, $monto);
+        $this->assertIsFloat($resultado);
+        $this->assertNotTrue(errores::$error);
+        $this->assertEquals(3351.21, $resultado);
+
+        errores::$error = false;
+
+        $_GET['seccion'] = 'cat_sat_tipo_persona';
+        $_GET['accion'] = 'lista';
+        $_SESSION['grupo_id'] = 1;
+        $_GET['session_id'] = '1';
+
+
+        $cat_sat_periodicidad_pago_nom_id = 2;
+        $monto = 10685.7	;
+        $resultado = $nomina->isr($cat_sat_periodicidad_pago_nom_id, $monto);
+        $this->assertIsFloat($resultado);
+        $this->assertNotTrue(errores::$error);
+        $this->assertEquals(2104.9, $resultado);
+
+        errores::$error = false;
+
+        $_GET['seccion'] = 'cat_sat_tipo_persona';
+        $_GET['accion'] = 'lista';
+        $_SESSION['grupo_id'] = 1;
+        $_GET['session_id'] = '1';
+
+
+        $cat_sat_periodicidad_pago_nom_id = 3;
+        $monto = 10685.7	;
+        $resultado = $nomina->isr($cat_sat_periodicidad_pago_nom_id, $monto);
+        $this->assertIsFloat($resultado);
+        $this->assertNotTrue(errores::$error);
+        $this->assertEquals(1571.43, $resultado);
+
+        errores::$error = false;
+
+        $_GET['seccion'] = 'cat_sat_tipo_persona';
+        $_GET['accion'] = 'lista';
+        $_SESSION['grupo_id'] = 1;
+        $_GET['session_id'] = '1';
+
+
+        $cat_sat_periodicidad_pago_nom_id = 4;
+        $monto = 10685.7	;
+        $resultado = $nomina->isr($cat_sat_periodicidad_pago_nom_id, $monto);
+        $this->assertIsFloat($resultado);
+        $this->assertNotTrue(errores::$error);
+        $this->assertEquals(943.46, $resultado);
+
         errores::$error = false;
     }
 

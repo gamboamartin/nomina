@@ -111,11 +111,18 @@ class nom_nomina extends modelo
         return $registro;
     }
 
+    private function calcula_isr(float $cuota_excedente, stdClass $row_isr): float
+    {
+        $isr = $cuota_excedente + $row_isr->cat_sat_isr_cuota_fija;
+        return round($isr,2);
+
+    }
+
     private function cuota_excedente_isr(float|int $diferencia_li, stdClass $row_isr): float
     {
         $cuota_excedente = $diferencia_li * $row_isr->cat_sat_isr_porcentaje_excedente;
         $cuota_excedente = round($cuota_excedente,2);
-        $cuota_excedente = $cuota_excedente / 100;
+        $cuota_excedente /= 100;
         return round($cuota_excedente,2);
     }
 
@@ -123,6 +130,26 @@ class nom_nomina extends modelo
     {
         $diferencia_li = $monto - $row_isr->cat_sat_isr_limite_inferior;
         return round($diferencia_li, 2);
+    }
+
+    private function genera_isr(float $monto, stdClass $row_isr): float|array
+    {
+        $diferencia_li = $this->diferencia_li(monto:$monto,row_isr:  $row_isr);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al obtener diferencia limite inferior', data: $diferencia_li);
+        }
+
+        $cuota_excedente = $this->cuota_excedente_isr(diferencia_li: $diferencia_li,row_isr:  $row_isr);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al obtener cuota excedente', data: $cuota_excedente);
+        }
+
+        $isr = $this->calcula_isr(cuota_excedente: $cuota_excedente,row_isr:  $row_isr);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al calcular isr', data: $isr);
+        }
+
+        return $isr;
     }
 
     private function get_sucursal_by_empleado(int $em_empleado_id){
@@ -319,7 +346,8 @@ class nom_nomina extends modelo
         return $r_alta_factura;
     }
 
-    public function isr(int $cat_sat_periodicidad_pago_nom_id, float|int $monto){
+    public function isr(int $cat_sat_periodicidad_pago_nom_id, float|int $monto): float|array
+    {
         if($cat_sat_periodicidad_pago_nom_id<=0){
             return $this->error->error(mensaje: 'Error $cat_sat_periodicidad_pago_nom_id debe ser mayor a 0',
                 data: $cat_sat_periodicidad_pago_nom_id);
@@ -330,20 +358,13 @@ class nom_nomina extends modelo
             return $this->error->error(mensaje: 'Error al obtener isr', data: $row_isr);
         }
 
-        $diferencia_li = $this->diferencia_li(monto:$monto,row_isr:  $row_isr);
+        $isr = $this->genera_isr(monto: $monto, row_isr: $row_isr);
         if(errores::$error){
-            return $this->error->error(mensaje: 'Error al obtener diferencia limite inferior', data: $diferencia_li);
+            return $this->error->error(mensaje: 'Error al calcular isr', data: $isr);
         }
 
-        $cuota_excedente = $this->cuota_excedente_isr(diferencia_li: $diferencia_li,row_isr:  $row_isr);
-        if(errores::$error){
-            return $this->error->error(mensaje: 'Error al obtener cuota excedente', data: $cuota_excedente);
-        }
-        
 
-
-        return $row_isr;
-
+        return $isr;
 
 
     }
