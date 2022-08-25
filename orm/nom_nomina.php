@@ -31,23 +31,23 @@ class nom_nomina extends modelo
             return $this->error->error(mensaje: 'Error al generar registros', data: $registros);
         }
 
-        $regisros_factura = $this->genera_registro_factura(registros: $registros['fc_fcd'],
+        $registros_factura = $this->genera_registro_factura(registros: $registros['fc_fcd'],
             empleado_sucursal: $registros['nom_rel_empleado_sucursal'],cat_sat: $registros['nom_conf_empleado']);
         if (errores::$error) {
-            return $this->error->error(mensaje: 'Error al generar registros de factura', data: $regisros_factura);
+            return $this->error->error(mensaje: 'Error al generar registros de factura', data: $registros_factura);
         }
 
-        $r_alta_factura = $this->inserta_factura(registro: $regisros_factura);
+        $r_alta_factura = $this->inserta_factura(registro: $registros_factura);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al dar de alta la factura', data: $r_alta_factura);
         }
 
-        $regisros_cfd_partida = $this->genera_registro_cfd_partida(fc_factura: $r_alta_factura);
+        $registros_cfd_partida = $this->genera_registro_cfd_partida(fc_factura: $r_alta_factura);
         if (errores::$error) {
-            return $this->error->error(mensaje: 'Error al generar registros de cfd partida', data: $regisros_cfd_partida);
+            return $this->error->error(mensaje: 'Error al generar registros de cfd partida', data: $registros_cfd_partida);
         }
 
-        $r_alta_cfd_partida  = $this->inserta_cfd_partida(registro: $regisros_cfd_partida);
+        $r_alta_cfd_partida  = $this->inserta_cfd_partida(registro: $registros_cfd_partida);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al dar de alta cfd partida', data: $r_alta_cfd_partida);
         }
@@ -67,6 +67,8 @@ class nom_nomina extends modelo
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al insertar nomina', data: $r_alta_bd);
         }
+
+
         return $r_alta_bd;
     }
 
@@ -377,8 +379,6 @@ class nom_nomina extends modelo
 
 
     }
-
-
 
 
     private function codigo_nomina(int $org_sucursal_id, array $registro): array|string
