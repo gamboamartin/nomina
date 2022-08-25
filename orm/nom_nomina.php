@@ -82,6 +82,43 @@ class nom_nomina extends modelo
         return $registro;
     }
 
+    private function asigna_codigo_nomina(array $registro): array
+    {
+        if (!isset($registro['codigo'])) {
+
+            $codigo = $this->codigo_nomina(org_sucursal_id: $registro['org_sucursal_id'],
+                registro: $registro);
+            if (errores::$error) {
+                return $this->error->error(mensaje: 'Error al generar codigo', data: $codigo);
+            }
+
+            $registro['codigo'] = $codigo;
+        }
+        return $registro;
+    }
+
+    private function asigna_descripcion_nomina(array $registro): array
+    {
+        if (!isset($registro['descripcion'])) {
+
+            $descripcion = $this->descripcion_nomina(em_empleado_id: $registro['em_empleado_id'],
+                registro: $registro);
+            if (errores::$error) {
+                return $this->error->error(mensaje: 'Error al generar descripcion', data: $descripcion);
+            }
+            $registro['descripcion'] = $descripcion;
+        }
+        return $registro;
+    }
+
+    private function cuota_excedente_isr(float|int $diferencia_li, stdClass $row_isr): float
+    {
+        $cuota_excedente = $diferencia_li * $row_isr->cat_sat_isr_porcentaje_excedente;
+        $cuota_excedente = round($cuota_excedente,2);
+        $cuota_excedente = $cuota_excedente / 100;
+        return round($cuota_excedente,2);
+    }
+
     private function diferencia_li(float|int $monto, stdClass $row_isr): float
     {
         $diferencia_li = $monto - $row_isr->cat_sat_isr_limite_inferior;
@@ -298,6 +335,12 @@ class nom_nomina extends modelo
             return $this->error->error(mensaje: 'Error al obtener diferencia limite inferior', data: $diferencia_li);
         }
 
+        $cuota_excedente = $this->cuota_excedente_isr(diferencia_li: $diferencia_li,row_isr:  $row_isr);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al obtener cuota excedente', data: $cuota_excedente);
+        }
+        
+
 
         return $row_isr;
 
@@ -307,34 +350,6 @@ class nom_nomina extends modelo
 
 
 
-    private function asigna_codigo_nomina(array $registro): array
-    {
-        if (!isset($registro['codigo'])) {
-
-            $codigo = $this->codigo_nomina(org_sucursal_id: $registro['org_sucursal_id'],
-                registro: $registro);
-            if (errores::$error) {
-                return $this->error->error(mensaje: 'Error al generar codigo', data: $codigo);
-            }
-
-            $registro['codigo'] = $codigo;
-        }
-        return $registro;
-    }
-
-    private function asigna_descripcion_nomina(array $registro): array
-    {
-        if (!isset($registro['descripcion'])) {
-
-            $descripcion = $this->descripcion_nomina(em_empleado_id: $registro['em_empleado_id'],
-                registro: $registro);
-            if (errores::$error) {
-                return $this->error->error(mensaje: 'Error al generar descripcion', data: $descripcion);
-            }
-            $registro['descripcion'] = $descripcion;
-        }
-        return $registro;
-    }
 
     private function codigo_nomina(int $org_sucursal_id, array $registro): array|string
     {
