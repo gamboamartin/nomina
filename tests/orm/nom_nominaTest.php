@@ -40,7 +40,7 @@ class nom_nominaTest extends test {
 
         $this->assertIsObject($resultado);
         $this->assertNotTrue(errores::$error);
-        $this->assertEquals('1', $resultado->registros[0]['cat_sat_isr_id']);
+        $this->assertEquals('1', $resultado->cat_sat_isr_id);
 
         errores::$error = false;
 

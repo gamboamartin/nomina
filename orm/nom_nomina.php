@@ -219,15 +219,32 @@ class nom_nomina extends modelo
         return $this->registro;
     }
 
-    private function limpia_campos(array $registro, array $campos_limpiar): array
-    {
-        foreach ($campos_limpiar as $valor) {
-            if (isset($registro[$valor])) {
-                unset($registro[$valor]);
-            }
+    private function get_isr(int $cat_sat_periodicidad_pago_nom_id, float|int $monto){
+        $filtro['cat_sat_periodicidad_pago_nom.id'] = $cat_sat_periodicidad_pago_nom_id;
+
+
+        $filtro_especial = $this->filtro_especial_isr(monto: $monto);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al obtener filtro', data: $filtro_especial);
         }
-        return $registro;
+
+        $r_isr = (new cat_sat_isr($this->link))->filtro_and(filtro: $filtro, filtro_especial: $filtro_especial);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al obtener isr', data: $r_isr);
+        }
+
+        if($r_isr->n_registros===0){
+            return $this->error->error(mensaje: 'Error no existe registro isr', data: $r_isr);
+        }
+        if($r_isr->n_registros>1){
+            return $this->error->error(mensaje: 'Error existe mas de un registro de isr', data: $r_isr);
+        }
+
+
+        return $r_isr->registros_obj[0];
     }
+
+
 
     private function inserta_cfd_partida(array $registro): array|stdClass
     {
@@ -253,22 +270,15 @@ class nom_nomina extends modelo
                 data: $cat_sat_periodicidad_pago_nom_id);
         }
 
-        $filtro['cat_sat_periodicidad_pago_nom.id'] = $cat_sat_periodicidad_pago_nom_id;
+        $row_isr = $this->get_isr(cat_sat_periodicidad_pago_nom_id: $cat_sat_periodicidad_pago_nom_id, monto:$monto);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al obtener isr', data: $row_isr);
+        }
+
         
 
-        $filtro_especial = $this->filtro_especial_isr(monto: $monto);
-        if(errores::$error){
-            return $this->error->error(mensaje: 'Error al obtener filtro', data: $filtro_especial);
-        }
 
-
-
-        $r_isr = (new cat_sat_isr($this->link))->filtro_and(filtro: $filtro, filtro_especial: $filtro_especial);
-        if(errores::$error){
-            return $this->error->error(mensaje: 'Error al obtener isr', data: $r_isr);
-        }
-
-        return $r_isr;
+        return $row_isr;
 
 
 
@@ -343,6 +353,16 @@ class nom_nomina extends modelo
         $filtro_especial[1][(string)$monto]['valor_es_campo'] = true;
 
         return $filtro_especial;
+    }
+
+    private function limpia_campos(array $registro, array $campos_limpiar): array
+    {
+        foreach ($campos_limpiar as $valor) {
+            if (isset($registro[$valor])) {
+                unset($registro[$valor]);
+            }
+        }
+        return $registro;
     }
 
     public function registros_por_id(modelo $entidad, int $id): array|stdClass
