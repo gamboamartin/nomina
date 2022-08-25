@@ -157,7 +157,6 @@ class nom_par_percepcion_html extends html_controler {
         $disabled_nom_nomina_id = $params->nom_nomina_id->disabled ?? false;
         $filtro_nom_nomina_id = $params->nom_nomina_id->filtro ?? array();
 
-
         $select = (new nom_nomina_html(html:$this->html_base))->select_nom_nomina_id(
             cols: $cols_nom_nomina_id, con_registros:true, id_selected: $nom_nomina_id,link: $link,
             disabled: $disabled_nom_nomina_id, filtro: $filtro_nom_nomina_id);
@@ -214,13 +213,17 @@ class nom_par_percepcion_html extends html_controler {
     {
         $texts = new stdClass();
 
-        $in_importe_gravado = $this->input_importe_gravado(cols: 6,row_upd:  $row_upd,value_vacio:  $value_vacio);
+        $row_upd->importe_gravado = 0;
+
+        $in_importe_gravado = $this->input_importe_gravado(cols: 6,row_upd:  $row_upd,value_vacio:  false);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al generar input',data:  $in_importe_gravado);
         }
         $texts->importe_gravado = $in_importe_gravado;
 
-        $in_importe_exento = $this->input_importe_exento(cols: 6,row_upd:  $row_upd,value_vacio:  $value_vacio);
+        $row_upd->importe_exento = 0;
+
+        $in_importe_exento = $this->input_importe_exento(cols: 6,row_upd:  $row_upd,value_vacio:  false);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al generar input',data:  $in_importe_exento);
         }

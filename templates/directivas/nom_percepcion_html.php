@@ -134,8 +134,11 @@ class nom_percepcion_html extends html_controler {
     {
         $modelo = new nom_percepcion(link: $link);
 
+        $extra_params_keys[] = 'nom_percepcion_id';
+        $extra_params_keys[] = 'nom_percepcion_descripcion';
+
         $select = $this->select_catalogo(cols:$cols,con_registros:$con_registros,id_selected:$id_selected,
-            modelo: $modelo,label: 'Percepcion',required: true);
+            modelo: $modelo, extra_params_keys:$extra_params_keys,label: 'Percepcion',required: true);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al generar select', data: $select);
         }

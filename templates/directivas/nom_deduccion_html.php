@@ -132,8 +132,11 @@ class nom_deduccion_html extends html_controler {
     {
         $modelo = new nom_deduccion(link: $link);
 
+        $extra_params_keys[] = 'nom_deduccion_id';
+        $extra_params_keys[] = 'nom_deduccion_descripcion';
+
         $select = $this->select_catalogo(cols:$cols,con_registros:$con_registros,id_selected:$id_selected,
-            modelo: $modelo,label: 'Deduccion',required: true);
+            modelo: $modelo, extra_params_keys:$extra_params_keys, label: 'Deduccion',required: true);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al generar select', data: $select);
         }
