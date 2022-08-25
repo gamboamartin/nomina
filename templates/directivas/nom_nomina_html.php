@@ -684,6 +684,11 @@ class nom_nomina_html extends html_controler
             return $this->error->error(mensaje: 'Error al generar registros de empleado ', data: $em_empleado);
         }
 
+        $subtotal = (new nom_nomina($link))->get_sub_total_nomina(fc_factura_id: $row_upd->fc_factura_id);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al obtener el subtotal de nomina', data: $subtotal);
+        }
+
         $texts = new stdClass();
 
         $in_codigo = $this->input_codigo(cols: 4, row_upd:  $row_upd,value_vacio:  $value_vacio,
@@ -802,6 +807,8 @@ class nom_nomina_html extends html_controler
             return $this->error->error(mensaje: 'Error al generar input', data: $in_salario_diario_integrado);
         }
         $texts->salario_diario_integrado = $in_salario_diario_integrado;
+
+        $row_upd->subtotal = $subtotal;
 
         $in_subtotal = (new fc_factura_html(html: $this->html_base))->input_subtotal(
             cols: 6, row_upd: $row_upd, value_vacio: false, disabled: true);

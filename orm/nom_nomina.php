@@ -156,6 +156,16 @@ class nom_nomina extends modelo
         return $isr;
     }
 
+    public function get_sub_total_nomina(int $fc_factura_id): float
+    {
+        $subtotal = (new fc_factura($this->link))->get_factura_sub_total( fc_factura_id: $fc_factura_id);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al obtener el subtotal de la partida',
+                data: $subtotal);
+        }
+        return $subtotal;
+    }
+
     private function get_sucursal_by_empleado(int $em_empleado_id){
         $filtro['em_empleado.id'] = $em_empleado_id;
         $nom_rel_empleado_sucursal = (new nom_rel_empleado_sucursal($this->link))->filtro_and( filtro: $filtro);

@@ -54,12 +54,6 @@
 
 </main>
 
-
-
-
-
-
-
 <div class="container">
     <div class="row">
         <div class="col-md-12">
@@ -75,15 +69,20 @@
                         <th>Id</th>
                         <th>Codigo</th>
                         <th>Descripcion</th>
+                        <th>Importe Gravado</th>
+                        <th>Importe Exento</th>
                         <th>Modifica</th>
                         <th>Elimina</th>
 
                         <tbody>
+
                         <?php foreach ($controlador->percepciones->registros as $percepcion){?>
                             <tr>
-                                <td><?php echo $percepcion['nom_percepcion_id']; ?></td>
-                                <td><?php echo $percepcion['nom_percepcion_codigo']; ?></td>
-                                <td><?php echo $percepcion['nom_percepcion_descripcion']; ?></td>
+                                <td><?php echo $percepcion['nom_par_percepcion_id']; ?></td>
+                                <td><?php echo $percepcion['nom_par_percepcion_codigo']; ?></td>
+                                <td><?php echo $percepcion['nom_par_percepcion_descripcion']; ?></td>
+                                <td><?php echo $percepcion['nom_par_percepcion_importe_gravado']; ?></td>
+                                <td><?php echo $percepcion['nom_par_percepcion_importe_exento']; ?></td>
                                 <td><?php echo $percepcion['link_modifica']; ?></td>
                                 <td><?php echo $percepcion['link_elimina']; ?></td>
                             </tr>
@@ -115,15 +114,19 @@
                         <th>Id</th>
                         <th>Codigo</th>
                         <th>Descripcion</th>
+                        <th>Importe Gravado</th>
+                        <th>Importe Exento</th>
                         <th>Modifica</th>
                         <th>Elimina</th>
 
                         <tbody>
                             <?php foreach ($controlador->deducciones->registros as $deduccion){?>
                                 <tr>
-                                    <td><?php echo $deduccion['nom_deduccion_id']; ?></td>
-                                    <td><?php echo $deduccion['nom_deduccion_codigo']; ?></td>
-                                    <td><?php echo $deduccion['nom_deduccion_descripcion']; ?></td>
+                                    <td><?php echo $deduccion['nom_par_deduccion_id']; ?></td>
+                                    <td><?php echo $deduccion['nom_par_deduccion_codigo']; ?></td>
+                                    <td><?php echo $deduccion['nom_par_deduccion_descripcion']; ?></td>
+                                    <td><?php echo $deduccion['nom_par_deduccion_importe_gravado']; ?></td>
+                                    <td><?php echo $deduccion['nom_par_deduccion_importe_exento']; ?></td>
                                     <td><?php echo $deduccion['link_modifica']; ?></td>
                                     <td><?php echo $deduccion['link_elimina']; ?></td>
                                 </tr>
