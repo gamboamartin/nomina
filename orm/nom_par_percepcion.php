@@ -12,7 +12,7 @@ class nom_par_percepcion extends modelo{
     public function __construct(PDO $link){
         $tabla = __CLASS__;
         $columnas = array($tabla=>false, 'nom_nomina'=>$tabla, 'nom_percepcion'=>$tabla,
-            'cat_sat_tipo_percepcion_nom'=>'nom_percepcion');
+            'cat_sat_tipo_percepcion_nom'=>'nom_percepcion','cat_sat_periodicidad_pago_nom'=>'nom_nomina');
         $campos_obligatorios = array('nom_nomina_id','descripcion_select','alias','codigo_bis','nom_percepcion_id',
             'importe_gravado','importe_exento');
 
@@ -47,6 +47,27 @@ class nom_par_percepcion extends modelo{
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al insertar percepcion', data: $r_alta_bd);
         }
+
+        $total_gravado = (new nom_nomina($this->link))->total_gravado(nom_nomina_id: $r_alta_bd->registro_id);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al calcular total gravado', data: $total_gravado);
+        }
+
+        if($total_gravado >0.0) {
+
+            $nom_par_percepcion = $this->registro(registro_id: $r_alta_bd->registro_id, retorno_obj: true);
+            if (errores::$error) {
+                return $this->error->error(mensaje: 'Error al obtener nom_par_percepcion', data: $nom_par_percepcion);
+            }
+
+            $isr = (new nom_nomina($this->link))->isr(
+                cat_sat_periodicidad_pago_nom_id: $nom_par_percepcion->cat_sat_periodicidad_pago_nom_id,
+                monto: $total_gravado, fecha: $nom_par_percepcion->nom_nomina_fecha_final_pago);
+            if (errores::$error) {
+                return $this->error->error(mensaje: 'Error al obtener isr', data: $isr);
+            }
+        }
+
 
 
         return $r_alta_bd;
