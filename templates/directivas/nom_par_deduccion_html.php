@@ -61,9 +61,9 @@ class nom_par_deduccion_html extends html_controler {
         return $inputs_asignados;
     }
 
-    public function init_alta(PDO $link): array|stdClass
+    public function init_alta(PDO $link, int $nom_nomina_id = -1): array|stdClass
     {
-        $selects = $this->selects_alta(link: $link);
+        $selects = $this->selects_alta(link: $link,nom_nomina_id: $nom_nomina_id);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al generar selects',data:  $selects);
         }
@@ -151,12 +151,12 @@ class nom_par_deduccion_html extends html_controler {
         return $inputs;
     }
 
-    private function selects_alta(PDO $link): array|stdClass
+    private function selects_alta(PDO $link, int $nom_nomina_id = -1): array|stdClass
     {
         $selects = new stdClass();
 
         $select = (new nom_nomina_html(html:$this->html_base))->select_nom_nomina_id(
-            cols: 6, con_registros:true, id_selected:-1,link: $link);
+            cols: 6, con_registros:true, id_selected: $nom_nomina_id,link: $link);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al generar select',data:  $select);
         }

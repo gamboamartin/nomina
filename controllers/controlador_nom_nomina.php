@@ -59,6 +59,7 @@ class controlador_nom_nomina extends system {
             return $this->retorno_error(mensaje: 'Error al generar template',data:  $r_alta, header: $header,ws:$ws);
         }
 
+
         $inputs = (new nom_nomina_html(html: $this->html_base))->genera_inputs_alta(controler: $this, link: $this->link);
         if(errores::$error){
             $error = $this->errores->error(mensaje: 'Error al generar inputs',data:  $inputs);
@@ -94,6 +95,10 @@ class controlador_nom_nomina extends system {
         if(errores::$error){
             return $this->retorno_error(mensaje: 'Error al generar template',data:  $r_alta, header: $header,ws:$ws);
         }
+
+        $this->nom_nomina_id = $this->registro_id;
+
+        print_r($this->nom_nomina_id);
 
         $inputs = (new nom_nomina_html(html: $this->html_base))->genera_inputs_crea_nomina(controler: $this, link: $this->link);
         if(errores::$error){
@@ -187,7 +192,13 @@ class controlador_nom_nomina extends system {
                 header: $header,ws:$ws);
         }
 
-        $filtro['nom_nomina.id'] = 7;
+        $this->nom_nomina_id = $this->registro_id;
+
+        print_r($this->nom_nomina_id);
+
+
+
+        $filtro['nom_nomina.id'] = $this->nom_nomina_id;
         $deducciones = (new nom_par_deduccion($this->link))->filtro_and(filtro: $filtro);
         if(errores::$error){
             return $this->retorno_error(mensaje: 'Error al obtener deducciones',data:  $deducciones, header: $header,ws:$ws);
@@ -203,7 +214,6 @@ class controlador_nom_nomina extends system {
         }
         $this->deducciones = $deducciones;
 
-        $filtro['nom_nomina.id'] = 7;
         $percepciones = (new nom_par_percepcion($this->link))->filtro_and(filtro: $filtro);
         if(errores::$error){
             return $this->retorno_error(mensaje: 'Error al obtener percepciones',data:  $percepciones, header: $header,ws:$ws);

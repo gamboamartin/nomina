@@ -99,7 +99,7 @@ class nom_nomina_html extends html_controler
 
     public function genera_inputs_nueva_percepcion(controlador_nom_nomina $controler, PDO $link): array|stdClass
     {
-        $inputs = (new nom_par_percepcion_html(html: $this->html_base))->init_alta(link: $link);
+        $inputs = (new nom_par_percepcion_html(html: $this->html_base))->init_alta(link: $link, nom_nomina_id: $controler->registro_id);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al generar inputs', data: $inputs);
 
@@ -114,7 +114,7 @@ class nom_nomina_html extends html_controler
 
     public function genera_inputs_nueva_deduccion(controlador_nom_nomina $controler, PDO $link): array|stdClass
     {
-        $inputs = (new nom_par_deduccion_html(html: $this->html_base))->init_alta(link: $link);
+        $inputs = (new nom_par_deduccion_html(html: $this->html_base))->init_alta(link: $link, nom_nomina_id: $controler->registro_id);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al generar inputs', data: $inputs);
 
