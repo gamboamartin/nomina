@@ -11,6 +11,7 @@ namespace gamboamartin\nomina\controllers;
 use gamboamartin\comercial\controllers\controlador_com_sucursal;
 use gamboamartin\errores\errores;
 use gamboamartin\organigrama\controllers\controlador_org_sucursal;
+use gamboamartin\system\actions;
 use gamboamartin\system\links_menu;
 use gamboamartin\system\system;
 use gamboamartin\template\html;
@@ -19,6 +20,7 @@ use html\nom_nomina_html;
 use html\nom_par_percepcion_html;
 use html\org_sucursal_html;
 use html\selects;
+use JsonException;
 use models\nom_nomina;
 use models\nom_par_deduccion;
 use models\nom_par_percepcion;
@@ -46,7 +48,17 @@ class controlador_nom_nomina extends system {
 
         $this->titulo_lista = 'Nominas';
         $this->link_nom_nomina_alta_bd = $obj_link->links->nom_nomina->alta_bd;
-        $this->link_nom_par_percepcion_alta_bd = $obj_link->links->nom_par_percepcion->alta_bd;
+
+        $link_nom_par_percepcion_alta_bd  = $obj_link->link_con_id(accion:'nueva_percepcion_bd',
+            registro_id: $this->registro_id,seccion:  $this->seccion);
+
+        if(errores::$error){
+            $error = $this->errores->error(mensaje: 'Error al generar link',data:  $link_nom_par_percepcion_alta_bd);
+            print_r($error);
+            die('Error');
+        }
+
+        $this->link_nom_par_percepcion_alta_bd = $link_nom_par_percepcion_alta_bd;
         $this->link_nom_par_deduccion_alta_bd = $obj_link->links->nom_par_deduccion->alta_bd;
         $this->paths_conf = $paths_conf;
         $this->nom_nomina_id = $this->registro_id;
@@ -123,6 +135,51 @@ class controlador_nom_nomina extends system {
             die('Error');
         }
         return $r_alta;
+    }
+
+    /**
+     * @throws JsonException
+     */
+    public function nueva_percepcion_bd(bool $header, bool $ws = false): array|stdClass
+    {
+
+        if(isset($_POST['btn_action_next'])){
+            unset($_POST['btn_action_next']);
+        }
+
+        $r_alta_nom_par_percepcion = (new nom_par_percepcion($this->link))->alta_registro(registro: $_POST);
+        if(errores::$error){
+
+            return $this->retorno_error(mensaje: 'Error al dar de alta percepcion', data: $r_alta_nom_par_percepcion,
+                header:  $header, ws: $ws);
+        }
+
+        $siguiente_view = (new actions())->init_alta_bd();
+        if(errores::$error){
+
+            return $this->retorno_error(mensaje: 'Error al obtener siguiente view', data: $siguiente_view,
+                header:  $header, ws: $ws);
+        }
+
+        if($header){
+
+            $retorno = (new actions())->retorno_alta_bd(registro_id: $this->registro_id, seccion: $this->tabla,
+                siguiente_view: $siguiente_view);
+            if(errores::$error){
+                return $this->retorno_error(mensaje: 'Error al dar de alta registro', data: $alta_percepcion, header:  true,
+                    ws: $ws);
+            }
+            header('Location:'.$retorno);
+            exit;
+        }
+        if($ws){
+            header('Content-Type: application/json');
+            echo json_encode($r_alta_nom_par_percepcion, JSON_THROW_ON_ERROR);
+            exit;
+        }
+        $r_alta_nom_par_percepcion->siguiente_view = $siguiente_view;
+
+        return $r_alta_nom_par_percepcion;
     }
 
     public function nueva_deduccion(bool $header, bool $ws = false): array|string

@@ -18,7 +18,11 @@
                         <?php echo $controlador->inputs->select->nom_percepcion_id; ?>
                         <?php echo $controlador->inputs->importe_gravado; ?>
                         <?php echo $controlador->inputs->importe_exento; ?>
-                        <?php include (new views())->ruta_templates.'botons/submit/alta_bd.php';?>
+                        <div class="control-group btn-alta">
+                            <div class="controls">
+                                <button type="submit" class="btn btn-success" value="modifica" name="btn_action_next">Alta</button><br>
+                            </div>
+                        </div>
                     </form>
                 </div>
 
