@@ -14,8 +14,8 @@ class calcula_imss{
     public float $porc_invalidez_vida = .00625;
     public float $porc_cesantia = .01125;
     public float $porc_exc = .004;
-    public array $salario_minimo = array('2020'=>123.22,'2021'=>141.70,'2022'=>141.70);
-    public array $uma = array('2020'=>86.88,'2021'=>89.62,'2022'=>89.62);
+    public array $salario_minimo = array(2020=>123.22,2021=>141.70,2022=>141.70);
+    public array $uma = array(2020=>86.88,2021=>89.62,2022=>89.62);
     public string $year = '';
     public float $monto_uma = 0.0;
     public float $n_dias = 0.0;
@@ -37,6 +37,7 @@ class calcula_imss{
 
     public function __construct(){
         $this->error = new errores();
+        $this->validacion = new validacion();
 
     }
 
@@ -147,7 +148,8 @@ class calcula_imss{
                 data: $cat_sat_periodicidad_pago_nom_id);
         }
 
-        $init = $this->init_data_base($fecha, $n_dias, $sbc, $sd, $cat_sat_periodicidad_pago_nom_id);
+        $init = $this->init_data_base(cat_sat_periodicidad_pago_nom_id: $cat_sat_periodicidad_pago_nom_id,
+            fecha: $fecha, n_dias: $n_dias, sbc: $sbc, sd: $sd);
         if(errores::$error){
             return $this->error->error('Error al inicializar', $init);
         }
@@ -173,7 +175,8 @@ class calcula_imss{
         }
 
 
-        $init = $this->genera_imss($fecha, $n_dias, $sbc, $sd, $cat_sat_periodicidad_pago_nom_id);
+        $init = $this->genera_imss(cat_sat_periodicidad_pago_nom_id: $cat_sat_periodicidad_pago_nom_id,
+            fecha: $fecha, n_dias: $n_dias, sbc: $sbc, sd: $sd);
         if(errores::$error){
             return $this->error->error('Error al generar imss', $init);
         }
@@ -184,7 +187,8 @@ class calcula_imss{
         return $data;
     }
 
-    public function init_base(int  $cat_sat_periodicidad_pago_nom_id, string $fecha, float $n_dias, float $sbc, float $sd): stdClass|array
+    public function init_base(int  $cat_sat_periodicidad_pago_nom_id, string $fecha, float $n_dias, float $sbc,
+                              float $sd): stdClass|array
     {
         $valida = $this->valida_imss(fecha: $fecha,n_dias:  $n_dias, sbc: $sbc,sd:  $sd);
         if(errores::$error){
@@ -195,9 +199,12 @@ class calcula_imss{
                 data:  $cat_sat_periodicidad_pago_nom_id);
         }
 
+        $this->year = date('Y', strtotime($fecha));
+
         $this->monto_uma = $this->uma[2022];
 
-        $dias = $this->n_dias($n_dias, $cat_sat_periodicidad_pago_nom_id, $fecha);
+        $dias = $this->n_dias(cat_sat_periodicidad_pago_nom_id: $cat_sat_periodicidad_pago_nom_id, fecha: $fecha,
+            n_dias: $n_dias);
         if(errores::$error) {
             return $this->error->error("Error al obtener dias", $dias);
         }
@@ -246,7 +253,8 @@ class calcula_imss{
                 data:  $cat_sat_periodicidad_pago_nom_id);
         }
 
-        $base = $this->init_base($fecha, $n_dias, $sbc, $sd,$cat_sat_periodicidad_pago_nom_id);
+        $base = $this->init_base(cat_sat_periodicidad_pago_nom_id: $cat_sat_periodicidad_pago_nom_id,
+            fecha: $fecha, n_dias: $n_dias, sbc: $sbc, sd: $sd);
         if(errores::$error){
             return $this->error->error('Error al inicializar', $base);
         }
@@ -273,13 +281,14 @@ class calcula_imss{
         return $this->invalidez_vida;
     }
 
-    public function n_dias(float $n_dias, int $sat_nomina_periodicidad_pago_id, string $fecha): float|array
+    public function n_dias(int $cat_sat_periodicidad_pago_nom_id,  string $fecha, float $n_dias): float|array
     {
         if($n_dias<=0){
             return $this->error->error("Error n_dias en menor a 0", $n_dias);
         }
-        if($sat_nomina_periodicidad_pago_id<=0){
-            return $this->error->error('Error $sat_nomina_periodicidad_pago_id en menor a 0', $sat_nomina_periodicidad_pago_id);
+        if($cat_sat_periodicidad_pago_nom_id<=0){
+            return $this->error->error('Error $cat_sat_periodicidad_pago_nom_id en menor a 0',
+                $cat_sat_periodicidad_pago_nom_id);
         }
         $valida = $this->validacion->valida_fecha($fecha);
         if(errores::$error){
@@ -288,7 +297,7 @@ class calcula_imss{
 
         $this->n_dias = round($n_dias,2);
 
-        if($sat_nomina_periodicidad_pago_id=== 1 && $n_dias===15.0){
+        if($cat_sat_periodicidad_pago_nom_id=== 1 && $n_dias===15.0){
             $dias = $this->dias_quincena($fecha);
             if(errores::$error){
                 return $this->error->error("Error al obtener dias", $dias);
@@ -356,7 +365,7 @@ class calcula_imss{
         return $this->total_percepciones;
     }
 
-    public function valida_exedente(): bool|array
+    private function valida_exedente(): bool|array
     {
         if($this->monto_uma<=0){
             return $this->error->error('Error uma debe ser mayor a 0', $this->monto_uma);
@@ -370,7 +379,7 @@ class calcula_imss{
         return true;
     }
 
-    public function valida_imss(string $fecha, float $n_dias, float $sbc, float $sd): bool|array
+    private function valida_imss(string $fecha, float $n_dias, float $sbc, float $sd): bool|array
     {
         $valida = (new validacion())->valida_fecha(fecha: $fecha);
         if(errores::$error){
