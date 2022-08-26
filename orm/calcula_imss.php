@@ -41,7 +41,7 @@ class calcula_imss{
 
     }
 
-    public function calcula(): bool|array
+    private function calcula(): bool|array
     {
 
         $valida = $this->valida_exedente();
@@ -80,7 +80,7 @@ class calcula_imss{
         return true;
     }
 
-    public function cesantia(): float|array
+    private function cesantia(): float|array
     {
         if($this->total_percepciones <=0.0){
             return $this->error->error("Error total_percepciones debe ser mayor a 0", $this->total_percepciones);
@@ -90,7 +90,7 @@ class calcula_imss{
         return $this->cesantia;
     }
 
-    public function data_array(): array
+    private function data_array(): array
     {
         $data['prestaciones_en_dinero_trabajador'] = $this->prestaciones_en_dinero;
         $data['pensionados_beneficiarios'] = $this->pensionados_beneficiarios;
@@ -103,7 +103,7 @@ class calcula_imss{
         return $data;
     }
 
-    public function dias_quincena(string $fecha): float|array
+    private function dias_quincena(string $fecha): float|array
     {
         $valida = $this->validacion->valida_fecha($fecha);
         if(errores::$error){
@@ -116,7 +116,7 @@ class calcula_imss{
         return $this->n_dias;
     }
 
-    public function excedente_imss(): float|array
+    private function excedente_imss(): float|array
     {
 
         $valida = $this->valida_exedente();
@@ -187,7 +187,7 @@ class calcula_imss{
         return $data;
     }
 
-    public function init_base(int  $cat_sat_periodicidad_pago_nom_id, string $fecha, float $n_dias, float $sbc,
+    private function init_base(int  $cat_sat_periodicidad_pago_nom_id, string $fecha, float $n_dias, float $sbc,
                               float $sd): stdClass|array
     {
         $valida = $this->valida_imss(fecha: $fecha,n_dias:  $n_dias, sbc: $sbc,sd:  $sd);
@@ -223,7 +223,7 @@ class calcula_imss{
         return $data;
     }
 
-    public function init_data(): stdClass
+    private function init_data(): stdClass
     {
         $this->prestaciones_en_dinero = 0.0;
         $this->pensionados_beneficiarios = 0.0;
@@ -241,7 +241,7 @@ class calcula_imss{
         return $data;
     }
 
-    public function init_data_base(int $cat_sat_periodicidad_pago_nom_id, string $fecha, float $n_dias, float $sbc,
+    private function init_data_base(int $cat_sat_periodicidad_pago_nom_id, string $fecha, float $n_dias, float $sbc,
                                    float $sd): array|stdClass
     {
         $valida = $this->valida_imss(fecha: $fecha,n_dias:  $n_dias, sbc: $sbc,sd:  $sd);
@@ -271,7 +271,7 @@ class calcula_imss{
         return $data;
     }
 
-    public function invalidez_vida(): float|array
+    private function invalidez_vida(): float|array
     {
         if($this->total_percepciones <=0.0){
             return $this->error->error("Error total_percepciones debe ser mayor a 0", $this->total_percepciones);
@@ -281,7 +281,7 @@ class calcula_imss{
         return $this->invalidez_vida;
     }
 
-    public function n_dias(int $cat_sat_periodicidad_pago_nom_id,  string $fecha, float $n_dias): float|array
+    private function n_dias(int $cat_sat_periodicidad_pago_nom_id,  string $fecha, float $n_dias): float|array
     {
         if($n_dias<=0){
             return $this->error->error("Error n_dias en menor a 0", $n_dias);
@@ -307,7 +307,7 @@ class calcula_imss{
         return $this->n_dias;
     }
 
-    public function pensionados_beneficiarios(): float|array
+    private function pensionados_beneficiarios(): float|array
     {
         if($this->total_percepciones <=0.0){
             return $this->error->error("Error total_percepciones debe ser mayor a 0", $this->total_percepciones);
@@ -317,7 +317,7 @@ class calcula_imss{
         return $this->pensionados_beneficiarios;
     }
 
-    public function prestaciones_en_dinero(): float|array
+    private function prestaciones_en_dinero(): float|array
     {
         if($this->total_percepciones <=0.0){
             return $this->error->error("Error total_percepciones debe ser mayor a 0", $this->total_percepciones);
@@ -327,7 +327,7 @@ class calcula_imss{
         return $this->prestaciones_en_dinero;
     }
 
-    public function total(): float|array
+    private function total(): float|array
     {
         if($this->prestaciones_en_dinero<=0.0){
             return $this->error->error('Error $this->prestaciones_en_dinero debe ser mayor a 0', $this->prestaciones_en_dinero);
@@ -352,7 +352,7 @@ class calcula_imss{
     }
 
 
-    public function total_percepciones(): float|array
+    private function total_percepciones(): float|array
     {
         if($this->sbc<=0){
             return $this->error->error('Error sbc debe ser mayor a 0', $this->sbc);
