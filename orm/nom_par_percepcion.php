@@ -176,7 +176,7 @@ class nom_par_percepcion extends modelo{
      * @return float|array
      * @version 0.67.1
      */
-    PUBLIC function calcula_isr_nomina(int $nom_par_percepcion_id): float|array
+    private function calcula_isr_nomina(int $nom_par_percepcion_id): float|array
     {
         $isr = 0.0;
         $total_gravado = (new nom_nomina($this->link))->total_gravado(nom_nomina_id: $nom_par_percepcion_id);

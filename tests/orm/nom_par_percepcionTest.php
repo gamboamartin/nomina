@@ -3,6 +3,7 @@ namespace tests\controllers;
 
 use controllers\controlador_cat_sat_tipo_persona;
 use gamboamartin\errores\errores;
+use gamboamartin\test\liberator;
 use gamboamartin\test\test;
 use JsonException;
 use models\em_cuenta_bancaria;
@@ -136,6 +137,7 @@ class nom_par_percepcionTest extends test {
         $_SESSION['usuario_id'] = 1;
         $_GET['session_id'] = '1';
         $percepcion = new nom_par_percepcion($this->link);
+        $percepcion = new liberator($percepcion);
 
         $del_percepcion = $percepcion->elimina_todo();
         if(errores::$error){
