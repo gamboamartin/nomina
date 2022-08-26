@@ -91,7 +91,7 @@ class nom_par_percepcion extends modelo{
     {
         if(!isset($registro['descripcion'])){
 
-            $descripcion = $this->genera_descripcion(nom_nomina_id: $registro['nom_nomina_id'], registro: $registro);
+            $descripcion = $this->genera_descripcion( registro: $registro);
             if(errores::$error){
                 return $this->error->error(mensaje: 'Error al obtener descripcion', data: $descripcion);
             }
@@ -212,36 +212,21 @@ class nom_par_percepcion extends modelo{
 
 
 
-    private function descripcion_alta(stdClass $nom_nomina, array $registro): array|string
+    private function descripcion_alta(array $registro): array|string
     {
-        $descripcion = $registro['nom_nomina_id'];
-        $descripcion .= '-';
-        $descripcion .= $nom_nomina->cat_sat_periodicidad_pago_nom_descripcion;
-        $descripcion .= '-';
-        $descripcion .= $nom_nomina->em_empleado_rfc;
-        $descripcion .= '-';
-        $descripcion .= $nom_nomina->im_registro_patronal_descripcion;
-        $descripcion .= '-';
-
-        $descripcion_random = $this->codigo_random();
+        $nom_percepcion = (new nom_percepcion($this->link))->registro($registro['nom_percepcion_id']);
         if(errores::$error){
-            return $this->error->error(mensaje: 'Error al obtener descripcion', data: $descripcion_random);
+            return $this->error->error(mensaje: 'Error al obtener percepcion', data: $nom_percepcion);
         }
-        $descripcion.=$descripcion_random;
 
-        return $descripcion;
+        return $nom_percepcion['nom_percepcion_descripcion'];
     }
 
 
-    private function genera_descripcion(int $nom_nomina_id, array $registro): array|string
+    private function genera_descripcion(array $registro): array|string
     {
-        $nom_nomina = (new nom_nomina($this->link))->registro(registro_id: $nom_nomina_id,
-            retorno_obj: true);
-        if(errores::$error){
-            return $this->error->error(mensaje: 'Error al obtener $nom_nomina', data: $nom_nomina);
-        }
 
-        $descripcion = $this->descripcion_alta(nom_nomina: $nom_nomina, registro: $registro);
+        $descripcion = $this->descripcion_alta(registro: $registro);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al obtener descripcion', data: $descripcion);
         }
