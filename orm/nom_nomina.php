@@ -20,7 +20,7 @@ class nom_nomina extends modelo
             'dp_pais' => 'dp_estado', 'em_empleado' => $tabla, 'fc_factura' => $tabla,'
             cat_sat_periodicidad_pago_nom'=>$tabla,'im_registro_patronal'=>$tabla);
         $campos_obligatorios = array('cat_sat_periodicidad_pago_nom_id','em_cuenta_bancaria_id','fecha_inicial_pago',
-            'fecha_final_pago');
+            'fecha_final_pago','num_dias_pagados');
 
         parent::__construct(link: $link, tabla: $tabla, campos_obligatorios: $campos_obligatorios,
             columnas: $columnas);
@@ -259,24 +259,29 @@ class nom_nomina extends modelo
 
     private function genera_registro_cfd_partida(mixed $fc_factura, mixed $em_empleado) : array{
 
-        $codigo = rand();
-        $descripcion = rand();
-        $descripcion_select = rand();
-        $alias = rand();
-        $codigo_bis = rand();
+        $keys = array('num_dias_pagados','descuento');
+        $valida = $this->validacion->valida_existencia_keys(keys: $keys,registro:  $this->registro);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al validar registro', data: $valida);
+        }
+
+
+        $codigo = mt_rand();
+        $descripcion = mt_rand();
+        $descripcion_select = mt_rand();
+        $alias = mt_rand();
+        $codigo_bis = mt_rand();
         $com_producto_id = 1;
         $cantidad = $this->registro['num_dias_pagados'];
         $valor_unitario= $em_empleado->em_empleado_salario_diario;
         $descuento = $this->registro['descuento'];
         $fc_factura_id= $fc_factura->registro['fc_factura_id'];
 
-        $regisro_cfd_partida = array('codigo' => $codigo, 'descripcion' => $descripcion, 'descripcion_select' => $descripcion_select,
+        return array('codigo' => $codigo, 'descripcion' => $descripcion, 'descripcion_select' => $descripcion_select,
             'alias' => $alias, 'codigo_bis' => $codigo_bis,
             'com_producto_id' => $com_producto_id, 'cantidad' => $cantidad,
             'valor_unitario' => $valor_unitario, 'descuento' => $descuento,
             'fc_factura_id' => $fc_factura_id);
-
-        return $regisro_cfd_partida;
     }
 
     private function genera_registro_nomina(mixed $registros, mixed $fc_factura) : array{

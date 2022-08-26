@@ -5,6 +5,8 @@ use controllers\controlador_cat_sat_tipo_persona;
 use gamboamartin\errores\errores;
 use gamboamartin\test\test;
 use JsonException;
+use models\fc_cfd_partida;
+use models\fc_factura;
 use models\nom_nomina;
 use models\nom_par_percepcion;
 use stdClass;
@@ -134,6 +136,59 @@ class nom_nominaTest extends test {
         $_SESSION['usuario_id'] = 1;
         $_GET['session_id'] = '1';
         $nomina = new nom_nomina($this->link);
+        $fc_factura_modelo = new fc_factura($this->link);
+        $fc_cfd_partida_modelo = new fc_cfd_partida($this->link);
+        $nom_par_percepcion_modelo = new nom_par_percepcion($this->link);
+
+        $del_nom_par_percepcion = $nom_par_percepcion_modelo->elimina_todo();
+        if(errores::$error){
+            $error = (new errores())->error(mensaje: 'Error al eliminar nom_par_percepcion', data: $del_nom_par_percepcion);
+            print_r($error);
+            exit;
+        }
+
+        $del_nom_nomina = $nomina->elimina_todo();
+        if(errores::$error){
+            $error = (new errores())->error(mensaje: 'Error al eliminar $nom_nomina', data: $del_nom_nomina);
+            print_r($error);
+            exit;
+        }
+
+
+        $del_fc_cfd_partida = $fc_cfd_partida_modelo->elimina_todo();
+        if(errores::$error){
+            $error = (new errores())->error(mensaje: 'Error al eliminar fc_cfd_partida', data: $del_fc_cfd_partida);
+            print_r($error);
+            exit;
+        }
+
+        $del_fc_factura = $fc_factura_modelo->elimina_todo();
+        if(errores::$error){
+            $error = (new errores())->error(mensaje: 'Error al eliminar factura', data: $del_fc_factura);
+            print_r($error);
+            exit;
+        }
+
+
+        $nom_nomina = array();
+        $nom_nomina['id'] = 1;
+        $nom_nomina['im_registro_patronal_id'] = 1;
+        $nom_nomina['em_empleado_id'] = 1;
+        $nom_nomina['folio'] = 1;
+        $nom_nomina['fecha'] = 1;
+        $nom_nomina['cat_sat_periodicidad_pago_nom_id'] = 1;
+        $nom_nomina['em_cuenta_bancaria_id'] = 1;
+        $nom_nomina['fecha_inicial_pago'] = '2022-01-01';
+        $nom_nomina['fecha_final_pago'] = '2022-01-01';
+        $nom_nomina['num_dias_pagados'] = '1';
+        $nom_nomina['descuento'] = '0';
+
+        $alta_nom_nomina = $nomina->alta_registro($nom_nomina);
+        if(errores::$error){
+            $error = (new errores())->error(mensaje: 'Error al insertar nomina', data: $alta_nom_nomina);
+            print_r($error);
+            exit;
+        }
 
         $nom_par_percepcion_modelo = new nom_par_percepcion($this->link);
 

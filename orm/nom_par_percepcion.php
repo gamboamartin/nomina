@@ -138,6 +138,11 @@ class nom_par_percepcion extends modelo{
         $registro = $this->asigna_codigo(keys_registro: $keys_registro,keys_row:  $keys_row,
             modelo:  $modelo,registro:  $registro);
 
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al asignar codigo', data: $registro);
+        }
+
+
         $registro = $this->asigna_descripcion(registro: $registro);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al asignar descripcion', data: $registro);
