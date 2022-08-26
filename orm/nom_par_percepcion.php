@@ -79,7 +79,12 @@ class nom_par_percepcion extends modelo{
     {
         if(!isset($registro['codigo'])){
 
-            $codigo = $this->genera_codigo(nom_nomina_id: $registro['nom_nomina_id'], registro: $registro);
+            $keys_registro = array('nom_nomina_id');
+            $keys_row = array('cat_sat_periodicidad_pago_nom_id','em_empleado_rfc','im_registro_patronal_id');
+            $modelo = new nom_nomina($this->link);
+            $codigo = $this->genera_codigo(keys_registro: $keys_registro,keys_row:  $keys_row, modelo: $modelo,
+                registro_id:$registro['nom_nomina_id'] , registro: $registro);
+
             if(errores::$error){
                 return $this->error->error(mensaje: 'Error al obtener codigo', data: $codigo);
             }
@@ -236,24 +241,6 @@ class nom_par_percepcion extends modelo{
         return $descripcion;
     }
 
-    private function genera_codigo(int $nom_nomina_id, array $registro): array|string
-    {
-        $nom_nomina = (new nom_nomina($this->link))->registro(registro_id: $nom_nomina_id,
-            retorno_obj: true);
-        if(errores::$error){
-            return $this->error->error(mensaje: 'Error al obtener $nom_nomina', data: $nom_nomina);
-        }
-
-
-        $keys_registro = array('nom_nomina_id');
-        $keys_row = array('cat_sat_periodicidad_pago_nom_id','em_empleado_rfc','im_registro_patronal_id');
-        $codigo = $this->codigo_alta(keys_registro: $keys_registro,keys_row:  $keys_row,row:  $nom_nomina,
-            registro: $registro);
-        if(errores::$error){
-            return $this->error->error(mensaje: 'Error al obtener codigo', data: $codigo);
-        }
-        return $codigo;
-    }
 
     private function genera_descripcion(int $nom_nomina_id, array $registro): array|string
     {
