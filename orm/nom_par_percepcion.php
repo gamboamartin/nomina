@@ -75,23 +75,7 @@ class nom_par_percepcion extends modelo{
         return $registro;
     }
 
-    private function asigna_codigo(array $registro): array
-    {
-        if(!isset($registro['codigo'])){
 
-            $keys_registro = array('nom_nomina_id');
-            $keys_row = array('cat_sat_periodicidad_pago_nom_id','em_empleado_rfc','im_registro_patronal_id');
-            $modelo = new nom_nomina($this->link);
-            $codigo = $this->genera_codigo(keys_registro: $keys_registro,keys_row:  $keys_row, modelo: $modelo,
-                registro_id:$registro['nom_nomina_id'] , registro: $registro);
-
-            if(errores::$error){
-                return $this->error->error(mensaje: 'Error al obtener codigo', data: $codigo);
-            }
-            $registro['codigo'] = $codigo;
-        }
-        return $registro;
-    }
 
     private function asigna_codigo_bis(array $registro
     ): array
@@ -147,10 +131,12 @@ class nom_par_percepcion extends modelo{
 
     private function asigna_registro_alta(array $registro): array
     {
-        $registro = $this->asigna_codigo(registro: $registro);
-        if(errores::$error){
-            return $this->error->error(mensaje: 'Error al asignar codigo', data: $registro);
-        }
+
+        $keys_registro = array('nom_nomina_id');
+        $keys_row = array('cat_sat_periodicidad_pago_nom_id','em_empleado_rfc','im_registro_patronal_id');
+        $modelo = new nom_nomina($this->link);
+        $registro = $this->asigna_codigo(keys_registro: $keys_registro,keys_row:  $keys_row,
+            modelo:  $modelo,registro:  $registro);
 
         $registro = $this->asigna_descripcion(registro: $registro);
         if(errores::$error){
