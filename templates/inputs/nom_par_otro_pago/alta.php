@@ -3,5 +3,9 @@
 <?php echo $controlador->inputs->codigo; ?>
 <?php echo $controlador->inputs->codigo_bis; ?>
 <?php echo $controlador->inputs->descripcion; ?>
-<?php echo $controlador->inputs->select->cat_sat_tipo_otro_pago_nom_id; ?>
+<?php echo $controlador->inputs->select->nom_nomina_id; ?>
+<?php echo $controlador->inputs->select->nom_otro_pago_id; ?>
+<?php echo $controlador->inputs->importe_gravado; ?>
+<?php echo $controlador->inputs->importe_exento; ?>
+
 <?php include (new views())->ruta_templates.'botons/submit/alta_bd_otro.php';?>

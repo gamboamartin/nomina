@@ -23,7 +23,7 @@ class nom_otro_pago_html extends html_controler
     private function asigna_inputs(controlador_nom_otro_pago $controler, stdClass $inputs): array|stdClass
     {
         $controler->inputs->select = new stdClass();
-        $controler->inputs->select->cat_sat_tipo_percepcion_nom_id = $inputs->selects->cat_sat_tipo_percepcion_nom_id;
+        $controler->inputs->select->cat_sat_tipo_otro_pago_nom_id = $inputs->selects->cat_sat_tipo_otro_pago_nom_id;
 
         return $controler->inputs;
     }
@@ -111,12 +111,12 @@ class nom_otro_pago_html extends html_controler
     {
         $selects = new stdClass();
 
-        $select = (new cat_sat_tipo_percepcion_nom_html(html:$this->html_base))->select_cat_sat_tipo_percepcion_nom_id(
+        $select = (new cat_sat_tipo_otro_pago_nom_html(html:$this->html_base))->select_cat_sat_tipo_otro_pago_nom_id(
             cols: 12, con_registros:true, id_selected:-1,link: $link);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al generar select',data:  $select);
         }
-        $selects->cat_sat_tipo_percepcion_nom_id = $select;
+        $selects->cat_sat_tipo_otro_pago_nom_id = $select;
 
         return $selects;
     }
@@ -125,12 +125,12 @@ class nom_otro_pago_html extends html_controler
     {
         $selects = new stdClass();
 
-        $select = (new cat_sat_tipo_percepcion_nom_html(html:$this->html_base))->select_cat_sat_tipo_percepcion_nom_id(
-            cols: 12, con_registros:true, id_selected:$row_upd->cat_sat_tipo_percepcion_nom_id,link: $link);
+        $select = (new cat_sat_tipo_otro_pago_nom_html(html:$this->html_base))->select_cat_sat_tipo_otro_pago_nom_id(
+            cols: 12, con_registros:true, id_selected:$row_upd->cat_sat_tipo_otro_pago_nom_id,link: $link);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al generar select',data:  $select);
         }
-        $selects->cat_sat_tipo_percepcion_nom_id = $select;
+        $selects->cat_sat_tipo_otro_pago_nom_id = $select;
 
         return $selects;
     }
