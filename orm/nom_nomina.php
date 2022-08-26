@@ -44,7 +44,7 @@ class nom_nomina extends modelo
             return $this->error->error(mensaje: 'Error al dar de alta la factura', data: $r_alta_factura);
         }
 
-        $registros_cfd_partida = $this->genera_registro_cfd_partida(fc_factura: $r_alta_factura);
+        $registros_cfd_partida = $this->genera_registro_cfd_partida(fc_factura: $r_alta_factura,em_empleado: $registros['em_empleado']);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al generar registros de cfd partida', data: $registros_cfd_partida);
         }
@@ -55,7 +55,7 @@ class nom_nomina extends modelo
         }
 
         $this->registro = $this->limpia_campos(registro: $this->registro,
-            campos_limpiar: array('folio', 'fecha'));
+            campos_limpiar: array('folio', 'fecha', 'descuento'));
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al limpiar campos', data: $this->registro);
         }
@@ -156,7 +156,7 @@ class nom_nomina extends modelo
         return $isr;
     }
 
-    public function get_sub_total_nomina(int $fc_factura_id): float
+    public function get_sub_total_nomina(int $fc_factura_id): float|array
     {
         $subtotal = (new fc_factura($this->link))->get_factura_sub_total( fc_factura_id: $fc_factura_id);
         if (errores::$error) {
@@ -164,6 +164,16 @@ class nom_nomina extends modelo
                 data: $subtotal);
         }
         return $subtotal;
+    }
+
+    public function get_descuento_nomina(int $fc_factura_id): float
+    {
+        $descuento = (new fc_factura($this->link))->get_descuento( fc_factura_id: $fc_factura_id);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al obtener el descuento  de la partida',
+                data: $descuento);
+        }
+        return $descuento;
     }
 
     private function get_sucursal_by_empleado(int $em_empleado_id){
@@ -247,7 +257,7 @@ class nom_nomina extends modelo
         return $regisro_factura;
     }
 
-    private function genera_registro_cfd_partida(mixed $fc_factura) : array{
+    private function genera_registro_cfd_partida(mixed $fc_factura, mixed $em_empleado) : array{
 
         $codigo = rand();
         $descripcion = rand();
@@ -255,9 +265,9 @@ class nom_nomina extends modelo
         $alias = rand();
         $codigo_bis = rand();
         $com_producto_id = 1;
-        $cantidad = 1;
-        $valor_unitario= 1;
-        $descuento = 1;
+        $cantidad = $this->registro['num_dias_pagados'];
+        $valor_unitario= $em_empleado->em_empleado_salario_diario;
+        $descuento = $this->registro['descuento'];
         $fc_factura_id= $fc_factura->registro['fc_factura_id'];
 
         $regisro_cfd_partida = array('codigo' => $codigo, 'descripcion' => $descripcion, 'descripcion_select' => $descripcion_select,

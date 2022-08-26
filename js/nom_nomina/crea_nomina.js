@@ -16,6 +16,8 @@ let txt_num_dias_pagados = $('#num_dias_pagados');
 let txt_fecha_inicial_pago = $('#fecha_inicial_pago');
 let txt_fecha_final_pago = $('#fecha_final_pago');
 let txt_subtotal = $('#subtotal');
+let txt_descuento = $('#descuento');
+let txt_total = $('#total');
 
 
 sl_nom_empleado.change(function(){
@@ -43,7 +45,10 @@ sl_nom_empleado.change(function(){
     }
 
     let sub_Total = subTotal(txt_salario_diario.val(),txt_num_dias_pagados.val())
+    let total = sub_Total - txt_descuento.val()
+
     txt_subtotal.val(sub_Total)
+    txt_total.val(total)
 
     em_empleado_id = $(this).val();
 
@@ -73,6 +78,15 @@ sl_nom_empleado.change(function(){
 
 });
 
+txt_descuento.change(function() {
+
+    let sub_Total = subTotal(txt_salario_diario.val(),txt_num_dias_pagados.val())
+    let total = sub_Total - txt_descuento.val()
+
+    txt_total.val(total)
+
+});
+
 sl_cat_sat_periodicidad_pago_nom.change(function(){
     let selected = $(this).find('option:selected');
     let num_dias_pagados = selected.data('cat_sat_periodicidad_pago_nom_n_dias');
@@ -87,7 +101,10 @@ sl_cat_sat_periodicidad_pago_nom.change(function(){
     txt_num_dias_pagados.val(num_dias_pagados);
     txt_fecha_final_pago.val(fechaFinal)
     let sub_Total = subTotal(txt_salario_diario.val(),txt_num_dias_pagados.val())
+    let total = sub_Total - txt_descuento.val()
+
     txt_subtotal.val(sub_Total)
+    txt_total.val(total)
 });
 
 txt_fecha_inicial_pago.change(function() {
@@ -133,7 +150,7 @@ let fecha = (fechaInicio, numDias = 1) => {
     return fechaFinal.getFullYear() + "-" +  ('0' + (fechaFinal.getMonth()+1)).slice(-2) + "-" + ('0' + fechaFinal.getDate()).slice(-2);
 };
 
-let subTotal = (salario = 0, diasPagados = 0,) => {
+let subTotal = (salario = 0, diasPagados = 0) => {
    return salario * diasPagados
 };
 

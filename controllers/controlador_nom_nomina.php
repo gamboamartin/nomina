@@ -119,8 +119,6 @@ class controlador_nom_nomina extends system
 
         $this->nom_nomina_id = $this->registro_id;
 
-        print_r($this->nom_nomina_id);
-
         $inputs = (new nom_nomina_html(html: $this->html_base))->genera_inputs_crea_nomina(controler: $this, link: $this->link);
         if (errores::$error) {
             $error = $this->errores->error(mensaje: 'Error al generar inputs', data: $inputs);
