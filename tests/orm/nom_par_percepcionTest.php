@@ -132,7 +132,6 @@ class nom_par_percepcionTest extends test {
         $resultado = $percepcion->alta_bd();
 
 
-
         $this->assertIsObject($resultado);
         $this->assertNotTrue(errores::$error);
 
