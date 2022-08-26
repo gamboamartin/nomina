@@ -78,6 +78,8 @@ class nom_nomina_html extends html_controler
         $controler->inputs->salario_diario = $inputs->texts->salario_diario;
         $controler->inputs->salario_diario_integrado = $inputs->texts->salario_diario_integrado;
         $controler->inputs->subtotal = $inputs->texts->subtotal;
+        $controler->inputs->descuento = $inputs->texts->descuento;
+        $controler->inputs->total = $inputs->texts->total;
 
         return $controler->inputs;
     }
@@ -647,26 +649,50 @@ class nom_nomina_html extends html_controler
         }
         $texts->num_dias_pagados = $in_num_dias_pagados;
 
+        $row_upd->salario_diario = 0;
+
         $in_salario_diario = (new em_empleado_html(html: $this->html_base))->input_salario_diario(cols: 4,
-            row_upd: $row_upd,value_vacio: $value_vacio, disabled: true);
+            row_upd: $row_upd,value_vacio: false, disabled: true);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al generar input', data: $in_salario_diario);
         }
         $texts->salario_diario = $in_salario_diario;
 
+        $row_upd->salario_diario_integrado = 0;
+
         $in_salario_diario_integrado = (new em_empleado_html(html: $this->html_base))->input_salario_diario_integrado(
-            cols: 4, row_upd: $row_upd, value_vacio: $value_vacio, disabled: true);
+            cols: 4, row_upd: $row_upd, value_vacio: false, disabled: true);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al generar input', data: $in_salario_diario_integrado);
         }
         $texts->salario_diario_integrado = $in_salario_diario_integrado;
 
+        $row_upd->subtotal = 0;
+
         $in_subtotal = (new fc_factura_html(html: $this->html_base))->input_subtotal(
-            cols: 6, row_upd: $row_upd, value_vacio: false, disabled: true);
+            cols: 4, row_upd: $row_upd, value_vacio: false, disabled: true);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al generar input', data: $in_subtotal);
         }
         $texts->subtotal = $in_subtotal;
+
+        $row_upd->descuento = 0;
+
+        $in_descuento = (new fc_factura_html(html: $this->html_base))->input_descuento(
+            cols: 4, row_upd: $row_upd, value_vacio: false, disabled: false);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al generar input', data: $in_descuento);
+        }
+        $texts->descuento = $in_descuento;
+
+        $row_upd->total = 0;
+
+        $in_total = (new fc_factura_html(html: $this->html_base))->input_total(
+            cols: 4, row_upd: $row_upd, value_vacio: false, disabled: true);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al generar input', data: $in_total);
+        }
+        $texts->total = $in_total;
 
         return $texts;
     }
@@ -687,6 +713,11 @@ class nom_nomina_html extends html_controler
         $subtotal = (new nom_nomina($link))->get_sub_total_nomina(fc_factura_id: $row_upd->fc_factura_id);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al obtener el subtotal de nomina', data: $subtotal);
+        }
+
+        $descuento = (new nom_nomina($link))->get_descuento_nomina(fc_factura_id: $row_upd->fc_factura_id);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al obtener el descuento de nomina', data: $descuento);
         }
 
         $texts = new stdClass();
@@ -811,11 +842,29 @@ class nom_nomina_html extends html_controler
         $row_upd->subtotal = $subtotal;
 
         $in_subtotal = (new fc_factura_html(html: $this->html_base))->input_subtotal(
-            cols: 6, row_upd: $row_upd, value_vacio: false, disabled: true);
+            cols: 4, row_upd: $row_upd, value_vacio: false, disabled: true);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al generar input', data: $in_subtotal);
         }
         $texts->subtotal = $in_subtotal;
+
+        $row_upd->descuento = $descuento;
+
+        $in_descuento = (new fc_factura_html(html: $this->html_base))->input_descuento(
+            cols: 4, row_upd: $row_upd, value_vacio: false, disabled: true);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al generar input', data: $in_descuento);
+        }
+        $texts->descuento = $in_descuento;
+
+        $row_upd->total = $subtotal - $descuento;
+
+        $in_total = (new fc_factura_html(html: $this->html_base))->input_total(
+            cols: 4, row_upd: $row_upd, value_vacio: false, disabled: true);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al generar input', data: $in_total);
+        }
+        $texts->total = $in_total;
 
         return $texts;
     }
