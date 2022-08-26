@@ -54,62 +54,25 @@ class nom_par_percepcion extends modelo{
         }
 
         if($isr>0.0){
-            /*$nom_par_deduccion_ins = array();
+            $nom_par_deduccion_ins = array();
+            $nom_par_deduccion_ins['nom_nomina_id'] = $this->registro['nom_nomina_id'];
+            $nom_par_deduccion_ins['nom_deduccion_id'] = 1;
+            $nom_par_deduccion_ins['importe_gravado'] = $isr;
+            $nom_par_deduccion_ins['importe_exento'] = 0.0;
             $r_alta_nom_par_deduccion = (new nom_par_deduccion($this->link))->alta_registro(registro: $nom_par_deduccion_ins);
             if(errores::$error){
                 return $this->error->error(mensaje: 'Error al registrar deduccion', data: $r_alta_nom_par_deduccion);
-            }*/
+            }
         }
 
 
         return $r_alta_bd;
     }
 
-    private function asigna_alias(array $registro): array
-    {
-        if(!isset($registro['alias'])){
-
-            $registro['alias'] = $registro['descripcion'];
-
-        }
-        return $registro;
-    }
 
 
 
-    private function asigna_codigo_bis(array $registro
-    ): array
-    {
-        if(!isset($registro['codigo_bis'])){
 
-            $registro['codigo_bis'] = $registro['codigo'];
-        }
-        return $registro;
-    }
-
-    private function asigna_descripcion(array $registro): array
-    {
-        if(!isset($registro['descripcion'])){
-
-            $descripcion = $this->genera_descripcion( registro: $registro);
-            if(errores::$error){
-                return $this->error->error(mensaje: 'Error al obtener descripcion', data: $descripcion);
-            }
-
-            $registro['descripcion'] = $descripcion;
-
-        }
-        return $registro;
-    }
-
-    private function asigna_descripcion_select(array $registro): array
-    {
-        if(!isset($registro['descripcion_select'])){
-
-            $registro['descripcion_select'] = $registro['descripcion'];
-        }
-        return $registro;
-    }
 
     private function asigna_importe_exento(array $registro): array
     {
@@ -142,8 +105,8 @@ class nom_par_percepcion extends modelo{
             return $this->error->error(mensaje: 'Error al asignar codigo', data: $registro);
         }
 
-
-        $registro = $this->asigna_descripcion(registro: $registro);
+        $modelo = new nom_percepcion($this->link);
+        $registro = $this->asigna_descripcion(modelo:$modelo, registro: $registro);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al asignar descripcion', data: $registro);
         }
@@ -204,34 +167,14 @@ class nom_par_percepcion extends modelo{
                 return $this->error->error(mensaje: 'Error al obtener isr', data: $isr);
             }
 
+
+
         }
 
         return $isr;
     }
 
 
-
-
-    private function descripcion_alta(array $registro): array|string
-    {
-        $nom_percepcion = (new nom_percepcion($this->link))->registro($registro['nom_percepcion_id']);
-        if(errores::$error){
-            return $this->error->error(mensaje: 'Error al obtener percepcion', data: $nom_percepcion);
-        }
-
-        return $nom_percepcion['nom_percepcion_descripcion'];
-    }
-
-
-    private function genera_descripcion(array $registro): array|string
-    {
-
-        $descripcion = $this->descripcion_alta(registro: $registro);
-        if(errores::$error){
-            return $this->error->error(mensaje: 'Error al obtener descripcion', data: $descripcion);
-        }
-        return $descripcion;
-    }
 
     private function isr_total_nomina_por_percepcion(int $nom_par_percepcion_id, string $total_gravado): float|array
     {

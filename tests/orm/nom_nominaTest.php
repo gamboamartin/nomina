@@ -8,6 +8,7 @@ use JsonException;
 use models\fc_cfd_partida;
 use models\fc_factura;
 use models\nom_nomina;
+use models\nom_par_deduccion;
 use models\nom_par_percepcion;
 use stdClass;
 
@@ -139,10 +140,17 @@ class nom_nominaTest extends test {
         $fc_factura_modelo = new fc_factura($this->link);
         $fc_cfd_partida_modelo = new fc_cfd_partida($this->link);
         $nom_par_percepcion_modelo = new nom_par_percepcion($this->link);
+        $nom_par_deduccion_modelo = new nom_par_deduccion($this->link);
 
         $del_nom_par_percepcion = $nom_par_percepcion_modelo->elimina_todo();
         if(errores::$error){
             $error = (new errores())->error(mensaje: 'Error al eliminar nom_par_percepcion', data: $del_nom_par_percepcion);
+            print_r($error);
+            exit;
+        }
+        $del_nom_par_deduccion = $nom_par_deduccion_modelo->elimina_todo();
+        if(errores::$error){
+            $error = (new errores())->error(mensaje: 'Error al eliminar nom_par_percepcion', data: $del_nom_par_deduccion);
             print_r($error);
             exit;
         }
