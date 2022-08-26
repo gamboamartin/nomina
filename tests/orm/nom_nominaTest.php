@@ -27,6 +27,79 @@ class nom_nominaTest extends test {
     }
 
 
+    public function test_alta_bd(){
+        errores::$error = false;
+
+        $_GET['seccion'] = 'cat_sat_tipo_persona';
+        $_GET['accion'] = 'lista';
+        $_SESSION['grupo_id'] = 1;
+        $_SESSION['usuario_id'] = 1;
+        $_GET['session_id'] = '1';
+        $nomina = new nom_nomina($this->link);
+        $nom_par_deduccion = new nom_par_deduccion($this->link);
+        $nom_par_percepcion = new nom_par_percepcion($this->link);
+        $fc_factura = new fc_factura($this->link);
+        $fc_cfd_partida = new fc_cfd_partida($this->link);
+
+        $del_nom_par_percepcion = $nom_par_percepcion->elimina_todo();
+        if(errores::$error){
+            $error = (new errores())->error(mensaje: 'Error al eliminar $nom_par_percepcion', data: $del_nom_par_percepcion);
+            print_r($error);
+            exit;
+        }
+
+        $del_nom_par_deduccion = $nom_par_deduccion->elimina_todo();
+        if(errores::$error){
+            $error = (new errores())->error(mensaje: 'Error al eliminar $nom_par_deduccion', data: $del_nom_par_deduccion);
+            print_r($error);
+            exit;
+        }
+
+        $del_fc_cfd_partida = $fc_cfd_partida->elimina_todo();
+        if(errores::$error){
+            $error = (new errores())->error(mensaje: 'Error al eliminar $del_fc_cfd_partida', data: $del_fc_cfd_partida);
+            print_r($error);
+            exit;
+        }
+
+        $del_nom_nomina = $nomina->elimina_todo();
+        if(errores::$error){
+            $error = (new errores())->error(mensaje: 'Error al eliminar nom_nomina', data: $del_nom_nomina);
+            print_r($error);
+            exit;
+        }
+
+        $del_fc_factura = $fc_factura->elimina_todo();
+        if(errores::$error){
+            $error = (new errores())->error(mensaje: 'Error al eliminar fc_factura', data: $del_fc_factura);
+            print_r($error);
+            exit;
+        }
+
+
+
+        $nom_nomina_ins = array();
+        $nom_nomina_ins['id'] = 1;
+        $nom_nomina_ins['im_registro_patronal_id'] = 1;
+        $nom_nomina_ins['em_empleado_id'] = 1;
+        $nom_nomina_ins['folio'] = 1;
+        $nom_nomina_ins['fecha'] = '2022-01-01';
+        $nom_nomina_ins['num_dias_pagados'] = '10';
+        $nom_nomina_ins['descuento'] = '0';
+        $nom_nomina_ins['cat_sat_periodicidad_pago_nom_id'] = '1';
+        $nom_nomina_ins['em_cuenta_bancaria_id'] = '1';
+        $nom_nomina_ins['fecha_inicial_pago'] = '2022-01-01';
+        $nom_nomina_ins['fecha_final_pago'] = '2022-01-01';
+
+        $nomina->registro = $nom_nomina_ins;
+
+        $resultado = $nomina->alta_bd();
+        $this->assertIsObject($resultado);
+        $this->assertNotTrue(errores::$error);
+
+
+    }
+
     public function test_isr(): void
     {
         errores::$error = false;
@@ -112,6 +185,7 @@ class nom_nominaTest extends test {
         $_GET['seccion'] = 'cat_sat_tipo_persona';
         $_GET['accion'] = 'lista';
         $_SESSION['grupo_id'] = 1;
+        $_SESSION['usuario_id'] = 1;
         $_GET['session_id'] = '1';
 
 
@@ -134,7 +208,7 @@ class nom_nominaTest extends test {
         $_GET['seccion'] = 'cat_sat_tipo_persona';
         $_GET['accion'] = 'lista';
         $_SESSION['grupo_id'] = 1;
-        $_SESSION['usuario_id'] = 1;
+        $_SESSION['usuario_id'] = 2;
         $_GET['session_id'] = '1';
         $nomina = new nom_nomina($this->link);
         $fc_factura_modelo = new fc_factura($this->link);
