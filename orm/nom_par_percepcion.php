@@ -55,21 +55,49 @@ class nom_par_percepcion extends modelo{
         }
 
         if($isr>0.0){
-            $nom_par_deduccion_ins = array();
-            $nom_par_deduccion_ins['nom_nomina_id'] = $this->registro['nom_nomina_id'];
-            $nom_par_deduccion_ins['nom_deduccion_id'] = 1;
-            $nom_par_deduccion_ins['importe_gravado'] = $isr;
-            $nom_par_deduccion_ins['importe_exento'] = 0.0;
-            $r_alta_nom_par_deduccion = (new nom_par_deduccion($this->link))->alta_registro(registro: $nom_par_deduccion_ins);
+
+
+            $filtro = array();
+            $filtro['nom_nomina.id'] = $this->registro['nom_nomina_id'];
+            $filtro['nom_deduccion.id'] = 1;
+
+            $existe = (new nom_par_deduccion($this->link))->existe(filtro: $filtro);
             if(errores::$error){
-                return $this->error->error(mensaje: 'Error al registrar deduccion', data: $r_alta_nom_par_deduccion);
+                return $this->error->error(mensaje: 'Error al validar si existe deduccion', data: $existe);
             }
 
+
+            $nom_par_deduccion_ins = $this->nom_par_deduccion_aut(monto: $isr, nom_deduccion_id: 1,
+                nom_nomina_id: $this->registro['nom_nomina_id']);
+            if(errores::$error){
+                return $this->error->error(mensaje: 'Error al generar deduccion', data: $nom_par_deduccion_ins);
+            }
+
+            if($existe){
+                $nom_par_deduccion = (new nom_par_deduccion($this->link))->filtro_and(filtro: $filtro);
+                if(errores::$error){
+                    return $this->error->error(mensaje: 'Error al obtener deduccion', data: $nom_par_deduccion);
+                }
+
+                $r_modifica_nom_par_deduccion = (new nom_par_deduccion($this->link))->modifica_bd(
+                    registro:$nom_par_deduccion_ins, id: $nom_par_deduccion->registros[0]['nom_par_deduccion_id']);
+                if(errores::$error){
+                    return $this->error->error(mensaje: 'Error al modificar deduccion', data: $r_modifica_nom_par_deduccion);
+                }
+            }
+            else{
+                $r_alta_nom_par_deduccion = (new nom_par_deduccion($this->link))->alta_registro(registro: $nom_par_deduccion_ins);
+                if(errores::$error){
+                    return $this->error->error(mensaje: 'Error al registrar deduccion', data: $r_alta_nom_par_deduccion);
+                }
+
+            }
 
             $nom_par_percepcion = $this->registro(registro_id:$r_alta_bd->registro_id, retorno_obj: true);
             if(errores::$error){
                 return $this->error->error(mensaje: 'Error al obtener nomina', data: $nom_par_percepcion);
             }
+
 
 
             $imss = (new calcula_imss())->imss(
@@ -83,14 +111,40 @@ class nom_par_percepcion extends modelo{
 
             if((float)$imss['total']>0.0) {
 
-                $nom_par_deduccion_ins = array();
-                $nom_par_deduccion_ins['nom_nomina_id'] = $this->registro['nom_nomina_id'];
-                $nom_par_deduccion_ins['nom_deduccion_id'] = 2;
-                $nom_par_deduccion_ins['importe_gravado'] = (float)$imss['total'];
-                $nom_par_deduccion_ins['importe_exento'] = 0.0;
-                $r_alta_nom_par_deduccion = (new nom_par_deduccion($this->link))->alta_registro(registro: $nom_par_deduccion_ins);
-                if (errores::$error) {
-                    return $this->error->error(mensaje: 'Error al registrar deduccion', data: $r_alta_nom_par_deduccion);
+                $filtro = array();
+                $filtro['nom_nomina.id'] = $this->registro['nom_nomina_id'];
+                $filtro['nom_deduccion.id'] = 2;
+
+                $existe = (new nom_par_deduccion($this->link))->existe(filtro: $filtro);
+                if(errores::$error){
+                    return $this->error->error(mensaje: 'Error al validar si existe deduccion', data: $existe);
+                }
+
+
+                $nom_par_deduccion_ins = $this->nom_par_deduccion_aut(monto: (float)$imss['total'], nom_deduccion_id: 2,
+                    nom_nomina_id: $this->registro['nom_nomina_id']);
+                if(errores::$error){
+                    return $this->error->error(mensaje: 'Error al generar deduccion', data: $nom_par_deduccion_ins);
+                }
+
+
+                if($existe){
+                    $nom_par_deduccion = (new nom_par_deduccion($this->link))->filtro_and(filtro: $filtro);
+                    if(errores::$error){
+                        return $this->error->error(mensaje: 'Error al obtener deduccion', data: $nom_par_deduccion);
+                    }
+
+                    $r_modifica_nom_par_deduccion = (new nom_par_deduccion($this->link))->modifica_bd(
+                        registro:$nom_par_deduccion_ins, id: $nom_par_deduccion->registros[0]['nom_par_deduccion_id']);
+                    if(errores::$error){
+                        return $this->error->error(mensaje: 'Error al modificar deduccion', data: $r_modifica_nom_par_deduccion);
+                    }
+                }
+                else {
+                    $r_alta_nom_par_deduccion = (new nom_par_deduccion($this->link))->alta_registro(registro: $nom_par_deduccion_ins);
+                    if (errores::$error) {
+                        return $this->error->error(mensaje: 'Error al registrar deduccion', data: $r_alta_nom_par_deduccion);
+                    }
                 }
             }
         }
@@ -221,6 +275,16 @@ class nom_par_percepcion extends modelo{
         }
 
         return $isr;
+    }
+
+    private function nom_par_deduccion_aut(float $monto, int $nom_deduccion_id, int $nom_nomina_id): array
+    {
+        $nom_par_deduccion_ins = array();
+        $nom_par_deduccion_ins['nom_nomina_id'] =$nom_nomina_id;
+        $nom_par_deduccion_ins['nom_deduccion_id'] = $nom_deduccion_id;
+        $nom_par_deduccion_ins['importe_gravado'] = $monto;
+        $nom_par_deduccion_ins['importe_exento'] = 0.0;
+        return $nom_par_deduccion_ins;
     }
 
     private function total_percepcion(array $registro): float|array
