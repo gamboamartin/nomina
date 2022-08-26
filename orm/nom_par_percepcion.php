@@ -213,27 +213,7 @@ class nom_par_percepcion extends modelo{
         return $isr;
     }
 
-    private function codigo_alta(stdClass $nom_nomina, array $registro): array|string
-    {
-        $codigo = $registro['nom_nomina_id'];
-        $codigo .= '-';
-        $codigo .= $nom_nomina->cat_sat_periodicidad_pago_nom_id;
-        $codigo .= '-';
-        $codigo .= $nom_nomina->em_empleado_rfc;
-        $codigo .= '-';
-        $codigo .= $nom_nomina->im_registro_patronal_id;
-        $codigo .= '-';
 
-
-        $codigo_random = $this->codigo_random();
-        if(errores::$error){
-            return $this->error->error(mensaje: 'Error al obtener codigo random', data: $codigo_random);
-        }
-
-        $codigo.=$codigo_random;
-
-        return $codigo;
-    }
 
 
     private function descripcion_alta(stdClass $nom_nomina, array $registro): array|string
@@ -264,7 +244,11 @@ class nom_par_percepcion extends modelo{
             return $this->error->error(mensaje: 'Error al obtener $nom_nomina', data: $nom_nomina);
         }
 
-        $codigo = $this->codigo_alta(nom_nomina: $nom_nomina, registro: $registro);
+
+        $keys_registro = array('nom_nomina_id');
+        $keys_row = array('cat_sat_periodicidad_pago_nom_id','em_empleado_rfc','im_registro_patronal_id');
+        $codigo = $this->codigo_alta(keys_registro: $keys_registro,keys_row:  $keys_row,row:  $nom_nomina,
+            registro: $registro);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al obtener codigo', data: $codigo);
         }
