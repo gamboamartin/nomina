@@ -66,11 +66,12 @@ class nom_par_percepcion extends modelo{
                 return $this->error->error(mensaje: 'Error al validar si existe deduccion', data: $existe);
             }
 
-            $nom_par_deduccion_ins = array();
-            $nom_par_deduccion_ins['nom_nomina_id'] = $this->registro['nom_nomina_id'];
-            $nom_par_deduccion_ins['nom_deduccion_id'] = 1;
-            $nom_par_deduccion_ins['importe_gravado'] = $isr;
-            $nom_par_deduccion_ins['importe_exento'] = 0.0;
+
+            $nom_par_deduccion_ins = $this->nom_par_deduccion_aut(monto: $isr, nom_deduccion_id: 1,
+                nom_nomina_id: $this->registro['nom_nomina_id']);
+            if(errores::$error){
+                return $this->error->error(mensaje: 'Error al generar deduccion', data: $nom_par_deduccion_ins);
+            }
 
             if($existe){
                 $nom_par_deduccion = (new nom_par_deduccion($this->link))->filtro_and(filtro: $filtro);
@@ -119,11 +120,13 @@ class nom_par_percepcion extends modelo{
                     return $this->error->error(mensaje: 'Error al validar si existe deduccion', data: $existe);
                 }
 
-                $nom_par_deduccion_ins = array();
-                $nom_par_deduccion_ins['nom_nomina_id'] = $this->registro['nom_nomina_id'];
-                $nom_par_deduccion_ins['nom_deduccion_id'] = 2;
-                $nom_par_deduccion_ins['importe_gravado'] = (float)$imss['total'];
-                $nom_par_deduccion_ins['importe_exento'] = 0.0;
+
+                $nom_par_deduccion_ins = $this->nom_par_deduccion_aut(monto: (float)$imss['total'], nom_deduccion_id: 2,
+                    nom_nomina_id: $this->registro['nom_nomina_id']);
+                if(errores::$error){
+                    return $this->error->error(mensaje: 'Error al generar deduccion', data: $nom_par_deduccion_ins);
+                }
+
 
                 if($existe){
                     $nom_par_deduccion = (new nom_par_deduccion($this->link))->filtro_and(filtro: $filtro);
@@ -272,6 +275,16 @@ class nom_par_percepcion extends modelo{
         }
 
         return $isr;
+    }
+
+    private function nom_par_deduccion_aut(float $monto, int $nom_deduccion_id, int $nom_nomina_id): array
+    {
+        $nom_par_deduccion_ins = array();
+        $nom_par_deduccion_ins['nom_nomina_id'] =$nom_nomina_id;
+        $nom_par_deduccion_ins['nom_deduccion_id'] = $nom_deduccion_id;
+        $nom_par_deduccion_ins['importe_gravado'] = $monto;
+        $nom_par_deduccion_ins['importe_exento'] = 0.0;
+        return $nom_par_deduccion_ins;
     }
 
     private function total_percepcion(array $registro): float|array
