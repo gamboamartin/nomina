@@ -32,7 +32,7 @@ class nom_conf_factura_html extends html_controler {
     private function btn_next_action(string $label, string $value): array|string
     {
 
-        $btn = $this->directivas->btn_action_next_div(label: $label, value: $value);
+        $btn = $this->directivas->btn_action_next_div(label: $label, value: $value, cols: 12);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al generar btn', data: $btn);
         }
