@@ -53,6 +53,15 @@ class nom_par_percepcion extends modelo{
             return $this->error->error(mensaje: 'Error al obtener isr', data: $isr);
         }
 
+        if($isr>0.0){
+            /*$nom_par_deduccion_ins = array();
+            $r_alta_nom_par_deduccion = (new nom_par_deduccion($this->link))->alta_registro(registro: $nom_par_deduccion_ins);
+            if(errores::$error){
+                return $this->error->error(mensaje: 'Error al registrar deduccion', data: $r_alta_nom_par_deduccion);
+            }*/
+        }
+
+
         return $r_alta_bd;
     }
 
@@ -178,11 +187,18 @@ class nom_par_percepcion extends modelo{
      */
     private function calcula_isr_nomina(int $nom_par_percepcion_id): float|array
     {
+
+        $nom_nomina = $this->registro(registro_id:$nom_par_percepcion_id, retorno_obj: true);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al obtener nomina', data: $nom_nomina);
+        }
+
         $isr = 0.0;
-        $total_gravado = (new nom_nomina($this->link))->total_gravado(nom_nomina_id: $nom_par_percepcion_id);
+        $total_gravado = (new nom_nomina($this->link))->total_gravado(nom_nomina_id: $nom_nomina->nom_nomina_id);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al calcular total gravado', data: $total_gravado);
         }
+
 
         if($total_gravado >0.0) {
 
@@ -219,16 +235,6 @@ class nom_par_percepcion extends modelo{
         return $codigo;
     }
 
-    private function codigo_random(): array|string
-    {
-        try {
-            $codigo = random_int(10, 99) . random_int(10, 99) . random_int(10, 99) . random_int(10, 99);
-        }
-        catch (Throwable $e){
-            return $this->error->error(mensaje: 'Error al generar codigo random', data: $e);
-        }
-        return $codigo;
-    }
 
     private function descripcion_alta(stdClass $nom_nomina, array $registro): array|string
     {

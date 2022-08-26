@@ -117,8 +117,10 @@ class nom_par_percepcionTest extends test {
 
         $percepcion->registro['nom_nomina_id'] = 1;
         $percepcion->registro['nom_percepcion_id'] = 1;
-        $percepcion->registro['importe_gravado'] = 1;
+        $percepcion->registro['importe_gravado'] = 100;
         $resultado = $percepcion->alta_bd();
+
+       // print_r($resultado);exit;
 
 
         $this->assertIsObject($resultado);

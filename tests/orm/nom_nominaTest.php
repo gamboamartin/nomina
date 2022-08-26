@@ -115,6 +115,8 @@ class nom_nominaTest extends test {
         $cat_sat_periodicidad_pago_nom_id = 4;
         $monto = 10685.7	;
         $resultado = $nomina->isr($cat_sat_periodicidad_pago_nom_id, $monto);
+
+
         $this->assertIsFloat($resultado);
         $this->assertNotTrue(errores::$error);
         $this->assertEquals(943.46, $resultado);
