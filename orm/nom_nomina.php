@@ -4,12 +4,14 @@ namespace models;
 
 use base\orm\modelo;
 use gamboamartin\errores\errores;
+use gamboamartin\validacion\validacion;
 use html\im_registro_patronal_html;
 use PDO;
 use stdClass;
 
 class nom_nomina extends modelo
 {
+
 
     public function __construct(PDO $link)
     {
@@ -194,6 +196,8 @@ class nom_nomina extends modelo
         return $nom_rel_empleado_sucursal->registros[0];
     }
 
+
+
     private function genera_registros(): array
     {
         $im_registro_patronal = $this->registros_por_id(new im_registro_patronal($this->link),
@@ -360,6 +364,10 @@ class nom_nomina extends modelo
         return $r_isr->registros_obj[0];
     }
 
+
+
+
+
     private function inserta_cfd_partida(array $registro): array|stdClass
     {
         $r_alta_cfd_partida = (new fc_cfd_partida($this->link))->alta_registro(registro: $registro);
@@ -419,6 +427,7 @@ class nom_nomina extends modelo
         return $codigo;
     }
 
+
     /**
      * @param float $monto
      * @param string $fecha
@@ -462,6 +471,8 @@ class nom_nomina extends modelo
         }
         return $registro;
     }
+
+    
 
     public function registros_por_id(modelo $entidad, int $id): array|stdClass
     {
@@ -536,6 +547,8 @@ class nom_nomina extends modelo
         return round($r_nom_par_percepcion['total_importe_gravado'],2);
 
     }
+
+
 
 
 }

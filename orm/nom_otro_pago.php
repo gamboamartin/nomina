@@ -363,31 +363,7 @@ class nom_otro_pago extends modelo
         return $r_alta_factura;
     }
 
-    public function isr(int $cat_sat_periodicidad_pago_nom_id, float|int $monto, string $fecha = ''): float|array
-    {
-        if($cat_sat_periodicidad_pago_nom_id<=0){
-            return $this->error->error(mensaje: 'Error $cat_sat_periodicidad_pago_nom_id debe ser mayor a 0',
-                data: $cat_sat_periodicidad_pago_nom_id);
-        }
 
-        if($fecha === ''){
-            $fecha = date('Y-m-d');
-        }
-
-        $row_isr = $this->get_isr(cat_sat_periodicidad_pago_nom_id: $cat_sat_periodicidad_pago_nom_id, monto:$monto,
-            fecha: $fecha);
-        if(errores::$error){
-            return $this->error->error(mensaje: 'Error al obtener isr', data: $row_isr);
-        }
-
-        $isr = $this->genera_isr(monto: $monto, row_isr: $row_isr);
-        if(errores::$error){
-            return $this->error->error(mensaje: 'Error al calcular isr', data: $isr);
-        }
-
-        return $isr;
-
-    }
 
     private function codigo_nomina(int $org_sucursal_id, array $registro): array|string
     {
