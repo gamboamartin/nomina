@@ -186,7 +186,7 @@ class nominas extends modelo {
     /**
      * @throws JsonException
      */
-    protected function transaccion_deduccion_isr(stdClass $data_existe, array $nom_par_deduccion_ins): array|stdClass
+    protected function transaccion_deduccion(stdClass $data_existe, array $nom_par_deduccion_ins): array|stdClass
     {
         $result = new stdClass();
         if($data_existe->existe){
