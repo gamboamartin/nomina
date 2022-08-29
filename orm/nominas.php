@@ -110,17 +110,20 @@ class nominas extends modelo {
         return $registro;
     }
 
-    protected function data_deduccion(int $nom_nomina_id){
+    protected function data_deduccion(float $monto, int $nom_deduccion_id, int $nom_nomina_id): array|stdClass
+    {
         $data_existe = $this->existe_data_deduccion_imss(nom_nomina_id: $nom_nomina_id);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al validar si existe deduccion', data: $data_existe);
         }
-
-        $nom_par_deduccion_ins = $this->nom_par_deduccion_aut(monto: (float)$imss['total'], nom_deduccion_id: 2,
-            nom_nomina_id: $this->registro['nom_nomina_id']);
+        $nom_par_deduccion_ins = $this->nom_par_deduccion_aut(monto: $monto, nom_deduccion_id: $nom_deduccion_id,
+            nom_nomina_id: $nom_nomina_id);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al generar deduccion', data: $nom_par_deduccion_ins);
         }
+
+        $data_existe->row_ins = $nom_par_deduccion_ins;
+        return $data_existe;
     }
 
     private function existe_data_deduccion(int $id, int $nom_nomina_id): array|stdClass
@@ -140,7 +143,7 @@ class nominas extends modelo {
         return $data;
     }
 
-    protected function existe_data_deduccion_imss(int $nom_nomina_id): array|stdClass
+    private function existe_data_deduccion_imss(int $nom_nomina_id): array|stdClass
     {
 
 
@@ -196,7 +199,7 @@ class nominas extends modelo {
         return $r_modifica_nom_par_deduccion;
     }
 
-    protected function nom_par_deduccion_aut(float $monto, int $nom_deduccion_id, int $nom_nomina_id): array
+    private function nom_par_deduccion_aut(float $monto, int $nom_deduccion_id, int $nom_nomina_id): array
     {
         $nom_par_deduccion_ins = array();
         $nom_par_deduccion_ins['nom_nomina_id'] =$nom_nomina_id;

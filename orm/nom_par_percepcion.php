@@ -57,18 +57,14 @@ class nom_par_percepcion extends nominas{
         if($isr>0.0){
 
 
-            $data_existe = $this->existe_data_deduccion_isr(nom_nomina_id: $this->registro['nom_nomina_id']);
+            $data_existe = $this->data_deduccion(monto: (float)$isr, nom_deduccion_id: 1,
+                nom_nomina_id: $this->registro['nom_nomina_id']);
             if(errores::$error){
                 return $this->error->error(mensaje: 'Error al validar si existe deduccion', data: $data_existe);
             }
 
-            $nom_par_deduccion_ins = $this->nom_par_deduccion_aut(monto: $isr, nom_deduccion_id: 1,
-                nom_nomina_id: $this->registro['nom_nomina_id']);
-            if(errores::$error){
-                return $this->error->error(mensaje: 'Error al generar deduccion', data: $nom_par_deduccion_ins);
-            }
 
-            $transaccion = $this->transaccion_deduccion(data_existe: $data_existe,nom_par_deduccion_ins: $nom_par_deduccion_ins);
+            $transaccion = $this->transaccion_deduccion(data_existe: $data_existe,nom_par_deduccion_ins: $data_existe->row_ins);
             if(errores::$error){
                 return $this->error->error(mensaje: 'Error al generar transaccion', data: $transaccion);
             }
@@ -91,19 +87,14 @@ class nom_par_percepcion extends nominas{
 
             if((float)$imss['total']>0.0) {
 
-                $data_existe = $this->existe_data_deduccion_imss(nom_nomina_id: $this->registro['nom_nomina_id']);
+                $data_existe = $this->data_deduccion(monto: (float)$isr, nom_deduccion_id: 1,
+                    nom_nomina_id: $this->registro['nom_nomina_id']);
                 if(errores::$error){
                     return $this->error->error(mensaje: 'Error al validar si existe deduccion', data: $data_existe);
                 }
 
 
-                $nom_par_deduccion_ins = $this->nom_par_deduccion_aut(monto: (float)$imss['total'], nom_deduccion_id: 2,
-                    nom_nomina_id: $this->registro['nom_nomina_id']);
-                if(errores::$error){
-                    return $this->error->error(mensaje: 'Error al generar deduccion', data: $nom_par_deduccion_ins);
-                }
-
-                $transaccion = $this->transaccion_deduccion(data_existe: $data_existe,nom_par_deduccion_ins: $nom_par_deduccion_ins);
+                $transaccion = $this->transaccion_deduccion(data_existe: $data_existe,nom_par_deduccion_ins: $data_existe->row_ins);
                 if(errores::$error){
                     return $this->error->error(mensaje: 'Error al generar transaccion', data: $transaccion);
                 }
