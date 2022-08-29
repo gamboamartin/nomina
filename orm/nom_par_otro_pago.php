@@ -37,7 +37,7 @@ class nom_par_otro_pago extends nominas
         }
         $this->registro = $registro;
 
-        $total = $this->total_otro_pago(registro: $this->registro);
+        $total = $this->total_percepcion(registro: $this->registro);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al obtener total', data: $total);
         }
@@ -47,85 +47,21 @@ class nom_par_otro_pago extends nominas
             return $this->error->error(mensaje: 'Error al insertar otro pago', data: $r_alta_bd);
         }
 
-        $isr = $this->calcula_isr_nomina(nom_par_otro_pago_id: $r_alta_bd->registro_id);
+        $transaccion_isr = $this->transacciona_isr(partida_percepcion_id: $r_alta_bd->registro_id);
         if (errores::$error) {
-            return $this->error->error(mensaje: 'Error al obtener isr', data: $isr);
+            return $this->error->error(mensaje: 'Error al obtener isr', data: $transaccion_isr);
         }
 
-        if($isr>0.0){
-
-            $transaccion = $this->aplica_deduccion(monto: (float)(float)$isr, nom_deduccion_id: 1,
-                nom_nomina_id:  $this->registro['nom_nomina_id']);
-            if(errores::$error){
-                return $this->error->error(mensaje: 'Error al generar transaccion', data: $transaccion);
-            }
-
-
-            $transaccion_imss = $this->transacciona_imss(nom_nomina_id: $this->registro['nom_nomina_id'],
-                registro_id: $r_alta_bd->registro_id);
-            if(errores::$error){
-                return $this->error->error(mensaje: 'Error al generar transaccion imss', data: $transaccion_imss);
-            }
+        $transaccion_imss = $this->transacciona_imss(nom_nomina_id: $this->registro['nom_nomina_id'],
+            partida_percepcion_id: $r_alta_bd->registro_id);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al generar transaccion imss', data: $transaccion_imss);
         }
+
 
         return $r_alta_bd;
     }
 
 
-
-
-
-    private function calcula_isr_nomina(int $nom_par_otro_pago_id): float|array
-    {
-        $nom_nomina = $this->registro(registro_id:$nom_par_otro_pago_id, retorno_obj: true);
-        if(errores::$error){
-            return $this->error->error(mensaje: 'Error al obtener nomina', data: $nom_nomina);
-        }
-
-        $isr = 0.0;
-        $total_gravado = (new nom_nomina($this->link))->total_gravado(nom_nomina_id: $nom_nomina->nom_nomina_id);
-        if(errores::$error){
-            return $this->error->error(mensaje: 'Error al calcular total gravado', data: $total_gravado);
-        }
-
-        if($total_gravado >0.0) {
-            $isr = $this->isr_total_nomina_par_otro_pago(
-                nom_par_otro_pago_id: $nom_par_otro_pago_id, total_gravado: $total_gravado);
-            if (errores::$error) {
-                return $this->error->error(mensaje: 'Error al obtener isr', data: $isr);
-            }
-        }
-        return $isr;
-    }
-
-    private function isr_total_nomina_par_otro_pago(int $nom_par_otro_pago_id, string $total_gravado): float|array
-    {
-        $nom_par_otro_pago = $this->registro(registro_id: $nom_par_otro_pago_id, retorno_obj: true);
-        if (errores::$error) {
-            return $this->error->error(mensaje: 'Error al obtener nom_par_otro_pago', data: $nom_par_otro_pago);
-        }
-
-        $isr = (new nom_nomina($this->link))->isr(
-            cat_sat_periodicidad_pago_nom_id: $nom_par_otro_pago->cat_sat_periodicidad_pago_nom_id,
-            monto: $total_gravado, fecha: $nom_par_otro_pago->nom_nomina_fecha_final_pago);
-        if (errores::$error) {
-            return $this->error->error(mensaje: 'Error al obtener isr', data: $isr);
-        }
-
-        return $isr;
-    }
-
-
-
-    private function total_otro_pago(array $registro): float|array
-    {
-        $total = $registro['importe_exento']+ $registro['importe_gravado'];
-        $total = round($total,2);
-
-        if($total<=0.0){
-            return $this->error->error(mensaje: 'Error total es 0', data: $total);
-        }
-        return $total;
-    }
 
 }

@@ -105,6 +105,29 @@ class nominas extends modelo {
         return $registro;
     }
 
+    private function calcula_isr_nomina(int $partida_percepcion_id): float|array
+    {
+        $nom_nomina = $this->registro(registro_id:$partida_percepcion_id, retorno_obj: true);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al obtener nomina', data: $nom_nomina);
+        }
+
+        $isr = 0.0;
+        $total_gravado = (new nom_nomina($this->link))->total_gravado(nom_nomina_id: $nom_nomina->nom_nomina_id);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al calcular total gravado', data: $total_gravado);
+        }
+
+        if($total_gravado >0.0) {
+            $isr = $this->isr_total_nomina_por_percepcion(
+                partida_percepcion_id: $partida_percepcion_id, total_gravado: $total_gravado);
+            if (errores::$error) {
+                return $this->error->error(mensaje: 'Error al obtener isr', data: $isr);
+            }
+        }
+        return $isr;
+    }
+
     private function campos_base(modelo $modelo, array $registro): array
     {
         $registro = $this->asigna_descripcion(modelo: $modelo, registro: $registro);
@@ -130,7 +153,7 @@ class nominas extends modelo {
         return $registro;
     }
 
-    protected function data_deduccion(float $monto, int $nom_deduccion_id, int $nom_nomina_id): array|stdClass
+    private function data_deduccion(float $monto, int $nom_deduccion_id, int $nom_nomina_id): array|stdClass
     {
         $data_existe = $this->existe_data_deduccion(nom_deduccion_id:$nom_deduccion_id, nom_nomina_id: $nom_nomina_id);
         if(errores::$error){
@@ -191,7 +214,7 @@ class nominas extends modelo {
      * @param int $nom_nomina_id Nomina en ejecucion
      * @return array|stdClass
      */
-    protected function existe_data_deduccion_isr(int $nom_nomina_id): array|stdClass
+    private function existe_data_deduccion_isr(int $nom_nomina_id): array|stdClass
     {
 
 
@@ -233,12 +256,12 @@ class nominas extends modelo {
 
     /**
      * Calcula los datos de imss de una nomina
-     * @param int $registro_id Registro de deduccion, percepcion u otro pago
+     * @param int $partida_percepcion_id Registro de deduccion, percepcion u otro pago
      * @return array
      */
-    private function imss(int $registro_id): array
+    private function imss(int $partida_percepcion_id): array
     {
-        $nom_partida = $this->registro(registro_id:$registro_id, retorno_obj: true);
+        $nom_partida = $this->registro(registro_id:$partida_percepcion_id, retorno_obj: true);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al obtener nomina', data: $nom_partida);
         }
@@ -250,10 +273,27 @@ class nominas extends modelo {
             sbc: $nom_partida->em_empleado_salario_diario_integrado, sd: $nom_partida->em_empleado_salario_diario);
     }
 
+    protected function isr_total_nomina_por_percepcion(int $partida_percepcion_id, string $total_gravado): float|array
+    {
+        $nom_par_percepcion = $this->registro(registro_id: $partida_percepcion_id, retorno_obj: true);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al obtener nom_par_percepcion', data: $nom_par_percepcion);
+        }
+
+        $isr = (new nom_nomina($this->link))->isr(
+            cat_sat_periodicidad_pago_nom_id: $nom_par_percepcion->cat_sat_periodicidad_pago_nom_id,
+            monto: $total_gravado, fecha: $nom_par_percepcion->nom_nomina_fecha_final_pago);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al obtener isr', data: $isr);
+        }
+
+        return $isr;
+    }
+
     /**
      * @throws JsonException
      */
-    protected function modifica_deduccion(array $filtro, array $nom_par_deduccion_upd): array|\stdClass
+    private function modifica_deduccion(array $filtro, array $nom_par_deduccion_upd): array|\stdClass
     {
 
         $nom_par_deduccion_modelo = new nom_par_deduccion($this->link);
@@ -280,6 +320,17 @@ class nominas extends modelo {
         $nom_par_deduccion_ins['importe_gravado'] = $monto;
         $nom_par_deduccion_ins['importe_exento'] = 0.0;
         return $nom_par_deduccion_ins;
+    }
+
+    protected function total_percepcion(array $registro): float|array
+    {
+        $total = $registro['importe_exento']+ $registro['importe_gravado'];
+        $total = round($total,2);
+
+        if($total<=0.0){
+            return $this->error->error(mensaje: 'Error total es 0', data: $total);
+        }
+        return $total;
     }
 
     /**
@@ -317,16 +368,16 @@ class nominas extends modelo {
     /**
      * Transacciona la deduccion de imss
      * @param int $nom_nomina_id Nomina para transaccionar imss
-     * @param int $registro_id Registro de deduccion, percepcion u otro pago
+     * @param int $partida_percepcion_id Registro de deduccion, percepcion u otro pago
      * @return array|stdClass
      * @throws JsonException
      */
-    protected function transacciona_imss(int $nom_nomina_id, int $registro_id): array|stdClass
+    protected function transacciona_imss(int $nom_nomina_id, int $partida_percepcion_id): array|stdClass
     {
         $data = new stdClass();
         $transaccion_aplicada = false;
         $transaccion = new stdClass();
-        $imss = $this->imss(registro_id: $registro_id);
+        $imss = $this->imss(partida_percepcion_id: $partida_percepcion_id);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al calcular imss', data: $imss);
         }
@@ -351,6 +402,31 @@ class nominas extends modelo {
         return $data;
 
     }
+
+    /**
+     * @throws JsonException
+     */
+    protected function transacciona_isr(int $partida_percepcion_id): float|array
+    {
+        $isr = $this->calcula_isr_nomina(partida_percepcion_id: $partida_percepcion_id);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al obtener isr', data: $isr);
+        }
+
+        if($isr>0.0){
+
+            $transaccion = $this->aplica_deduccion(monto: (float)(float)$isr, nom_deduccion_id: 1,
+                nom_nomina_id:  $this->registro['nom_nomina_id']);
+            if(errores::$error){
+                return $this->error->error(mensaje: 'Error al generar transaccion', data: $transaccion);
+            }
+
+
+        }
+        return $isr;
+    }
+
+
 
 
 }
