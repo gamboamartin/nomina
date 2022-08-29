@@ -209,9 +209,21 @@ class nominas extends modelo {
      * @param int $nom_nomina_id Id de la nomina
      * @param string $tabla Tabla de deduccion
      * @return array
+     * @version 0.106.11
      */
-    protected function filtro_partida(int $id, int $nom_nomina_id, string $tabla): array
+    PUBLIC function filtro_partida(int $id, int $nom_nomina_id, string $tabla): array
     {
+        if($id<=0){
+            return $this->error->error(mensaje: 'Error id debe ser mayor a 0', data: $id);
+        }
+        if($nom_nomina_id<=0){
+            return $this->error->error(mensaje: 'Error $nom_nomina_id debe ser mayor a 0', data: $nom_nomina_id);
+        }
+        $tabla = trim($tabla);
+        if($tabla === ''){
+            return $this->error->error(mensaje: 'Error $tabla esta vacia', data: $tabla);
+        }
+
         $filtro = array();
         $filtro['nom_nomina.id'] = $nom_nomina_id;
         $filtro[$tabla.'.id'] = $id;

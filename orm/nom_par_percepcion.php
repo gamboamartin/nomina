@@ -80,7 +80,7 @@ class nom_par_percepcion extends nominas{
                 if(errores::$error){
                     return $this->error->error(mensaje: 'Error al generar transaccion', data: $transaccion);
                 }
-                
+
             }
         }
 
