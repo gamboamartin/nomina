@@ -199,6 +199,20 @@ class nominas extends modelo {
         return $filtro;
     }
 
+    protected function imss(int $registro_id): array
+    {
+        $nom_partida = $this->registro(registro_id:$registro_id, retorno_obj: true);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al obtener nomina', data: $nom_partida);
+        }
+
+
+        return (new calcula_imss())->imss(
+            cat_sat_periodicidad_pago_nom_id: $nom_partida->cat_sat_periodicidad_pago_nom_id,
+            fecha:$nom_partida->nom_nomina_fecha_final_pago, n_dias: $nom_partida->nom_nomina_num_dias_pagados,
+            sbc: $nom_partida->em_empleado_salario_diario_integrado, sd: $nom_partida->em_empleado_salario_diario);
+    }
+
     /**
      * @throws JsonException
      */

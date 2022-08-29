@@ -70,15 +70,7 @@ class nom_par_otro_pago extends nominas
 
 
 
-            $nom_par_otro_pago = $this->registro(registro_id:$r_alta_bd->registro_id, retorno_obj: true);
-            if(errores::$error){
-                return $this->error->error(mensaje: 'Error al obtener nomina', data: $nom_par_otro_pago);
-            }
-
-            $imss = (new calcula_imss())->imss(
-                cat_sat_periodicidad_pago_nom_id: $nom_par_otro_pago->cat_sat_periodicidad_pago_nom_id,
-                fecha:$nom_par_otro_pago->nom_nomina_fecha_final_pago, n_dias: $nom_par_otro_pago->nom_nomina_num_dias_pagados,
-                sbc: $nom_par_otro_pago->em_empleado_salario_diario_integrado, sd: $nom_par_otro_pago->em_empleado_salario_diario);
+            $imss = $this->imss(registro_id: $r_alta_bd->registro_id);
             if(errores::$error){
                 return $this->error->error(mensaje: 'Error al calcular imss', data: $imss);
             }
