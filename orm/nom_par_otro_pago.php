@@ -153,15 +153,7 @@ class nom_par_otro_pago extends nominas
         return $isr;
     }
 
-    private function nom_par_deduccion_aut(float $monto, int $nom_deduccion_id, int $nom_nomina_id): array
-    {
-        $nom_par_deduccion_ins = array();
-        $nom_par_deduccion_ins['nom_nomina_id'] =$nom_nomina_id;
-        $nom_par_deduccion_ins['nom_deduccion_id'] = $nom_deduccion_id;
-        $nom_par_deduccion_ins['importe_gravado'] = $monto;
-        $nom_par_deduccion_ins['importe_exento'] = 0.0;
-        return $nom_par_deduccion_ins;
-    }
+
 
     private function total_otro_pago(array $registro): float|array
     {

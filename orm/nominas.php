@@ -110,6 +110,19 @@ class nominas extends modelo {
         return $registro;
     }
 
+    protected function data_deduccion(int $nom_nomina_id){
+        $data_existe = $this->existe_data_deduccion_imss(nom_nomina_id: $nom_nomina_id);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al validar si existe deduccion', data: $data_existe);
+        }
+
+        $nom_par_deduccion_ins = $this->nom_par_deduccion_aut(monto: (float)$imss['total'], nom_deduccion_id: 2,
+            nom_nomina_id: $this->registro['nom_nomina_id']);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al generar deduccion', data: $nom_par_deduccion_ins);
+        }
+    }
+
     private function existe_data_deduccion(int $id, int $nom_nomina_id): array|stdClass
     {
         $filtro = $this->filtro_partida(id: 2, nom_nomina_id: $nom_nomina_id, tabla: 'nom_deduccion');
@@ -181,6 +194,16 @@ class nominas extends modelo {
         }
 
         return $r_modifica_nom_par_deduccion;
+    }
+
+    protected function nom_par_deduccion_aut(float $monto, int $nom_deduccion_id, int $nom_nomina_id): array
+    {
+        $nom_par_deduccion_ins = array();
+        $nom_par_deduccion_ins['nom_nomina_id'] =$nom_nomina_id;
+        $nom_par_deduccion_ins['nom_deduccion_id'] = $nom_deduccion_id;
+        $nom_par_deduccion_ins['importe_gravado'] = $monto;
+        $nom_par_deduccion_ins['importe_exento'] = 0.0;
+        return $nom_par_deduccion_ins;
     }
 
     /**
