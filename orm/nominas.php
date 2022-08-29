@@ -7,6 +7,26 @@ use stdClass;
 
 class nominas extends modelo {
 
+    /**
+     * @throws JsonException
+     */
+    protected function aplica_deduccion(float $monto, int $nom_deduccion_id, int $nom_nomina_id): array|stdClass
+    {
+        $data_existe = $this->data_deduccion(monto: $monto, nom_deduccion_id: $nom_deduccion_id,
+            nom_nomina_id: $nom_nomina_id);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al validar si existe deduccion', data: $data_existe);
+        }
+
+
+        $transaccion = $this->transaccion_deduccion(data_existe: $data_existe,nom_par_deduccion_ins: $data_existe->row_ins);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al generar transaccion', data: $transaccion);
+        }
+
+        return $transaccion;
+    }
+
     private function asigna_codigo_partida(array $registro): array
     {
         $keys_registro = array('nom_nomina_id');
@@ -252,7 +272,7 @@ class nominas extends modelo {
     /**
      * @throws JsonException
      */
-    protected function transaccion_deduccion(stdClass $data_existe, array $nom_par_deduccion_ins): array|stdClass
+    private function transaccion_deduccion(stdClass $data_existe, array $nom_par_deduccion_ins): array|stdClass
     {
         $result = new stdClass();
         if($data_existe->existe){
