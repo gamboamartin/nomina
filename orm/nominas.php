@@ -37,6 +37,21 @@ class nominas extends modelo {
         return $registro;
     }
 
+    protected function base_alta_campos(modelo $modelo, array $registro): array
+    {
+        $registro = $this->asigna_codigo_partida(registro: $registro);
+
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al asignar codigo', data: $registro);
+        }
+
+        $registro = $this->campos_base(modelo: $modelo,registro:  $registro);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al asignar descripcion_select', data: $registro);
+        }
+        return $registro;
+    }
+
     protected function campos_base(modelo $modelo, array $registro): array
     {
         $registro = $this->asigna_descripcion(modelo: $modelo, registro: $registro);

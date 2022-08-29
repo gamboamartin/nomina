@@ -157,14 +157,11 @@ class nom_par_percepcion extends nominas{
     private function asigna_registro_alta(array $registro): array
     {
 
-        $registro = $this->asigna_codigo_partida(registro: $registro);
-
-        if(errores::$error){
-            return $this->error->error(mensaje: 'Error al asignar codigo', data: $registro);
-        }
 
         $modelo = new nom_percepcion($this->link);
-        $registro = $this->campos_base(modelo: $modelo,registro:  $registro);
+
+
+        $registro = $this->base_alta_campos(modelo: $modelo,registro:  $registro);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al asignar descripcion_select', data: $registro);
         }

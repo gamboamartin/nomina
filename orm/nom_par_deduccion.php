@@ -22,17 +22,8 @@ class nom_par_deduccion extends nominas{
     private function asigna_registro_alta(array $registro): array
     {
 
-
-        $registro = $this->asigna_codigo_partida(registro: $registro);
-
-        if(errores::$error){
-            return $this->error->error(mensaje: 'Error al asignar codigo', data: $registro);
-        }
-
         $modelo = new nom_deduccion($this->link);
-
-
-        $registro = $this->campos_base(modelo: $modelo,registro:  $registro);
+        $registro = $this->base_alta_campos(modelo: $modelo,registro:  $registro);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al asignar descripcion_select', data: $registro);
         }
@@ -52,6 +43,7 @@ class nom_par_deduccion extends nominas{
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al validar registro', data: $valida);
         }
+
 
         $registro = $this->asigna_registro_alta(registro: $this->registro);
         if(errores::$error){
