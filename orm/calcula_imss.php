@@ -103,11 +103,17 @@ class calcula_imss{
         return $data;
     }
 
+    /**
+     * Obtiene los dias de una quincena
+     * @param string $fecha Fecha de quincena
+     * @return float|array
+     * @version 0.108.11
+     */
     private function dias_quincena(string $fecha): float|array
     {
-        $valida = $this->validacion->valida_fecha($fecha);
+        $valida = $this->validacion->valida_fecha(fecha: $fecha);
         if(errores::$error){
-            return $this->error->error("Error al validar fecha", $valida);
+            return $this->error->error(mensaje: "Error al validar fecha", data: $valida);
         }
         $dias_mes = (int)date('t',strtotime($fecha));
         $this->n_dias_mes = $dias_mes;
@@ -137,9 +143,9 @@ class calcula_imss{
     }
 
     /**
-     * @param int $cat_sat_periodicidad_pago_nom_id
-     * @param string $fecha
-     * @param float $n_dias
+     * @param int $cat_sat_periodicidad_pago_nom_id Identificador de periodicidad
+     * @param string $fecha Fecha de nomina
+     * @param float $n_dias Numero de dias de periodo de pago
      * @param float $sbc
      * @param float $sd
      * @return array|float
@@ -172,9 +178,9 @@ class calcula_imss{
     }
 
     /**
-     * @param int $cat_sat_periodicidad_pago_nom_id
-     * @param string $fecha
-     * @param float $n_dias
+     * @param int $cat_sat_periodicidad_pago_nom_id Identificador de periodicidad
+     * @param string $fecha Fecha de nomina
+     * @param float $n_dias Numero de dias de periodo de pago
      * @param float $sbc
      * @param float $sd
      * @return array
@@ -203,6 +209,14 @@ class calcula_imss{
         return $data;
     }
 
+    /**
+     * @param int $cat_sat_periodicidad_pago_nom_id Identificador de periodicidad
+     * @param string $fecha Fecha de nomina
+     * @param float $n_dias Numero de dias de periodo de pago
+     * @param float $sbc
+     * @param float $sd
+     * @return stdClass|array
+     */
     private function init_base(int  $cat_sat_periodicidad_pago_nom_id, string $fecha, float $n_dias, float $sbc,
                               float $sd): stdClass|array
     {
@@ -217,12 +231,15 @@ class calcula_imss{
 
         $this->year = date('Y', strtotime($fecha));
 
+        /**
+         * REFACTORIZAR POR AÑO
+         */
         $this->monto_uma = $this->uma[2022];
 
         $dias = $this->n_dias(cat_sat_periodicidad_pago_nom_id: $cat_sat_periodicidad_pago_nom_id, fecha: $fecha,
             n_dias: $n_dias);
         if(errores::$error) {
-            return $this->error->error("Error al obtener dias", $dias);
+            return $this->error->error(mensaje: "Error al obtener dias", data: $dias);
         }
 
 
@@ -257,6 +274,14 @@ class calcula_imss{
         return $data;
     }
 
+    /**
+     * @param int $cat_sat_periodicidad_pago_nom_id Identificador de periodicidad
+     * @param string $fecha Fecha de nomina
+     * @param float $n_dias Numero de dias de periodo de pago
+     * @param float $sbc
+     * @param float $sd
+     * @return array|stdClass
+     */
     private function init_data_base(int $cat_sat_periodicidad_pago_nom_id, string $fecha, float $n_dias, float $sbc,
                                    float $sd): array|stdClass
     {
@@ -297,26 +322,32 @@ class calcula_imss{
         return $this->invalidez_vida;
     }
 
+    /**
+     * @param int $cat_sat_periodicidad_pago_nom_id
+     * @param string $fecha Fecha de nomina
+     * @param float $n_dias Numero de dias del periodo
+     * @return float|array
+     */
     private function n_dias(int $cat_sat_periodicidad_pago_nom_id,  string $fecha, float $n_dias): float|array
     {
         if($n_dias<=0){
-            return $this->error->error("Error n_dias en menor a 0", $n_dias);
+            return $this->error->error(mensaje: "Error n_dias en menor a 0", data: $n_dias);
         }
         if($cat_sat_periodicidad_pago_nom_id<=0){
-            return $this->error->error('Error $cat_sat_periodicidad_pago_nom_id en menor a 0',
-                $cat_sat_periodicidad_pago_nom_id);
+            return $this->error->error(mensaje: 'Error $cat_sat_periodicidad_pago_nom_id en menor a 0',
+                data: $cat_sat_periodicidad_pago_nom_id);
         }
-        $valida = $this->validacion->valida_fecha($fecha);
+        $valida = $this->validacion->valida_fecha(fecha: $fecha);
         if(errores::$error){
-            return $this->error->error("Error al validar fecha", $valida);
+            return $this->error->error(mensaje: "Error al validar fecha",data:  $valida);
         }
 
         $this->n_dias = round($n_dias,2);
 
         if($cat_sat_periodicidad_pago_nom_id=== 1 && $n_dias===15.0){
-            $dias = $this->dias_quincena($fecha);
+            $dias = $this->dias_quincena(fecha: $fecha);
             if(errores::$error){
-                return $this->error->error("Error al obtener dias", $dias);
+                return $this->error->error(mensaje: "Error al obtener dias",data:  $dias);
             }
         }
 

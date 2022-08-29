@@ -28,6 +28,76 @@ class calcula_imssTest extends test {
         $this->paths_conf->views = '/var/www/html/cat_sat/config/views.php';
     }
 
+    public function test_dias_quincena(): void
+    {
+        errores::$error = false;
+
+        $_GET['seccion'] = 'cat_sat_tipo_persona';
+        $_GET['accion'] = 'lista';
+        $_SESSION['grupo_id'] = 1;
+        $_GET['session_id'] = '1';
+        $calculo = new calcula_imss();
+        $calculo = new liberator($calculo);
+
+        $fecha = '';
+
+
+        $resultado = $calculo->dias_quincena($fecha);
+        $this->assertIsArray($resultado);
+        $this->assertTrue(errores::$error);
+        $this->assertStringContainsStringIgnoringCase('Error al validar fecha', $resultado['mensaje']);
+
+        errores::$error = false;
+
+        $_GET['seccion'] = 'cat_sat_tipo_persona';
+        $_GET['accion'] = 'lista';
+        $_SESSION['grupo_id'] = 1;
+        $_GET['session_id'] = '1';
+
+
+        $fecha = '2022-08-15';
+
+
+        $resultado = $calculo->dias_quincena($fecha);
+        $this->assertIsFloat($resultado);
+        $this->assertNotTrue(errores::$error);
+        $this->assertEquals(15.5,$resultado);
+
+        errores::$error = false;
+
+        $_GET['seccion'] = 'cat_sat_tipo_persona';
+        $_GET['accion'] = 'lista';
+        $_SESSION['grupo_id'] = 1;
+        $_GET['session_id'] = '1';
+
+
+        $fecha = '2022-02-15';
+
+
+        $resultado = $calculo->dias_quincena($fecha);
+        $this->assertIsFloat($resultado);
+        $this->assertNotTrue(errores::$error);
+        $this->assertEquals(14,$resultado);
+
+        errores::$error = false;
+
+        $_GET['seccion'] = 'cat_sat_tipo_persona';
+        $_GET['accion'] = 'lista';
+        $_SESSION['grupo_id'] = 1;
+        $_GET['session_id'] = '1';
+
+
+        $fecha = '2022-06-15';
+
+
+        $resultado = $calculo->dias_quincena($fecha);
+        $this->assertIsFloat($resultado);
+        $this->assertNotTrue(errores::$error);
+        $this->assertEquals(15,$resultado);
+
+        errores::$error = false;
+    }
+
 
     public function test_imss(): void
     {

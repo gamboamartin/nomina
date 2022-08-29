@@ -232,7 +232,8 @@ class nominas extends modelo {
     }
 
     /**
-     * @param int $registro_id
+     * Calcula los datos de imss de una nomina
+     * @param int $registro_id Registro de deduccion, percepcion u otro pago
      * @return array
      */
     private function imss(int $registro_id): array
@@ -312,7 +313,12 @@ class nominas extends modelo {
 
     }
 
+
     /**
+     * Transacciona la deduccion de imss
+     * @param int $nom_nomina_id Nomina para transaccionar imss
+     * @param int $registro_id Registro de deduccion, percepcion u otro pago
+     * @return array|stdClass
      * @throws JsonException
      */
     protected function transacciona_imss(int $nom_nomina_id, int $registro_id): array|stdClass
