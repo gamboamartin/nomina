@@ -10,7 +10,7 @@ class nominas extends modelo {
     /**
      * @throws JsonException
      */
-    protected function aplica_deduccion(float $monto, int $nom_deduccion_id, int $nom_nomina_id): array|stdClass
+    private function aplica_deduccion(float $monto, int $nom_deduccion_id, int $nom_nomina_id): array|stdClass
     {
         $data_existe = $this->data_deduccion(monto: $monto, nom_deduccion_id: $nom_deduccion_id,
             nom_nomina_id: $nom_nomina_id);
@@ -278,11 +278,32 @@ class nominas extends modelo {
     }
 
     /**
+     * @throws JsonException
+     */
+    protected function integra_deducciones(int $nom_nomina_id, int $partida_percepcion_id): array|stdClass
+    {
+        $transaccion_isr = $this->transacciona_isr(nom_nomina_id:$nom_nomina_id,
+            partida_percepcion_id: $partida_percepcion_id);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al obtener isr', data: $transaccion_isr);
+        }
+        $transaccion_imss = $this->transacciona_imss(nom_nomina_id: $nom_nomina_id,
+            partida_percepcion_id: $partida_percepcion_id);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al generar transaccion imss', data: $transaccion_imss);
+        }
+        $data = new stdClass();
+        $data->imss = $transaccion_imss;
+        $data->isr = $transaccion_isr;
+        return $data;
+    }
+
+    /**
      * @param int $partida_percepcion_id
      * @param string|float|int $total_gravado Monto gravable de nomina
      * @return float|array
      */
-    protected function isr_total_nomina_por_percepcion(int $partida_percepcion_id, string|float|int $total_gravado): float|array
+    private function isr_total_nomina_por_percepcion(int $partida_percepcion_id, string|float|int $total_gravado): float|array
     {
         $nom_par_percepcion = $this->registro(registro_id: $partida_percepcion_id, retorno_obj: true);
         if (errores::$error) {
@@ -416,7 +437,7 @@ class nominas extends modelo {
      * @param int $partida_percepcion_id Identificador ya sea otto_pago o percepcion
      * @throws JsonException
      */
-    protected function transacciona_isr(int $nom_nomina_id, int $partida_percepcion_id): float|array
+    private function transacciona_isr(int $nom_nomina_id, int $partida_percepcion_id): float|array
     {
         $isr = $this->calcula_isr_nomina(partida_percepcion_id: $partida_percepcion_id);
         if (errores::$error) {
