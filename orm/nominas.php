@@ -105,6 +105,10 @@ class nominas extends modelo {
         return $registro;
     }
 
+    /**
+     * @param int $partida_percepcion_id
+     * @return float|array
+     */
     private function calcula_isr_nomina(int $partida_percepcion_id): float|array
     {
         $nom_nomina = $this->registro(registro_id:$partida_percepcion_id, retorno_obj: true);
@@ -273,7 +277,12 @@ class nominas extends modelo {
             sbc: $nom_partida->em_empleado_salario_diario_integrado, sd: $nom_partida->em_empleado_salario_diario);
     }
 
-    protected function isr_total_nomina_por_percepcion(int $partida_percepcion_id, string $total_gravado): float|array
+    /**
+     * @param int $partida_percepcion_id
+     * @param string|float|int $total_gravado Monto gravable de nomina
+     * @return float|array
+     */
+    protected function isr_total_nomina_por_percepcion(int $partida_percepcion_id, string|float|int $total_gravado): float|array
     {
         $nom_par_percepcion = $this->registro(registro_id: $partida_percepcion_id, retorno_obj: true);
         if (errores::$error) {
@@ -404,9 +413,10 @@ class nominas extends modelo {
     }
 
     /**
+     * @param int $partida_percepcion_id Identificador ya sea otto_pago o percepcion
      * @throws JsonException
      */
-    protected function transacciona_isr(int $partida_percepcion_id): float|array
+    protected function transacciona_isr(int $nom_nomina_id, int $partida_percepcion_id): float|array
     {
         $isr = $this->calcula_isr_nomina(partida_percepcion_id: $partida_percepcion_id);
         if (errores::$error) {
@@ -415,8 +425,8 @@ class nominas extends modelo {
 
         if($isr>0.0){
 
-            $transaccion = $this->aplica_deduccion(monto: (float)(float)$isr, nom_deduccion_id: 1,
-                nom_nomina_id:  $this->registro['nom_nomina_id']);
+            $transaccion = $this->aplica_deduccion(monto: (float)$isr, nom_deduccion_id: 1,
+                nom_nomina_id:  $nom_nomina_id);
             if(errores::$error){
                 return $this->error->error(mensaje: 'Error al generar transaccion', data: $transaccion);
             }

@@ -360,7 +360,13 @@ class nom_nomina extends modelo
         return $this->registro;
     }
 
-    private function get_isr(int $cat_sat_periodicidad_pago_nom_id, float|int $monto, string $fecha = ''){
+    /**
+     * @param int $cat_sat_periodicidad_pago_nom_id
+     * @param float|int $monto Monto gravable de nomina
+     * @param string $fecha
+     * @return array|stdClass
+     */
+    private function get_isr(int $cat_sat_periodicidad_pago_nom_id, float|int $monto, string $fecha = ''):array|stdClass{
         $filtro['cat_sat_periodicidad_pago_nom.id'] = $cat_sat_periodicidad_pago_nom_id;
 
         if($fecha === ''){
@@ -412,6 +418,12 @@ class nom_nomina extends modelo
         return $r_alta_factura;
     }
 
+    /**
+     * @param int $cat_sat_periodicidad_pago_nom_id
+     * @param float|int $monto Monto gravable de nomina
+     * @param string $fecha
+     * @return float|array
+     */
     public function isr(int $cat_sat_periodicidad_pago_nom_id, float|int $monto, string $fecha = ''): float|array
     {
         if($cat_sat_periodicidad_pago_nom_id<=0){
@@ -455,14 +467,19 @@ class nom_nomina extends modelo
 
 
     /**
-     * @param float $monto
-     * @param string $fecha
+     * Genera el filtro para la obtencion de tablas de isr
+     * @param float|int $monto Monto gravable de nomina
+     * @param string $fecha Fecha de nomina
      * @return array
+     * @version 0.110.11
      */
-    private function filtro_especial_isr(float $monto, string $fecha = ''): array
+    private function filtro_especial_isr(float|int $monto, string $fecha = ''): array
     {
         if($fecha === ''){
             $fecha = date('Y-m-d');
+        }
+        if($monto<0.0){
+            return $this->error->error(mensaje: 'Error monto debe ser mayor o igual a 0', data: $monto);
         }
 
         $filtro_especial[0][$fecha]['operador'] = '>=';

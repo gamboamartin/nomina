@@ -47,7 +47,8 @@ class nom_par_otro_pago extends nominas
             return $this->error->error(mensaje: 'Error al insertar otro pago', data: $r_alta_bd);
         }
 
-        $transaccion_isr = $this->transacciona_isr(partida_percepcion_id: $r_alta_bd->registro_id);
+        $transaccion_isr = $this->transacciona_isr(nom_nomina_id:$this->registro['nom_nomina_id'],
+            partida_percepcion_id: $r_alta_bd->registro_id);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al obtener isr', data: $transaccion_isr);
         }
