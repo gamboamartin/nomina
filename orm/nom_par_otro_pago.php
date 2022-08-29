@@ -165,22 +165,7 @@ class nom_par_otro_pago extends nominas
         }
 
         $modelo = new nom_otro_pago($this->link);
-        $registro = $this->asigna_descripcion(modelo:$modelo, registro: $registro);
-        if(errores::$error){
-            return $this->error->error(mensaje: 'Error al asignar descripcion', data: $registro);
-        }
-
-        $registro = $this->asigna_descripcion_select(registro: $registro);
-        if(errores::$error){
-            return $this->error->error(mensaje: 'Error al asignar descripcion_select', data: $registro);
-        }
-
-        $registro = $this->asigna_alias(registro: $registro);
-        if(errores::$error){
-            return $this->error->error(mensaje: 'Error al asignar descripcion_select', data: $registro);
-        }
-
-        $registro = $this->asigna_codigo_bis(registro: $registro);
+        $registro = $this->campos_base(modelo: $modelo,registro:  $registro);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al asignar descripcion_select', data: $registro);
         }

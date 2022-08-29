@@ -4,6 +4,32 @@ use base\orm\modelo;
 use gamboamartin\errores\errores;
 
 class nominas extends modelo {
+
+    protected function campos_base(modelo $modelo, array $registro): array
+    {
+        $registro = $this->asigna_descripcion(modelo: $modelo, registro: $registro);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al asignar descripcion', data: $registro);
+        }
+
+        $registro = $this->asigna_descripcion_select(registro: $registro);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al asignar descripcion_select', data: $registro);
+        }
+
+        $registro = $this->asigna_alias(registro: $registro);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al asignar descripcion_select', data: $registro);
+        }
+
+        $registro = $this->asigna_codigo_bis(registro: $registro);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al asignar descripcion_select', data: $registro);
+        }
+
+        return $registro;
+    }
+
     protected function asigna_codigo_partida(array $registro): array
     {
         $keys_registro = array('nom_nomina_id');
