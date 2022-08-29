@@ -136,6 +136,14 @@ class calcula_imss{
         return $this->excedente;
     }
 
+    /**
+     * @param int $cat_sat_periodicidad_pago_nom_id
+     * @param string $fecha
+     * @param float $n_dias
+     * @param float $sbc
+     * @param float $sd
+     * @return array|float
+     */
     private function genera_imss(int $cat_sat_periodicidad_pago_nom_id, string $fecha, float $n_dias, float $sbc,
                                  float $sd): array|float
     {
@@ -163,6 +171,14 @@ class calcula_imss{
         return $this->total;
     }
 
+    /**
+     * @param int $cat_sat_periodicidad_pago_nom_id
+     * @param string $fecha
+     * @param float $n_dias
+     * @param float $sbc
+     * @param float $sd
+     * @return array
+     */
     public function imss(int $cat_sat_periodicidad_pago_nom_id, string $fecha, float $n_dias, float $sbc, float $sd): array
     {
         $valida = $this->valida_imss(fecha: $fecha,n_dias:  $n_dias,sbc:  $sbc,sd:  $sd);
@@ -379,6 +395,15 @@ class calcula_imss{
         return true;
     }
 
+    /**
+     * Valida los datos de entrada para calculo de imss
+     * @param string $fecha Fecha de operacion
+     * @param float $n_dias Dias Trabajados
+     * @param float $sbc Salario diario integrado
+     * @param float $sd Salario diario o base
+     * @return bool|array
+     * @version 0.104.11
+     */
     private function valida_imss(string $fecha, float $n_dias, float $sbc, float $sd): bool|array
     {
         $valida = (new validacion())->valida_fecha(fecha: $fecha);

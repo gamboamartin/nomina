@@ -199,6 +199,10 @@ class nominas extends modelo {
         return $filtro;
     }
 
+    /**
+     * @param int $registro_id
+     * @return array
+     */
     protected function imss(int $registro_id): array
     {
         $nom_partida = $this->registro(registro_id:$registro_id, retorno_obj: true);
