@@ -87,9 +87,11 @@ class nom_par_otro_pago extends nominas
             }
 
             if((float)$imss['total']>0.0) {
-                $filtro = array();
-                $filtro['nom_nomina.id'] = $this->registro['nom_nomina_id'];
-                $filtro['nom_deduccion.id'] = 2;
+
+                $filtro = $this->filtro_partida(id: 2, nom_nomina_id: $this->registro['nom_nomina_id'], tabla: 'nom_deduccion');
+                if(errores::$error){
+                    return $this->error->error(mensaje: 'Error al generar filtro', data: $filtro);
+                }
 
                 $existe = (new nom_par_deduccion($this->link))->existe(filtro: $filtro);
                 if(errores::$error){

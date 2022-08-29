@@ -112,9 +112,12 @@ class nominas extends modelo {
 
     protected function existe_data_deduccion_isr(int $nom_nomina_id): array|stdClass
     {
-        $filtro = array();
-        $filtro['nom_nomina.id'] = $nom_nomina_id;
-        $filtro['nom_deduccion.id'] = 1;
+
+
+        $filtro = $this->filtro_partida(id:1, nom_nomina_id:  $nom_nomina_id, tabla: 'nom_deduccion');
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al generar filtro', data: $filtro);
+        }
 
         $existe = (new nom_par_deduccion($this->link))->existe(filtro: $filtro);
         if(errores::$error){
@@ -126,6 +129,15 @@ class nominas extends modelo {
         $data->existe = $existe;
 
         return $data;
+    }
+
+    protected function filtro_partida(int $id, int $nom_nomina_id, string $tabla): array
+    {
+        $filtro = array();
+        $filtro['nom_nomina.id'] = $nom_nomina_id;
+        $filtro[$tabla.'.id'] = $id;
+
+        return $filtro;
     }
 
     /**
