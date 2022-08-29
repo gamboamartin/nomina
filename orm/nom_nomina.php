@@ -147,13 +147,23 @@ class nom_nomina extends modelo
         return round($cuota_excedente,2);
     }
 
+    /**
+     * @param float|int $monto Monto total gravable
+     * @param stdClass $row_isr
+     * @return float
+     */
     private function diferencia_li(float|int $monto, stdClass $row_isr): float
     {
         $diferencia_li = $monto - $row_isr->cat_sat_isr_limite_inferior;
         return round($diferencia_li, 2);
     }
 
-    private function genera_isr(float $monto, stdClass $row_isr): float|array
+    /**
+     * @param float|int $monto Monto total gravable
+     * @param stdClass $row_isr
+     * @return float|array
+     */
+    private function genera_isr(float|int $monto, stdClass $row_isr): float|array
     {
         $diferencia_li = $this->diferencia_li(monto:$monto,row_isr:  $row_isr);
         if(errores::$error){
@@ -361,24 +371,33 @@ class nom_nomina extends modelo
     }
 
     /**
-     * @param int $cat_sat_periodicidad_pago_nom_id
+     * @param int $cat_sat_periodicidad_pago_nom_id Periodicidad de pago identificador
      * @param float|int $monto Monto gravable de nomina
-     * @param string $fecha
+     * @param string $fecha Fecha din del periodo de pago
      * @return array|stdClass
+     * @version 0.113.11
      */
     private function get_isr(int $cat_sat_periodicidad_pago_nom_id, float|int $monto, string $fecha = ''):array|stdClass{
+
+        if($cat_sat_periodicidad_pago_nom_id<=0){
+            return $this->error->error(mensaje: 'Error monto debe ser mayor  a 0',
+                data: $cat_sat_periodicidad_pago_nom_id);
+        }
+
         $filtro['cat_sat_periodicidad_pago_nom.id'] = $cat_sat_periodicidad_pago_nom_id;
 
         if($fecha === ''){
             $fecha = date('Y-m-d');
         }
 
+        if($monto<=0.0){
+            return $this->error->error(mensaje: 'Error monto debe ser mayor o igual a 0', data: $monto);
+        }
+
         $filtro_especial = $this->filtro_especial_isr(monto: $monto, fecha : $fecha);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al obtener filtro', data: $filtro_especial);
         }
-
-
 
         $r_isr = (new cat_sat_isr($this->link))->filtro_and(filtro: $filtro, filtro_especial: $filtro_especial);
         if(errores::$error){
@@ -421,7 +440,7 @@ class nom_nomina extends modelo
     /**
      * @param int $cat_sat_periodicidad_pago_nom_id
      * @param float|int $monto Monto gravable de nomina
-     * @param string $fecha
+     * @param string $fecha Fecha din del periodo de pago
      * @return float|array
      */
     public function isr(int $cat_sat_periodicidad_pago_nom_id, float|int $monto, string $fecha = ''): float|array
@@ -478,7 +497,7 @@ class nom_nomina extends modelo
         if($fecha === ''){
             $fecha = date('Y-m-d');
         }
-        if($monto<0.0){
+        if($monto<=0.0){
             return $this->error->error(mensaje: 'Error monto debe ser mayor o igual a 0', data: $monto);
         }
 

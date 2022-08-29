@@ -106,7 +106,7 @@ class nominas extends modelo {
     }
 
     /**
-     * @param int $partida_percepcion_id
+     * @param int $partida_percepcion_id otro pago o percepcion id
      * @return float|array
      */
     private function calcula_isr_nomina(int $partida_percepcion_id): float|array
@@ -299,7 +299,7 @@ class nominas extends modelo {
     }
 
     /**
-     * @param int $partida_percepcion_id
+     * @param int $partida_percepcion_id otro pago o percepcion id
      * @param string|float|int $total_gravado Monto gravable de nomina
      * @return float|array
      */
