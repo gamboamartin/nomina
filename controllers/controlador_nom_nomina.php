@@ -485,8 +485,8 @@ class controlador_nom_nomina extends system
         $params->nom_nomina_id->disabled = true;
         ////$params->nom_nomina_id->filtro = array('nom_nomina.id' => $this->registro_id); // REVISAR
 
-        $params->nom_deduccion_id = new stdClass();
-        $params->nom_deduccion_id->cols = 12;
+        $params->nom_percepcion_id = new stdClass();
+        $params->nom_percepcion_id->cols = 12;
 
         $inputs = (new nom_par_percepcion_html(html: $this->html_base))->inputs_nom_par_percepcion(
             controlador: $controlador, params: $params);
