@@ -14,7 +14,7 @@ class nom_par_otro_pago extends modelo
     public function __construct(PDO $link)
     {
         $tabla = __CLASS__;
-        $columnas = array($tabla => false);
+        $columnas = array($tabla => false,'nom_nomina'=>$tabla, 'nom_otro_pago'=>$tabla);
         $campos_obligatorios = array();
 
         parent::__construct(link: $link, tabla: $tabla, campos_obligatorios: $campos_obligatorios,

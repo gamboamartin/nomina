@@ -40,7 +40,7 @@ class controlador_nom_nomina extends system
     public stdClass $paths_conf;
     public stdClass $deducciones;
     public stdClass $percepciones;
-
+    public stdClass $otros_pagos;
 
     public function __construct(PDO      $link, html $html = new \gamboamartin\template_1\html(),
                                 stdClass $paths_conf = new stdClass())
@@ -398,6 +398,27 @@ class controlador_nom_nomina extends system
         return $deduccion;
     }
 
+    private function data_otro_pago_btn(array $otro_pago): array
+    {
+        $params['nom_nomina_id'] = $otro_pago['nom_nomina_id'];
+
+        $btn_elimina = $this->html_base->button_href(accion: 'elimina_bd', etiqueta: 'Elimina',
+            registro_id: $otro_pago['nom_otro_pago_id'], seccion: 'nom_otro_pago', style: 'danger');
+        if (errores::$error) {
+            return $this->errores->error(mensaje: 'Error al generar btn', data: $btn_elimina);
+        }
+        $otro_pago['link_elimina'] = $btn_elimina;
+
+        $btn_modifica = $this->html_base->button_href(accion: 'modifica', etiqueta: 'Modifica',
+            registro_id: $otro_pago['nom_otro_pago_id'], seccion: 'nom_otro_pago', style: 'warning', params: $params);
+        if (errores::$error) {
+            return $this->errores->error(mensaje: 'Error al generar btn', data: $btn_modifica);
+        }
+        $otro_pago['link_modifica'] = $btn_modifica;
+
+        return $otro_pago;
+    }
+
     public function modifica(bool $header, bool $ws = false, string $breadcrumbs = '', bool $aplica_form = true,
                              bool $muestra_btn = true): array|string
     {
@@ -439,6 +460,20 @@ class controlador_nom_nomina extends system
             $percepciones->registros[$indice] = $percepcion;
         }
         $this->percepciones = $percepciones;
+
+        $otros_pagos = (new nom_par_otro_pago($this->link))->filtro_and(filtro: $filtro);
+        if (errores::$error) {
+            return $this->retorno_error(mensaje: 'Error al obtener otros pagos', data: $otros_pagos, header: $header, ws: $ws);
+        }
+        foreach ($otros_pagos->registros as $indice => $otro_pago) {
+
+            $otro_pago = $this->data_otro_pago_btn(otro_pago: $otro_pago);
+            if (errores::$error) {
+                return $this->retorno_error(mensaje: 'Error al asignar botones', data: $otro_pago, header: $header, ws: $ws);
+            }
+            $otros_pagos->registros[$indice] = $otro_pago;
+        }
+        $this->otros_pagos = $otros_pagos;
 
         return $base->template;
     }

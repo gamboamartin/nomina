@@ -146,3 +146,48 @@
         </div><!-- /.center-content -->
     </div>
 </div>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+
+            <div class="widget widget-box box-container widget-mylistings">
+
+                <div class="">
+                    <div class="widget-header">
+                        <h2>Otros Pagos</h2>
+                    </div>
+
+                    <table class="table table-striped footable-sort" data-sorting="true">
+                        <th>Id</th>
+                        <th>Codigo</th>
+                        <th>Descripcion</th>
+                        <th>Importe Gravado</th>
+                        <th>Importe Exento</th>
+                        <th>Modifica</th>
+                        <th>Elimina</th>
+
+                        <tbody>
+                        <?php foreach ($controlador->otros_pagos->registros as $otro_pago){?>
+                            <tr>
+                                <td><?php echo $otro_pago['nom_par_otro_pago_id']; ?></td>
+                                <td><?php echo $otro_pago['nom_par_otro_pago_codigo']; ?></td>
+                                <td><?php echo $otro_pago['nom_par_otro_pago_descripcion']; ?></td>
+                                <td><?php echo $otro_pago['nom_par_otro_pago_importe_gravado']; ?></td>
+                                <td><?php echo $otro_pago['nom_par_otro_pago_importe_exento']; ?></td>
+                                <td><?php echo $otro_pago['link_modifica']; ?></td>
+                                <td><?php echo $otro_pago['link_elimina']; ?></td>
+                            </tr>
+                        <?php } ?>
+                        </tbody>
+                    </table>
+                    <div class="box-body">
+                        * Total registros: <?php echo $controlador->otros_pagos->n_registros; ?><br />
+                        * Fecha Hora: <?php echo $controlador->fecha_hoy; ?>
+                    </div>
+
+                </div>
+            </div> <!-- /. widget-table-->
+        </div><!-- /.center-content -->
+    </div>
+</div>
