@@ -211,7 +211,7 @@ class nominas extends modelo {
      * @return array
      * @version 0.106.11
      */
-    PUBLIC function filtro_partida(int $id, int $nom_nomina_id, string $tabla): array
+    private function filtro_partida(int $id, int $nom_nomina_id, string $tabla): array
     {
         if($id<=0){
             return $this->error->error(mensaje: 'Error id debe ser mayor a 0', data: $id);
@@ -235,7 +235,7 @@ class nominas extends modelo {
      * @param int $registro_id
      * @return array
      */
-    protected function imss(int $registro_id): array
+    private function imss(int $registro_id): array
     {
         $nom_partida = $this->registro(registro_id:$registro_id, retorno_obj: true);
         if(errores::$error){
@@ -309,6 +309,40 @@ class nominas extends modelo {
         }
         return $result;
 
+
+    }
+
+    /**
+     * @throws JsonException
+     */
+    protected function transacciona_imss(int $nom_nomina_id, int $registro_id): array|stdClass
+    {
+        $data = new stdClass();
+        $transaccion_aplicada = false;
+        $transaccion = new stdClass();
+        $imss = $this->imss(registro_id: $registro_id);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al calcular imss', data: $imss);
+        }
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al calcular imss', data: $imss);
+        }
+
+        if((float)$imss['total']>0.0) {
+
+            $transaccion = $this->aplica_deduccion(monto: (float)$imss['total'], nom_deduccion_id: 2,
+                nom_nomina_id:  $nom_nomina_id);
+            if(errores::$error){
+                return $this->error->error(mensaje: 'Error al generar transaccion', data: $transaccion);
+            }
+            $transaccion_aplicada = true;
+
+        }
+        $data->imss = $imss;
+        $data->transaccion = $transaccion;
+        $data->transaccion_aplicada = $transaccion_aplicada;
+
+        return $data;
 
     }
 

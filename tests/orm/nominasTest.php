@@ -39,6 +39,7 @@ class nominasTest extends test {
         $_SESSION['grupo_id'] = 1;
         $_GET['session_id'] = '1';
         $nominas = new nom_par_percepcion($this->link);
+        $nominas = new liberator($nominas);
 
         $tabla = 'x';
         $nom_nomina_id = 1;

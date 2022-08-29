@@ -56,31 +56,16 @@ class nom_par_percepcion extends nominas{
 
         if($isr>0.0){
 
-
             $transaccion = $this->aplica_deduccion(monto: (float)(float)$isr, nom_deduccion_id: 1,
                 nom_nomina_id:  $this->registro['nom_nomina_id']);
             if(errores::$error){
                 return $this->error->error(mensaje: 'Error al generar transaccion', data: $transaccion);
             }
 
-
-            $imss = $this->imss(registro_id: $r_alta_bd->registro_id);
+            $transaccion_imss = $this->transacciona_imss(nom_nomina_id: $this->registro['nom_nomina_id'],
+                registro_id: $r_alta_bd->registro_id);
             if(errores::$error){
-                return $this->error->error(mensaje: 'Error al calcular imss', data: $imss);
-            }
-
-            if(errores::$error){
-                return $this->error->error(mensaje: 'Error al calcular imss', data: $imss);
-            }
-
-            if((float)$imss['total']>0.0) {
-
-                $transaccion = $this->aplica_deduccion(monto: (float)$imss['total'], nom_deduccion_id: 2,
-                    nom_nomina_id:  $this->registro['nom_nomina_id']);
-                if(errores::$error){
-                    return $this->error->error(mensaje: 'Error al generar transaccion', data: $transaccion);
-                }
-
+                return $this->error->error(mensaje: 'Error al generar transaccion imss', data: $transaccion_imss);
             }
         }
 
