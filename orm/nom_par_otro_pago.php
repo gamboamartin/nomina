@@ -101,16 +101,15 @@ class nom_par_otro_pago extends nominas
                 }
 
                 if($data_existe->existe){
-                    $nom_par_deduccion = (new nom_par_deduccion($this->link))->filtro_and(filtro: $data_existe->filtro);
+
+                    $r_modifica_nom_par_deduccion = $this->modifica_deduccion(
+                        filtro: $data_existe->filtro,nom_par_deduccion_upd:  $nom_par_deduccion_ins);
                     if(errores::$error){
-                        return $this->error->error(mensaje: 'Error al obtener deduccion', data: $nom_par_deduccion);
+                        return $this->error->error(
+                            mensaje: 'Error al modificar deduccion', data: $r_modifica_nom_par_deduccion);
                     }
 
-                    $r_modifica_nom_par_deduccion = (new nom_par_deduccion($this->link))->modifica_bd(
-                        registro:$nom_par_deduccion_ins, id: $nom_par_deduccion->registros[0]['nom_par_deduccion_id']);
-                    if(errores::$error){
-                        return $this->error->error(mensaje: 'Error al modificar deduccion', data: $r_modifica_nom_par_deduccion);
-                    }
+
                 }
                 else {
                     $r_alta_nom_par_deduccion = (new nom_par_deduccion($this->link))->alta_registro(registro: $nom_par_deduccion_ins);

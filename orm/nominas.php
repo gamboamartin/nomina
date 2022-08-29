@@ -164,7 +164,7 @@ class nominas extends modelo {
     /**
      * @throws JsonException
      */
-    private function modifica_deduccion(array $filtro, array $nom_par_deduccion_upd): array|\stdClass
+    protected function modifica_deduccion(array $filtro, array $nom_par_deduccion_upd): array|\stdClass
     {
 
         $nom_par_deduccion_modelo = new nom_par_deduccion($this->link);
