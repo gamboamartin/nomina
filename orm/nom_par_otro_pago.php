@@ -66,22 +66,12 @@ class nom_par_otro_pago extends nominas
                 return $this->error->error(mensaje: 'Error al generar deduccion', data: $nom_par_deduccion_ins);
             }
 
-            if($data_existe->existe){
+            $transaccion = $this->transaccion_deduccion_isr(data_existe: $data_existe,nom_par_deduccion_ins: $nom_par_deduccion_ins);
+            if(errores::$error){
+                return $this->error->error(mensaje: 'Error al generar transaccion de isr', data: $transaccion);
+            }
 
 
-                $r_modifica_nom_par_deduccion = $this->modifica_deduccion(
-                    filtro: $data_existe->filtro,nom_par_deduccion_upd:  $nom_par_deduccion_ins);
-                if(errores::$error){
-                    return $this->error->error(
-                        mensaje: 'Error al modificar deduccion', data: $r_modifica_nom_par_deduccion);
-                }
-            }
-            else{
-                $r_alta_nom_par_deduccion = (new nom_par_deduccion($this->link))->alta_registro(registro: $nom_par_deduccion_ins);
-                if(errores::$error){
-                    return $this->error->error(mensaje: 'Error al registrar deduccion', data: $r_alta_nom_par_deduccion);
-                }
-            }
 
             $nom_par_otro_pago = $this->registro(registro_id:$r_alta_bd->registro_id, retorno_obj: true);
             if(errores::$error){

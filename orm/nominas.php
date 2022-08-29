@@ -131,7 +131,7 @@ class nominas extends modelo {
     /**
      * @throws JsonException
      */
-    protected function modifica_deduccion(array $filtro, array $nom_par_deduccion_upd): array|\stdClass
+    private function modifica_deduccion(array $filtro, array $nom_par_deduccion_upd): array|\stdClass
     {
 
         $nom_par_deduccion_modelo = new nom_par_deduccion($this->link);
@@ -148,6 +148,37 @@ class nominas extends modelo {
         }
 
         return $r_modifica_nom_par_deduccion;
+    }
+
+    /**
+     * @throws JsonException
+     */
+    protected function transaccion_deduccion_isr(stdClass $data_existe, array $nom_par_deduccion_ins): array|stdClass
+    {
+        $result = new stdClass();
+        if($data_existe->existe){
+            $r_modifica_nom_par_deduccion = $this->modifica_deduccion(
+                filtro: $data_existe->filtro,nom_par_deduccion_upd:  $nom_par_deduccion_ins);
+            if(errores::$error){
+                return $this->error->error(
+                    mensaje: 'Error al modificar deduccion', data: $r_modifica_nom_par_deduccion);
+            }
+            $result->data = $r_modifica_nom_par_deduccion;
+            $result->transaccion = 'modifica';
+        }
+        else{
+            $r_alta_nom_par_deduccion = (new nom_par_deduccion($this->link))->alta_registro(
+                registro: $nom_par_deduccion_ins);
+            if(errores::$error){
+                return $this->error->error(mensaje: 'Error al registrar deduccion', data: $r_alta_nom_par_deduccion);
+            }
+            $result->data = $r_alta_nom_par_deduccion;
+            $result->transaccion = 'alta';
+
+        }
+        return $result;
+
+
     }
 
 
