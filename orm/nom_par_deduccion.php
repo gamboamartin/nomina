@@ -19,18 +19,7 @@ class nom_par_deduccion extends nominas{
 
 
 
-    private function asigna_registro_alta(array $registro): array
-    {
 
-        $modelo = new nom_deduccion($this->link);
-        $registro = $this->base_alta_campos(modelo: $modelo,registro:  $registro);
-        if(errores::$error){
-            return $this->error->error(mensaje: 'Error al asignar descripcion_select', data: $registro);
-        }
-
-
-        return $registro;
-    }
 
     /**
      * @throws JsonException
@@ -45,9 +34,10 @@ class nom_par_deduccion extends nominas{
         }
 
 
-        $registro = $this->asigna_registro_alta(registro: $this->registro);
+        $modelo = new nom_deduccion($this->link);
+        $registro = $this->asigna_registro_alta(modelo: $modelo, registro: $this->registro);
         if(errores::$error){
-            return $this->error->error(mensaje: 'Error al asignar codigo', data: $registro);
+            return $this->error->error(mensaje: 'Error al asignar datos', data: $registro);
         }
         $this->registro = $registro;
 

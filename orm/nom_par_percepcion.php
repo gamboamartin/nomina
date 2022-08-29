@@ -32,9 +32,10 @@ class nom_par_percepcion extends nominas{
             return $this->error->error(mensaje: 'Error al validar registro', data: $valida);
         }
 
-        $registro = $this->asigna_registro_alta(registro: $this->registro);
+        $modelo = new nom_percepcion($this->link);
+        $registro = $this->asigna_registro_alta(modelo: $modelo, registro: $this->registro);
         if(errores::$error){
-            return $this->error->error(mensaje: 'Error al asignar codigo', data: $registro);
+            return $this->error->error(mensaje: 'Error al asignar datos', data: $registro);
         }
         $this->registro = $registro;
 
@@ -154,24 +155,7 @@ class nom_par_percepcion extends nominas{
 
 
 
-    private function asigna_registro_alta(array $registro): array
-    {
 
-
-        $modelo = new nom_percepcion($this->link);
-
-
-        $registro = $this->base_alta_campos(modelo: $modelo,registro:  $registro);
-        if(errores::$error){
-            return $this->error->error(mensaje: 'Error al asignar descripcion_select', data: $registro);
-        }
-
-        $registro = $this->asigna_importes(registro: $registro);
-        if(errores::$error){
-            return $this->error->error(mensaje: 'Error al asignar importes', data: $registro);
-        }
-       return $registro;
-    }
 
     /**
      * Calcula el isr de una nomina

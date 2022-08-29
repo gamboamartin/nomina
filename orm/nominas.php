@@ -51,7 +51,24 @@ class nominas extends modelo {
         return $registro;
     }
 
-    protected function base_alta_campos(modelo $modelo, array $registro): array
+    protected function asigna_registro_alta(modelo $modelo, array $registro): array
+    {
+
+
+        $registro = $this->base_alta_campos(modelo: $modelo,registro:  $registro);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al asignar descripcion_select', data: $registro);
+        }
+        $registro = $this->asigna_importes(registro: $registro);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al asignar importes', data: $registro);
+        }
+
+
+        return $registro;
+    }
+
+    private function base_alta_campos(modelo $modelo, array $registro): array
     {
         $registro = $this->asigna_codigo_partida(registro: $registro);
 
