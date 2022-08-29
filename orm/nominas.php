@@ -112,7 +112,7 @@ class nominas extends modelo {
 
     protected function data_deduccion(float $monto, int $nom_deduccion_id, int $nom_nomina_id): array|stdClass
     {
-        $data_existe = $this->existe_data_deduccion_imss(nom_nomina_id: $nom_nomina_id);
+        $data_existe = $this->existe_data_deduccion(nom_deduccion_id:$nom_deduccion_id, nom_nomina_id: $nom_nomina_id);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al validar si existe deduccion', data: $data_existe);
         }
@@ -126,9 +126,14 @@ class nominas extends modelo {
         return $data_existe;
     }
 
-    private function existe_data_deduccion(int $id, int $nom_nomina_id): array|stdClass
+    /**
+     * @param int $nom_deduccion_id
+     * @param int $nom_nomina_id
+     * @return array|stdClass
+     */
+    private function existe_data_deduccion(int $nom_deduccion_id, int $nom_nomina_id): array|stdClass
     {
-        $filtro = $this->filtro_partida(id: 2, nom_nomina_id: $nom_nomina_id, tabla: 'nom_deduccion');
+        $filtro = $this->filtro_partida(id: $nom_deduccion_id, nom_nomina_id: $nom_nomina_id, tabla: 'nom_deduccion');
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al generar filtro', data: $filtro);
         }
@@ -143,11 +148,16 @@ class nominas extends modelo {
         return $data;
     }
 
+    /**
+     *
+     * @param int $nom_nomina_id Nomina en ejecucion
+     * @return array|stdClass
+     */
     private function existe_data_deduccion_imss(int $nom_nomina_id): array|stdClass
     {
 
 
-        $data = $this->existe_data_deduccion(id:2, nom_nomina_id: $nom_nomina_id);
+        $data = $this->existe_data_deduccion(nom_deduccion_id:2, nom_nomina_id: $nom_nomina_id);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al validar si existe deduccion', data: $data);
         }
@@ -156,11 +166,16 @@ class nominas extends modelo {
         return $data;
     }
 
+    /**
+     *
+     * @param int $nom_nomina_id Nomina en ejecucion
+     * @return array|stdClass
+     */
     protected function existe_data_deduccion_isr(int $nom_nomina_id): array|stdClass
     {
 
 
-        $data = $this->existe_data_deduccion(id:1, nom_nomina_id: $nom_nomina_id);
+        $data = $this->existe_data_deduccion(nom_deduccion_id:1, nom_nomina_id: $nom_nomina_id);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al validar si existe deduccion', data: $data);
         }
@@ -168,6 +183,13 @@ class nominas extends modelo {
         return $data;
     }
 
+    /**
+     * Genera un filtro para una partida de nomina
+     * @param int $id Id de la deduccion base
+     * @param int $nom_nomina_id Id de la nomina
+     * @param string $tabla Tabla de deduccion
+     * @return array
+     */
     protected function filtro_partida(int $id, int $nom_nomina_id, string $tabla): array
     {
         $filtro = array();

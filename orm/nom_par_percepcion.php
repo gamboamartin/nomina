@@ -87,7 +87,7 @@ class nom_par_percepcion extends nominas{
 
             if((float)$imss['total']>0.0) {
 
-                $data_existe = $this->data_deduccion(monto: (float)$isr, nom_deduccion_id: 1,
+                $data_existe = $this->data_deduccion(monto: (float)$isr, nom_deduccion_id: 2,
                     nom_nomina_id: $this->registro['nom_nomina_id']);
                 if(errores::$error){
                     return $this->error->error(mensaje: 'Error al validar si existe deduccion', data: $data_existe);
