@@ -147,14 +147,6 @@ class nom_par_otro_pago extends nominas
         return $registro;
     }
 
-    private function asigna_importe_gravado(array $registro): array
-    {
-        if(!isset($registro['importe_gravado'])){
-
-            $registro['importe_gravado'] = 0;
-        }
-        return $registro;
-    }
 
     private function asigna_registro_alta(array $registro): array
     {
