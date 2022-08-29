@@ -6,7 +6,7 @@ use JsonException;
 use PDO;
 use stdClass;
 
-class nom_par_deduccion extends modelo{
+class nom_par_deduccion extends nominas{
 
     public function __construct(PDO $link){
         $tabla = __CLASS__;
@@ -22,11 +22,8 @@ class nom_par_deduccion extends modelo{
     private function asigna_registro_alta(array $registro): array
     {
 
-        $keys_registro = array('nom_nomina_id');
-        $keys_row = array('cat_sat_periodicidad_pago_nom_id','em_empleado_rfc','im_registro_patronal_id');
-        $modelo = new nom_nomina($this->link);
-        $registro = $this->asigna_codigo(keys_registro: $keys_registro,keys_row:  $keys_row,
-            modelo:  $modelo,registro:  $registro);
+
+        $registro = $this->asigna_codigo_partida(registro: $registro);
 
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al asignar codigo', data: $registro);
