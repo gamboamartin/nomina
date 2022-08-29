@@ -296,16 +296,14 @@ class nom_nomina extends modelo
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al validar registro', data: $valida);
         }
-
-
         $codigo = mt_rand();
         $descripcion = mt_rand();
         $descripcion_select = mt_rand();
         $alias = mt_rand();
         $codigo_bis = mt_rand();
         $com_producto_id = 1;
-        $cantidad = $this->registro['num_dias_pagados'];
-        $valor_unitario= $em_empleado->em_empleado_salario_diario;
+        $cantidad = 1;
+        $valor_unitario= $this->registro['num_dias_pagados'] * $em_empleado->em_empleado_salario_diario;
         $descuento = $this->registro['descuento'];
         $fc_factura_id= $fc_factura->registro['fc_factura_id'];
 
