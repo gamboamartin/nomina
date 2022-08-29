@@ -19,6 +19,15 @@ class nominas extends modelo {
         return $registro;
     }
 
+    protected function asigna_importe_exento(array $registro): array
+    {
+        if(!isset($registro['importe_exento'])){
+
+            $registro['importe_exento'] = 0;
+        }
+        return $registro;
+    }
+
     protected function asigna_importe_gravado(array $registro): array
     {
         if(!isset($registro['importe_gravado'])){

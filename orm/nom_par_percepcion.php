@@ -154,19 +154,6 @@ class nom_par_percepcion extends nominas{
 
 
 
-
-
-
-    private function asigna_importe_exento(array $registro): array
-    {
-        if(!isset($registro['importe_exento'])){
-
-            $registro['importe_exento'] = 0;
-        }
-        return $registro;
-    }
-
-
     private function asigna_registro_alta(array $registro): array
     {
 
