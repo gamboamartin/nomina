@@ -5,7 +5,7 @@ use gamboamartin\errores\errores;
 
 class nominas extends modelo {
 
-    protected function asigna_codigo_partida(array $registro): array
+    private function asigna_codigo_partida(array $registro): array
     {
         $keys_registro = array('nom_nomina_id');
         $keys_row = array('cat_sat_periodicidad_pago_nom_id','em_empleado_rfc','im_registro_patronal_id');
@@ -19,7 +19,7 @@ class nominas extends modelo {
         return $registro;
     }
 
-    protected function asigna_importe_exento(array $registro): array
+    private function asigna_importe_exento(array $registro): array
     {
         if(!isset($registro['importe_exento'])){
 
@@ -28,11 +28,25 @@ class nominas extends modelo {
         return $registro;
     }
 
-    protected function asigna_importe_gravado(array $registro): array
+    private function asigna_importe_gravado(array $registro): array
     {
         if(!isset($registro['importe_gravado'])){
 
             $registro['importe_gravado'] = 0;
+        }
+        return $registro;
+    }
+
+    protected function asigna_importes(array $registro): array
+    {
+        $registro = $this->asigna_importe_gravado(registro: $registro);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al asignar descripcion_select', data: $registro);
+        }
+
+        $registro = $this->asigna_importe_exento(registro: $registro);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al asignar descripcion_select', data: $registro);
         }
         return $registro;
     }
@@ -52,7 +66,7 @@ class nominas extends modelo {
         return $registro;
     }
 
-    protected function campos_base(modelo $modelo, array $registro): array
+    private function campos_base(modelo $modelo, array $registro): array
     {
         $registro = $this->asigna_descripcion(modelo: $modelo, registro: $registro);
         if(errores::$error){

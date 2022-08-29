@@ -166,14 +166,9 @@ class nom_par_percepcion extends nominas{
             return $this->error->error(mensaje: 'Error al asignar descripcion_select', data: $registro);
         }
 
-        $registro = $this->asigna_importe_gravado(registro: $registro);
+        $registro = $this->asigna_importes(registro: $registro);
         if(errores::$error){
-            return $this->error->error(mensaje: 'Error al asignar descripcion_select', data: $registro);
-        }
-
-        $registro = $this->asigna_importe_exento(registro: $registro);
-        if(errores::$error){
-            return $this->error->error(mensaje: 'Error al asignar descripcion_select', data: $registro);
+            return $this->error->error(mensaje: 'Error al asignar importes', data: $registro);
         }
        return $registro;
     }
