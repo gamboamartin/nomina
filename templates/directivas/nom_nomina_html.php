@@ -55,6 +55,16 @@ class nom_nomina_html extends html_controler
         return $controler->inputs;
     }
 
+    private function asigna_inputs_otro_pago(controlador_nom_nomina $controler, stdClass $inputs): array|stdClass
+    {
+        $controler->inputs->select = new stdClass();
+        $controler->inputs->select->nom_nomina_id = $inputs->selects->nom_nomina_id;
+        $controler->inputs->select->nom_otro_pago_id = $inputs->selects->nom_otro_pago_id;
+        $controler->inputs->importe_gravado = $inputs->texts->importe_gravado;
+        $controler->inputs->importe_exento = $inputs->texts->importe_exento;
+        return $controler->inputs;
+    }
+
     private function asigna_inputs_crea_nomina(controlador_nom_nomina $controler, stdClass $inputs): array|stdClass
     {
         $controler->inputs->select = new stdClass();
@@ -132,6 +142,25 @@ class nom_nomina_html extends html_controler
 
         return $inputs_asignados;
     }
+
+    public function genera_inputs_otro_pago(controlador_nom_nomina $controler, PDO $link,
+                                                   stdClass $params = new stdClass()): array|stdClass
+    {
+        $inputs = (new nom_par_otro_pago_html(html: $this->html_base))->init_alta(
+            link: $link, nom_nomina_id: $controler->registro_id, params: $params);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al generar inputs', data: $inputs);
+
+        }
+        $inputs_asignados = $this->asigna_inputs_otro_pago(controler: $controler, inputs: $inputs);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al asignar inputs', data: $inputs_asignados);
+        }
+
+        return $inputs_asignados;
+    }
+
+
 
     public function genera_inputs_crea_nomina(controlador_nom_nomina $controler, PDO $link): array|stdClass
     {

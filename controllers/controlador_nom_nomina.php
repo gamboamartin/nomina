@@ -24,6 +24,7 @@ use html\selects;
 use JsonException;
 use models\nom_nomina;
 use models\nom_par_deduccion;
+use models\nom_par_otro_pago;
 use models\nom_par_percepcion;
 use models\org_sucursal;
 use PDO;
@@ -34,6 +35,7 @@ class controlador_nom_nomina extends system
     public string $link_nom_nomina_alta_bd = '';
     public string $link_nom_par_percepcion_alta_bd = '';
     public string $link_nom_par_deduccion_alta_bd = '';
+    public string $link_nom_par_otro_pago_alta_bd = '';
     public int $nom_nomina_id = -1;
     public stdClass $paths_conf;
     public stdClass $deducciones;
@@ -64,10 +66,19 @@ class controlador_nom_nomina extends system
             die('Error');
         }
 
+        $link_nom_par_otro_pago_alta_bd = $obj_link->link_con_id(accion: 'otro_pago_bd',
+            registro_id: $this->registro_id, seccion: $this->seccion);
+        if (errores::$error) {
+            $error = $this->errores->error(mensaje: 'Error al generar link', data: $link_nom_par_otro_pago_alta_bd);
+            print_r($error);
+            die('Error');
+        }
+
         $this->titulo_lista = 'Nominas';
         $this->link_nom_nomina_alta_bd = $obj_link->links->nom_nomina->alta_bd;
         $this->link_nom_par_percepcion_alta_bd = $link_nom_par_percepcion_alta_bd;
         $this->link_nom_par_deduccion_alta_bd = $link_nom_par_deduccion_alta_bd;
+        $this->link_nom_par_otro_pago_alta_bd = $link_nom_par_otro_pago_alta_bd;
         $this->paths_conf = $paths_conf;
         $this->nom_nomina_id = $this->registro_id;
     }
@@ -288,10 +299,10 @@ class controlador_nom_nomina extends system
         $params->nom_nomina_id->disabled = true;
         $params->nom_nomina_id->filtro = array('nom_nomina.id' => $this->registro_id);
 
-        $params->nom_percepcion_id = new stdClass();
-        $params->nom_percepcion_id->cols = 12;
+        $params->nom_otro_pago_id = new stdClass();
+        $params->nom_otro_pago_id->cols = 12;
 
-        $inputs = (new nom_nomina_html(html: $this->html_base))->genera_inputs_nueva_percepcion(controler: $this,
+        $inputs = (new nom_nomina_html(html: $this->html_base))->genera_inputs_otro_pago(controler: $this,
             link: $this->link, params: $params);
         if (errores::$error) {
             $error = $this->errores->error(mensaje: 'Error al generar inputs', data: $inputs);
@@ -300,6 +311,49 @@ class controlador_nom_nomina extends system
         }
 
         return $r_alta;
+    }
+
+    public function otro_pago_bd(bool $header, bool $ws = false): array|stdClass
+    {
+        if (isset($_POST['btn_action_next'])) {
+            unset($_POST['btn_action_next']);
+        }
+
+        $_POST['nom_nomina_id'] = $this->registro_id;
+        $_POST['codigo'] = $_POST['nom_nomina_id'] . $_POST['nom_otro_pago_id'] . $_POST['descripcion'] .
+            $_POST['importe_gravado'] . $_POST['importe_exento'];
+        $_POST['codigo_bis'] = $_POST['codigo'];
+
+        $r_alta_nom_par_otro_paago = (new nom_par_otro_pago($this->link))->alta_registro(registro: $_POST);
+        if (errores::$error) {
+            return $this->retorno_error(mensaje: 'Error al dar de alta deduccion', data: $r_alta_nom_par_otro_paago,
+                header: $header, ws: $ws);
+        }
+
+        $siguiente_view = (new actions())->init_alta_bd();
+        if (errores::$error) {
+            return $this->retorno_error(mensaje: 'Error al obtener siguiente view', data: $siguiente_view,
+                header: $header, ws: $ws);
+        }
+
+        if ($header) {
+            $retorno = (new actions())->retorno_alta_bd(registro_id: $this->registro_id, seccion: $this->tabla,
+                siguiente_view: $siguiente_view);
+            if (errores::$error) {
+                return $this->retorno_error(mensaje: 'Error al dar de alta registro',
+                    data: $r_alta_nom_par_otro_paago, header: true, ws: $ws);
+            }
+            header('Location:' . $retorno);
+            exit;
+        }
+        if ($ws) {
+            header('Content-Type: application/json');
+            echo json_encode($r_alta_nom_par_otro_paago, JSON_THROW_ON_ERROR);
+            exit;
+        }
+        $r_alta_nom_par_otro_paago->siguiente_view = $siguiente_view;
+
+        return $r_alta_nom_par_otro_paago;
     }
 
     private function data_percepcion_btn(array $percepcion): array
