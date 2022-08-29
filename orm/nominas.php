@@ -2,6 +2,7 @@
 namespace models;
 use base\orm\modelo;
 use gamboamartin\errores\errores;
+use JsonException;
 
 class nominas extends modelo {
 
@@ -37,7 +38,7 @@ class nominas extends modelo {
         return $registro;
     }
 
-    protected function asigna_importes(array $registro): array
+    private function asigna_importes(array $registro): array
     {
         $registro = $this->asigna_importe_gravado(registro: $registro);
         if(errores::$error){
@@ -106,6 +107,28 @@ class nominas extends modelo {
         }
 
         return $registro;
+    }
+
+    /**
+     * @throws JsonException
+     */
+    protected function modifica_deduccion(array $filtro, array $nom_par_deduccion_upd): array|\stdClass
+    {
+
+        $nom_par_deduccion_modelo = new nom_par_deduccion($this->link);
+
+        $nom_par_deduccion = $nom_par_deduccion_modelo->filtro_and(filtro: $filtro);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al obtener deduccion', data: $nom_par_deduccion);
+        }
+
+        $r_modifica_nom_par_deduccion = $nom_par_deduccion_modelo->modifica_bd(
+            registro:$nom_par_deduccion_upd, id: $nom_par_deduccion->registros[0]['nom_par_deduccion_id']);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al modificar deduccion', data: $r_modifica_nom_par_deduccion);
+        }
+
+        return $r_modifica_nom_par_deduccion;
     }
 
 
