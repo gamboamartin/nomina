@@ -3,6 +3,7 @@ namespace models;
 use base\orm\modelo;
 use gamboamartin\errores\errores;
 use JsonException;
+use stdClass;
 
 class nominas extends modelo {
 
@@ -107,6 +108,24 @@ class nominas extends modelo {
         }
 
         return $registro;
+    }
+
+    protected function existe_data_deduccion_isr(int $nom_nomina_id): array|stdClass
+    {
+        $filtro = array();
+        $filtro['nom_nomina.id'] = $nom_nomina_id;
+        $filtro['nom_deduccion.id'] = 1;
+
+        $existe = (new nom_par_deduccion($this->link))->existe(filtro: $filtro);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al validar si existe deduccion', data: $existe);
+        }
+
+        $data = new stdClass();
+        $data->filtro = $filtro;
+        $data->existe = $existe;
+
+        return $data;
     }
 
     /**

@@ -57,15 +57,10 @@ class nom_par_percepcion extends nominas{
         if($isr>0.0){
 
 
-            $filtro = array();
-            $filtro['nom_nomina.id'] = $this->registro['nom_nomina_id'];
-            $filtro['nom_deduccion.id'] = 1;
-
-            $existe = (new nom_par_deduccion($this->link))->existe(filtro: $filtro);
+            $data_existe = $this->existe_data_deduccion_isr(nom_nomina_id: $this->registro['nom_nomina_id']);
             if(errores::$error){
-                return $this->error->error(mensaje: 'Error al validar si existe deduccion', data: $existe);
+                return $this->error->error(mensaje: 'Error al validar si existe deduccion', data: $data_existe);
             }
-
 
             $nom_par_deduccion_ins = $this->nom_par_deduccion_aut(monto: $isr, nom_deduccion_id: 1,
                 nom_nomina_id: $this->registro['nom_nomina_id']);
@@ -73,9 +68,9 @@ class nom_par_percepcion extends nominas{
                 return $this->error->error(mensaje: 'Error al generar deduccion', data: $nom_par_deduccion_ins);
             }
 
-            if($existe){
+            if($data_existe->existe){
                 $r_modifica_nom_par_deduccion = $this->modifica_deduccion(
-                    filtro: $filtro,nom_par_deduccion_upd:  $nom_par_deduccion_ins);
+                    filtro: $data_existe->filtro,nom_par_deduccion_upd:  $nom_par_deduccion_ins);
                 if(errores::$error){
                     return $this->error->error(
                         mensaje: 'Error al modificar deduccion', data: $r_modifica_nom_par_deduccion);
