@@ -129,7 +129,7 @@ class nom_par_otro_pago_html extends html_controler
 
     private function init_modifica(PDO $link, stdClass $row_upd, stdClass $params = new stdClass()): array|stdClass
     {
-        $selects = $this->selects_modifica(link: $link, row_upd: $row_upd);
+        $selects = $this->selects_modifica(link: $link, row_upd: $row_upd,params: $params);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al generar selects',data:  $selects);
         }
@@ -183,19 +183,25 @@ class nom_par_otro_pago_html extends html_controler
         return $selects;
     }
 
-    private function selects_modifica(PDO $link, stdClass $row_upd): array|stdClass
+    private function selects_modifica(PDO $link, stdClass $row_upd, stdClass $params = new stdClass()): array|stdClass
     {
+        $cols_nom_nomina_id = $params->nom_nomina_id->cols ?? 6;
+        $disabled_nom_nomina_id = $params->nom_nomina_id->disabled ?? false;
+        $filtro_nom_nomina_id = $params->nom_nomina_id->filtro ?? array();
+
         $selects = new stdClass();
 
         $select = (new nom_nomina_html(html:$this->html_base))->select_nom_nomina_id(
-            cols: 6, con_registros:true, id_selected:$row_upd->nom_nomina_id,link: $link);
+            cols: $cols_nom_nomina_id, con_registros:true, id_selected: $row_upd->nom_nomina_id,link: $link,
+            disabled: $disabled_nom_nomina_id, filtro: $filtro_nom_nomina_id);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al generar select',data:  $select);
         }
         $selects->nom_nomina_id = $select;
 
+        $cols_nom_otro_pago_id = $params->nom_otro_pago_id->cols ?? 6;
         $select = (new nom_otro_pago_html(html:$this->html_base))->select_nom_otro_pago_id(
-            cols: 6, con_registros:true, id_selected:$row_upd->nom_otro_pago_id,link: $link);
+            cols: $cols_nom_otro_pago_id, con_registros:true, id_selected:$row_upd->nom_otro_pago_id,link: $link);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al generar select',data:  $select);
         }

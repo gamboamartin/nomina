@@ -18,6 +18,8 @@ use gamboamartin\system\system;
 use gamboamartin\template\html;
 use html\com_sucursal_html;
 use html\nom_nomina_html;
+use html\nom_par_deduccion_html;
+use html\nom_par_otro_pago_html;
 use html\nom_par_percepcion_html;
 use html\org_sucursal_html;
 use html\selects;
@@ -36,6 +38,9 @@ class controlador_nom_nomina extends system
     public string $link_nom_par_percepcion_alta_bd = '';
     public string $link_nom_par_deduccion_alta_bd = '';
     public string $link_nom_par_otro_pago_alta_bd = '';
+    public string $link_nom_par_percepcion_modifica_bd = '';
+    public string $link_nom_par_deduccion_modifica_bd = '';
+    public string $link_nom_par_otro_pago_modifica_bd = '';
     public int $nom_nomina_id = -1;
     public stdClass $paths_conf;
     public stdClass $deducciones;
@@ -74,11 +79,38 @@ class controlador_nom_nomina extends system
             die('Error');
         }
 
+        $link_nom_par_percepcion_modifica_bd = $obj_link->link_con_id(accion: 'modifica_percepcion_bd',
+            registro_id: $this->registro_id, seccion: $this->seccion);
+        if (errores::$error) {
+            $error = $this->errores->error(mensaje: 'Error al generar link', data: $link_nom_par_percepcion_modifica_bd);
+            print_r($error);
+            die('Error');
+        }
+
+        $link_nom_par_deduccion_modifica_bd = $obj_link->link_con_id(accion: 'modifica_deduccion_bd',
+            registro_id: $this->registro_id, seccion: $this->seccion);
+        if (errores::$error) {
+            $error = $this->errores->error(mensaje: 'Error al generar link', data: $link_nom_par_deduccion_modifica_bd);
+            print_r($error);
+            die('Error');
+        }
+
+        $link_nom_par_otro_pago_modifica_bd = $obj_link->link_con_id(accion: 'modifica_otro_pago_bd',
+            registro_id: $this->registro_id, seccion: $this->seccion);
+        if (errores::$error) {
+            $error = $this->errores->error(mensaje: 'Error al generar link', data: $link_nom_par_otro_pago_modifica_bd);
+            print_r($error);
+            die('Error');
+        }
+
         $this->titulo_lista = 'Nominas';
         $this->link_nom_nomina_alta_bd = $obj_link->links->nom_nomina->alta_bd;
         $this->link_nom_par_percepcion_alta_bd = $link_nom_par_percepcion_alta_bd;
         $this->link_nom_par_deduccion_alta_bd = $link_nom_par_deduccion_alta_bd;
         $this->link_nom_par_otro_pago_alta_bd = $link_nom_par_otro_pago_alta_bd;
+        $this->link_nom_par_percepcion_modifica_bd = $link_nom_par_deduccion_modifica_bd;
+        $this->link_nom_par_deduccion_modifica_bd = $link_nom_par_deduccion_modifica_bd;
+        $this->link_nom_par_otro_pago_modifica_bd = $link_nom_par_otro_pago_modifica_bd;
         $this->paths_conf = $paths_conf;
         $this->nom_nomina_id = $this->registro_id;
     }
@@ -286,6 +318,128 @@ class controlador_nom_nomina extends system
         return $r_alta_nom_par_deduccion;
     }
 
+    public function modifica_deduccion(bool $header, bool $ws = false): array|stdClass|string
+    {
+        $controlador = new controlador_nom_par_deduccion($this->link);
+
+        $r_modifica = $controlador->modifica(header: false, aplica_form: false);
+        if (errores::$error) {
+            return $this->errores->error(mensaje: 'Error al generar template', data: $r_modifica);
+        }
+
+        $params = new stdClass();
+        $params->nom_nomina_id = new stdClass();
+        $params->nom_nomina_id->cols = 12;
+        $params->nom_nomina_id->disabled = true;
+        ////$params->nom_nomina_id->filtro = array('nom_nomina.id' => $this->registro_id); // REVISAR
+
+        $params->nom_deduccion_id = new stdClass();
+        $params->nom_deduccion_id->cols = 12;
+
+        $inputs = (new nom_par_deduccion_html(html: $this->html_base))->inputs_nom_par_deduccion (
+            controlador: $controlador, params: $params);
+        if(errores::$error){
+            return $this->errores->error(mensaje: 'Error al inicializar inputs',data:  $inputs);
+        }
+        $this->inputs = $inputs;
+
+        return $r_modifica;
+    }
+
+    public function modifica_percepcion(bool $header, bool $ws = false): array|stdClass|string
+    {
+        $controlador = new controlador_nom_par_percepcion($this->link);
+
+        $r_modifica = $controlador->modifica(header: false, aplica_form: false);
+        if (errores::$error) {
+            return $this->errores->error(mensaje: 'Error al generar template', data: $r_modifica);
+        }
+
+        $params = new stdClass();
+        $params->nom_nomina_id = new stdClass();
+        $params->nom_nomina_id->cols = 12;
+        $params->nom_nomina_id->disabled = true;
+        ////$params->nom_nomina_id->filtro = array('nom_nomina.id' => $this->registro_id); // REVISAR
+
+        $params->nom_deduccion_id = new stdClass();
+        $params->nom_deduccion_id->cols = 12;
+
+        $inputs = (new nom_par_percepcion_html(html: $this->html_base))->inputs_nom_par_percepcion(
+            controlador: $controlador, params: $params);
+        if(errores::$error){
+            return $this->errores->error(mensaje: 'Error al inicializar inputs',data:  $inputs);
+        }
+        $this->inputs = $inputs;
+
+        return $r_modifica;
+    }
+
+    public function modifica_otro_pago(bool $header, bool $ws = false): array|stdClass|string
+    {
+        $controlador = new controlador_nom_par_otro_pago($this->link);
+
+        $r_modifica = $controlador->modifica(header: false, aplica_form: false);
+        if (errores::$error) {
+            return $this->errores->error(mensaje: 'Error al generar template', data: $r_modifica);
+        }
+
+        $params = new stdClass();
+        $params->nom_nomina_id = new stdClass();
+        $params->nom_nomina_id->cols = 12;
+        $params->nom_nomina_id->disabled = true;
+        ////$params->nom_nomina_id->filtro = array('nom_nomina.id' => $this->registro_id); // REVISAR
+
+        $params->nom_otro_pago_id = new stdClass();
+        $params->nom_otro_pago_id->cols = 12;
+
+        $inputs = (new nom_par_otro_pago_html(html: $this->html_base))->inputs_nom_par_otro_pago(
+            controlador: $controlador, params: $params);
+        if(errores::$error){
+            return $this->errores->error(mensaje: 'Error al inicializar inputs',data:  $inputs);
+        }
+        $this->inputs = $inputs;
+
+        return $r_modifica;
+    }
+
+    public function modifica_deduccion_bd(bool $header, bool $ws = false): array|stdClass
+    {
+        if (isset($_POST['btn_action_next'])) {
+            unset($_POST['btn_action_next']);
+        }
+
+        $r_modifica_nom_par_deduccion = (new nom_par_deduccion($this->link))->modifica_bd(
+            registro:$this->registro, id: $this->registro_id);
+        if (errores::$error) {
+            return $this->retorno_error(mensaje: 'Error al modificar deduccion', data: $r_modifica_nom_par_deduccion, header: $header, ws: $ws);
+        }
+
+        $siguiente_view = (new actions())->init_alta_bd();
+        if (errores::$error) {
+            return $this->retorno_error(mensaje: 'Error al obtener siguiente view', data: $siguiente_view,
+                header: $header, ws: $ws);
+        }
+
+        if ($header) {
+            $retorno = (new actions())->retorno_alta_bd(registro_id: $this->registro_id, seccion: $this->tabla,
+                siguiente_view: $siguiente_view);
+            if (errores::$error) {
+                return $this->retorno_error(mensaje: 'Error al dar de modificar registro',
+                    data: $r_modifica_nom_par_deduccion, header: true, ws: $ws);
+            }
+            header('Location:' . $retorno);
+            exit;
+        }
+        if ($ws) {
+            header('Content-Type: application/json');
+            echo json_encode($r_modifica_nom_par_deduccion, JSON_THROW_ON_ERROR);
+            exit;
+        }
+        $r_modifica_nom_par_deduccion->siguiente_view = $siguiente_view;
+
+        return $r_modifica_nom_par_deduccion;
+    }
+
     public function otro_pago(bool $header, bool $ws = false): array|string
     {
         $r_alta = parent::alta(header: false, ws: false); // TODO: Change the autogenerated stub
@@ -360,15 +514,15 @@ class controlador_nom_nomina extends system
     {
         $params['nom_nomina_id'] = $percepcion['nom_nomina_id'];
 
-        $btn_elimina = $this->html_base->button_href(accion: 'elimina_bd', etiqueta: 'Elimina',
-            registro_id: $percepcion['nom_percepcion_id'], seccion: 'nom_percepcion', style: 'danger');
+        $btn_elimina = $this->html_base->button_href(accion: 'elimina_percepcion_bd', etiqueta: 'Elimina',
+            registro_id: $percepcion['nom_percepcion_id'], seccion: 'nom_nomina', style: 'danger');
         if (errores::$error) {
             return $this->errores->error(mensaje: 'Error al generar btn', data: $btn_elimina);
         }
         $percepcion['link_elimina'] = $btn_elimina;
 
-        $btn_modifica = $this->html_base->button_href(accion: 'modifica', etiqueta: 'Modifica',
-            registro_id: $percepcion['nom_percepcion_id'], seccion: 'nom_percepcion', style: 'warning', params: $params);
+        $btn_modifica = $this->html_base->button_href(accion: 'modifica_percepcion', etiqueta: 'Modifica',
+            registro_id: $percepcion['nom_percepcion_id'], seccion: 'nom_nomina', style: 'warning', params: $params);
         if (errores::$error) {
             return $this->errores->error(mensaje: 'Error al generar btn', data: $btn_modifica);
         }
@@ -381,15 +535,15 @@ class controlador_nom_nomina extends system
     {
         $params['nom_nomina_id'] = $deduccion['nom_nomina_id'];
 
-        $btn_elimina = $this->html_base->button_href(accion: 'elimina_bd', etiqueta: 'Elimina',
-            registro_id: $deduccion['nom_deduccion_id'], seccion: 'nom_deduccion', style: 'danger');
+        $btn_elimina = $this->html_base->button_href(accion: 'elimina_deduccion_bd', etiqueta: 'Elimina',
+            registro_id: $deduccion['nom_deduccion_id'], seccion: 'nom_nomina', style: 'danger');
         if (errores::$error) {
             return $this->errores->error(mensaje: 'Error al generar btn', data: $btn_elimina);
         }
         $deduccion['link_elimina'] = $btn_elimina;
 
-        $btn_modifica = $this->html_base->button_href(accion: 'modifica', etiqueta: 'Modifica',
-            registro_id: $deduccion['nom_deduccion_id'], seccion: 'nom_deduccion', style: 'warning', params: $params);
+        $btn_modifica = $this->html_base->button_href(accion: 'modifica_deduccion', etiqueta: 'Modifica',
+            registro_id: $deduccion['nom_deduccion_id'], seccion: 'nom_nomina', style: 'warning', params: $params);
         if (errores::$error) {
             return $this->errores->error(mensaje: 'Error al generar btn', data: $btn_modifica);
         }
@@ -402,15 +556,15 @@ class controlador_nom_nomina extends system
     {
         $params['nom_nomina_id'] = $otro_pago['nom_nomina_id'];
 
-        $btn_elimina = $this->html_base->button_href(accion: 'elimina_bd', etiqueta: 'Elimina',
-            registro_id: $otro_pago['nom_otro_pago_id'], seccion: 'nom_otro_pago', style: 'danger');
+        $btn_elimina = $this->html_base->button_href(accion: 'elimina_otro_pago_bd', etiqueta: 'Elimina',
+            registro_id: $otro_pago['nom_otro_pago_id'], seccion: 'nom_nomina', style: 'danger');
         if (errores::$error) {
             return $this->errores->error(mensaje: 'Error al generar btn', data: $btn_elimina);
         }
         $otro_pago['link_elimina'] = $btn_elimina;
 
-        $btn_modifica = $this->html_base->button_href(accion: 'modifica', etiqueta: 'Modifica',
-            registro_id: $otro_pago['nom_otro_pago_id'], seccion: 'nom_otro_pago', style: 'warning', params: $params);
+        $btn_modifica = $this->html_base->button_href(accion: 'modifica_otro_pago', etiqueta: 'Modifica',
+            registro_id: $otro_pago['nom_otro_pago_id'], seccion: 'nom_nomina', style: 'warning', params: $params);
         if (errores::$error) {
             return $this->errores->error(mensaje: 'Error al generar btn', data: $btn_modifica);
         }

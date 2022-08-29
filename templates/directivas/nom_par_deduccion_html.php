@@ -124,12 +124,12 @@ class nom_par_deduccion_html extends html_controler {
 
     private function init_modifica(PDO $link, stdClass $row_upd, stdClass $params = new stdClass()): array|stdClass
     {
-        $selects = $this->selects_modifica(link: $link, row_upd: $row_upd);
+        $selects = $this->selects_modifica(link: $link, row_upd: $row_upd,params: $params);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al generar selects',data:  $selects);
         }
 
-        $texts = $this->texts_alta(row_upd: $row_upd, value_vacio: false, params: $params);
+        $texts = $this->texts_modifica(row_upd: $row_upd, value_vacio: false, params: $params);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al generar texts',data:  $texts);
         }
@@ -178,19 +178,25 @@ class nom_par_deduccion_html extends html_controler {
         return $selects;
     }
 
-    private function selects_modifica(PDO $link, stdClass $row_upd): array|stdClass
+    private function selects_modifica(PDO $link, stdClass $row_upd, stdClass $params = new stdClass()): array|stdClass
     {
+        $cols_nom_nomina_id = $params->nom_nomina_id->cols ?? 6;
+        $disabled_nom_nomina_id = $params->nom_nomina_id->disabled ?? false;
+        $filtro_nom_nomina_id = $params->nom_nomina_id->filtro ?? array();
+
         $selects = new stdClass();
 
         $select = (new nom_nomina_html(html:$this->html_base))->select_nom_nomina_id(
-            cols: 6, con_registros:true, id_selected:$row_upd->nom_nomina_id,link: $link);
+            cols: $cols_nom_nomina_id, con_registros:true, id_selected: $row_upd->nom_nomina_id,link: $link,
+            disabled: $disabled_nom_nomina_id, filtro: $filtro_nom_nomina_id);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al generar select',data:  $select);
         }
         $selects->nom_nomina_id = $select;
 
+        $cols_nom_deduccion_id = $params->nom_deduccion_id->cols ?? 6;
         $select = (new nom_deduccion_html(html:$this->html_base))->select_nom_deduccion_id(
-            cols: 6, con_registros:true, id_selected:$row_upd->nom_deduccion_id,link: $link);
+            cols: $cols_nom_deduccion_id, con_registros:true, id_selected:$row_upd->nom_deduccion_id,link: $link);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al generar select',data:  $select);
         }
@@ -224,6 +230,24 @@ class nom_par_deduccion_html extends html_controler {
         $texts->importe_gravado = $in_importe_gravado;
 
         $row_upd->importe_exento = 0;
+
+        $in_importe_exento = $this->input_importe_exento(cols: 6,row_upd:  $row_upd,value_vacio:  false);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al generar input',data:  $in_importe_exento);
+        }
+        $texts->importe_exento = $in_importe_exento;
+        return $texts;
+    }
+
+    private function texts_modifica(stdClass $row_upd, bool $value_vacio, stdClass $params = new stdClass()): array|stdClass
+    {
+        $texts = new stdClass();
+
+        $in_importe_gravado = $this->input_importe_gravado(cols: 6,row_upd:  $row_upd,value_vacio:  false);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al generar input',data:  $in_importe_gravado);
+        }
+        $texts->importe_gravado = $in_importe_gravado;
 
         $in_importe_exento = $this->input_importe_exento(cols: 6,row_upd:  $row_upd,value_vacio:  false);
         if(errores::$error){
