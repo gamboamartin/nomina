@@ -88,14 +88,10 @@ class nom_par_otro_pago extends nominas
 
             if((float)$imss['total']>0.0) {
 
-                $filtro = $this->filtro_partida(id: 2, nom_nomina_id: $this->registro['nom_nomina_id'], tabla: 'nom_deduccion');
-                if(errores::$error){
-                    return $this->error->error(mensaje: 'Error al generar filtro', data: $filtro);
-                }
 
-                $existe = (new nom_par_deduccion($this->link))->existe(filtro: $filtro);
+                $data_existe = $this->existe_data_deduccion_imss(nom_nomina_id: $this->registro['nom_nomina_id']);
                 if(errores::$error){
-                    return $this->error->error(mensaje: 'Error al validar si existe deduccion', data: $existe);
+                    return $this->error->error(mensaje: 'Error al validar si existe deduccion', data: $data_existe);
                 }
 
                 $nom_par_deduccion_ins = $this->nom_par_deduccion_aut(monto: (float)$imss['total'], nom_deduccion_id: 2,
@@ -104,8 +100,8 @@ class nom_par_otro_pago extends nominas
                     return $this->error->error(mensaje: 'Error al generar deduccion', data: $nom_par_deduccion_ins);
                 }
 
-                if($existe){
-                    $nom_par_deduccion = (new nom_par_deduccion($this->link))->filtro_and(filtro: $filtro);
+                if($data_existe->existe){
+                    $nom_par_deduccion = (new nom_par_deduccion($this->link))->filtro_and(filtro: $data_existe->filtro);
                     if(errores::$error){
                         return $this->error->error(mensaje: 'Error al obtener deduccion', data: $nom_par_deduccion);
                     }
