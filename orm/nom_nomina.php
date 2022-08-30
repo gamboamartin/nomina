@@ -639,6 +639,30 @@ class nom_nomina extends modelo
         return $r_nom_par_otro_pago->registros;
     }
 
+    public function partidas(int $nom_nomina_id): array|stdClass
+    {
+        $percepciones = $this->percepciones(nom_nomina_id: $nom_nomina_id);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al obtener percepciones', data: $percepciones);
+        }
+        $deducciones = $this->deducciones(nom_nomina_id: $nom_nomina_id);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al obtener deducciones', data: $deducciones);
+        }
+        $otros_pagos = $this->otros_pagos(nom_nomina_id: $nom_nomina_id);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al obtener $otros_pagos', data: $otros_pagos);
+        }
+
+        $data = new stdClass();
+        $data->percepciones = $percepciones;
+        $data->deducciones = $deducciones;
+        $data->otros_pagos = $otros_pagos;
+
+        return $data;
+
+    }
+
     public function percepciones(int $nom_nomina_id): array
     {
         $filtro['nom_nomina.id'] = $nom_nomina_id;
