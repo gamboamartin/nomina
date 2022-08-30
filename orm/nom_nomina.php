@@ -86,8 +86,6 @@ class nom_nomina extends modelo
         return $r_alta_bd;
     }
 
-    
-
     private function asigna_campo(array $registro, string $campo, array $campos_asignar): array
     {
         if (!isset($registro[$campo])) {
@@ -228,6 +226,61 @@ class nom_nomina extends modelo
             return $this->error->error(mensaje: 'Error el limite debe ser menor o igual al monto', data: $diferencia_li);
         }
         return $diferencia_li;
+    }
+
+    /**
+     * Genera el filtro para la obtencion de tablas de isr
+     * @param float|int $monto Monto gravable de nomina
+     * @param string $fecha Fecha de nomina
+     * @return array
+     * @version 0.110.11
+     */
+    private function filtro_especial_isr(float|int $monto, string $fecha = ''): array
+    {
+        if($fecha === ''){
+            $fecha = date('Y-m-d');
+        }
+        if($monto<=0.0){
+            return $this->error->error(mensaje: 'Error monto debe ser mayor o igual a 0', data: $monto);
+        }
+
+        $filtro_especial[0][$fecha]['operador'] = '>=';
+        $filtro_especial[0][$fecha]['valor'] = 'cat_sat_isr.fecha_inicio';
+        $filtro_especial[0][$fecha]['comparacion'] = 'AND';
+        $filtro_especial[0][$fecha]['valor_es_campo'] = true;
+
+        $filtro_especial[1][$fecha]['operador'] = '<=';
+        $filtro_especial[1][$fecha]['valor'] = 'cat_sat_isr.fecha_fin';
+        $filtro_especial[1][$fecha]['comparacion'] = 'AND';
+        $filtro_especial[1][$fecha]['valor_es_campo'] = true;
+
+        $filtro_especial[2][(string)$monto]['operador'] = '>=';
+        $filtro_especial[2][(string)$monto]['valor'] = 'cat_sat_isr.limite_inferior';
+        $filtro_especial[2][(string)$monto]['comparacion'] = 'AND';
+        $filtro_especial[2][(string)$monto]['valor_es_campo'] = true;
+
+        $filtro_especial[3][(string)$monto]['operador'] = '<=';
+        $filtro_especial[3][(string)$monto]['valor'] = 'cat_sat_isr.limite_superior';
+        $filtro_especial[3][(string)$monto]['comparacion'] = 'AND';
+        $filtro_especial[3][(string)$monto]['valor_es_campo'] = true;
+
+        return $filtro_especial;
+    }
+
+    private function genera_codigo_nomina(stdClass $org_sucursal, array $registro): string
+    {
+        $serie = $org_sucursal->org_sucursal_serie;
+        $folio = $registro['folio'];
+        return $org_sucursal->org_sucursal_id . $serie . $folio;
+    }
+
+    private function genera_descripcion(stdClass $em_empleado, array $registro): string
+    {
+        return $em_empleado->em_empleado_id .
+            $em_empleado->em_empleado_nombre .
+            $em_empleado->em_empleado_ap .
+            $em_empleado->em_empleado_am .
+            $em_empleado->em_empleado_rfc;
     }
 
     /**
@@ -451,6 +504,11 @@ class nom_nomina extends modelo
         return $this->registro;
     }
 
+    private function genera_valor_campo(array $campos_asignar): string
+    {
+        return implode($campos_asignar);
+    }
+
     /**
      * @param int $cat_sat_periodicidad_pago_nom_id Periodicidad de pago identificador
      * @param float|int $monto Monto gravable de nomina
@@ -547,48 +605,6 @@ class nom_nomina extends modelo
 
     }
 
-
-
-
-    /**
-     * Genera el filtro para la obtencion de tablas de isr
-     * @param float|int $monto Monto gravable de nomina
-     * @param string $fecha Fecha de nomina
-     * @return array
-     * @version 0.110.11
-     */
-    private function filtro_especial_isr(float|int $monto, string $fecha = ''): array
-    {
-        if($fecha === ''){
-            $fecha = date('Y-m-d');
-        }
-        if($monto<=0.0){
-            return $this->error->error(mensaje: 'Error monto debe ser mayor o igual a 0', data: $monto);
-        }
-
-        $filtro_especial[0][$fecha]['operador'] = '>=';
-        $filtro_especial[0][$fecha]['valor'] = 'cat_sat_isr.fecha_inicio';
-        $filtro_especial[0][$fecha]['comparacion'] = 'AND';
-        $filtro_especial[0][$fecha]['valor_es_campo'] = true;
-
-        $filtro_especial[1][$fecha]['operador'] = '<=';
-        $filtro_especial[1][$fecha]['valor'] = 'cat_sat_isr.fecha_fin';
-        $filtro_especial[1][$fecha]['comparacion'] = 'AND';
-        $filtro_especial[1][$fecha]['valor_es_campo'] = true;
-
-        $filtro_especial[2][(string)$monto]['operador'] = '>=';
-        $filtro_especial[2][(string)$monto]['valor'] = 'cat_sat_isr.limite_inferior';
-        $filtro_especial[2][(string)$monto]['comparacion'] = 'AND';
-        $filtro_especial[2][(string)$monto]['valor_es_campo'] = true;
-
-        $filtro_especial[3][(string)$monto]['operador'] = '<=';
-        $filtro_especial[3][(string)$monto]['valor'] = 'cat_sat_isr.limite_superior';
-        $filtro_especial[3][(string)$monto]['comparacion'] = 'AND';
-        $filtro_especial[3][(string)$monto]['valor_es_campo'] = true;
-
-        return $filtro_especial;
-    }
-
     private function limpia_campos(array $registro, array $campos_limpiar): array
     {
         foreach ($campos_limpiar as $valor) {
@@ -597,30 +613,6 @@ class nom_nomina extends modelo
             }
         }
         return $registro;
-    }
-
-
-    private function genera_valor_campo(array $campos_asignar): string
-    {
-        return implode($campos_asignar);
-    }
-
-
-
-    private function genera_codigo_nomina(stdClass $org_sucursal, array $registro): string
-    {
-        $serie = $org_sucursal->org_sucursal_serie;
-        $folio = $registro['folio'];
-        return $org_sucursal->org_sucursal_id . $serie . $folio;
-    }
-
-    private function genera_descripcion(stdClass $em_empleado, array $registro): string
-    {
-        return $em_empleado->em_empleado_id .
-            $em_empleado->em_empleado_nombre .
-            $em_empleado->em_empleado_ap .
-            $em_empleado->em_empleado_am .
-            $em_empleado->em_empleado_rfc;
     }
 
     /**
@@ -653,8 +645,5 @@ class nom_nomina extends modelo
         return round($total_gravado, 2);
 
     }
-
-
-
-
+    
 }
