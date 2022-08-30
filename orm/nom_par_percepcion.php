@@ -26,7 +26,7 @@ class nom_par_percepcion extends nominas{
     public function alta_bd(): array|stdClass
     {
 
-        $keys = array('nom_nomina_id');
+        $keys = array('nom_nomina_id','nom_percepcion_id');
         $valida = $this->validacion->valida_ids(keys: $keys, registro: $this->registro);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al validar registro', data: $valida);
