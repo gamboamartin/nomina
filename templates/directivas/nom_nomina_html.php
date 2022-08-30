@@ -459,6 +459,9 @@ class nom_nomina_html extends html_controler
         }
         $selects->em_empleado_id = $select;
 
+        if(!isset($row_upd->nom_conf_empleado_id)){
+            $row_upd->nom_conf_empleado_id = -1;
+        }
         $select = (new nom_conf_empleado_html(html: $this->html_base))->select_nom_conf_empleado_id(
             cols: 6, con_registros: true, id_selected: $row_upd->nom_conf_empleado_id, link: $link);
         if (errores::$error) {

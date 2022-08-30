@@ -152,6 +152,7 @@ class nom_conf_empleado_html extends html_controler {
         return $selects;
     }
 
+
     public function select_nom_conf_empleado_id(int $cols, bool $con_registros, int|null $id_selected, PDO $link): array|string
     {
         $valida = (new directivas(html:$this->html_base))->valida_cols(cols:$cols);
