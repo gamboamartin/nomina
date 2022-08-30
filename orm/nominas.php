@@ -407,7 +407,7 @@ class nominas extends modelo {
     }
 
     /**
-     * @param int $nom_nomina_id
+     * @param int $nom_nomina_id Registro de nomina en ejecucion
      * @param string|float|int $total_gravado Monto gravable de nomina
      * @return float|array
      */

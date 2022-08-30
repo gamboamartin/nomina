@@ -132,8 +132,25 @@ class nom_nomina extends modelo
         return $registro;
     }
 
-    private function calcula_isr(float $cuota_excedente, stdClass $row_isr): float
+    /**
+     * Genera la suma del la cuota exedente y lacuota fija
+     * @param float $cuota_excedente Monto calculado en base a la tabla de isr
+     * @param stdClass $row_isr Registro de isr
+     * @return float|array
+     * @version 0.129.16
+     */
+    private function calcula_isr(float $cuota_excedente, stdClass $row_isr): float|array
     {
+        $keys = array('cat_sat_isr_cuota_fija');
+        $valida = $this->validacion->valida_double_mayores_igual_0(keys: $keys, registro: $row_isr);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al validar row isr', data: $valida);
+        }
+        if($cuota_excedente<0.0){
+            return $this->error->error(mensaje: 'Error $cuota_excedente debe ser mayor o igual a 0',
+                data: $cuota_excedente);
+        }
+
         $isr = $cuota_excedente + $row_isr->cat_sat_isr_cuota_fija;
         return round($isr,2);
 
@@ -217,6 +234,7 @@ class nom_nomina extends modelo
     }
 
     /**
+     * Genera el monto de isr en base al registro aplicado
      * @param float|int $monto Monto total gravable
      * @param stdClass $row_isr Registro en proceso
      * @return float|array
@@ -500,6 +518,7 @@ class nom_nomina extends modelo
     }
 
     /**
+     * Calcula el isr
      * @param int $cat_sat_periodicidad_pago_nom_id
      * @param float|int $monto Monto gravable de nomina
      * @param string $fecha Fecha din del periodo de pago
