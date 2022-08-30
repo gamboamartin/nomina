@@ -389,11 +389,12 @@ class nominas extends modelo {
      */
     protected function integra_deducciones(int $nom_nomina_id, int $partida_percepcion_id): array|stdClass
     {
-        $transaccion_isr = $this->transacciona_isr(nom_nomina_id:$nom_nomina_id,
-            partida_percepcion_id: $partida_percepcion_id);
+
+        $transaccion_isr = $this->transacciona_isr_por_nomina(nom_nomina_id: $nom_nomina_id);
         if (errores::$error) {
-            return $this->error->error(mensaje: 'Error al obtener isr', data: $transaccion_isr);
+            return $this->error->error(mensaje: 'Error al generar isr', data: $transaccion_isr);
         }
+
         $transaccion_imss = $this->transacciona_imss(nom_nomina_id: $nom_nomina_id,
             partida_percepcion_id: $partida_percepcion_id);
         if(errores::$error){

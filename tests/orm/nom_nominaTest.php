@@ -6,10 +6,12 @@ use gamboamartin\errores\errores;
 use gamboamartin\test\liberator;
 use gamboamartin\test\test;
 use JsonException;
+use models\em_cuenta_bancaria;
 use models\fc_cfd_partida;
 use models\fc_factura;
 use models\nom_nomina;
 use models\nom_par_deduccion;
+use models\nom_par_otro_pago;
 use models\nom_par_percepcion;
 use stdClass;
 
@@ -39,8 +41,16 @@ class nom_nominaTest extends test {
         $nomina = new nom_nomina($this->link);
         $nom_par_deduccion = new nom_par_deduccion($this->link);
         $nom_par_percepcion = new nom_par_percepcion($this->link);
+        $nom_par_otro_pago = new nom_par_otro_pago($this->link);
         $fc_factura = new fc_factura($this->link);
         $fc_cfd_partida = new fc_cfd_partida($this->link);
+
+        $del_nom_par_otro_pago = $nom_par_otro_pago->elimina_todo();
+        if(errores::$error){
+            $error = (new errores())->error(mensaje: 'Error al eliminar $nom_par_otro_pago', data: $del_nom_par_otro_pago);
+            print_r($error);
+            exit;
+        }
 
         $del_nom_par_percepcion = $nom_par_percepcion->elimina_todo();
         if(errores::$error){
@@ -77,6 +87,28 @@ class nom_nominaTest extends test {
             exit;
         }
 
+        $del_em_cuenta_bancaria = (new em_cuenta_bancaria($this->link))->elimina_todo();
+        if(errores::$error){
+            $error = (new errores())->error(mensaje: 'Error al eliminar em_cuenta_bancaria', data: $del_em_cuenta_bancaria);
+            print_r($error);
+            exit;
+        }
+
+
+        $em_cuenta_bancaria = array();
+        $em_cuenta_bancaria['id'] = 1;
+        $em_cuenta_bancaria['codigo'] = 1;
+        $em_cuenta_bancaria['descripcion'] = 1;
+        $em_cuenta_bancaria['bn_sucursal_id'] = 1;
+        $em_cuenta_bancaria['em_empleado_id'] = 1;
+        $em_cuenta_bancaria['descripcion_select'] = 1;
+        $alta_em_cuenta_bancaria = (new em_cuenta_bancaria($this->link))->alta_registro($em_cuenta_bancaria);
+        if(errores::$error){
+            $error = (new errores())->error(mensaje: 'Error al dar de alta cuenta', data: $alta_em_cuenta_bancaria);
+            print_r($error);
+            exit;
+        }
+
 
 
         $nom_nomina_ins = array();
@@ -95,6 +127,8 @@ class nom_nominaTest extends test {
         $nomina->registro = $nom_nomina_ins;
 
         $resultado = $nomina->alta_bd();
+
+
         $this->assertIsObject($resultado);
         $this->assertNotTrue(errores::$error);
 

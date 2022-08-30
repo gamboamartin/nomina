@@ -106,6 +106,7 @@ class nom_par_otro_pagoTest extends test {
         $em_cuenta_bancaria['descripcion'] = 1;
         $em_cuenta_bancaria['bn_sucursal_id'] = 1;
         $em_cuenta_bancaria['em_empleado_id'] = 1;
+        $em_cuenta_bancaria['descripcion_select'] = 1;
 
 
         $alta_em_cuenta_bancaria = $em_cuenta_bancaria_modelo->alta_registro($em_cuenta_bancaria);
