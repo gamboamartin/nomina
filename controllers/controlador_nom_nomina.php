@@ -491,8 +491,9 @@ class controlador_nom_nomina extends system
         $params = new stdClass();
         $params->nom_nomina_id = new stdClass();
         $params->nom_nomina_id->cols = 12;
-        $params->nom_nomina_id->disabled = true;
-        ////$params->nom_nomina_id->filtro = array('nom_nomina.id' => $this->registro_id); // REVISAR
+        //$params->nom_nomina_id->disabled = false;
+        $params->nom_nomina_id->selected = 0;
+        $params->nom_nomina_id->filtro = array('nom_nomina.id' => $this->registro_id);
 
         $params->nom_otro_pago_id = new stdClass();
         $params->nom_otro_pago_id->cols = 12;
@@ -509,12 +510,9 @@ class controlador_nom_nomina extends system
 
     public function modifica_otro_pago_bd(bool $header, bool $ws = false): array|stdClass
     {
-        if (isset($_POST['btn_action_next'])) {
-            unset($_POST['btn_action_next']);
-        }
+        $registros = $_POST;
 
-        $r_modifica = (new nom_par_otro_pago($this->link))->modifica_bd(
-            registro:$this->registro, id: $this->registro_id);
+        $r_modifica = (new nom_par_otro_pago($this->link))->modifica_bd( registro:$registros, id: $this->registro_id);
         if (errores::$error) {
             return $this->retorno_error(mensaje: 'Error al modificar deduccion', data: $r_modifica, header: $header, ws: $ws);
         }
@@ -525,11 +523,15 @@ class controlador_nom_nomina extends system
                 header: $header, ws: $ws);
         }
 
+        if (isset($_POST['btn_action_next'])) {
+            unset($_POST['btn_action_next']);
+        }
+
         if ($header) {
             $retorno = (new actions())->retorno_alta_bd(registro_id: $this->registro_id, seccion: $this->tabla,
                 siguiente_view: $siguiente_view);
             if (errores::$error) {
-                return $this->retorno_error(mensaje: 'Error al dar de modificar registro',
+                return $this->retorno_error(mensaje: 'Error al dar de alta registro',
                     data: $r_modifica, header: true, ws: $ws);
             }
             header('Location:' . $retorno);
