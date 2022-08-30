@@ -86,7 +86,34 @@ class nom_nomina extends modelo
         return $r_alta_bd;
     }
 
-    public function aplica_imss(int $nom_nomina_id){
+    public function aplica_imss(int $nom_nomina_id): bool|array
+    {
+        $partidas = $this->partidas(nom_nomina_id: $nom_nomina_id);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al obtener partidas', data: $partidas);
+        }
+
+        $aplica_imss = false;
+        foreach ($partidas->percepciones as $percepcion){
+            $existe_key_imss = isset($percepcion['nom_percepcion_aplica_imss']);
+            $aplica_imss_bool = $existe_key_imss && $percepcion['nom_percepcion_aplica_imss'] === 'activo';
+            if($aplica_imss_bool){
+                $aplica_imss = true;
+                break;
+            }
+        }
+        if(!$aplica_imss) {
+            foreach ($partidas->otros_pagos as $otro_pago) {
+                $existe_key_imss = isset($otro_pago['nom_otro_pago_aplica_imss']);
+                $aplica_imss_bool = $existe_key_imss && $otro_pago['nom_otro_pago_aplica_imss'] === 'activo';
+                if ($aplica_imss_bool) {
+                    $aplica_imss = true;
+                    break;
+                }
+            }
+        }
+
+        return $aplica_imss;
 
     }
 
