@@ -260,6 +260,27 @@ class nominas extends modelo {
     }
 
     /**
+     * @throws JsonException
+     */
+    private function elimina_deduccion(array $filtro): array
+    {
+        $r_nom_par_deduccion = (new nom_par_deduccion(link: $this->link))->filtro_and(filtro: $filtro);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al obtener deduccion', data: $r_nom_par_deduccion);
+        }
+        $dels = array();
+        foreach ($r_nom_par_deduccion->registros as $par_deduccion) {
+            $elimina_deduccion = (new nom_par_deduccion(link: $this->link))->elimina_bd(
+                id: $par_deduccion['nom_par_deduccion_id']);
+            if (errores::$error) {
+                return $this->error->error(mensaje: 'Error al eliminar deduccion', data: $elimina_deduccion);
+            }
+            $dels[] = $elimina_deduccion;
+        }
+        return $dels;
+    }
+
+    /**
      * @param int $nom_deduccion_id
      * @param int $nom_nomina_id
      * @return array|stdClass
@@ -589,13 +610,9 @@ class nominas extends modelo {
                 return $this->error->error(mensaje: 'Error al validar si existe deduccion', data: $data_existe);
             }
             if($data_existe->existe){
-                $nom_par_deduccion = (new nom_par_deduccion(link: $this->link))->filtro_and(filtro: $data_existe->filtro);
+                $elimina_deducciones = $this->elimina_deduccion(filtro: $data_existe->filtro);
                 if(errores::$error){
-                    return $this->error->error(mensaje: 'Error al obtener deduccion', data: $nom_par_deduccion);
-                }
-                $elimina_deduccion = (new nom_par_deduccion(link: $this->link))->elimina_bd(id:$nom_par_deduccion->registros[0]['nom_par_deduccion_id']);
-                if(errores::$error){
-                    return $this->error->error(mensaje: 'Error al eliminar deduccion', data: $elimina_deduccion);
+                    return $this->error->error(mensaje: 'Error al eliminar deducciones', data: $elimina_deducciones);
                 }
             }
 
