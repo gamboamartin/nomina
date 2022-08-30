@@ -139,6 +139,12 @@ class nom_nomina extends modelo
 
     }
 
+    /**
+     * Calcula la cuota exedente para isr
+     * @param float|int $diferencia_li Diferencia en te monto y limite inferior
+     * @param stdClass $row_isr Registro en proceso
+     * @return float
+     */
     private function cuota_excedente_isr(float|int $diferencia_li, stdClass $row_isr): float
     {
         $cuota_excedente = $diferencia_li * $row_isr->cat_sat_isr_porcentaje_excedente;
@@ -165,14 +171,14 @@ class nom_nomina extends modelo
         $diferencia_li = $monto - $row_isr->cat_sat_isr_limite_inferior;
         $diferencia_li = round($diferencia_li, 2);
         if($diferencia_li<0.0){
-            return $this->error->error(mensaje: 'Error el limite debe ser menor o igual al monto', data: $valida);
+            return $this->error->error(mensaje: 'Error el limite debe ser menor o igual al monto', data: $diferencia_li);
         }
         return $diferencia_li;
     }
 
     /**
      * @param float|int $monto Monto total gravable
-     * @param stdClass $row_isr
+     * @param stdClass $row_isr Registro en proceso
      * @return float|array
      */
     private function genera_isr(float|int $monto, stdClass $row_isr): float|array
@@ -195,16 +201,6 @@ class nom_nomina extends modelo
         return $isr;
     }
 
-    public function get_sub_total_nomina(int $fc_factura_id): float|array
-    {
-        $subtotal = (new fc_factura($this->link))->get_factura_sub_total( fc_factura_id: $fc_factura_id);
-        if (errores::$error) {
-            return $this->error->error(mensaje: 'Error al obtener el subtotal de la partida',
-                data: $subtotal);
-        }
-        return $subtotal;
-    }
-
     public function get_descuento_nomina(int $fc_factura_id): float
     {
         $descuento = (new fc_factura($this->link))->get_descuento( fc_factura_id: $fc_factura_id);
@@ -213,6 +209,26 @@ class nom_nomina extends modelo
                 data: $descuento);
         }
         return $descuento;
+    }
+
+    private function get_percepciones(int $nom_nomina_id): array
+    {
+        $filtro['nom_nomina.id'] = $nom_nomina_id;
+        $r_nom_par_percepcion = (new nom_par_percepcion($this->link))->filtro_and(filtro:$filtro);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al obtener nomina_partida_percepcion', data: $r_nom_par_percepcion);
+        }
+        return $r_nom_par_percepcion->registros_obj;
+    }
+
+    public function get_sub_total_nomina(int $fc_factura_id): float|array
+    {
+        $subtotal = (new fc_factura($this->link))->get_factura_sub_total( fc_factura_id: $fc_factura_id);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al obtener el subtotal de la partida',
+                data: $subtotal);
+        }
+        return $subtotal;
     }
 
     private function get_sucursal_by_empleado(int $em_empleado_id){
@@ -578,16 +594,6 @@ class nom_nomina extends modelo
             $em_empleado->em_empleado_ap .
             $em_empleado->em_empleado_am .
             $em_empleado->em_empleado_rfc;
-    }
-
-    private function get_percepciones(int $nom_nomina_id): array
-    {
-        $filtro['nom_nomina.id'] = $nom_nomina_id;
-        $r_nom_par_percepcion = (new nom_par_percepcion($this->link))->filtro_and(filtro:$filtro);
-        if (errores::$error) {
-            return $this->error->error(mensaje: 'Error al obtener nomina_partida_percepcion', data: $r_nom_par_percepcion);
-        }
-        return $r_nom_par_percepcion->registros_obj;
     }
 
     /**
