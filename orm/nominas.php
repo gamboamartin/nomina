@@ -335,6 +335,7 @@ class nominas extends modelo {
             return $this->error->error(mensaje: 'Error al obtener nom_par_percepcion', data: $nom_par_percepcion);
         }
 
+
         $isr = (new nom_nomina($this->link))->isr(
             cat_sat_periodicidad_pago_nom_id: $nom_par_percepcion->cat_sat_periodicidad_pago_nom_id,
             monto: $total_gravado, fecha: $nom_par_percepcion->nom_nomina_fecha_final_pago);

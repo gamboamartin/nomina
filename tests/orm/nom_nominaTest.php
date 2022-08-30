@@ -101,6 +101,28 @@ class nom_nominaTest extends test {
 
     }
 
+    public function test_diferencia_li(): void
+    {
+        errores::$error = false;
+
+        $_GET['seccion'] = 'cat_sat_tipo_persona';
+        $_GET['accion'] = 'lista';
+        $_SESSION['grupo_id'] = 1;
+        $_SESSION['usuario_id'] = 2;
+        $_GET['session_id'] = '1';
+
+        $nomina = new nom_nomina($this->link);
+        $nomina = new liberator($nomina);
+        $monto = 50;
+        $row_isr = new stdClass();
+        $row_isr->cat_sat_isr_limite_inferior = 10;
+        $resultado = $nomina->diferencia_li($monto, $row_isr);
+        $this->assertIsFloat($resultado);
+        $this->assertNotTrue(errores::$error);
+        $this->assertEquals(40.0, $resultado);
+        errores::$error = false;
+    }
+
     public function test_filtro_especial_isr(): void
     {
         errores::$error = false;

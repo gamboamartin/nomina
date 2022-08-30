@@ -148,14 +148,26 @@ class nom_nomina extends modelo
     }
 
     /**
+     * Obtiene la diferencia entre limite inferior menos monto
      * @param float|int $monto Monto total gravable
-     * @param stdClass $row_isr
-     * @return float
+     * @param stdClass $row_isr Registro para isr
+     * @return float|array
+     * @version 0.119.14
      */
-    private function diferencia_li(float|int $monto, stdClass $row_isr): float
+    private function diferencia_li(float|int $monto, stdClass $row_isr): float|array
     {
+        $keys = array('cat_sat_isr_limite_inferior');
+        $valida = $this->validacion->valida_double_mayores_0(keys: $keys, registro: $row_isr);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al validar row_isr', data: $valida);
+        }
+
         $diferencia_li = $monto - $row_isr->cat_sat_isr_limite_inferior;
-        return round($diferencia_li, 2);
+        $diferencia_li = round($diferencia_li, 2);
+        if($diferencia_li<0.0){
+            return $this->error->error(mensaje: 'Error el limite debe ser menor o igual al monto', data: $valida);
+        }
+        return $diferencia_li;
     }
 
     /**
