@@ -33,7 +33,6 @@ class nom_par_percepcion extends nominas{
         }
 
         $modelo = new nom_percepcion($this->link);
-        
 
         $r_alta_bd = $this->alta_bd_percepcion(modelo: $modelo);
         if(errores::$error){

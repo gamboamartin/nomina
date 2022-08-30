@@ -240,7 +240,7 @@ class nom_nomina extends modelo
         }
 
         $fc_fcd_id = $this->registros_por_id(new fc_cfd($this->link),
-            $im_registro_patronal->im_registro_patronal_fc_fcd_id);
+            $im_registro_patronal->im_registro_patronal_fc_cfd_id);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al generar registros de fcd', data: $fc_fcd_id);
         }
