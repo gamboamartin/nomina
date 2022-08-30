@@ -29,21 +29,16 @@ class nom_nomina extends modelo
 
     public function alta_bd(): array|stdClass
     {
-
-
         $registros = $this->genera_registros();
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al generar registros', data: $registros);
         }
-
 
         $registros_factura = $this->genera_registro_factura(registros: $registros['fc_fcd'],
             empleado_sucursal: $registros['nom_rel_empleado_sucursal'],cat_sat: $registros['nom_conf_empleado']);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al generar registros de factura', data: $registros_factura);
         }
-
-
 
         $r_alta_factura = $this->inserta_factura(registro: $registros_factura);
         if (errores::$error) {
