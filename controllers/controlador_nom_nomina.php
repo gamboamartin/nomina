@@ -482,6 +482,7 @@ class controlador_nom_nomina extends system
     public function modifica_otro_pago(bool $header, bool $ws = false): array|stdClass|string
     {
         $controlador = new controlador_nom_par_otro_pago($this->link);
+        $controlador->registro_id = $this->nom_par_otro_pago_id;
 
         $r_modifica = $controlador->modifica(header: false, aplica_form: false);
         if (errores::$error) {
