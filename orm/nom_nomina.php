@@ -139,18 +139,58 @@ class nom_nomina extends modelo
 
     }
 
+    private function codigo_nomina(int $org_sucursal_id, array $registro): array|string
+    {
+
+        $org_sucursal = (new org_sucursal($this->link))->registro(registro_id: $org_sucursal_id, retorno_obj: true);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al obtener sucursal', data: $org_sucursal);
+        }
+
+        $codigo = $this->genera_codigo_nomina(org_sucursal: $org_sucursal, registro: $registro);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al generar codigo', data: $codigo);
+        }
+        return $codigo;
+    }
+
     /**
      * Calcula la cuota exedente para isr
      * @param float|int $diferencia_li Diferencia en te monto y limite inferior
      * @param stdClass $row_isr Registro en proceso
-     * @return float
+     * @return float|array
+     * @version 0.126.16
      */
-    private function cuota_excedente_isr(float|int $diferencia_li, stdClass $row_isr): float
+    private function cuota_excedente_isr(float|int $diferencia_li, stdClass $row_isr): float|array
     {
+        $keys = array('cat_sat_isr_porcentaje_excedente');
+        $valida = $this->validacion->valida_double_mayores_igual_0(keys: $keys, registro: $row_isr);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al validar row_isr', data: $valida);
+        }
+
+        if($diferencia_li<0.0){
+            return $this->error->error(mensaje: 'Error $diferencia_li debe ser mayor a 0', data: $diferencia_li);
+        }
+
         $cuota_excedente = $diferencia_li * $row_isr->cat_sat_isr_porcentaje_excedente;
         $cuota_excedente = round($cuota_excedente,2);
         $cuota_excedente /= 100;
         return round($cuota_excedente,2);
+    }
+
+    private function descripcion_nomina(int $em_empleado_id, array $registro): array|string
+    {
+        $em_empleado = (new em_empleado($this->link))->registro(registro_id: $em_empleado_id, retorno_obj: true);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al obtener empleado', data: $em_empleado);
+        }
+
+        $descripcion = $this->genera_descripcion(em_empleado: $em_empleado, registro: $registro);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al generar descripcion', data: $descripcion);
+        }
+        return $descripcion;
     }
 
     /**
@@ -441,10 +481,6 @@ class nom_nomina extends modelo
         return $r_isr->registros_obj[0];
     }
 
-
-
-
-
     private function inserta_cfd_partida(array $registro): array|stdClass
     {
         $r_alta_cfd_partida = (new fc_cfd_partida($this->link))->alta_registro(registro: $registro);
@@ -495,20 +531,7 @@ class nom_nomina extends modelo
 
     }
 
-    private function codigo_nomina(int $org_sucursal_id, array $registro): array|string
-    {
 
-        $org_sucursal = (new org_sucursal($this->link))->registro(registro_id: $org_sucursal_id, retorno_obj: true);
-        if (errores::$error) {
-            return $this->error->error(mensaje: 'Error al obtener sucursal', data: $org_sucursal);
-        }
-
-        $codigo = $this->genera_codigo_nomina(org_sucursal: $org_sucursal, registro: $registro);
-        if (errores::$error) {
-            return $this->error->error(mensaje: 'Error al generar codigo', data: $codigo);
-        }
-        return $codigo;
-    }
 
 
     /**
@@ -566,19 +589,7 @@ class nom_nomina extends modelo
         return implode($campos_asignar);
     }
 
-    private function descripcion_nomina(int $em_empleado_id, array $registro): array|string
-    {
-        $em_empleado = (new em_empleado($this->link))->registro(registro_id: $em_empleado_id, retorno_obj: true);
-        if (errores::$error) {
-            return $this->error->error(mensaje: 'Error al obtener empleado', data: $em_empleado);
-        }
 
-        $descripcion = $this->genera_descripcion(em_empleado: $em_empleado, registro: $registro);
-        if (errores::$error) {
-            return $this->error->error(mensaje: 'Error al generar descripcion', data: $descripcion);
-        }
-        return $descripcion;
-    }
 
     private function genera_codigo_nomina(stdClass $org_sucursal, array $registro): string
     {
