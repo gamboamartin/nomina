@@ -11,8 +11,6 @@ use stdClass;
 
 class nom_nomina extends modelo
 {
-
-
     public function __construct(PDO $link)
     {
         $tabla = __CLASS__;
@@ -221,8 +219,6 @@ class nom_nomina extends modelo
         }
         return $nom_rel_empleado_sucursal->registros[0];
     }
-
-
 
     private function genera_registros(): array
     {
