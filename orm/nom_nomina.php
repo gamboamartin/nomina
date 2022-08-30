@@ -623,7 +623,18 @@ class nom_nomina extends modelo
             return $this->error->error(mensaje: 'Error al obtener percepciones', data: $r_nom_par_percepcion);
         }
 
-        return round($r_nom_par_percepcion['total_importe_gravado'],2);
+        $campos = array();
+        $campos['total_importe_gravado'] = 'nom_par_otro_pago.importe_gravado';
+        $r_nom_par_otro_pago = (new nom_par_otro_pago($this->link))->suma(campos: $campos,filtro: $filtro);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al obtener otros pagos', data: $r_nom_par_otro_pago);
+        }
+
+        $total_percepciones = round($r_nom_par_percepcion['total_importe_gravado'],2);
+        $total_otros_pagos = round($r_nom_par_otro_pago['total_importe_gravado'],2);
+
+        $total_gravado = $total_percepciones + $total_otros_pagos;
+        return round($total_gravado, 2);
 
     }
 
