@@ -56,4 +56,6 @@ class nom_par_deduccion extends nominas{
 
 
 
+
+
 }

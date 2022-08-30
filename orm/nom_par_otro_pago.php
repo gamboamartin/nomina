@@ -40,6 +40,16 @@ class nom_par_otro_pago extends nominas
         return $r_alta_bd;
     }
 
+    public function modifica_bd(array $registro, int $id, bool $reactiva = false): array|stdClass
+    {
+        $r_modifica_bd = $this->modifica_bd_percepcion(registro: $registro,id:  $id);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al modificar registro',data:  $r_modifica_bd);
+        }
+        return $r_modifica_bd;
+
+    }
+
 
 
 
