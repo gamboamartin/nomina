@@ -195,6 +195,16 @@ class nom_nomina extends modelo
         return round($cuota_excedente,2);
     }
 
+    public function deducciones(int $nom_nomina_id): array
+    {
+        $filtro['nom_nomina.id'] = $nom_nomina_id;
+        $r_nom_par_deduccion = (new nom_par_deduccion($this->link))->filtro_and(filtro: $filtro);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al obtener deducciones', data: $r_nom_par_deduccion);
+        }
+        return $r_nom_par_deduccion->registros;
+    }
+
     private function descripcion_nomina(int $em_empleado_id, array $registro): array|string
     {
         $em_empleado = (new em_empleado($this->link))->registro(registro_id: $em_empleado_id, retorno_obj: true);
