@@ -7,7 +7,9 @@ use gamboamartin\nomina\controllers\controlador_nom_deduccion;
 
 use gamboamartin\system\html_controler;
 use models\nom_conf_factura;
+use models\nom_conf_nomina;
 use models\nom_deduccion;
+use models\nom_nomina;
 use PDO;
 use stdClass;
 
@@ -130,7 +132,7 @@ class nom_conf_nomina_html extends html_controler {
 
     public function select_nom_conf_nomina(int $cols, bool $con_registros, int $id_selected, PDO $link): array|string
     {
-        $modelo = new nom_deduccion(link: $link);
+        $modelo = new nom_conf_nomina(link: $link);
 
         $select = $this->select_catalogo(cols:$cols,con_registros:$con_registros,id_selected:$id_selected,
             modelo: $modelo, label: 'Configuracion Nomina',required: true);

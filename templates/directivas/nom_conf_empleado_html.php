@@ -13,6 +13,7 @@ use models\com_sucursal;
 use models\em_empleado;
 use models\nom_conf_empleado;
 use models\nom_conf_factura;
+use models\nom_conf_nomina;
 use models\nom_percepcion;
 use PDO;
 use stdClass;
@@ -23,7 +24,7 @@ class nom_conf_empleado_html extends html_controler {
     {
         $controler->inputs->select = new stdClass();
         $controler->inputs->select->em_empleado_id = $inputs->selects->em_empleado_id;
-        $controler->inputs->select->nom_conf_factura_id = $inputs->selects->nom_conf_factura_id;
+        $controler->inputs->select->nom_conf_nomina_id = $inputs->selects->nom_conf_nomina_id;
 
         return $controler->inputs;
     }
@@ -118,12 +119,12 @@ class nom_conf_empleado_html extends html_controler {
         }
         $selects->em_empleado_id = $select;
 
-        $select = (new nom_conf_factura_html(html:$this->html_base))->select_nom_conf_factura_id(
+        $select = (new nom_conf_nomina_html(html:$this->html_base))->select_nom_conf_nomina(
             cols: 6, con_registros:true, id_selected:-1,link: $link);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al generar select',data:  $select);
         }
-        $selects->nom_conf_factura_id = $select;
+        $selects->nom_conf_nomina_id = $select;
 
 
         return $selects;
@@ -140,12 +141,12 @@ class nom_conf_empleado_html extends html_controler {
         }
         $selects->em_empleado_id = $select;
 
-        $select = (new nom_conf_factura_html(html:$this->html_base))->select_nom_conf_factura_id(
-            cols: 6, con_registros:true, id_selected:$row_upd->nom_conf_factura_id,link: $link);
+        $select = (new nom_conf_nomina_html(html:$this->html_base))->select_nom_conf_nomina(
+            cols: 6, con_registros:true, id_selected:$row_upd->nom_conf_nomina_id,link: $link);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al generar select',data:  $select);
         }
-        $selects->nom_conf_factura_id = $select;
+        $selects->nom_conf_nomina_id = $select;
 
         return $selects;
     }
