@@ -629,6 +629,16 @@ class nom_nomina extends modelo
         return $registro;
     }
 
+    public function otros_pagos(int $nom_nomina_id): array
+    {
+        $filtro['nom_nomina.id'] = $nom_nomina_id;
+        $r_nom_par_otro_pago = (new nom_par_otro_pago($this->link))->filtro_and(filtro: $filtro);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al obtener otros pagos', data: $r_nom_par_otro_pago);
+        }
+        return $r_nom_par_otro_pago->registros;
+    }
+
     public function percepciones(int $nom_nomina_id): array
     {
         $filtro['nom_nomina.id'] = $nom_nomina_id;
