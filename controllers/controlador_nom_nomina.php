@@ -416,6 +416,7 @@ class controlador_nom_nomina extends system
     public function modifica_deduccion(bool $header, bool $ws = false): array|stdClass|string
     {
         $controlador = new controlador_nom_par_deduccion($this->link);
+        $controlador->registro_id = $this->nom_par_deduccion_id;
 
         $r_modifica = $controlador->modifica(header: false, aplica_form: false);
         if (errores::$error) {
@@ -426,7 +427,7 @@ class controlador_nom_nomina extends system
         $params->nom_nomina_id = new stdClass();
         $params->nom_nomina_id->cols = 12;
         $params->nom_nomina_id->disabled = true;
-        ////$params->nom_nomina_id->filtro = array('nom_nomina.id' => $this->registro_id); // REVISAR
+        $params->nom_nomina_id->filtro = array('nom_nomina.id' => $this->registro_id);
 
         $params->nom_deduccion_id = new stdClass();
         $params->nom_deduccion_id->cols = 12;
@@ -447,10 +448,12 @@ class controlador_nom_nomina extends system
             unset($_POST['btn_action_next']);
         }
 
-        $r_modifica_nom_par_deduccion = (new nom_par_deduccion($this->link))->modifica_bd(
-            registro:$this->registro, id: $this->registro_id);
+        $registros = $_POST;
+
+        $r_modifica = (new nom_par_deduccion($this->link))->modifica_bd(registro: $registros,
+            id: $this->nom_par_deduccion_id);
         if (errores::$error) {
-            return $this->retorno_error(mensaje: 'Error al modificar deduccion', data: $r_modifica_nom_par_deduccion, header: $header, ws: $ws);
+            return $this->retorno_error(mensaje: 'Error al modificar deduccion', data: $r_modifica, header: $header, ws: $ws);
         }
 
         $siguiente_view = (new actions())->init_alta_bd();
@@ -463,20 +466,20 @@ class controlador_nom_nomina extends system
             $retorno = (new actions())->retorno_alta_bd(registro_id: $this->registro_id, seccion: $this->tabla,
                 siguiente_view: $siguiente_view);
             if (errores::$error) {
-                return $this->retorno_error(mensaje: 'Error al dar de modificar registro',
-                    data: $r_modifica_nom_par_deduccion, header: true, ws: $ws);
+                return $this->retorno_error(mensaje: 'Error al dar de alta registro',
+                    data: $r_modifica, header: true, ws: $ws);
             }
             header('Location:' . $retorno);
             exit;
         }
         if ($ws) {
             header('Content-Type: application/json');
-            echo json_encode($r_modifica_nom_par_deduccion, JSON_THROW_ON_ERROR);
+            echo json_encode($r_modifica, JSON_THROW_ON_ERROR);
             exit;
         }
-        $r_modifica_nom_par_deduccion->siguiente_view = $siguiente_view;
+        $r_modifica->siguiente_view = $siguiente_view;
 
-        return $r_modifica_nom_par_deduccion;
+        return $r_modifica;
     }
 
     public function modifica_otro_pago(bool $header, bool $ws = false): array|stdClass|string
@@ -492,8 +495,7 @@ class controlador_nom_nomina extends system
         $params = new stdClass();
         $params->nom_nomina_id = new stdClass();
         $params->nom_nomina_id->cols = 12;
-        //$params->nom_nomina_id->disabled = false;
-        $params->nom_nomina_id->selected = 0;
+        $params->nom_nomina_id->disabled = true;
         $params->nom_nomina_id->filtro = array('nom_nomina.id' => $this->registro_id);
 
         $params->nom_otro_pago_id = new stdClass();
@@ -511,9 +513,14 @@ class controlador_nom_nomina extends system
 
     public function modifica_otro_pago_bd(bool $header, bool $ws = false): array|stdClass
     {
+        if (isset($_POST['btn_action_next'])) {
+            unset($_POST['btn_action_next']);
+        }
+
         $registros = $_POST;
 
-        $r_modifica = (new nom_par_otro_pago($this->link))->modifica_bd( registro:$registros, id: $this->registro_id);
+        $r_modifica = (new nom_par_otro_pago($this->link))->modifica_bd( registro:$registros,
+            id: $this->nom_par_otro_pago_id);
         if (errores::$error) {
             return $this->retorno_error(mensaje: 'Error al modificar deduccion', data: $r_modifica, header: $header, ws: $ws);
         }
@@ -522,10 +529,6 @@ class controlador_nom_nomina extends system
         if (errores::$error) {
             return $this->retorno_error(mensaje: 'Error al obtener siguiente view', data: $siguiente_view,
                 header: $header, ws: $ws);
-        }
-
-        if (isset($_POST['btn_action_next'])) {
-            unset($_POST['btn_action_next']);
         }
 
         if ($header) {
@@ -551,6 +554,7 @@ class controlador_nom_nomina extends system
     public function modifica_percepcion(bool $header, bool $ws = false): array|stdClass|string
     {
         $controlador = new controlador_nom_par_percepcion($this->link);
+        $controlador->registro_id = $this->nom_par_percepcion_id;
 
         $r_modifica = $controlador->modifica(header: false, aplica_form: false);
         if (errores::$error) {
@@ -561,7 +565,7 @@ class controlador_nom_nomina extends system
         $params->nom_nomina_id = new stdClass();
         $params->nom_nomina_id->cols = 12;
         $params->nom_nomina_id->disabled = true;
-        ////$params->nom_nomina_id->filtro = array('nom_nomina.id' => $this->registro_id); // REVISAR
+        $params->nom_nomina_id->filtro = array('nom_nomina.id' => $this->registro_id);
 
         $params->nom_percepcion_id = new stdClass();
         $params->nom_percepcion_id->cols = 12;
@@ -582,8 +586,10 @@ class controlador_nom_nomina extends system
             unset($_POST['btn_action_next']);
         }
 
-        $r_modifica = (new nom_par_percepcion($this->link))->modifica_bd(
-            registro:$this->registro, id: $this->registro_id);
+        $registros = $_POST;
+
+        $r_modifica = (new nom_par_percepcion($this->link))->modifica_bd(registro: $registros,
+            id: $this->nom_par_percepcion_id);
         if (errores::$error) {
             return $this->retorno_error(mensaje: 'Error al modificar deduccion', data: $r_modifica, header: $header, ws: $ws);
         }
@@ -598,7 +604,7 @@ class controlador_nom_nomina extends system
             $retorno = (new actions())->retorno_alta_bd(registro_id: $this->registro_id, seccion: $this->tabla,
                 siguiente_view: $siguiente_view);
             if (errores::$error) {
-                return $this->retorno_error(mensaje: 'Error al dar de modificar registro',
+                return $this->retorno_error(mensaje: 'Error al dar de alta registro',
                     data: $r_modifica, header: true, ws: $ws);
             }
             header('Location:' . $retorno);
