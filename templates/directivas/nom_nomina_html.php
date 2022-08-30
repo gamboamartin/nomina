@@ -70,6 +70,7 @@ class nom_nomina_html extends html_controler
         $controler->inputs->select = new stdClass();
         $controler->inputs->select->im_registro_patronal_id = $inputs->selects->im_registro_patronal_id;
         $controler->inputs->select->em_empleado_id = $inputs->selects->em_empleado_id;
+        $controler->inputs->select->nom_conf_empleado_id = $inputs->selects->nom_conf_empleado_id;
         $controler->inputs->select->cat_sat_tipo_nomina_id = $inputs->selects->cat_sat_tipo_nomina_id;
         $controler->inputs->select->cat_sat_periodicidad_pago_nom_id = $inputs->selects->cat_sat_periodicidad_pago_nom_id;
         $controler->inputs->select->em_cuenta_bancaria_id = $inputs->selects->em_cuenta_bancaria_id;
@@ -402,11 +403,18 @@ class nom_nomina_html extends html_controler
         $selects->im_registro_patronal_id = $select;
 
         $select = (new em_empleado_html(html: $this->html_base))->select_em_empleado_id(
-            cols: 12, con_registros: true, id_selected: -1, link: $link);
+            cols: 6, con_registros: true, id_selected: -1, link: $link);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al generar select', data: $select);
         }
         $selects->em_empleado_id = $select;
+
+        $select = (new nom_conf_empleado_html(html: $this->html_base))->select_nom_conf_empleado_id(
+            cols: 6, con_registros: false, id_selected: -1, link: $link);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al generar select', data: $select);
+        }
+        $selects->nom_conf_empleado_id = $select;
 
         $select = (new cat_sat_tipo_nomina_html(html: $this->html_base))->select_cat_sat_tipo_nomina_id(
             cols: 6, con_registros: true, id_selected: -1, link: $link);
@@ -450,6 +458,13 @@ class nom_nomina_html extends html_controler
             return $this->error->error(mensaje: 'Error al generar select', data: $select);
         }
         $selects->em_empleado_id = $select;
+
+        $select = (new nom_conf_empleado_html(html: $this->html_base))->select_nom_conf_empleado_id(
+            cols: 6, con_registros: true, id_selected: $row_upd->nom_conf_empleado_id, link: $link);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al generar select', data: $select);
+        }
+        $selects->nom_conf_empleado_id = $select;
 
         $select = (new cat_sat_tipo_nomina_html(html: $this->html_base))->select_cat_sat_tipo_nomina_id(
             cols: 6, con_registros: true, id_selected: $row_upd->cat_sat_tipo_nomina_id, link: $link);

@@ -14,6 +14,7 @@
 
                         <?php echo $controlador->inputs->select->im_registro_patronal_id; ?>
                         <?php echo $controlador->inputs->select->em_empleado_id; ?>
+                        <?php echo $controlador->inputs->select->nom_conf_empleado_id; ?>
                         <?php echo $controlador->inputs->select->em_cuenta_bancaria_id; ?>
                         <?php echo $controlador->inputs->rfc; ?>
                         <?php echo $controlador->inputs->curp; ?>
