@@ -21,6 +21,7 @@ class nom_nomina extends modelo
             'dp_cp' => 'dp_colonia_postal', 'dp_municipio' => 'dp_cp', 'dp_estado' => 'dp_municipio',
             'dp_pais' => 'dp_estado', 'em_empleado' => $tabla, 'fc_factura' => $tabla,'
             cat_sat_periodicidad_pago_nom'=>$tabla,'im_registro_patronal'=>$tabla);
+
         $campos_obligatorios = array('cat_sat_periodicidad_pago_nom_id','em_cuenta_bancaria_id','fecha_inicial_pago',
             'fecha_final_pago','num_dias_pagados','im_registro_patronal_id','em_empleado_id');
 
@@ -233,25 +234,25 @@ class nom_nomina extends modelo
             return $this->error->error(mensaje: 'Error al validar registro', data: $valida);
         }
 
-        $im_registro_patronal = $this->registros_por_id(new im_registro_patronal($this->link),
+        $im_registro_patronal = $this->registro_por_id(new im_registro_patronal($this->link),
             $this->registro['im_registro_patronal_id']);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al generar registros de registro patronal',
                 data: $im_registro_patronal);
         }
 
-        $fc_fcd_id = $this->registros_por_id(new fc_cfd($this->link),
+        $fc_fcd_id = $this->registro_por_id(new fc_cfd($this->link),
             $im_registro_patronal->im_registro_patronal_fc_cfd_id);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al generar registros de fcd', data: $fc_fcd_id);
         }
 
-        $em_empleado = $this->registros_por_id(new em_empleado($this->link), $this->registro['em_empleado_id']);
+        $em_empleado = $this->registro_por_id(new em_empleado($this->link), $this->registro['em_empleado_id']);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al generar registros de empleado ', data: $em_empleado);
         }
 
-        $nom_conf_empleado = $this->registros_por_id(new nom_conf_empleado($this->link), $this->registro['em_empleado_id']);
+        $nom_conf_empleado = $this->registro_por_id(new nom_conf_empleado($this->link), $this->registro['em_empleado_id']);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al generar registros de conf factura',
                 data: $nom_conf_empleado);
@@ -535,16 +536,6 @@ class nom_nomina extends modelo
         return $registro;
     }
 
-
-
-    public function registros_por_id(modelo $entidad, int $id): array|stdClass
-    {
-        $data = $entidad->registro(registro_id: $id, retorno_obj: true);
-        if (errores::$error) {
-            return $this->error->error(mensaje: 'Error al obtener los registros', data: $data);
-        }
-        return $data;
-    }
 
     private function genera_valor_campo(array $campos_asignar): string
     {

@@ -729,12 +729,12 @@ class nom_nomina_html extends html_controler
     private function texts_modifica_crea_nomina(PDO $link,stdClass $row_upd, bool $value_vacio, stdClass $params = new stdClass()):
     array|stdClass
     {
-        $fc_factura = (new nom_nomina($link))->registros_por_id(entidad:  new fc_factura($link), id: $row_upd->fc_factura_id);
+        $fc_factura = (new nom_nomina($link))->registro_por_id(entidad:  new fc_factura($link), id: $row_upd->fc_factura_id);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al generar registros de factura ', data: $fc_factura);
         }
 
-        $em_empleado = (new nom_nomina($link))->registros_por_id(entidad:  new em_empleado($link), id: $row_upd->em_empleado_id);
+        $em_empleado = (new nom_nomina($link))->registro_por_id(entidad:  new em_empleado($link), id: $row_upd->em_empleado_id);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al generar registros de empleado ', data: $em_empleado);
         }
