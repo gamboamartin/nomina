@@ -222,8 +222,17 @@ class nom_nomina extends modelo
         return round($cuota_excedente,2);
     }
 
+    /**
+     * Obtiene todas las deducciones de una nomina
+     * @param int $nom_nomina_id Identificador de nomina
+     * @return array
+     * @version 0.146.6
+     */
     public function deducciones(int $nom_nomina_id): array
     {
+        if($nom_nomina_id<=0){
+            return $this->error->error(mensaje: 'Error $nom_nomina_id debe ser mayor a 0', data: $nom_nomina_id);
+        }
         $filtro['nom_nomina.id'] = $nom_nomina_id;
         $r_nom_par_deduccion = (new nom_par_deduccion($this->link))->filtro_and(filtro: $filtro);
         if(errores::$error){
