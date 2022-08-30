@@ -690,8 +690,17 @@ class nom_nomina extends modelo
 
     }
 
+    /**
+     * Obtiene todas las percepciones de una nomina
+     * @param int $nom_nomina_id Nomina en ejecucion
+     * @return array
+     * @version 1.144.6
+     */
     public function percepciones(int $nom_nomina_id): array
     {
+        if($nom_nomina_id<=0){
+            return $this->error->error(mensaje: 'Error $nom_nomina_id debe ser mayor a 0', data: $nom_nomina_id);
+        }
         $filtro['nom_nomina.id'] = $nom_nomina_id;
         $r_nom_par_percepcion = (new nom_par_percepcion($this->link))->filtro_and(filtro: $filtro);
         if(errores::$error){

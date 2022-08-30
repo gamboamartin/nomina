@@ -350,6 +350,26 @@ class nom_nominaTest extends test {
         errores::$error = false;
     }
 
+    public function test_percepciones(): void
+    {
+        errores::$error = false;
+
+        $_GET['seccion'] = 'cat_sat_tipo_persona';
+        $_GET['accion'] = 'lista';
+        $_SESSION['grupo_id'] = 1;
+        $_GET['session_id'] = '1';
+        $nomina = new nom_nomina($this->link);
+
+
+        $nom_nomina_id = 1;
+        $resultado = $nomina->percepciones($nom_nomina_id);
+        $this->assertIsArray($resultado);
+        $this->assertNotTrue(errores::$error);
+
+
+        errores::$error = false;
+    }
+
 
 
     public function test_total_gravado(): void
