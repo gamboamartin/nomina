@@ -86,6 +86,10 @@ class nom_nomina extends modelo
         return $r_alta_bd;
     }
 
+    public function aplica_imss(int $nom_nomina_id){
+
+    }
+
     private function asigna_campo(array $registro, string $campo, array $campos_asignar): array
     {
         if (!isset($registro[$campo])) {
@@ -615,6 +619,16 @@ class nom_nomina extends modelo
         return $registro;
     }
 
+    public function percepciones(int $nom_nomina_id): array
+    {
+        $filtro['nom_nomina.id'] = $nom_nomina_id;
+        $r_nom_par_percepcion = (new nom_par_percepcion($this->link))->filtro_and(filtro: $filtro);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al obtener percepciones', data: $r_nom_par_percepcion);
+        }
+        return $r_nom_par_percepcion->registros;
+    }
+
     /**
      * Obtiene el total gravado de una nomina
      * @param int $nom_nomina_id Nomina a verificar
@@ -645,5 +659,5 @@ class nom_nomina extends modelo
         return round($total_gravado, 2);
 
     }
-    
+
 }
