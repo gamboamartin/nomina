@@ -579,24 +579,34 @@ class nominas extends modelo {
         $data = new stdClass();
         $transaccion_aplicada = false;
         $transaccion = new stdClass();
-        $imss = $this->imss(partida_percepcion_id: $partida_percepcion_id);
+        $imss = array();
+
+        $aplica_imss = (new nom_nomina($this->link))->aplica_imss(nom_nomina_id: $nom_nomina_id);
         if(errores::$error){
-            return $this->error->error(mensaje: 'Error al calcular imss', data: $imss);
-        }
-        if(errores::$error){
-            return $this->error->error(mensaje: 'Error al calcular imss', data: $imss);
+            return $this->error->error(mensaje: 'Error al validar si aplica imss', data: $aplica_imss);
         }
 
+        if($aplica_imss) {
 
-        if((float)$imss['total']>0.0) {
-
-            $transaccion = $this->aplica_deduccion(monto: (float)$imss['total'], nom_deduccion_id: 2,
-                nom_nomina_id:  $nom_nomina_id);
-            if(errores::$error){
-                return $this->error->error(mensaje: 'Error al generar transaccion', data: $transaccion);
+            $imss = $this->imss(partida_percepcion_id: $partida_percepcion_id);
+            if (errores::$error) {
+                return $this->error->error(mensaje: 'Error al calcular imss', data: $imss);
             }
-            $transaccion_aplicada = true;
+            if (errores::$error) {
+                return $this->error->error(mensaje: 'Error al calcular imss', data: $imss);
+            }
 
+
+            if ((float)$imss['total'] > 0.0) {
+
+                $transaccion = $this->aplica_deduccion(monto: (float)$imss['total'], nom_deduccion_id: 2,
+                    nom_nomina_id: $nom_nomina_id);
+                if (errores::$error) {
+                    return $this->error->error(mensaje: 'Error al generar transaccion', data: $transaccion);
+                }
+                $transaccion_aplicada = true;
+
+            }
         }
         $data->imss = $imss;
         $data->transaccion = $transaccion;
