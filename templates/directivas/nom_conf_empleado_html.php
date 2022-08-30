@@ -8,6 +8,7 @@ use gamboamartin\nomina\controllers\controlador_nom_conf_empleado;
 use gamboamartin\nomina\controllers\controlador_nom_conf_factura;
 use gamboamartin\nomina\controllers\controlador_nom_percepcion;
 use gamboamartin\system\html_controler;
+use gamboamartin\template\directivas;
 use models\cat_sat_tipo_percepcion_nom;
 use models\com_sucursal;
 use models\em_empleado;
@@ -151,8 +152,16 @@ class nom_conf_empleado_html extends html_controler {
         return $selects;
     }
 
-    public function select_nom_conf_empleado_id(int $cols, bool $con_registros, int $id_selected, PDO $link): array|string
+    public function select_nom_conf_empleado_id(int $cols, bool $con_registros, int|null $id_selected, PDO $link): array|string
     {
+        $valida = (new directivas(html:$this->html_base))->valida_cols(cols:$cols);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al validar cols', data: $valida);
+        }
+        if(is_null($id_selected)){
+            $id_selected = -1;
+        }
+
         $modelo = new nom_conf_empleado(link: $link);
 
         $select = $this->select_catalogo(cols:$cols,con_registros:$con_registros,id_selected:$id_selected,
