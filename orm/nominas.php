@@ -49,7 +49,6 @@ class nominas extends modelo {
             return $this->error->error(mensaje: 'Error al validar si existe deduccion', data: $data_existe);
         }
 
-
         $transaccion = $this->transaccion_deduccion(data_existe: $data_existe,nom_par_deduccion_ins: $data_existe->row_ins);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al generar transaccion', data: $transaccion);
@@ -254,6 +253,8 @@ class nominas extends modelo {
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al integrar deducciones', data: $transacciones_deduccion);
         }
+
+
 
         return $r_elimina_bd;
     }
@@ -575,15 +576,28 @@ class nominas extends modelo {
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al obtener isr', data: $isr);
         }
-
         if($isr>0.0){
-
             $transaccion = $this->aplica_deduccion(monto: (float)$isr, nom_deduccion_id: 1,
                 nom_nomina_id:  $nom_nomina_id);
             if(errores::$error){
                 return $this->error->error(mensaje: 'Error al generar transaccion', data: $transaccion);
             }
-
+        }
+        elseif($isr<=0.0){
+            $data_existe = $this->existe_data_deduccion(nom_deduccion_id:1, nom_nomina_id: $nom_nomina_id);
+            if(errores::$error){
+                return $this->error->error(mensaje: 'Error al validar si existe deduccion', data: $data_existe);
+            }
+            if($data_existe->existe){
+                $nom_par_deduccion = (new nom_par_deduccion(link: $this->link))->filtro_and(filtro: $data_existe->filtro);
+                if(errores::$error){
+                    return $this->error->error(mensaje: 'Error al obtener deduccion', data: $nom_par_deduccion);
+                }
+                $elimina_deduccion = (new nom_par_deduccion(link: $this->link))->elimina_bd(id:$nom_par_deduccion->registros[0]['nom_par_deduccion_id']);
+                if(errores::$error){
+                    return $this->error->error(mensaje: 'Error al eliminar deduccion', data: $elimina_deduccion);
+                }
+            }
 
         }
         return $isr;
