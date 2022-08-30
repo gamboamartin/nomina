@@ -176,6 +176,29 @@ class calcula_imssTest extends test {
         errores::$error = false;
     }
 
+    public function test_n_dias(): void
+    {
+        errores::$error = false;
+
+        $_GET['seccion'] = 'cat_sat_tipo_persona';
+        $_GET['accion'] = 'lista';
+        $_SESSION['grupo_id'] = 1;
+        $_GET['session_id'] = '1';
+        $calculo = new calcula_imss();
+        $calculo = new liberator($calculo);
+
+        $fecha = '';
+
+        $cat_sat_periodicidad_pago_nom_id = 1;
+        $n_dias = 1;
+        $fecha = '2022-01-01';
+        $resultado = $calculo->n_dias($cat_sat_periodicidad_pago_nom_id, $fecha, $n_dias);
+        $this->assertIsNumeric($resultado);
+        $this->assertNotTrue(errores::$error);
+        $this->assertEquals(1,$resultado);
+        errores::$error = false;
+    }
+
     public function test_valida_imss(): void
     {
         errores::$error = false;

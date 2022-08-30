@@ -350,6 +350,8 @@ class nom_nominaTest extends test {
         errores::$error = false;
     }
 
+
+
     public function test_total_gravado(): void
     {
         errores::$error = false;

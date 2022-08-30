@@ -146,7 +146,7 @@ class calcula_imss{
      * @param int $cat_sat_periodicidad_pago_nom_id Identificador de periodicidad
      * @param string $fecha Fecha de nomina
      * @param float $n_dias Numero de dias de periodo de pago
-     * @param float $sbc
+     * @param float $sbc Salario diario integrado
      * @param float $sd
      * @return array|float
      */
@@ -181,7 +181,7 @@ class calcula_imss{
      * @param int $cat_sat_periodicidad_pago_nom_id Identificador de periodicidad
      * @param string $fecha Fecha de nomina
      * @param float $n_dias Numero de dias de periodo de pago
-     * @param float $sbc
+     * @param float $sbc Salario diario integrado
      * @param float $sd
      * @return array
      */
@@ -213,7 +213,7 @@ class calcula_imss{
      * @param int $cat_sat_periodicidad_pago_nom_id Identificador de periodicidad
      * @param string $fecha Fecha de nomina
      * @param float $n_dias Numero de dias de periodo de pago
-     * @param float $sbc
+     * @param float $sbc Salario diario integrado
      * @param float $sd
      * @return stdClass|array
      */
@@ -278,7 +278,7 @@ class calcula_imss{
      * @param int $cat_sat_periodicidad_pago_nom_id Identificador de periodicidad
      * @param string $fecha Fecha de nomina
      * @param float $n_dias Numero de dias de periodo de pago
-     * @param float $sbc
+     * @param float $sbc Salario diario integrado
      * @param float $sd
      * @return array|stdClass
      */
@@ -327,11 +327,12 @@ class calcula_imss{
      * @param string $fecha Fecha de nomina
      * @param float $n_dias Numero de dias del periodo
      * @return float|array
+     * @version 0.130.16
      */
     private function n_dias(int $cat_sat_periodicidad_pago_nom_id,  string $fecha, float $n_dias): float|array
     {
         if($n_dias<=0){
-            return $this->error->error(mensaje: "Error n_dias en menor a 0", data: $n_dias);
+            return $this->error->error(mensaje: "Error n_dias debe ser mayor a 0", data: $n_dias);
         }
         if($cat_sat_periodicidad_pago_nom_id<=0){
             return $this->error->error(mensaje: 'Error $cat_sat_periodicidad_pago_nom_id en menor a 0',
