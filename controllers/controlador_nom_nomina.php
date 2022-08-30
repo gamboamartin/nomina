@@ -35,7 +35,7 @@ class controlador_nom_nomina extends system
     public string $link_nom_par_deduccion_modifica_bd = '';
     public string $link_nom_par_otro_pago_modifica_bd = '';
     public int $nom_nomina_id = -1;
-    public int $nom_nom_par_percepcion_id = -1;
+    public int $nom_par_percepcion_id = -1;
     public int $nom_par_deduccion_id = -1;
     public int $nom_par_otro_pago_id = -1;
     public stdClass $paths_conf;
@@ -110,6 +110,18 @@ class controlador_nom_nomina extends system
         $this->link_nom_par_otro_pago_modifica_bd = $link_nom_par_otro_pago_modifica_bd;
         $this->paths_conf = $paths_conf;
         $this->nom_nomina_id = $this->registro_id;
+
+        if (isset($_GET['nom_par_percepcion_id'])){
+            $this->nom_par_percepcion_id = $_GET['nom_par_percepcion_id'];
+        }
+
+        if (isset($_GET['nom_par_deduccion_id'])){
+            $this->nom_par_deduccion_id = $_GET['nom_par_deduccion_id'];
+        }
+
+        if (isset($_GET['nom_par_otro_pago_id'])){
+            $this->nom_par_otro_pago_id = $_GET['nom_par_otro_pago_id'];
+        }
 
         print_r($this->registro_id);
     }
@@ -232,45 +244,114 @@ class controlador_nom_nomina extends system
 
     public function elimina_deduccion_bd(bool $header, bool $ws = false): array|stdClass
     {
-        if (isset($_POST['btn_action_next'])) {
-            unset($_POST['btn_action_next']);
-        }
-
-        $r_elimina = (new nom_par_deduccion($this->link))->elimina_bd(id: $this->registro_id);
+        $r_elimina = (new nom_par_deduccion($this->link))->elimina_bd(id: $this->nom_par_deduccion_id);
         if (errores::$error) {
             return $this->retorno_error(mensaje: 'Error al eliminar otro pago', data: $r_elimina, header: $header,
                 ws: $ws);
         }
+
+        $siguiente_view = (new actions())->init_alta_bd();
+        if (errores::$error) {
+            return $this->retorno_error(mensaje: 'Error al obtener siguiente view', data: $siguiente_view,
+                header: $header, ws: $ws);
+        }
+
+        if (isset($_POST['btn_action_next'])) {
+            unset($_POST['btn_action_next']);
+        }
+
+        if ($header) {
+            $retorno = (new actions())->retorno_alta_bd(registro_id: $this->registro_id, seccion: $this->tabla,
+                siguiente_view: $siguiente_view);
+            if (errores::$error) {
+                return $this->retorno_error(mensaje: 'Error al dar de alta registro',
+                    data: $r_elimina, header: true, ws: $ws);
+            }
+            header('Location:' . $retorno);
+            exit;
+        }
+        if ($ws) {
+            header('Content-Type: application/json');
+            echo json_encode($r_elimina, JSON_THROW_ON_ERROR);
+            exit;
+        }
+        $r_elimina->siguiente_view = $siguiente_view;
 
         return $r_elimina;
     }
 
     public function elimina_otro_pago_bd(bool $header, bool $ws = false): array|stdClass
     {
-        if (isset($_POST['btn_action_next'])) {
-            unset($_POST['btn_action_next']);
-        }
-
-        $r_elimina = (new nom_par_otro_pago($this->link))->elimina_bd(id: $this->registro_id);
+        $r_elimina = (new nom_par_otro_pago($this->link))->elimina_bd(id: $this->nom_par_otro_pago_id);
         if (errores::$error) {
             return $this->retorno_error(mensaje: 'Error al eliminar otro pago', data: $r_elimina, header: $header,
                 ws: $ws);
         }
+
+        $siguiente_view = (new actions())->init_alta_bd();
+        if (errores::$error) {
+            return $this->retorno_error(mensaje: 'Error al obtener siguiente view', data: $siguiente_view,
+                header: $header, ws: $ws);
+        }
+
+        if (isset($_POST['btn_action_next'])) {
+            unset($_POST['btn_action_next']);
+        }
+
+        if ($header) {
+            $retorno = (new actions())->retorno_alta_bd(registro_id: $this->registro_id, seccion: $this->tabla,
+                siguiente_view: $siguiente_view);
+            if (errores::$error) {
+                return $this->retorno_error(mensaje: 'Error al dar de alta registro',
+                    data: $r_elimina, header: true, ws: $ws);
+            }
+            header('Location:' . $retorno);
+            exit;
+        }
+        if ($ws) {
+            header('Content-Type: application/json');
+            echo json_encode($r_elimina, JSON_THROW_ON_ERROR);
+            exit;
+        }
+        $r_elimina->siguiente_view = $siguiente_view;
 
         return $r_elimina;
     }
 
     public function elimina_percepcion_bd(bool $header, bool $ws = false): array|stdClass
     {
-        if (isset($_POST['btn_action_next'])) {
-            unset($_POST['btn_action_next']);
-        }
-
-        $r_elimina = (new nom_par_percepcion($this->link))->elimina_bd(id: $this->registro_id);
+        $r_elimina = (new nom_par_percepcion($this->link))->elimina_bd(id: $this->nom_par_percepcion_id);
         if (errores::$error) {
             return $this->retorno_error(mensaje: 'Error al eliminar otro pago', data: $r_elimina, header: $header,
                 ws: $ws);
         }
+
+        $siguiente_view = (new actions())->init_alta_bd();
+        if (errores::$error) {
+            return $this->retorno_error(mensaje: 'Error al obtener siguiente view', data: $siguiente_view,
+                header: $header, ws: $ws);
+        }
+
+        if (isset($_POST['btn_action_next'])) {
+            unset($_POST['btn_action_next']);
+        }
+
+        if ($header) {
+            $retorno = (new actions())->retorno_alta_bd(registro_id: $this->registro_id, seccion: $this->tabla,
+                siguiente_view: $siguiente_view);
+            if (errores::$error) {
+                return $this->retorno_error(mensaje: 'Error al dar de alta registro',
+                    data: $r_elimina, header: true, ws: $ws);
+            }
+            header('Location:' . $retorno);
+            exit;
+        }
+        if ($ws) {
+            header('Content-Type: application/json');
+            echo json_encode($r_elimina, JSON_THROW_ON_ERROR);
+            exit;
+        }
+        $r_elimina->siguiente_view = $siguiente_view;
 
         return $r_elimina;
     }
