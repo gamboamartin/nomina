@@ -86,6 +86,8 @@ class nom_nomina extends modelo
         return $r_alta_bd;
     }
 
+    
+
     private function asigna_campo(array $registro, string $campo, array $campos_asignar): array
     {
         if (!isset($registro[$campo])) {

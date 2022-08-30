@@ -18,6 +18,8 @@ class nom_par_percepcion extends nominas{
 
         parent::__construct(link: $link,tabla:  $tabla, campos_obligatorios: $campos_obligatorios,
             columnas: $columnas);
+
+        $this->tabla_nom_conf = 'nom_percepcion';
     }
 
     /**

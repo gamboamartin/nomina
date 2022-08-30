@@ -8,6 +8,8 @@ use stdClass;
 
 class nom_par_deduccion extends nominas{
 
+
+
     public function __construct(PDO $link){
         $tabla = __CLASS__;
         $columnas = array($tabla=>false, 'nom_nomina'=>$tabla, 'nom_deduccion'=>$tabla);
@@ -15,6 +17,8 @@ class nom_par_deduccion extends nominas{
 
         parent::__construct(link: $link,tabla:  $tabla, campos_obligatorios: $campos_obligatorios,
             columnas: $columnas);
+
+        $this->tabla_nom_conf = 'nom_deduccion';
     }
 
 

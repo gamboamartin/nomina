@@ -20,6 +20,8 @@ class nom_par_otro_pago extends nominas
 
         parent::__construct(link: $link, tabla: $tabla, campos_obligatorios: $campos_obligatorios,
             columnas: $columnas);
+
+        $this->tabla_nom_conf = 'nom_otro_pago';
     }
 
     public function alta_bd(): array|stdClass
