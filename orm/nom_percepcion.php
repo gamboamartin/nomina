@@ -1,9 +1,9 @@
 <?php
 namespace models;
-use base\orm\modelo;
+
 use PDO;
 
-class nom_percepcion extends modelo{
+class nom_percepcion extends nominas_confs {
 
     public function __construct(PDO $link){
         $tabla = __CLASS__;

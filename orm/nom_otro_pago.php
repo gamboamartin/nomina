@@ -2,13 +2,10 @@
 
 namespace models;
 
-use base\orm\modelo;
-use gamboamartin\errores\errores;
-use html\im_registro_patronal_html;
 use PDO;
-use stdClass;
 
-class nom_otro_pago extends modelo
+
+class nom_otro_pago extends nominas_confs
 {
 
     public function __construct(PDO $link)
