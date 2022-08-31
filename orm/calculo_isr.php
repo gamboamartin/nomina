@@ -324,13 +324,13 @@ class calculo_isr{
     }
 
     /**
-     * @param modelo $modelo Modelo en ejecucion
+     * @param nominas $modelo $modelo Modelo en ejecucion
      * @param int $partida_percepcion_id otro pago o percepcion id
      * @param string|float|int $total_gravado Monto gravable de nomina
      * @return float|array
      * @version 0.176.7
      */
-    private function isr_total_nomina_por_percepcion(modelo $modelo, int $partida_percepcion_id,
+    private function isr_total_nomina_por_percepcion(nominas $modelo, int $partida_percepcion_id,
                                                      string|float|int $total_gravado): float|array
     {
 
@@ -338,20 +338,9 @@ class calculo_isr{
             return  $this->error->error(mensaje: 'Error al obtener registro $partida_percepcion_id debe ser mayor a 0',
                 data: $partida_percepcion_id);
         }
-        $nom_par_percepcion = $modelo->registro(registro_id: $partida_percepcion_id, retorno_obj: true);
+        $nom_par_percepcion = $modelo->base_calculo_impuesto(partida_percepcion_id: $partida_percepcion_id);
         if (errores::$error) {
-            return $this->error->error(mensaje: 'Error al obtener nom_par_percepcion', data: $nom_par_percepcion);
-        }
-
-        $keys = array('cat_sat_periodicidad_pago_nom_id');
-        $valida = $this->validacion->valida_ids(keys: $keys, registro: $nom_par_percepcion);
-        if (errores::$error) {
-            return $this->error->error(mensaje: 'Error al validar $nom_par_percepcion', data: $valida);
-        }
-        $keys = array('nom_nomina_fecha_final_pago');
-        $valida = $this->validacion->fechas_in_array(data: $nom_par_percepcion, keys: $keys);
-        if (errores::$error) {
-            return $this->error->error(mensaje: 'Error al validar $nom_par_percepcion', data: $valida);
+            return $this->error->error(mensaje: 'Error al obtener $nom_par_percepcion', data: $nom_par_percepcion);
         }
 
         $isr = $this->isr(

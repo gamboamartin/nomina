@@ -16,7 +16,6 @@ class calculo_subsidio{
     }
 
 
-
     /**
      * @param modelo $modelo
      * @param int $partida_percepcion_id otro pago o percepcion id
@@ -68,8 +67,6 @@ class calculo_subsidio{
         }
         return $subsidio;
     }
-
-
 
 
     /**
@@ -179,19 +176,23 @@ class calculo_subsidio{
     }
 
     /**
-     * Calcula el isr
-     * @param int $cat_sat_periodicidad_pago_nom_id
+     * Calcula el subsidio
+     * @param int $cat_sat_periodicidad_pago_nom_id Periodicidad aplicada
      * @param PDO $link conexion a la bd
      * @param float|int $monto Monto gravable de nomina
      * @param string $fecha Fecha din del periodo de pago
      * @return float|array
-
+     * @version 0.180.6
      */
-    private function subsidio(int $cat_sat_periodicidad_pago_nom_id, PDO $link, float|int $monto, string $fecha = ''): float|array
+    private function subsidio(int $cat_sat_periodicidad_pago_nom_id, PDO $link, float|int $monto,
+                              string $fecha = ''): float|array
     {
         if($cat_sat_periodicidad_pago_nom_id<=0){
             return $this->error->error(mensaje: 'Error $cat_sat_periodicidad_pago_nom_id debe ser mayor a 0',
                 data: $cat_sat_periodicidad_pago_nom_id);
+        }
+        if($monto<=0.0){
+            return $this->error->error(mensaje: 'Error monto debe ser mayor o igual a 0', data: $monto);
         }
 
         if($fecha === ''){
@@ -204,7 +205,7 @@ class calculo_subsidio{
             return $this->error->error(mensaje: 'Error al obtener subsidio', data: $row_subsidio);
         }
 
-        $subsidio = $this->genera_subsidio(row_isr: $row_subsidio);
+        $subsidio = $this->genera_subsidio(row_subsidio: $row_subsidio);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al calcular subsidio', data: $subsidio);
         }
@@ -237,13 +238,12 @@ class calculo_subsidio{
     }
 
     /**
-     * @param modelo $modelo Modelo en ejecucion
+     * @param nominas $modelo $modelo Modelo en ejecucion
      * @param int $partida_percepcion_id otro pago o percepcion id
      * @param string|float|int $total_gravado Monto gravable de nomina
      * @return float|array
-
      */
-    private function subsidio_total_nomina_por_percepcion(modelo $modelo, int $partida_percepcion_id,
+    private function subsidio_total_nomina_por_percepcion(nominas $modelo, int $partida_percepcion_id,
                                                      string|float|int $total_gravado): float|array
     {
 
@@ -251,20 +251,10 @@ class calculo_subsidio{
             return  $this->error->error(mensaje: 'Error al obtener registro $partida_percepcion_id debe ser mayor a 0',
                 data: $partida_percepcion_id);
         }
-        $nom_par_percepcion = $modelo->registro(registro_id: $partida_percepcion_id, retorno_obj: true);
-        if (errores::$error) {
-            return $this->error->error(mensaje: 'Error al obtener nom_par_percepcion', data: $nom_par_percepcion);
-        }
 
-        $keys = array('cat_sat_periodicidad_pago_nom_id');
-        $valida = $this->validacion->valida_ids(keys: $keys, registro: $nom_par_percepcion);
+        $nom_par_percepcion = $modelo->base_calculo_impuesto(partida_percepcion_id: $partida_percepcion_id);
         if (errores::$error) {
-            return $this->error->error(mensaje: 'Error al validar $nom_par_percepcion', data: $valida);
-        }
-        $keys = array('nom_nomina_fecha_final_pago');
-        $valida = $this->validacion->fechas_in_array(data: $nom_par_percepcion, keys: $keys);
-        if (errores::$error) {
-            return $this->error->error(mensaje: 'Error al validar $nom_par_percepcion', data: $valida);
+            return $this->error->error(mensaje: 'Error al obtener $nom_par_percepcion', data: $nom_par_percepcion);
         }
 
         $subsidio = $this->subsidio(

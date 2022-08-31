@@ -107,6 +107,30 @@ class calculo_subsidioTest extends test {
         errores::$error = false;
     }
 
+    public function test_subsidio(): void
+    {
+        errores::$error = false;
+
+        $_GET['seccion'] = 'cat_sat_tipo_persona';
+        $_GET['accion'] = 'lista';
+        $_SESSION['grupo_id'] = 1;
+        $_SESSION['usuario_id'] = 2;
+        $_GET['session_id'] = '1';
+
+        $calculo = new calculo_subsidio();
+        $calculo = new liberator($calculo);
+
+        $monto = .01;
+        $cat_sat_periodicidad_pago_nom_id = 1;
+
+        $resultado = $calculo->subsidio($cat_sat_periodicidad_pago_nom_id, $this->link, $monto);
+        $this->assertIsNumeric($resultado);
+        $this->assertNotTrue(errores::$error);
+        $this->assertEquals('13.39', $resultado);
+
+        errores::$error = false;
+    }
+
 
 }
 
