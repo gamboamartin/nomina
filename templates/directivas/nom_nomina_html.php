@@ -431,7 +431,7 @@ class nom_nomina_html extends html_controler
         $selects->cat_sat_periodicidad_pago_nom_id = $select;
 
         $select = (new em_cuenta_bancaria_html(html: $this->html_base))->select_em_cuenta_bancaria_id(
-            cols: 12, con_registros: true, id_selected: -1, link: $link);
+            cols: 12, con_registros: false, id_selected: -1, link: $link);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al generar select', data: $select);
         }
