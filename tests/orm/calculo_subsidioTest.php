@@ -57,6 +57,33 @@ class calculo_subsidioTest extends test {
 
     }
 
+    public function test_get_subsidio(): void
+    {
+        errores::$error = false;
+
+        $_GET['seccion'] = 'cat_sat_tipo_persona';
+        $_GET['accion'] = 'lista';
+        $_SESSION['grupo_id'] = 1;
+        $_SESSION['usuario_id'] = 2;
+        $_GET['session_id'] = '1';
+
+        $calculo = new calculo_subsidio();
+        $calculo = new liberator($calculo);
+
+        $monto = 0.01;
+        $cat_sat_periodicidad_pago_nom_id = 1;
+
+        $resultado = $calculo->get_subsidio($cat_sat_periodicidad_pago_nom_id, $this->link, $monto);
+        $this->assertIsObject($resultado);
+        $this->assertNotTrue(errores::$error);
+        $this->assertEquals('1', $resultado->cat_sat_subsidio_id);
+        $this->assertEquals('0.01', $resultado->cat_sat_subsidio_limite_inferior);
+        $this->assertEquals('58.19', $resultado->cat_sat_subsidio_limite_superior);
+        $this->assertEquals('13.39', $resultado->cat_sat_subsidio_cuota_fija);
+
+        errores::$error = false;
+    }
+
 
 }
 

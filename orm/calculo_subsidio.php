@@ -130,17 +130,19 @@ class calculo_subsidio{
     }
 
     /**
+     * Obtiene un registro de subsidio
      * @param int $cat_sat_periodicidad_pago_nom_id Periodicidad de pago identificador
      * @param PDO $link Conexion a la base de datos
      * @param float|int $monto Monto gravable de nomina
      * @param string $fecha Fecha din del periodo de pago
      * @return array|stdClass
+     * @version 0.178.6
      */
     private function get_subsidio(int $cat_sat_periodicidad_pago_nom_id, PDO $link, float|int $monto,
                              string $fecha = ''):array|stdClass{
 
         if($cat_sat_periodicidad_pago_nom_id<=0){
-            return $this->error->error(mensaje: 'Error monto debe ser mayor  a 0',
+            return $this->error->error(mensaje: 'Error $cat_sat_periodicidad_pago_nom_id debe ser mayor  a 0',
                 data: $cat_sat_periodicidad_pago_nom_id);
         }
 
