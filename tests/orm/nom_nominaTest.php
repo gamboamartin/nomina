@@ -159,28 +159,7 @@ class nom_nominaTest extends test {
 
     }
 
-    public function test_cuota_excedente_isr(): void
-    {
-        errores::$error = false;
 
-        $_GET['seccion'] = 'cat_sat_tipo_persona';
-        $_GET['accion'] = 'lista';
-        $_SESSION['grupo_id'] = 1;
-        $_SESSION['usuario_id'] = 2;
-        $_GET['session_id'] = '1';
-
-        $nomina = new nom_nomina($this->link);
-        $nomina = new liberator($nomina);
-
-        $row_isr = new stdClass();
-        $row_isr->cat_sat_isr_porcentaje_excedente = 10;
-        $diferencia_li = 1000;
-        $resultado = $nomina->cuota_excedente_isr($diferencia_li, $row_isr);
-        $this->assertIsFloat($resultado);
-        $this->assertNotTrue(errores::$error);
-        $this->assertEquals(100.000, $resultado);
-        errores::$error = false;
-    }
 
     public function test_deducciones(): void
     {

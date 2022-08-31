@@ -29,6 +29,29 @@ class calculo_isrTest extends test {
         $this->paths_conf->views = '/var/www/html/cat_sat/config/views.php';
     }
 
+    public function test_cuota_excedente_isr(): void
+    {
+        errores::$error = false;
+
+        $_GET['seccion'] = 'cat_sat_tipo_persona';
+        $_GET['accion'] = 'lista';
+        $_SESSION['grupo_id'] = 1;
+        $_SESSION['usuario_id'] = 2;
+        $_GET['session_id'] = '1';
+
+        $calculo = new calculo_isr();
+        //$calculo = new liberator($calculo);
+
+        $row_isr = new stdClass();
+        $row_isr->cat_sat_isr_porcentaje_excedente = 10;
+        $diferencia_li = 1000;
+        $resultado = $calculo->cuota_excedente_isr($diferencia_li, $row_isr);
+        $this->assertIsFloat($resultado);
+        $this->assertNotTrue(errores::$error);
+        $this->assertEquals(100.000, $resultado);
+        errores::$error = false;
+    }
+
     public function test_diferencia_li(): void
     {
         errores::$error = false;

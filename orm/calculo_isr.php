@@ -15,6 +15,31 @@ class calculo_isr{
     }
 
     /**
+     * Calcula la cuota exedente para isr
+     * @param float|int $diferencia_li Diferencia en te monto y limite inferior
+     * @param stdClass $row_isr Registro en proceso
+     * @return float|array
+     * @version 0.126.16
+     */
+    public function cuota_excedente_isr(float|int $diferencia_li, stdClass $row_isr): float|array
+    {
+        $keys = array('cat_sat_isr_porcentaje_excedente');
+        $valida = $this->validacion->valida_double_mayores_igual_0(keys: $keys, registro: $row_isr);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al validar row_isr', data: $valida);
+        }
+
+        if($diferencia_li<0.0){
+            return $this->error->error(mensaje: 'Error $diferencia_li debe ser mayor a 0', data: $diferencia_li);
+        }
+
+        $cuota_excedente = $diferencia_li * $row_isr->cat_sat_isr_porcentaje_excedente;
+        $cuota_excedente = round($cuota_excedente,2);
+        $cuota_excedente /= 100;
+        return round($cuota_excedente,2);
+    }
+
+    /**
      * Obtiene la diferencia entre limite inferior menos monto
      * @param float|int $monto Monto total gravable
      * @param stdClass $row_isr Registro para isr
