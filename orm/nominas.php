@@ -215,6 +215,12 @@ class nominas extends modelo {
         return $registro;
     }
 
+    /**
+     * Genera la base para el calculo de impuestos
+     * @param int $partida_percepcion_id Partida de nomina
+     * @return array|stdClass
+     * @version 0.181.6
+     */
     public function base_calculo_impuesto(int $partida_percepcion_id): array|stdClass
     {
         if($partida_percepcion_id <=0){

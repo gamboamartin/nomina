@@ -29,6 +29,51 @@ class nominasTest extends test {
         $this->paths_conf->views = '/var/www/html/cat_sat/config/views.php';
     }
 
+    public function test_base_calculo_impuesto(): void
+    {
+        errores::$error = false;
+
+        $_GET['seccion'] = 'cat_sat_tipo_persona';
+        $_GET['accion'] = 'lista';
+        $_SESSION['grupo_id'] = 1;
+        $_SESSION['usuario_id'] = 2;
+        $_GET['session_id'] = '1';
+        $nominas = new nom_par_percepcion($this->link);
+        //$nominas = new liberator($nominas);
+
+        $r_del_nom_par_percepcion = $nominas->elimina_todo();
+        if(errores::$error){
+            $error = (new errores())->error('Error al eliminar percepcion', $r_del_nom_par_percepcion);
+            print_r($error);
+            exit;
+        }
+
+        $nom_par_percepcion = array();
+        $nom_par_percepcion['id'] = 1;
+        $nom_par_percepcion['nom_nomina_id'] = 1;
+        $nom_par_percepcion['nom_percepcion_id'] = 1;
+        $r_alta_nom_par_percepcion = $nominas->alta_registro($nom_par_percepcion);
+        if(errores::$error){
+            $error = (new errores())->error('Error al dar de alta percepcion', $r_alta_nom_par_percepcion);
+            print_r($error);
+            exit;
+        }
+
+        $partida_percepcion_id = 1;
+
+        $resultado = $nominas->base_calculo_impuesto($partida_percepcion_id);
+        $this->assertIsObject($resultado);
+        $this->assertNotTrue(errores::$error);
+        $this->assertEquals('1', $resultado->nom_par_percepcion_id);
+        $this->assertEquals('Sueldos, Salarios Rayas y Jornales', $resultado->nom_par_percepcion_descripcion);
+        $this->assertEquals('1', $resultado->nom_nomina_id);
+        $this->assertEquals('1', $resultado->nom_percepcion_id);
+        $this->assertEquals('Diario', $resultado->cat_sat_periodicidad_pago_nom_descripcion);
+        $this->assertEquals('1', $resultado->em_empleado_id);
+        $this->assertEquals('250', $resultado->em_empleado_salario_diario_integrado);
+        errores::$error = false;
+    }
+
 
     public function test_filtro_partida(): void
     {

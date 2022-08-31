@@ -17,11 +17,11 @@ class calculo_subsidio{
 
 
     /**
-     * @param modelo $modelo
+     * @param nominas $modelo $modelo
      * @param int $partida_percepcion_id otro pago o percepcion id
      * @return float|array
      */
-    public function calcula_subsidio_nomina(modelo $modelo, int $partida_percepcion_id): float|array
+    public function calcula_subsidio_nomina(nominas $modelo, int $partida_percepcion_id): float|array
     {
         $nom_partida = $modelo->registro(registro_id:$partida_percepcion_id, retorno_obj: true);
         if(errores::$error){
