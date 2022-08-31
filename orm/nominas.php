@@ -285,6 +285,37 @@ class nominas extends modelo {
         return $data_existe;
     }
 
+    /**
+     * @throws JsonException
+     */
+    private function ejecuta_transaccion_imss(bool $aplica_imss, int $nom_nomina_id, int $partida_percepcion_id): array|stdClass
+    {
+        $data = new stdClass();
+        $data->transaccion_aplicada = false;
+        $data->transaccion = new stdClass();
+        $data->dels = array();
+        $data->imss = array();
+        if($aplica_imss) {
+            $aplicacion_imss = $this->aplica_imss_valor(nom_nomina_id: $nom_nomina_id,
+                partida_percepcion_id: $partida_percepcion_id);
+            if (errores::$error) {
+                return $this->error->error(mensaje: 'Error al generar transaccion', data: $aplicacion_imss);
+            }
+            $data->transaccion_aplicada = $aplicacion_imss->transaccion_aplicada;
+            $data->transaccion = $aplicacion_imss->transaccion;
+            $data->imss = $aplicacion_imss->imss;
+
+        }
+        else{
+            $elimina_deducciones = $this->elimina_imss(nom_nomina_id: $nom_nomina_id);
+            if(errores::$error){
+                return $this->error->error(mensaje: 'Error al eliminar deducciones', data: $elimina_deducciones);
+            }
+            $data->dels = $elimina_deducciones;
+        }
+        return $data;
+    }
+
     public function elimina_bd(int $id): array
     {
         $nom_percepcion = $this->registro(registro_id:$id, retorno_obj: true);
@@ -616,38 +647,18 @@ class nominas extends modelo {
      */
     protected function transacciona_imss(int $nom_nomina_id, int $partida_percepcion_id): array|stdClass
     {
-        $data = new stdClass();
-        $transaccion_aplicada = false;
-        $transaccion = new stdClass();
-        $imss = array();
 
         $aplica_imss = (new nom_nomina($this->link))->aplica_imss(nom_nomina_id: $nom_nomina_id);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al validar si aplica imss', data: $aplica_imss);
         }
 
-        if($aplica_imss) {
-            $aplicacion_imss = $this->aplica_imss_valor(nom_nomina_id: $nom_nomina_id,
-                partida_percepcion_id: $partida_percepcion_id);
-            if (errores::$error) {
-                return $this->error->error(mensaje: 'Error al generar transaccion', data: $aplicacion_imss);
-            }
-            $transaccion_aplicada = $aplicacion_imss->transaccion_aplicada;
-            $transaccion = $aplicacion_imss->transaccion;
-
+        $aplicacion_imss = $this->ejecuta_transaccion_imss(aplica_imss: $aplica_imss,
+            nom_nomina_id:  $nom_nomina_id, partida_percepcion_id: $partida_percepcion_id);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al generar transaccion', data: $aplicacion_imss);
         }
-        else{
-            $elimina_deducciones = $this->elimina_imss(nom_nomina_id: $nom_nomina_id);
-            if(errores::$error){
-                return $this->error->error(mensaje: 'Error al eliminar deducciones', data: $elimina_deducciones);
-            }
-
-        }
-        $data->imss = $imss;
-        $data->transaccion = $transaccion;
-        $data->transaccion_aplicada = $transaccion_aplicada;
-
-        return $data;
+        return $aplicacion_imss;
 
     }
 
