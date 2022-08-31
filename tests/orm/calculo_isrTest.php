@@ -40,7 +40,7 @@ class calculo_isrTest extends test {
         $_GET['session_id'] = '1';
 
         $calculo = new calculo_isr();
-        //$calculo = new liberator($calculo);
+        $calculo = new liberator($calculo);
 
         $row_isr = new stdClass();
         $row_isr->cat_sat_isr_cuota_fija = 25;
@@ -63,7 +63,7 @@ class calculo_isrTest extends test {
         $_GET['session_id'] = '1';
 
         $calculo = new calculo_isr();
-        //$calculo = new liberator($calculo);
+        $calculo = new liberator($calculo);
 
         $row_isr = new stdClass();
         $row_isr->cat_sat_isr_porcentaje_excedente = 10;
@@ -86,7 +86,7 @@ class calculo_isrTest extends test {
         $_GET['session_id'] = '1';
 
         $calculo = new calculo_isr();
-        //$calculo = new liberator($calculo);
+        $calculo = new liberator($calculo);
         $monto = 50;
         $row_isr = new stdClass();
         $row_isr->cat_sat_isr_limite_inferior = 10;
@@ -119,6 +119,30 @@ class calculo_isrTest extends test {
 
         $this->assertEquals('>=', $resultado[2][date(10)]['operador']);
 
+        errores::$error = false;
+    }
+
+    public function test_genera_isr(): void
+    {
+        errores::$error = false;
+
+        $_GET['seccion'] = 'cat_sat_tipo_persona';
+        $_GET['accion'] = 'lista';
+        $_SESSION['grupo_id'] = 1;
+        $_GET['session_id'] = '1';
+        $calculo = new calculo_isr();
+        //$calculo = new liberator($calculo);
+
+
+        $monto = 1;
+        $row_isr = new stdClass();
+        $row_isr->cat_sat_isr_limite_inferior = 0.01;
+        $row_isr->cat_sat_isr_porcentaje_excedente = 10;
+        $row_isr->cat_sat_isr_cuota_fija = 10;
+        $resultado = $calculo->genera_isr($monto, $row_isr);
+        $this->assertIsFloat($resultado);
+        $this->assertNotTrue(errores::$error);
+        $this->assertEquals(10.1, $resultado);
         errores::$error = false;
     }
 

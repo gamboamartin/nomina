@@ -21,7 +21,7 @@ class calculo_isr{
      * @return float|array
      * @version 0.129.16
      */
-    public function calcula_isr(float $cuota_excedente, stdClass $row_isr): float|array
+    private function calcula_isr(float $cuota_excedente, stdClass $row_isr): float|array
     {
         $keys = array('cat_sat_isr_cuota_fija');
         $valida = $this->validacion->valida_double_mayores_igual_0(keys: $keys, registro: $row_isr);
@@ -45,7 +45,7 @@ class calculo_isr{
      * @return float|array
      * @version 0.126.16
      */
-    public function cuota_excedente_isr(float|int $diferencia_li, stdClass $row_isr): float|array
+    private function cuota_excedente_isr(float|int $diferencia_li, stdClass $row_isr): float|array
     {
         $keys = array('cat_sat_isr_porcentaje_excedente');
         $valida = $this->validacion->valida_double_mayores_igual_0(keys: $keys, registro: $row_isr);
@@ -70,7 +70,7 @@ class calculo_isr{
      * @return float|array
      * @version 0.119.14
      */
-    public function diferencia_li(float|int $monto, stdClass $row_isr): float|array
+    private function diferencia_li(float|int $monto, stdClass $row_isr): float|array
     {
         $keys = array('cat_sat_isr_limite_inferior');
         $valida = $this->validacion->valida_double_mayores_0(keys: $keys, registro: $row_isr);
@@ -123,6 +123,44 @@ class calculo_isr{
         $filtro_especial[3][(string)$monto]['valor_es_campo'] = true;
 
         return $filtro_especial;
+    }
+
+    /**
+     * Genera el monto de isr en base al registro aplicado
+     * @param float|int $monto Monto total gravable
+     * @param stdClass $row_isr Registro en proceso
+     * @return float|array
+     * @version 0.163.6
+     */
+    public function genera_isr(float|int $monto, stdClass $row_isr): float|array
+    {
+        $keys = array('cat_sat_isr_limite_inferior');
+        $valida = $this->validacion->valida_double_mayores_0(keys: $keys, registro: $row_isr);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al validar row_isr', data: $valida);
+        }
+        $keys = array('cat_sat_isr_porcentaje_excedente','cat_sat_isr_cuota_fija');
+        $valida = $this->validacion->valida_double_mayores_igual_0(keys: $keys, registro: $row_isr);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al validar row_isr', data: $valida);
+        }
+
+        $diferencia_li = $this->diferencia_li(monto:$monto,row_isr:  $row_isr);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al obtener diferencia limite inferior', data: $diferencia_li);
+        }
+
+        $cuota_excedente = $this->cuota_excedente_isr(diferencia_li: $diferencia_li,row_isr:  $row_isr);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al obtener cuota excedente', data: $cuota_excedente);
+        }
+
+        $isr = $this->calcula_isr(cuota_excedente: $cuota_excedente,row_isr:  $row_isr);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al calcular isr', data: $isr);
+        }
+
+        return $isr;
     }
 
     /**
