@@ -20,6 +20,8 @@ let txt_subtotal = $('#subtotal');
 let txt_descuento = $('#descuento');
 let txt_total = $('#total');
 
+let configuraciones = {};
+
 
 sl_nom_empleado.change(function(){
     let selected = $(this).find('option:selected');
@@ -73,12 +75,27 @@ sl_nom_empleado.change(function(){
         integra_new_option("#nom_conf_empleado_id",'Seleccione una configuración','-1');
 
         $.each(data.registros, function( index, nom_conf_empleado ) {
+            configuraciones[nom_conf_empleado.nom_conf_empleado_id] = nom_conf_empleado;
             integra_new_option("#nom_conf_empleado_id",nom_conf_empleado.nom_conf_empleado_descripcion+' '+nom_conf_empleado.em_empleado_id,nom_conf_empleado.nom_conf_empleado_id);
         });
 
         sl_nom_conf_empleado.selectpicker('refresh');
     });
+
+    sl_cat_sat_periodicidad_pago_nom.val("").change();
 });
+
+sl_nom_conf_empleado.change(function () {
+    let selected = $(this).find('option:selected').val();
+
+    let elemento = Object.keys(configuraciones)
+        .filter((key) => key.includes(selected))
+        .reduce((obj, key) => {
+            return configuraciones[key];
+        }, {});
+    sl_cat_sat_periodicidad_pago_nom.val(elemento.nom_conf_nomina_cat_sat_periodicidad_pago_nom_id).change();
+
+})
 
 let getData = async (url, acciones) => {
      fetch(url)
