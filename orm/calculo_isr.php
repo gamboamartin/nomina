@@ -1,14 +1,40 @@
 <?php
 namespace models;
 use gamboamartin\errores\errores;
+use gamboamartin\validacion\validacion;
 use PDO;
 use stdClass;
 
 class calculo_isr{
     private errores $error;
+    private validacion $validacion;
 
     public function __construct(){
         $this->error = new errores();
+        $this->validacion = new validacion();
+    }
+
+    /**
+     * Obtiene la diferencia entre limite inferior menos monto
+     * @param float|int $monto Monto total gravable
+     * @param stdClass $row_isr Registro para isr
+     * @return float|array
+     * @version 0.119.14
+     */
+    public function diferencia_li(float|int $monto, stdClass $row_isr): float|array
+    {
+        $keys = array('cat_sat_isr_limite_inferior');
+        $valida = $this->validacion->valida_double_mayores_0(keys: $keys, registro: $row_isr);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al validar row_isr', data: $valida);
+        }
+
+        $diferencia_li = $monto - $row_isr->cat_sat_isr_limite_inferior;
+        $diferencia_li = round($diferencia_li, 2);
+        if($diferencia_li<0.0){
+            return $this->error->error(mensaje: 'Error el limite debe ser menor o igual al monto', data: $diferencia_li);
+        }
+        return $diferencia_li;
     }
 
     /**

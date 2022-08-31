@@ -349,28 +349,7 @@ class nom_nomina extends modelo
         return $descripcion;
     }
 
-    /**
-     * Obtiene la diferencia entre limite inferior menos monto
-     * @param float|int $monto Monto total gravable
-     * @param stdClass $row_isr Registro para isr
-     * @return float|array
-     * @version 0.119.14
-     */
-    private function diferencia_li(float|int $monto, stdClass $row_isr): float|array
-    {
-        $keys = array('cat_sat_isr_limite_inferior');
-        $valida = $this->validacion->valida_double_mayores_0(keys: $keys, registro: $row_isr);
-        if(errores::$error){
-            return $this->error->error(mensaje: 'Error al validar row_isr', data: $valida);
-        }
 
-        $diferencia_li = $monto - $row_isr->cat_sat_isr_limite_inferior;
-        $diferencia_li = round($diferencia_li, 2);
-        if($diferencia_li<0.0){
-            return $this->error->error(mensaje: 'Error el limite debe ser menor o igual al monto', data: $diferencia_li);
-        }
-        return $diferencia_li;
-    }
 
     private function es_imss_activo(array $partida, string $tabla): bool
     {
@@ -431,7 +410,7 @@ class nom_nomina extends modelo
             return $this->error->error(mensaje: 'Error al validar row_isr', data: $valida);
         }
 
-        $diferencia_li = $this->diferencia_li(monto:$monto,row_isr:  $row_isr);
+        $diferencia_li = (new calculo_isr())->diferencia_li(monto:$monto,row_isr:  $row_isr);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al obtener diferencia limite inferior', data: $diferencia_li);
         }
