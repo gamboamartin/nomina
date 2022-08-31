@@ -238,10 +238,12 @@ class calculo_subsidio{
     }
 
     /**
+     * Obtiene el subsidio por percepcion
      * @param nominas $modelo $modelo Modelo en ejecucion
      * @param int $partida_percepcion_id otro pago o percepcion id
      * @param string|float|int $total_gravado Monto gravable de nomina
      * @return float|array
+     * @version 0.182.6
      */
     private function subsidio_total_nomina_por_percepcion(nominas $modelo, int $partida_percepcion_id,
                                                      string|float|int $total_gravado): float|array
@@ -250,6 +252,9 @@ class calculo_subsidio{
         if($partida_percepcion_id <=0){
             return  $this->error->error(mensaje: 'Error al obtener registro $partida_percepcion_id debe ser mayor a 0',
                 data: $partida_percepcion_id);
+        }
+        if($total_gravado<=0.0){
+            return $this->error->error(mensaje: 'Error $total_gravado debe ser mayor o igual a 0', data: $total_gravado);
         }
 
         $nom_par_percepcion = $modelo->base_calculo_impuesto(partida_percepcion_id: $partida_percepcion_id);

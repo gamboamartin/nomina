@@ -131,6 +131,30 @@ class calculo_subsidioTest extends test {
         errores::$error = false;
     }
 
+    public function test_subsidio_total_nomina_por_percepcion(): void
+    {
+        errores::$error = false;
+
+        $_GET['seccion'] = 'cat_sat_tipo_persona';
+        $_GET['accion'] = 'lista';
+        $_SESSION['grupo_id'] = 1;
+        $_SESSION['usuario_id'] = 2;
+        $_GET['session_id'] = '1';
+
+        $calculo = new calculo_subsidio();
+        $calculo = new liberator($calculo);
+        $modelo = new nom_par_percepcion($this->link);
+
+        $partida_percepcion_id = 1;
+        $total_gravado = 0.01;
+
+        $resultado = $calculo->subsidio_total_nomina_por_percepcion($modelo, $partida_percepcion_id, $total_gravado);
+        $this->assertIsNumeric($resultado);
+        $this->assertNotTrue(errores::$error);
+        $this->assertEquals('13.39', $resultado);
+        errores::$error = false;
+    }
+
 
 }
 
