@@ -596,7 +596,6 @@ class nominas extends modelo {
                 return $this->error->error(mensaje: 'Error al calcular imss', data: $imss);
             }
 
-
             if ((float)$imss['total'] > 0.0) {
 
                 $transaccion = $this->aplica_deduccion(monto: (float)$imss['total'], nom_deduccion_id: 2,
@@ -604,6 +603,7 @@ class nominas extends modelo {
                 if (errores::$error) {
                     return $this->error->error(mensaje: 'Error al generar transaccion', data: $transaccion);
                 }
+
                 $transaccion_aplicada = true;
 
             }
