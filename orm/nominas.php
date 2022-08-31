@@ -33,10 +33,11 @@ class nominas extends modelo {
             return $this->error->error(mensaje: 'Error al insertar otro pago', data: $r_alta_bd);
         }
 
-        $transacciones_deduccion = $this->integra_deducciones(nom_nomina_id: $this->registro['nom_nomina_id']);
+        $transacciones = $this->transacciones_por_nomina(nom_nomina_id: $this->registro['nom_nomina_id']);
         if (errores::$error) {
-            return $this->error->error(mensaje: 'Error al integrar deducciones', data: $transacciones_deduccion);
+            return $this->error->error(mensaje: 'Error al integrar deducciones', data: $transacciones);
         }
+
         return $r_alta_bd;
     }
 

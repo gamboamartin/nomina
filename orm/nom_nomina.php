@@ -453,9 +453,21 @@ class nom_nomina extends modelo
      * @param float|int $monto Monto total gravable
      * @param stdClass $row_isr Registro en proceso
      * @return float|array
+     * @version 0.163.6
      */
     private function genera_isr(float|int $monto, stdClass $row_isr): float|array
     {
+        $keys = array('cat_sat_isr_limite_inferior');
+        $valida = $this->validacion->valida_double_mayores_0(keys: $keys, registro: $row_isr);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al validar row_isr', data: $valida);
+        }
+        $keys = array('cat_sat_isr_porcentaje_excedente','cat_sat_isr_cuota_fija');
+        $valida = $this->validacion->valida_double_mayores_igual_0(keys: $keys, registro: $row_isr);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al validar row_isr', data: $valida);
+        }
+
         $diferencia_li = $this->diferencia_li(monto:$monto,row_isr:  $row_isr);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al obtener diferencia limite inferior', data: $diferencia_li);
