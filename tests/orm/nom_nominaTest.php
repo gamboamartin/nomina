@@ -222,30 +222,7 @@ class nom_nominaTest extends test {
         errores::$error = false;
     }
 
-    public function test_filtro_especial_isr(): void
-    {
-        errores::$error = false;
 
-        $_GET['seccion'] = 'cat_sat_tipo_persona';
-        $_GET['accion'] = 'lista';
-        $_SESSION['grupo_id'] = 1;
-        $_SESSION['usuario_id'] = 2;
-        $_GET['session_id'] = '1';
-        $monto = 10;
-        $nomina = new nom_nomina($this->link);
-        $nomina = new liberator($nomina);
-        $resultado = $nomina->filtro_especial_isr($monto);
-        $this->assertIsArray($resultado);
-        $this->assertNotTrue(errores::$error);
-        $this->assertEquals('>=', $resultado[0][date('Y-m-d')]['operador']);
-        $this->assertEquals('cat_sat_isr.fecha_inicio', $resultado[0][date('Y-m-d')]['valor']);
-        $this->assertEquals('AND', $resultado[0][date('Y-m-d')]['comparacion']);
-        $this->assertEquals(true, $resultado[0][date('Y-m-d')]['valor_es_campo']);
-
-        $this->assertEquals('>=', $resultado[2][date(10)]['operador']);
-
-        errores::$error = false;
-    }
 
     public function test_existe_key_imss(): void
     {
