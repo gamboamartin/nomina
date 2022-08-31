@@ -275,26 +275,7 @@ class nom_nominaTest extends test {
         errores::$error = false;
     }
 
-    public function test_get_isr(): void
-    {
-        errores::$error = false;
 
-        $_GET['seccion'] = 'cat_sat_tipo_persona';
-        $_GET['accion'] = 'lista';
-        $_SESSION['grupo_id'] = 1;
-        $_SESSION['usuario_id'] = 2;
-        $_GET['session_id'] = '1';
-
-        $nomina = new nom_nomina($this->link);
-        $nomina = new liberator($nomina);
-        $monto = 0.01;
-        $cat_sat_periodicidad_pago_nom_id = 1;
-        $resultado = $nomina->get_isr($cat_sat_periodicidad_pago_nom_id, $monto);
-        $this->assertIsObject($resultado);
-        $this->assertNotTrue(errores::$error);
-        $this->assertEquals(1, $resultado->cat_sat_isr_id);
-        errores::$error = false;
-    }
 
     public function test_isr(): void
     {

@@ -242,6 +242,7 @@ class nominas extends modelo {
         return $isr;
     }
 
+
     /**
      * @param int $nom_nomina_id
      * @return float|array
