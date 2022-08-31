@@ -619,14 +619,11 @@ class nominas extends modelo {
             return $this->error->error(mensaje: 'Error al modificar registro', data: $r_modifica_bd);
         }
 
-        $transacciones_deduccion = $this->transacciona_isr_por_nomina(nom_nomina_id: $nom_percepcion->nom_nomina_id);
+        $transacciones = $this->transacciones_por_nomina(nom_nomina_id: $nom_percepcion->nom_nomina_id);
         if (errores::$error) {
-            return $this->error->error(mensaje: 'Error al integrar deducciones', data: $transacciones_deduccion);
+            return $this->error->error(mensaje: 'Error al integrar deducciones', data: $transacciones);
         }
-        $transacciones_deduccion = $this->transacciona_imss_por_nomina(nom_nomina_id: $nom_percepcion->nom_nomina_id);
-        if (errores::$error) {
-            return $this->error->error(mensaje: 'Error al integrar deducciones', data: $transacciones_deduccion);
-        }
+
         return $r_modifica_bd;
     }
 
@@ -803,6 +800,27 @@ class nominas extends modelo {
 
         }
         return $isr;
+    }
+
+    /**
+     * @throws JsonException
+     */
+    private function transacciones_por_nomina(int $nom_nomina_id): array|stdClass
+    {
+        $transacciones_deduccion_isr = $this->transacciona_isr_por_nomina(nom_nomina_id: $nom_nomina_id);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al integrar deducciones isr',
+                data: $transacciones_deduccion_isr);
+        }
+        $transacciones_deduccion_imss = $this->transacciona_imss_por_nomina(nom_nomina_id: $nom_nomina_id);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al integrar deducciones imss',
+                data: $transacciones_deduccion_imss);
+        }
+        $data = new stdClass();
+        $data->isr = $transacciones_deduccion_isr;
+        $data->imss = $transacciones_deduccion_imss;
+        return $data;
     }
 
 
