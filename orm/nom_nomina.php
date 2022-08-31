@@ -54,7 +54,7 @@ class nom_nomina extends modelo
         }
 
         $this->registro = $this->limpia_campos(registro: $this->registro,
-            campos_limpiar: array('folio', 'fecha', 'descuento'));
+            campos_limpiar: array('folio', 'fecha', 'descuento','nom_conf_empleado_id'));
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al limpiar campos', data: $this->registro);
         }
