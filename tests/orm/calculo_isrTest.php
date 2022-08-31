@@ -6,6 +6,7 @@ use gamboamartin\errores\errores;
 use gamboamartin\test\liberator;
 use gamboamartin\test\test;
 use JsonException;
+use models\adm_dia;
 use models\calcula_imss;
 use models\calculo_isr;
 use models\fc_cfd_partida;
@@ -249,7 +250,7 @@ class calculo_isrTest extends test {
         $_SESSION['grupo_id'] = 1;
         $_GET['session_id'] = '1';
         $calculo = new calculo_isr();
-        //$calculo = new liberator($calculo);
+        $calculo = new liberator($calculo);
 
         $cat_sat_periodicidad_pago_nom_id = 1;
         $monto = .01;
@@ -339,6 +340,48 @@ class calculo_isrTest extends test {
         $this->assertNotTrue(errores::$error);
         $this->assertEquals(943.46, $resultado);
 
+        errores::$error = false;
+    }
+
+    public function test_isr_total_nomina_por_percepcion(): void
+    {
+        errores::$error = false;
+
+        $_GET['seccion'] = 'cat_sat_tipo_persona';
+        $_GET['accion'] = 'lista';
+        $_SESSION['grupo_id'] = 1;
+        $_SESSION['usuario_id'] = 2;
+        $_GET['session_id'] = '1';
+        $calculo = new calculo_isr();
+        $calculo = new liberator($calculo);
+
+        $modelo = new nom_par_percepcion($this->link);
+
+        $nom_par_percepcion_del = $modelo->elimina_todo();
+        if(errores::$error){
+            $error = (new errores())->error('Error al eliminar percepciones', $nom_par_percepcion_del);
+            print_r($error);
+            exit;
+        }
+
+        $nom_par_percepcion = array();
+        $nom_par_percepcion['id'] = 1;
+        $nom_par_percepcion['nom_nomina_id'] = 1;
+        $nom_par_percepcion['nom_percepcion_id'] = 1;
+        $nom_par_percepcion['importe_gravado'] = 1;
+        $nom_par_percepcion_alta = $modelo->alta_registro($nom_par_percepcion);
+        if(errores::$error){
+            $error = (new errores())->error('Error al dar de alta percepcion', $nom_par_percepcion_alta);
+            print_r($error);
+            exit;
+        }
+
+        $partida_percepcion_id = 1;
+        $total_gravado = 100;
+        $resultado = $calculo->isr_total_nomina_por_percepcion($modelo, $partida_percepcion_id, $total_gravado);
+        $this->assertIsNumeric($resultado);
+        $this->assertNotTrue(errores::$error);
+        $this->assertEquals(5.45, $resultado);
         errores::$error = false;
     }
 
