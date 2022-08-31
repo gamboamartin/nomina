@@ -18,6 +18,7 @@ use html\nom_nomina_html;
 use html\nom_par_deduccion_html;
 use html\nom_par_otro_pago_html;
 use html\nom_par_percepcion_html;
+use JsonException;
 use models\nom_nomina;
 use models\nom_par_deduccion;
 use models\nom_par_otro_pago;
@@ -261,14 +262,8 @@ class controlador_nom_nomina extends system
         }
 
         if ($header) {
-            $retorno = (new actions())->retorno_alta_bd(registro_id: $this->registro_id, seccion: $this->tabla,
-                siguiente_view: $siguiente_view);
-            if (errores::$error) {
-                return $this->retorno_error(mensaje: 'Error al dar de alta registro',
-                    data: $r_elimina, header: true, ws: $ws);
-            }
-            header('Location:' . $retorno);
-            exit;
+            $this->retorno_base(registro_id:$this->registro_id, result: $r_elimina,
+                siguiente_view: $siguiente_view, ws:  $ws);
         }
         if ($ws) {
             header('Content-Type: application/json');
@@ -299,14 +294,8 @@ class controlador_nom_nomina extends system
         }
 
         if ($header) {
-            $retorno = (new actions())->retorno_alta_bd(registro_id: $this->registro_id, seccion: $this->tabla,
-                siguiente_view: $siguiente_view);
-            if (errores::$error) {
-                return $this->retorno_error(mensaje: 'Error al dar de alta registro',
-                    data: $r_elimina, header: true, ws: $ws);
-            }
-            header('Location:' . $retorno);
-            exit;
+            $this->retorno_base(registro_id:$this->registro_id, result: $r_elimina,
+                siguiente_view: $siguiente_view, ws:  $ws);
         }
         if ($ws) {
             header('Content-Type: application/json');
@@ -337,14 +326,8 @@ class controlador_nom_nomina extends system
         }
 
         if ($header) {
-            $retorno = (new actions())->retorno_alta_bd(registro_id: $this->registro_id, seccion: $this->tabla,
-                siguiente_view: $siguiente_view);
-            if (errores::$error) {
-                return $this->retorno_error(mensaje: 'Error al dar de alta registro',
-                    data: $r_elimina, header: true, ws: $ws);
-            }
-            header('Location:' . $retorno);
-            exit;
+            $this->retorno_base(registro_id:$this->registro_id, result: $r_elimina,
+                siguiente_view: $siguiente_view, ws:  $ws);
         }
         if ($ws) {
             header('Content-Type: application/json');
@@ -463,14 +446,8 @@ class controlador_nom_nomina extends system
         }
 
         if ($header) {
-            $retorno = (new actions())->retorno_alta_bd(registro_id: $this->registro_id, seccion: $this->tabla,
-                siguiente_view: $siguiente_view);
-            if (errores::$error) {
-                return $this->retorno_error(mensaje: 'Error al dar de alta registro',
-                    data: $r_modifica, header: true, ws: $ws);
-            }
-            header('Location:' . $retorno);
-            exit;
+            $this->retorno_base(registro_id:$this->registro_id, result: $r_modifica,
+                siguiente_view: $siguiente_view, ws:  $ws);
         }
         if ($ws) {
             header('Content-Type: application/json');
@@ -532,14 +509,8 @@ class controlador_nom_nomina extends system
         }
 
         if ($header) {
-            $retorno = (new actions())->retorno_alta_bd(registro_id: $this->registro_id, seccion: $this->tabla,
-                siguiente_view: $siguiente_view);
-            if (errores::$error) {
-                return $this->retorno_error(mensaje: 'Error al dar de alta registro',
-                    data: $r_modifica, header: true, ws: $ws);
-            }
-            header('Location:' . $retorno);
-            exit;
+            $this->retorno_base(registro_id:$this->registro_id, result: $r_modifica,
+                siguiente_view: $siguiente_view, ws:  $ws);
         }
         if ($ws) {
             header('Content-Type: application/json');
@@ -601,14 +572,8 @@ class controlador_nom_nomina extends system
         }
 
         if ($header) {
-            $retorno = (new actions())->retorno_alta_bd(registro_id: $this->registro_id, seccion: $this->tabla,
-                siguiente_view: $siguiente_view);
-            if (errores::$error) {
-                return $this->retorno_error(mensaje: 'Error al dar de alta registro',
-                    data: $r_modifica, header: true, ws: $ws);
-            }
-            header('Location:' . $retorno);
-            exit;
+            $this->retorno_base(registro_id:$this->registro_id, result: $r_modifica,
+                siguiente_view: $siguiente_view, ws:  $ws);
         }
         if ($ws) {
             header('Content-Type: application/json');
@@ -670,14 +635,8 @@ class controlador_nom_nomina extends system
         }
 
         if ($header) {
-            $retorno = (new actions())->retorno_alta_bd(registro_id: $this->registro_id, seccion: $this->tabla,
-                siguiente_view: $siguiente_view);
-            if (errores::$error) {
-                return $this->retorno_error(mensaje: 'Error al dar de alta registro',
-                    data: $r_alta_nom_par_deduccion, header: true, ws: $ws);
-            }
-            header('Location:' . $retorno);
-            exit;
+            $this->retorno_base(registro_id:$this->registro_id, result: $r_alta_nom_par_deduccion,
+                siguiente_view: $siguiente_view, ws:  $ws);
         }
         if ($ws) {
             header('Content-Type: application/json');
@@ -716,8 +675,13 @@ class controlador_nom_nomina extends system
         return $r_alta;
     }
 
+    /**
+     * @throws JsonException
+     */
     public function nueva_percepcion_bd(bool $header, bool $ws = false): array|stdClass
     {
+
+        $this->link->beginTransaction();
         if (isset($_POST['btn_action_next'])) {
             unset($_POST['btn_action_next']);
         }
@@ -729,27 +693,22 @@ class controlador_nom_nomina extends system
 
         $r_alta_nom_par_percepcion = (new nom_par_percepcion($this->link))->alta_registro(registro: $_POST);
         if (errores::$error) {
+            $this->link->rollBack();
             return $this->retorno_error(mensaje: 'Error al dar de alta percepcion', data: $r_alta_nom_par_percepcion,
                 header: $header, ws: $ws);
         }
 
         $siguiente_view = (new actions())->init_alta_bd();
         if (errores::$error) {
-
+            $this->link->rollBack();
             return $this->retorno_error(mensaje: 'Error al obtener siguiente view', data: $siguiente_view,
                 header: $header, ws: $ws);
         }
+        $this->link->commit();
 
         if ($header) {
-
-            $retorno = (new actions())->retorno_alta_bd(registro_id: $this->registro_id, seccion: $this->tabla,
-                siguiente_view: $siguiente_view);
-            if (errores::$error) {
-                return $this->retorno_error(mensaje: 'Error al dar de alta registro',
-                    data: $r_alta_nom_par_percepcion, header: true, ws: $ws);
-            }
-            header('Location:' . $retorno);
-            exit;
+            $this->retorno_base(registro_id:$this->registro_id, result: $r_alta_nom_par_percepcion,
+                siguiente_view: $siguiente_view, ws:  $ws);
         }
         if ($ws) {
             header('Content-Type: application/json');
@@ -812,14 +771,8 @@ class controlador_nom_nomina extends system
         }
 
         if ($header) {
-            $retorno = (new actions())->retorno_alta_bd(registro_id: $this->registro_id, seccion: $this->tabla,
-                siguiente_view: $siguiente_view);
-            if (errores::$error) {
-                return $this->retorno_error(mensaje: 'Error al dar de alta registro',
-                    data: $r_alta_nom_par_otro_paago, header: true, ws: $ws);
-            }
-            header('Location:' . $retorno);
-            exit;
+            $this->retorno_base(registro_id:$this->registro_id, result: $r_alta_nom_par_otro_paago,
+                siguiente_view: $siguiente_view, ws:  $ws);
         }
         if ($ws) {
             header('Content-Type: application/json');

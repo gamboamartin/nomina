@@ -97,7 +97,6 @@ class nom_nomina extends modelo
         }
 
 
-
         return $aplica_imss;
 
     }
