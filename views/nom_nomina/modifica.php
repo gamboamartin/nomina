@@ -13,9 +13,6 @@
                         <?php echo $controlador->inputs->id; ?>
                         <?php echo $controlador->inputs->codigo; ?>
                         <?php echo $controlador->inputs->codigo_bis; ?>
-                        <?php echo $controlador->inputs->descripcion; ?>
-                        <?php echo $controlador->inputs->descripcion_select; ?>
-                        <?php echo $controlador->inputs->alias; ?>
                         <?php echo $controlador->inputs->select->im_registro_patronal_id; ?>
                         <?php echo $controlador->inputs->select->em_empleado_id; ?>
                         <?php echo $controlador->inputs->select->em_cuenta_bancaria_id; ?>
