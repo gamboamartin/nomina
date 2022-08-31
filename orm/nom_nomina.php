@@ -91,28 +91,89 @@ class nom_nomina extends modelo
             return $this->error->error(mensaje: 'Error al obtener partidas', data: $partidas);
         }
 
+        $aplica_imss = $this->aplica_imss_base(partidas: $partidas);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al obtener aplica imss', data: $aplica_imss);
+        }
+
+
+
+        return $aplica_imss;
+
+    }
+
+    private function aplica_imss_base(stdClass $partidas): bool|array
+    {
+        $aplica_imss = $this->aplica_imss_percepcion(obj: 'percepciones', partidas: $partidas, tabla: 'nom_percepcion');
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al obtener aplica imss', data: $aplica_imss);
+        }
+
+        if(!$aplica_imss) {
+
+            $aplica_imss = $this->aplica_imss_percepcion(obj: 'otros_pagos', partidas: $partidas, tabla: 'nom_otro_pago');
+            if(errores::$error){
+                return $this->error->error(mensaje: 'Error al obtener aplica imss', data: $aplica_imss);
+            }
+
+        }
+        return $aplica_imss;
+    }
+
+    private function aplica_imss_bool(bool $es_imss_activo, bool $existe_key_imss): bool
+    {
+        return $existe_key_imss && $es_imss_activo;
+    }
+
+    private function aplica_imss_init(array $partida, string $tabla): array|stdClass
+    {
+        $existe_key_imss = $this->existe_key_imss(partida: $partida, tabla: $tabla);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al obtener key imss', data: $existe_key_imss);
+        }
+        $es_imss_activo = $this->es_imss_activo(partida: $partida, tabla: $tabla);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al obtener key imss', data: $es_imss_activo);
+        }
+
+        $data = new stdClass();
+        $data->existe_key_imss = $existe_key_imss;
+        $data->es_imss_activo = $es_imss_activo;
+
+        return $data;
+    }
+
+    private function aplica_imss_percepcion(string $obj,stdClass $partidas, string $tabla): bool|array
+    {
         $aplica_imss = false;
-        foreach ($partidas->percepciones as $percepcion){
-            $existe_key_imss = isset($percepcion['nom_percepcion_aplica_imss']);
-            $aplica_imss_bool = $existe_key_imss && $percepcion['nom_percepcion_aplica_imss'] === 'activo';
+        foreach ($partidas->$obj as $partida){
+
+            $aplica_imss_bool = $this->aplica_imss_val(partida: $partida, tabla: $tabla);
+            if(errores::$error){
+                return $this->error->error(mensaje: 'Error al obtener aplica imss', data: $aplica_imss_bool);
+            }
+
             if($aplica_imss_bool){
                 $aplica_imss = true;
                 break;
             }
         }
-        if(!$aplica_imss) {
-            foreach ($partidas->otros_pagos as $otro_pago) {
-                $existe_key_imss = isset($otro_pago['nom_otro_pago_aplica_imss']);
-                $aplica_imss_bool = $existe_key_imss && $otro_pago['nom_otro_pago_aplica_imss'] === 'activo';
-                if ($aplica_imss_bool) {
-                    $aplica_imss = true;
-                    break;
-                }
-            }
+        return $aplica_imss;
+    }
+
+    private function aplica_imss_val(array $partida, string $tabla): bool|array
+    {
+        $init = $this->aplica_imss_init(partida: $partida, tabla: $tabla);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al obtener key imss', data: $init);
+        }
+        $aplica_imss_bool = $this->aplica_imss_bool(
+            es_imss_activo:$init->es_imss_activo, existe_key_imss: $init->existe_key_imss);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al obtener aplica imss', data: $aplica_imss_bool);
         }
 
-        return $aplica_imss;
-
+        return $aplica_imss_bool;
     }
 
     private function asigna_campo(array $registro, string $campo, array $campos_asignar): array
@@ -274,6 +335,16 @@ class nom_nomina extends modelo
             return $this->error->error(mensaje: 'Error el limite debe ser menor o igual al monto', data: $diferencia_li);
         }
         return $diferencia_li;
+    }
+
+    private function es_imss_activo(array $partida, string $tabla): bool
+    {
+        return $partida[$tabla.'_aplica_imss'] === 'activo';
+    }
+
+    private function existe_key_imss(array $partida, string $tabla): bool
+    {
+        return isset($partida[$tabla.'_aplica_imss']);
     }
 
     /**
