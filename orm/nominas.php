@@ -78,6 +78,33 @@ class nominas extends modelo {
 
     }
 
+    /**
+     * @throws JsonException
+     */
+    private function aplica_imss_valor(int $nom_nomina_id, int $partida_percepcion_id): array|stdClass
+    {
+        $transaccion_aplicada = false;
+        $transaccion = new stdClass();
+        $imss = $this->imss(partida_percepcion_id: $partida_percepcion_id);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al calcular imss', data: $imss);
+        }
+        if ((float)$imss['total'] > 0.0) {
+            $transaccion = $this->aplica_deduccion(monto: (float)$imss['total'], nom_deduccion_id: 2,
+                nom_nomina_id: $nom_nomina_id);
+            if (errores::$error) {
+                return $this->error->error(mensaje: 'Error al generar transaccion', data: $transaccion);
+            }
+            $transaccion_aplicada = true;
+        }
+        $data = new stdClass();
+        $data->imss = $imss;
+        $data->transaccion_aplicada = $transaccion_aplicada;
+        $data->transaccion = $transaccion;
+
+        return $data;
+    }
+
     private function asigna_codigo_partida(array $registro): array
     {
         $keys_registro = array('nom_nomina_id');
@@ -301,6 +328,25 @@ class nominas extends modelo {
     }
 
     /**
+     * @throws JsonException
+     */
+    private function elimina_imss(int $nom_nomina_id): array
+    {
+        $elimina_deducciones = array();
+        $data_existe = $this->existe_data_deduccion(nom_deduccion_id:2, nom_nomina_id: $nom_nomina_id);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al validar si existe deduccion', data: $data_existe);
+        }
+        if($data_existe->existe){
+            $elimina_deducciones = $this->elimina_deduccion(filtro: $data_existe->filtro);
+            if(errores::$error){
+                return $this->error->error(mensaje: 'Error al eliminar deducciones', data: $elimina_deducciones);
+            }
+        }
+        return $elimina_deducciones;
+    }
+
+    /**
      * @param int $nom_deduccion_id
      * @param int $nom_nomina_id
      * @return array|stdClass
@@ -329,14 +375,10 @@ class nominas extends modelo {
      */
     private function existe_data_deduccion_imss(int $nom_nomina_id): array|stdClass
     {
-
-
         $data = $this->existe_data_deduccion(nom_deduccion_id:2, nom_nomina_id: $nom_nomina_id);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al validar si existe deduccion', data: $data);
         }
-
-
         return $data;
     }
 
@@ -347,8 +389,6 @@ class nominas extends modelo {
      */
     private function existe_data_deduccion_isr(int $nom_nomina_id): array|stdClass
     {
-
-
         $data = $this->existe_data_deduccion(nom_deduccion_id:1, nom_nomina_id: $nom_nomina_id);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al validar si existe deduccion', data: $data);
@@ -587,26 +627,21 @@ class nominas extends modelo {
         }
 
         if($aplica_imss) {
-
-            $imss = $this->imss(partida_percepcion_id: $partida_percepcion_id);
+            $aplicacion_imss = $this->aplica_imss_valor(nom_nomina_id: $nom_nomina_id,
+                partida_percepcion_id: $partida_percepcion_id);
             if (errores::$error) {
-                return $this->error->error(mensaje: 'Error al calcular imss', data: $imss);
+                return $this->error->error(mensaje: 'Error al generar transaccion', data: $aplicacion_imss);
             }
-            if (errores::$error) {
-                return $this->error->error(mensaje: 'Error al calcular imss', data: $imss);
+            $transaccion_aplicada = $aplicacion_imss->transaccion_aplicada;
+            $transaccion = $aplicacion_imss->transaccion;
+
+        }
+        else{
+            $elimina_deducciones = $this->elimina_imss(nom_nomina_id: $nom_nomina_id);
+            if(errores::$error){
+                return $this->error->error(mensaje: 'Error al eliminar deducciones', data: $elimina_deducciones);
             }
 
-            if ((float)$imss['total'] > 0.0) {
-
-                $transaccion = $this->aplica_deduccion(monto: (float)$imss['total'], nom_deduccion_id: 2,
-                    nom_nomina_id: $nom_nomina_id);
-                if (errores::$error) {
-                    return $this->error->error(mensaje: 'Error al generar transaccion', data: $transaccion);
-                }
-
-                $transaccion_aplicada = true;
-
-            }
         }
         $data->imss = $imss;
         $data->transaccion = $transaccion;

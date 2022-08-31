@@ -52,9 +52,6 @@ class nom_par_deduccion extends nominas{
         }
 
 
-
-
-
         return $r_alta_bd;
     }
 
