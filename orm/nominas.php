@@ -379,9 +379,9 @@ class nominas extends modelo {
             return $this->error->error(mensaje: 'Error al eliminar registro', data: $r_elimina_bd);
         }
 
-        $transacciones_deduccion = $this->transacciona_isr_por_nomina(nom_nomina_id: $nom_percepcion->nom_nomina_id);
+        $transacciones = $this->transacciones_por_nomina(nom_nomina_id: $nom_percepcion->nom_nomina_id);
         if (errores::$error) {
-            return $this->error->error(mensaje: 'Error al integrar deducciones', data: $transacciones_deduccion);
+            return $this->error->error(mensaje: 'Error al integrar deducciones', data: $transacciones);
         }
 
 
