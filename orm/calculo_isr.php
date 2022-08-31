@@ -39,6 +39,8 @@ class calculo_isr{
 
     }
 
+
+
     /**
      * Calcula la cuota exedente para isr
      * @param float|int $diferencia_li Diferencia en te monto y limite inferior
@@ -243,6 +245,29 @@ class calculo_isr{
 
         return $isr;
 
+    }
+
+    /**
+     * @param PDO $link
+     * @param int $nom_nomina_id Registro de nomina en ejecucion
+     * @param string|float|int $total_gravado Monto gravable de nomina
+     * @return float|array
+     */
+    public function isr_nomina(PDO $link, int $nom_nomina_id, string|float|int $total_gravado): float|array
+    {
+        $nom_nomina = (new nom_nomina($link))->registro(registro_id: $nom_nomina_id, retorno_obj: true);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al obtener nomina', data: $nom_nomina);
+        }
+
+        $isr = $this->isr(
+            cat_sat_periodicidad_pago_nom_id: $nom_nomina->cat_sat_periodicidad_pago_nom_id, link: $link,
+            monto: $total_gravado, fecha: $nom_nomina->nom_nomina_fecha_final_pago);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al obtener isr', data: $isr);
+        }
+
+        return $isr;
     }
 
     /**

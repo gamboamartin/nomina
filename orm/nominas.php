@@ -257,7 +257,8 @@ class nominas extends modelo {
         }
 
         if($total_gravado >0.0) {
-            $isr = $this->isr_nomina(nom_nomina_id: $nom_nomina_id, total_gravado: $total_gravado);
+            $isr = (new calculo_isr())->isr_nomina(link:$this->link, nom_nomina_id: $nom_nomina_id,
+                total_gravado: $total_gravado);
             if (errores::$error) {
                 return $this->error->error(mensaje: 'Error al obtener isr', data: $isr);
             }
@@ -562,27 +563,7 @@ class nominas extends modelo {
         return $data;
     }
 
-    /**
-     * @param int $nom_nomina_id Registro de nomina en ejecucion
-     * @param string|float|int $total_gravado Monto gravable de nomina
-     * @return float|array
-     */
-    private function isr_nomina(int $nom_nomina_id, string|float|int $total_gravado): float|array
-    {
-        $nom_nomina = (new nom_nomina($this->link))->registro(registro_id: $nom_nomina_id, retorno_obj: true);
-        if (errores::$error) {
-            return $this->error->error(mensaje: 'Error al obtener nomina', data: $nom_nomina);
-        }
 
-        $isr = (new calculo_isr())->isr(
-            cat_sat_periodicidad_pago_nom_id: $nom_nomina->cat_sat_periodicidad_pago_nom_id, link: $this->link,
-            monto: $total_gravado, fecha: $nom_nomina->nom_nomina_fecha_final_pago);
-        if (errores::$error) {
-            return $this->error->error(mensaje: 'Error al obtener isr', data: $isr);
-        }
-
-        return $isr;
-    }
 
 
 
