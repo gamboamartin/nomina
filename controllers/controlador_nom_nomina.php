@@ -29,6 +29,7 @@ use stdClass;
 class controlador_nom_nomina extends system
 {
     public string $link_nom_nomina_alta_bd = '';
+    public string $link_nom_nomina_modifica_bd = '';
     public string $link_nom_par_percepcion_alta_bd = '';
     public string $link_nom_par_deduccion_alta_bd = '';
     public string $link_nom_par_otro_pago_alta_bd = '';
@@ -51,6 +52,14 @@ class controlador_nom_nomina extends system
         $html_ = new nom_nomina_html(html: $html);
         $obj_link = new links_menu($this->registro_id);
         parent::__construct(html: $html_, link: $link, modelo: $modelo, obj_link: $obj_link, paths_conf: $paths_conf);
+
+        $link_nom_nomina_modifica_bd = $obj_link->link_con_id(accion: 'modifica_bd',
+            registro_id: $this->registro_id, seccion: $this->seccion);
+        if (errores::$error) {
+            $error = $this->errores->error(mensaje: 'Error al generar link', data: $link_nom_nomina_modifica_bd);
+            print_r($error);
+            die('Error');
+        }
 
         $link_nom_par_percepcion_alta_bd = $obj_link->link_con_id(accion: 'nueva_percepcion_bd',
             registro_id: $this->registro_id, seccion: $this->seccion);
@@ -103,6 +112,7 @@ class controlador_nom_nomina extends system
         $this->titulo_lista = 'Nominas';
 
         $this->link_nom_nomina_alta_bd = $obj_link->links->nom_nomina->alta_bd;
+        $this->link_nom_nomina_modifica_bd = $link_nom_nomina_modifica_bd;
         $this->link_nom_par_percepcion_alta_bd = $link_nom_par_percepcion_alta_bd;
         $this->link_nom_par_deduccion_alta_bd = $link_nom_par_deduccion_alta_bd;
         $this->link_nom_par_otro_pago_alta_bd = $link_nom_par_otro_pago_alta_bd;
