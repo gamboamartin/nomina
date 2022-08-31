@@ -112,20 +112,21 @@ class calculo_subsidio{
     }
 
     /**
-     * Genera el monto de isr en base al registro aplicado
-     * @param stdClass $row_isr Registro en proceso
+     * Genera el monto de subsidio en base al registro aplicado
+     * @param stdClass $row_subsidio Registro de subsidio
      * @return float|array
+     * @version 0.179.6
      */
-    private function genera_subsidio( stdClass $row_isr): float|array
+    private function genera_subsidio( stdClass $row_subsidio): float|array
     {
 
         $keys = array('cat_sat_subsidio_cuota_fija');
-        $valida = $this->validacion->valida_double_mayores_igual_0(keys: $keys, registro: $row_isr);
+        $valida = $this->validacion->valida_double_mayores_igual_0(keys: $keys, registro: $row_subsidio);
         if(errores::$error){
-            return $this->error->error(mensaje: 'Error al validar row_isr', data: $valida);
+            return $this->error->error(mensaje: 'Error al validar row_subsidio', data: $valida);
         }
 
-        $subsidio = $row_isr->cat_sat_subsidio_cuota_fija;
+        $subsidio = $row_subsidio->cat_sat_subsidio_cuota_fija;
         return round($subsidio,2);
     }
 

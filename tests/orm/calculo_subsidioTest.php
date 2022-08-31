@@ -57,6 +57,29 @@ class calculo_subsidioTest extends test {
 
     }
 
+    public function test_genera_subsidio(): void
+    {
+        errores::$error = false;
+
+        $_GET['seccion'] = 'cat_sat_tipo_persona';
+        $_GET['accion'] = 'lista';
+        $_SESSION['grupo_id'] = 1;
+        $_SESSION['usuario_id'] = 2;
+        $_GET['session_id'] = '1';
+
+        $calculo = new calculo_subsidio();
+        $calculo = new liberator($calculo);
+
+        $row_subsidio = new stdClass();
+        $row_subsidio->cat_sat_subsidio_cuota_fija = 10;
+
+        $resultado = $calculo->genera_subsidio($row_subsidio);
+        $this->assertIsNumeric($resultado);
+        $this->assertNotTrue(errores::$error);
+        $this->assertEquals(10, $resultado);
+        errores::$error = false;
+    }
+
     public function test_get_subsidio(): void
     {
         errores::$error = false;
