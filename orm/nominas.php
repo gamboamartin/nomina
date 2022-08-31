@@ -33,8 +33,7 @@ class nominas extends modelo {
             return $this->error->error(mensaje: 'Error al insertar otro pago', data: $r_alta_bd);
         }
 
-        $transacciones_deduccion = $this->integra_deducciones(nom_nomina_id: $this->registro['nom_nomina_id'],
-            partida_percepcion_id: $r_alta_bd->registro_id);
+        $transacciones_deduccion = $this->integra_deducciones(nom_nomina_id: $this->registro['nom_nomina_id']);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al integrar deducciones', data: $transacciones_deduccion);
         }
@@ -86,6 +85,30 @@ class nominas extends modelo {
         $transaccion_aplicada = false;
         $transaccion = new stdClass();
         $imss = $this->imss(partida_percepcion_id: $partida_percepcion_id);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al calcular imss', data: $imss);
+        }
+        if ((float)$imss['total'] > 0.0) {
+            $transaccion = $this->aplica_deduccion(monto: (float)$imss['total'], nom_deduccion_id: 2,
+                nom_nomina_id: $nom_nomina_id);
+            if (errores::$error) {
+                return $this->error->error(mensaje: 'Error al generar transaccion', data: $transaccion);
+            }
+            $transaccion_aplicada = true;
+        }
+        $data = new stdClass();
+        $data->imss = $imss;
+        $data->transaccion_aplicada = $transaccion_aplicada;
+        $data->transaccion = $transaccion;
+
+        return $data;
+    }
+
+    private function aplica_imss_valor_por_nomina(int $nom_nomina_id): array|stdClass
+    {
+        $transaccion_aplicada = false;
+        $transaccion = new stdClass();
+        $imss = $this->imss_por_nomina(nom_nomina_id: $nom_nomina_id);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al calcular imss', data: $imss);
         }
@@ -316,6 +339,33 @@ class nominas extends modelo {
         return $data;
     }
 
+    private function ejecuta_transaccion_imss_por_nomina(bool $aplica_imss, int $nom_nomina_id): array|stdClass
+    {
+        $data = new stdClass();
+        $data->transaccion_aplicada = false;
+        $data->transaccion = new stdClass();
+        $data->dels = array();
+        $data->imss = array();
+        if($aplica_imss) {
+            $aplicacion_imss = $this->aplica_imss_valor_por_nomina(nom_nomina_id: $nom_nomina_id);
+            if (errores::$error) {
+                return $this->error->error(mensaje: 'Error al generar transaccion', data: $aplicacion_imss);
+            }
+            $data->transaccion_aplicada = $aplicacion_imss->transaccion_aplicada;
+            $data->transaccion = $aplicacion_imss->transaccion;
+            $data->imss = $aplicacion_imss->imss;
+
+        }
+        else{
+            $elimina_deducciones = $this->elimina_imss(nom_nomina_id: $nom_nomina_id);
+            if(errores::$error){
+                return $this->error->error(mensaje: 'Error al eliminar deducciones', data: $elimina_deducciones);
+            }
+            $data->dels = $elimina_deducciones;
+        }
+        return $data;
+    }
+
     public function elimina_bd(int $id): array
     {
         $nom_percepcion = $this->registro(registro_id:$id, retorno_obj: true);
@@ -475,10 +525,24 @@ class nominas extends modelo {
             sbc: $nom_partida->em_empleado_salario_diario_integrado, sd: $nom_partida->em_empleado_salario_diario);
     }
 
+    private function imss_por_nomina(int $nom_nomina_id): array
+    {
+        $nom_nomina = (new nom_nomina($this->link))->registro(registro_id:$nom_nomina_id, retorno_obj: true);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al obtener nomina', data: $nom_nomina);
+        }
+
+
+        return (new calcula_imss())->imss(
+            cat_sat_periodicidad_pago_nom_id: $nom_nomina->cat_sat_periodicidad_pago_nom_id,
+            fecha:$nom_nomina->nom_nomina_fecha_final_pago, n_dias: $nom_nomina->nom_nomina_num_dias_pagados,
+            sbc: $nom_nomina->em_empleado_salario_diario_integrado, sd: $nom_nomina->em_empleado_salario_diario);
+    }
+
     /**
      * @throws JsonException
      */
-    protected function integra_deducciones(int $nom_nomina_id, int $partida_percepcion_id): array|stdClass
+    protected function integra_deducciones(int $nom_nomina_id): array|stdClass
     {
 
         $transaccion_isr = $this->transacciona_isr_por_nomina(nom_nomina_id: $nom_nomina_id);
@@ -486,8 +550,7 @@ class nominas extends modelo {
             return $this->error->error(mensaje: 'Error al generar isr', data: $transaccion_isr);
         }
 
-        $transaccion_imss = $this->transacciona_imss(nom_nomina_id: $nom_nomina_id,
-            partida_percepcion_id: $partida_percepcion_id);
+        $transaccion_imss = $this->transacciona_imss_por_nomina(nom_nomina_id: $nom_nomina_id);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al generar transaccion imss', data: $transaccion_imss);
         }
@@ -661,6 +724,24 @@ class nominas extends modelo {
         return $aplicacion_imss;
 
     }
+
+    protected function transacciona_imss_por_nomina(int $nom_nomina_id): array|stdClass
+    {
+
+        $aplica_imss = (new nom_nomina($this->link))->aplica_imss(nom_nomina_id: $nom_nomina_id);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al validar si aplica imss', data: $aplica_imss);
+        }
+
+        $aplicacion_imss = $this->ejecuta_transaccion_imss_por_nomina(aplica_imss: $aplica_imss,
+            nom_nomina_id:  $nom_nomina_id);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al generar transaccion', data: $aplicacion_imss);
+        }
+        return $aplicacion_imss;
+
+    }
+
 
     /**
      * @param int $partida_percepcion_id Identificador ya sea otto_pago o percepcion
