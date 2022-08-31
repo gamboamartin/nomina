@@ -215,35 +215,6 @@ class nominas extends modelo {
         return $registro;
     }
 
-    /**
-     * @param int $partida_percepcion_id otro pago o percepcion id
-     * @return float|array
-     */
-    private function calcula_isr_nomina(int $partida_percepcion_id): float|array
-    {
-        $nom_partida = $this->registro(registro_id:$partida_percepcion_id, retorno_obj: true);
-        if(errores::$error){
-            return $this->error->error(mensaje: 'Error al obtener nomina', data: $nom_partida);
-        }
-
-        $isr = 0.0;
-        $total_gravado = (new nom_nomina($this->link))->total_gravado(nom_nomina_id: $nom_partida->nom_nomina_id);
-        if(errores::$error){
-            return $this->error->error(mensaje: 'Error al calcular total gravado', data: $total_gravado);
-        }
-
-        if($total_gravado >0.0) {
-            $isr = (new calculo_isr())->isr_total_nomina_por_percepcion(modelo:$this,
-                partida_percepcion_id: $partida_percepcion_id, total_gravado: $total_gravado);
-            if (errores::$error) {
-                return $this->error->error(mensaje: 'Error al obtener isr', data: $isr);
-            }
-        }
-        return $isr;
-    }
-
-
-
 
     private function campos_base(modelo $modelo, array $registro): array
     {

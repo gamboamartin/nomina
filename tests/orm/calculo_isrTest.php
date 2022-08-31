@@ -52,6 +52,79 @@ class calculo_isrTest extends test {
 
     }
 
+    public function test_calcula_isr_nomina(): void
+    {
+        errores::$error = false;
+
+        $_GET['seccion'] = 'cat_sat_tipo_persona';
+        $_GET['accion'] = 'lista';
+        $_SESSION['grupo_id'] = 1;
+        $_SESSION['usuario_id'] = 2;
+        $_GET['session_id'] = '1';
+        $percepcion = new nom_par_percepcion($this->link);
+
+
+        $calculo = new calculo_isr();
+
+        $del_percepcion = $percepcion->elimina_todo();
+        if(errores::$error){
+            $error = (new errores())->error(mensaje: 'Error al eliminar $del_percepcion', data: $del_percepcion);
+            print_r($error);
+            exit;
+        }
+
+        $nom_par_percepcion = array();
+        $nom_par_percepcion['id'] = 1;
+        $nom_par_percepcion['nom_nomina_id'] = 1;
+        $nom_par_percepcion['importe_gravado'] = 1000;
+        $nom_par_percepcion['nom_percepcion_id'] = 1;
+        $alta_nom_par_percepcion = $percepcion->alta_registro($nom_par_percepcion);
+        if(errores::$error){
+            $error = (new errores())->error(mensaje: 'Error al insertar nomina percepcion', data: $alta_nom_par_percepcion);
+            print_r($error);
+            exit;
+        }
+
+
+        $nom_par_percepcion_id = 1;
+        $resultado = $calculo->calcula_isr_nomina(modelo: $percepcion, partida_percepcion_id: $nom_par_percepcion_id);
+
+        $this->assertNotTrue(errores::$error);
+        $this->assertIsFloat($resultado);
+        $this->assertEquals(168.61, $resultado);
+
+        errores::$error = false;
+
+        $_GET['seccion'] = 'cat_sat_tipo_persona';
+        $_GET['accion'] = 'lista';
+        $_SESSION['grupo_id'] = 1;
+        $_SESSION['usuario_id'] = 2;
+        $_GET['session_id'] = '1';
+
+
+
+        $nom_par_percepcion = array();
+        $nom_par_percepcion['id'] = 2;
+        $nom_par_percepcion['nom_nomina_id'] = 1;
+        $nom_par_percepcion['importe_gravado'] = 1000;
+        $nom_par_percepcion['nom_percepcion_id'] = 1;
+        $alta_nom_par_percepcion = $percepcion->alta_registro($nom_par_percepcion);
+        if(errores::$error){
+            $error = (new errores())->error(mensaje: 'Error al insertar nomina percepcion', data: $alta_nom_par_percepcion);
+            print_r($error);
+            exit;
+        }
+
+
+        $nom_par_percepcion_id = 1;
+        $resultado = $calculo->calcula_isr_nomina(modelo: $percepcion, partida_percepcion_id: $nom_par_percepcion_id);
+        $this->assertNotTrue(errores::$error);
+        $this->assertIsFloat($resultado);
+        $this->assertEquals(442.74, $resultado);
+
+        errores::$error = false;
+    }
+
     public function test_cuota_excedente_isr(): void
     {
         errores::$error = false;

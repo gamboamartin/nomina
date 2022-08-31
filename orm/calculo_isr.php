@@ -40,6 +40,34 @@ class calculo_isr{
     }
 
     /**
+     * @param modelo $modelo
+     * @param int $partida_percepcion_id otro pago o percepcion id
+     * @return float|array
+     */
+    public function calcula_isr_nomina(modelo $modelo, int $partida_percepcion_id): float|array
+    {
+        $nom_partida = $modelo->registro(registro_id:$partida_percepcion_id, retorno_obj: true);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al obtener nomina', data: $nom_partida);
+        }
+
+        $isr = 0.0;
+        $total_gravado = (new nom_nomina($modelo->link))->total_gravado(nom_nomina_id: $nom_partida->nom_nomina_id);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al calcular total gravado', data: $total_gravado);
+        }
+
+        if($total_gravado >0.0) {
+            $isr = $this->isr_total_nomina_por_percepcion(modelo:$modelo,
+                partida_percepcion_id: $partida_percepcion_id, total_gravado: $total_gravado);
+            if (errores::$error) {
+                return $this->error->error(mensaje: 'Error al obtener isr', data: $isr);
+            }
+        }
+        return $isr;
+    }
+
+    /**
      * @param PDO $link
      * @param int $nom_nomina_id
      * @return float|array
@@ -300,7 +328,7 @@ class calculo_isr{
      * @param string|float|int $total_gravado Monto gravable de nomina
      * @return float|array
      */
-    public function isr_total_nomina_por_percepcion(modelo $modelo, int $partida_percepcion_id, string|float|int $total_gravado): float|array
+    private function isr_total_nomina_por_percepcion(modelo $modelo, int $partida_percepcion_id, string|float|int $total_gravado): float|array
     {
         $nom_par_percepcion = $modelo->registro(registro_id: $partida_percepcion_id, retorno_obj: true);
         if (errores::$error) {
