@@ -247,6 +247,33 @@ class nom_nominaTest extends test {
         errores::$error = false;
     }
 
+    public function test_existe_key_imss(): void
+    {
+        errores::$error = false;
+
+        $_GET['seccion'] = 'cat_sat_tipo_persona';
+        $_GET['accion'] = 'lista';
+        $_SESSION['grupo_id'] = 1;
+        $_GET['session_id'] = '1';
+        $nomina = new nom_nomina($this->link);
+        $nomina = new liberator($nomina);
+
+
+        $partida = array();
+        $tabla = 'a';
+        $resultado = $nomina->existe_key_imss($partida, $tabla);
+        $this->assertNotTrue(errores::$error);
+        $this->assertFalse($resultado);
+        errores::$error = false;
+        $partida = array();
+        $tabla = 'a';
+        $partida['a_aplica_imss'] = 'inactivo';
+        $resultado = $nomina->existe_key_imss($partida, $tabla);
+        $this->assertNotTrue(errores::$error);
+        $this->assertTrue($resultado);
+        errores::$error = false;
+    }
+
     public function test_get_isr(): void
     {
         errores::$error = false;

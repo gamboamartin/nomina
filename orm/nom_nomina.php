@@ -139,6 +139,10 @@ class nom_nomina extends modelo
      */
     private function aplica_imss_init(array $partida, string $tabla): array|stdClass
     {
+        $tabla = trim($tabla);
+        if($tabla === ''){
+            return $this->error->error(mensaje: 'Error tabla vacia', data: $tabla);
+        }
         $existe_key_imss = $this->existe_key_imss(partida: $partida, tabla: $tabla);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al obtener key imss', data: $existe_key_imss);
@@ -163,6 +167,10 @@ class nom_nomina extends modelo
      */
     private function aplica_imss_percepcion(string $obj,stdClass $partidas, string $tabla): bool|array
     {
+        $tabla = trim($tabla);
+        if($tabla === ''){
+            return $this->error->error(mensaje: 'Error tabla vacia', data: $tabla);
+        }
         $aplica_imss = false;
         foreach ($partidas->$obj as $partida){
 
@@ -186,6 +194,10 @@ class nom_nomina extends modelo
      */
     private function aplica_imss_val(array $partida, string $tabla): bool|array
     {
+        $tabla = trim($tabla);
+        if($tabla === ''){
+            return $this->error->error(mensaje: 'Error tabla vacia', data: $tabla);
+        }
         $init = $this->aplica_imss_init(partida: $partida, tabla: $tabla);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al obtener key imss', data: $init);
@@ -366,12 +378,18 @@ class nom_nomina extends modelo
     }
 
     /**
+     * Verifica si existe o no el key de aplicacion de imss
      * @param array $partida Partida a verificar
-     * @param string $tabla
-     * @return bool
+     * @param string $tabla Tabla nom_percepcion o nom_deduccion etc
+     * @return bool|array
+     * @version 0.157.6
      */
-    private function existe_key_imss(array $partida, string $tabla): bool
+    private function existe_key_imss(array $partida, string $tabla): bool|array
     {
+        $tabla = trim($tabla);
+        if($tabla === ''){
+            return $this->error->error(mensaje: 'Error tabla vacia', data: $tabla);
+        }
         return isset($partida[$tabla.'_aplica_imss']);
     }
 
