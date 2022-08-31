@@ -84,6 +84,10 @@ class nom_nomina extends modelo
         return $r_alta_bd;
     }
 
+    /**
+     * @param int $nom_nomina_id Nomina en proceso
+     * @return bool|array
+     */
     public function aplica_imss(int $nom_nomina_id): bool|array
     {
         $partidas = $this->partidas(nom_nomina_id: $nom_nomina_id);
@@ -101,6 +105,10 @@ class nom_nomina extends modelo
 
     }
 
+    /**
+     * @param stdClass $partidas Partidas de nomina
+     * @return bool|array
+     */
     private function aplica_imss_base(stdClass $partidas): bool|array
     {
         $aplica_imss = $this->aplica_imss_percepcion(obj: 'percepciones', partidas: $partidas, tabla: 'nom_percepcion');
@@ -124,6 +132,11 @@ class nom_nomina extends modelo
         return $existe_key_imss && $es_imss_activo;
     }
 
+    /**
+     * @param array $partida Partida a verificar
+     * @param string $tabla
+     * @return array|stdClass
+     */
     private function aplica_imss_init(array $partida, string $tabla): array|stdClass
     {
         $existe_key_imss = $this->existe_key_imss(partida: $partida, tabla: $tabla);
@@ -142,6 +155,12 @@ class nom_nomina extends modelo
         return $data;
     }
 
+    /**
+     * @param string $obj Nombre del objeto a verificar
+     * @param stdClass $partidas
+     * @param string $tabla
+     * @return bool|array
+     */
     private function aplica_imss_percepcion(string $obj,stdClass $partidas, string $tabla): bool|array
     {
         $aplica_imss = false;
@@ -160,6 +179,11 @@ class nom_nomina extends modelo
         return $aplica_imss;
     }
 
+    /**
+     * @param array $partida Partida a verificar
+     * @param string $tabla
+     * @return bool|array
+     */
     private function aplica_imss_val(array $partida, string $tabla): bool|array
     {
         $init = $this->aplica_imss_init(partida: $partida, tabla: $tabla);
@@ -341,6 +365,11 @@ class nom_nomina extends modelo
         return $partida[$tabla.'_aplica_imss'] === 'activo';
     }
 
+    /**
+     * @param array $partida Partida a verificar
+     * @param string $tabla
+     * @return bool
+     */
     private function existe_key_imss(array $partida, string $tabla): bool
     {
         return isset($partida[$tabla.'_aplica_imss']);
@@ -733,6 +762,12 @@ class nom_nomina extends modelo
         return $registro;
     }
 
+    /**
+     * Obtiene otros pagos de nomina
+     * @param int $nom_nomina_id Nomina en proceso
+     * @return array
+     * @version 0.152.6
+     */
     public function otros_pagos(int $nom_nomina_id): array
     {
         if($nom_nomina_id<=0){
@@ -747,8 +782,17 @@ class nom_nomina extends modelo
         return $r_nom_par_otro_pago->registros;
     }
 
+    /**
+     * Obtiene las partidas de una nomina completa
+     * @param int $nom_nomina_id Nomina en proceso
+     * @return array|stdClass
+     * @version 0.153.6
+     */
     public function partidas(int $nom_nomina_id): array|stdClass
     {
+        if($nom_nomina_id<=0){
+            return $this->error->error(mensaje: 'Error $nom_nomina_id debe ser mayor a 0', data: $nom_nomina_id);
+        }
         $percepciones = $this->percepciones(nom_nomina_id: $nom_nomina_id);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al obtener percepciones', data: $percepciones);

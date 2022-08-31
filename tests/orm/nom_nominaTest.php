@@ -389,6 +389,27 @@ class nom_nominaTest extends test {
         errores::$error = false;
     }
 
+    public function test_partidas(): void
+    {
+        errores::$error = false;
+
+        $_GET['seccion'] = 'cat_sat_tipo_persona';
+        $_GET['accion'] = 'lista';
+        $_SESSION['grupo_id'] = 1;
+        $_GET['session_id'] = '1';
+        $nomina = new nom_nomina($this->link);
+
+
+        $nom_nomina_id = 1;
+        $resultado = $nomina->partidas($nom_nomina_id);
+        $this->assertIsObject($resultado);
+        $this->assertNotTrue(errores::$error);
+        $this->assertObjectHasAttribute('percepciones', $resultado);
+        $this->assertObjectHasAttribute('deducciones', $resultado);
+        $this->assertObjectHasAttribute('otros_pagos', $resultado);
+        errores::$error = false;
+    }
+
     public function test_percepciones(): void
     {
         errores::$error = false;
