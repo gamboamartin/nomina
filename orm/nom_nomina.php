@@ -4,8 +4,6 @@ namespace models;
 
 use base\orm\modelo;
 use gamboamartin\errores\errores;
-use gamboamartin\validacion\validacion;
-use html\im_registro_patronal_html;
 use PDO;
 use stdClass;
 
@@ -34,7 +32,7 @@ class nom_nomina extends modelo
             return $this->error->error(mensaje: 'Error al generar registros', data: $registros);
         }
 
-        $registros_factura = $this->genera_registro_factura(registros: $registros['fc_fcd'],
+        $registros_factura = $this->genera_registro_factura(registros: $registros['fc_csd'],
             empleado_sucursal: $registros['nom_rel_empleado_sucursal'],cat_sat: $registros['nom_conf_empleado']);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al generar registros de factura', data: $registros_factura);
@@ -423,10 +421,10 @@ class nom_nomina extends modelo
                 data: $im_registro_patronal);
         }
 
-        $fc_fcd_id = $this->registro_por_id(new fc_cfd($this->link),
-            $im_registro_patronal->im_registro_patronal_fc_cfd_id);
+        $fc_csd_id = $this->registro_por_id(new fc_csd($this->link),
+            $im_registro_patronal->im_registro_patronal_fc_csd_id);
         if (errores::$error) {
-            return $this->error->error(mensaje: 'Error al generar registros de fcd', data: $fc_fcd_id);
+            return $this->error->error(mensaje: 'Error al generar registros de fcd', data: $fc_csd_id);
         }
 
         $em_empleado = $this->registro_por_id(new em_empleado($this->link), $this->registro['em_empleado_id']);
@@ -448,7 +446,7 @@ class nom_nomina extends modelo
 
 
         $registros = array('im_registro_patronal' => $im_registro_patronal, 'em_empleado' => $em_empleado,
-            'fc_fcd' => $fc_fcd_id, 'nom_rel_empleado_sucursal' => $nom_rel_empleado_sucursal,
+            'fc_csd' => $fc_csd_id, 'nom_rel_empleado_sucursal' => $nom_rel_empleado_sucursal,
             'nom_conf_empleado' => $nom_conf_empleado);
 
         return $registros;
@@ -463,9 +461,9 @@ class nom_nomina extends modelo
         }
 
         $folio = $this->registro['folio'];
-        $serie = $registros->fc_cfd_serie;
+        $serie = $registros->fc_csd_serie;
         $fecha = $this->registro['fecha'];
-        $fc_cfd_id = $registros->fc_cfd_id;
+        $fc_csd_id = $registros->fc_csd_id;
         $com_sucursal_id = $empleado_sucursal['com_sucursal_id'];
         $cat_sat_forma_pago_id = $cat_sat->nom_conf_factura_cat_sat_forma_pago_id;
         $cat_sat_metodo_pago_id = $cat_sat->nom_conf_factura_cat_sat_metodo_pago_id;
@@ -475,7 +473,7 @@ class nom_nomina extends modelo
         $cat_sat_tipo_de_comprobante_id = $cat_sat->nom_conf_factura_cat_sat_tipo_de_comprobante_id;
 
         $regisro_factura = array('folio' => $folio, 'serie' => $serie, 'fecha' => $fecha,
-            'fc_cfd_id' => $fc_cfd_id, 'com_sucursal_id' => $com_sucursal_id,
+            'fc_csd_id' => $fc_csd_id, 'com_sucursal_id' => $com_sucursal_id,
             'cat_sat_forma_pago_id' => $cat_sat_forma_pago_id, 'cat_sat_metodo_pago_id' => $cat_sat_metodo_pago_id,
             'cat_sat_moneda_id' => $cat_sat_moneda_id, 'com_tipo_cambio_id' => $com_tipo_cambio_id,
             'cat_sat_uso_cfdi_id' => $cat_sat_uso_cfdi_id, 'cat_sat_tipo_de_comprobante_id' => $cat_sat_tipo_de_comprobante_id);
@@ -510,7 +508,7 @@ class nom_nomina extends modelo
 
     private function genera_registro_nomina(mixed $registros, mixed $fc_factura) : array{
 
-        $asignar = array($registros['fc_fcd']->org_sucursal_id,
+        $asignar = array($registros['fc_csd']->org_sucursal_id,
             $fc_factura->registro['fc_factura_serie'], $fc_factura->registro['fc_factura_folio']);
 
         $registro = $this->asigna_campo(registro: $this->registro, campo: "codigo", campos_asignar: $asignar);
@@ -606,7 +604,7 @@ class nom_nomina extends modelo
 
     private function inserta_cfd_partida(array $registro): array|stdClass
     {
-        $r_alta_cfd_partida = (new fc_cfd_partida($this->link))->alta_registro(registro: $registro);
+        $r_alta_cfd_partida = (new fc_partida($this->link))->alta_registro(registro: $registro);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al dar de alta cfd partida', data: $r_alta_cfd_partida);
         }

@@ -9,6 +9,7 @@ use JsonException;
 use models\em_cuenta_bancaria;
 use models\fc_cfd_partida;
 use models\fc_factura;
+use models\fc_partida;
 use models\nom_nomina;
 use models\nom_par_deduccion;
 use models\nom_par_percepcion;
@@ -44,7 +45,7 @@ class nom_par_percepcionTest extends test {
         $nom_nom_par_percepcion_modelo = new nom_par_percepcion($this->link);
         $nom_nom_par_deduccion_modelo = new nom_par_deduccion($this->link);
         $fc_factura_modelo = new fc_factura($this->link);
-        $fc_cfd_partida_modelo = new fc_cfd_partida($this->link);
+        $fc_partida_modelo = new fc_partida($this->link);
         $em_cuenta_bancaria_modelo = new em_cuenta_bancaria($this->link);
 
 
@@ -70,9 +71,9 @@ class nom_par_percepcionTest extends test {
             exit;
         }
 
-        $del_fc_cfd_partida = $fc_cfd_partida_modelo->elimina_todo();
+        $del_fc_partida = $fc_partida_modelo->elimina_todo();
         if(errores::$error){
-            $error = (new errores())->error(mensaje: 'Error al eliminar $fc_cfd_partida', data: $del_fc_cfd_partida);
+            $error = (new errores())->error(mensaje: 'Error al eliminar $fc_cfd_partida', data: $del_fc_partida);
             print_r($error);
             exit;
         }
