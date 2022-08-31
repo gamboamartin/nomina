@@ -663,7 +663,7 @@ class nominas extends modelo {
      */
     private function transacciona_isr(int $nom_nomina_id, int $partida_percepcion_id): float|array
     {
-        $isr = $this->calcula_isr_nomina(partida_percepcion_id: $partida_percepcion_id);
+        $isr = (new calculo_isr())->calcula_isr_nomina(modelo: $this, partida_percepcion_id: $partida_percepcion_id);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al obtener isr', data: $isr);
         }
