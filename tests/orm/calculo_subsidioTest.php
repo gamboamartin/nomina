@@ -31,6 +31,70 @@ class calculo_subsidioTest extends test {
         $this->paths_conf->views = '/var/www/html/cat_sat/config/views.php';
     }
 
+    public function test_calcula_subsidio_nomina(): void
+    {
+        errores::$error = false;
+
+        $_GET['seccion'] = 'cat_sat_tipo_persona';
+        $_GET['accion'] = 'lista';
+        $_SESSION['grupo_id'] = 1;
+        $_SESSION['usuario_id'] = 2;
+        $_GET['session_id'] = '1';
+
+        $calculo = new calculo_subsidio();
+        //$calculo = new liberator($calculo);
+
+        $modelo = new nom_par_percepcion($this->link);
+
+        $del_percepcion = $modelo->elimina_todo();
+        if(errores::$error){
+            $error = (new errores())->error('Error al eliminar percepcion', $del_percepcion);
+            print_r($error);
+            exit;
+        }
+
+        $nom_par_percepcion = array();
+        $nom_par_percepcion['id'] = 1;
+        $nom_par_percepcion['nom_nomina_id'] = 1;
+        $nom_par_percepcion['nom_percepcion_id'] = 1;
+        $nom_par_percepcion['importe_gravado'] = 100;
+
+        $alta_percepcion = $modelo->alta_registro($nom_par_percepcion);
+        if(errores::$error){
+            $error = (new errores())->error('Error al dar de alta percepcion', $alta_percepcion);
+            print_r($error);
+            exit;
+        }
+
+        $partida_percepcion_id = 1;
+        $resultado = $calculo->calcula_subsidio_nomina($modelo, $partida_percepcion_id);
+
+        $this->assertIsNumeric($resultado);
+        $this->assertNotTrue(errores::$error);
+        $this->assertEquals('13.38', $resultado);
+
+
+        $nom_par_percepcion = array();
+        $nom_par_percepcion['id'] = 2;
+        $nom_par_percepcion['nom_nomina_id'] = 1;
+        $nom_par_percepcion['nom_percepcion_id'] = 1;
+        $nom_par_percepcion['importe_gravado'] = 100;
+
+        $alta_percepcion = $modelo->alta_registro($nom_par_percepcion);
+        if(errores::$error){
+            $error = (new errores())->error('Error al dar de alta percepcion', $alta_percepcion);
+            print_r($error);
+            exit;
+        }
+
+        $resultado = $calculo->calcula_subsidio_nomina($modelo, $partida_percepcion_id);
+
+
+        $this->assertIsNumeric($resultado);
+        $this->assertNotTrue(errores::$error);
+        $this->assertEquals('9.69', $resultado);
+    }
+
     public function test_filtro_especial_subsidio(): void
     {
         errores::$error = false;

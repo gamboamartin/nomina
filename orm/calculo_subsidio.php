@@ -17,31 +17,37 @@ class calculo_subsidio{
 
 
     /**
+     * Calcula el subsidio desde una partida
      * @param nominas $modelo $modelo
      * @param int $partida_percepcion_id otro pago o percepcion id
      * @return float|array
+     * @version 0.184.6
      */
     public function calcula_subsidio_nomina(nominas $modelo, int $partida_percepcion_id): float|array
     {
+        if($partida_percepcion_id <=0){
+            return  $this->error->error(mensaje: 'Error al obtener registro $partida_percepcion_id debe ser mayor a 0',
+                data: $partida_percepcion_id);
+        }
         $nom_partida = $modelo->registro(registro_id:$partida_percepcion_id, retorno_obj: true);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al obtener nomina', data: $nom_partida);
         }
 
-        $isr = 0.0;
+        $subsidio = 0.0;
         $total_gravado = (new nom_nomina($modelo->link))->total_gravado(nom_nomina_id: $nom_partida->nom_nomina_id);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al calcular total gravado', data: $total_gravado);
         }
 
         if($total_gravado >0.0) {
-            $isr = $this->subsidio_total_nomina_por_percepcion(modelo:$modelo,
+            $subsidio = $this->subsidio_total_nomina_por_percepcion(modelo:$modelo,
                 partida_percepcion_id: $partida_percepcion_id, total_gravado: $total_gravado);
             if (errores::$error) {
-                return $this->error->error(mensaje: 'Error al obtener isr', data: $isr);
+                return $this->error->error(mensaje: 'Error al obtener $subsidio', data: $subsidio);
             }
         }
-        return $isr;
+        return $subsidio;
     }
 
     /**

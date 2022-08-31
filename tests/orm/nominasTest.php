@@ -52,6 +52,7 @@ class nominasTest extends test {
         $nom_par_percepcion['id'] = 1;
         $nom_par_percepcion['nom_nomina_id'] = 1;
         $nom_par_percepcion['nom_percepcion_id'] = 1;
+        $nom_par_percepcion['importe_gravado'] = 100;
         $r_alta_nom_par_percepcion = $nominas->alta_registro($nom_par_percepcion);
         if(errores::$error){
             $error = (new errores())->error('Error al dar de alta percepcion', $r_alta_nom_par_percepcion);
