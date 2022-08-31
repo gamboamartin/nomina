@@ -221,13 +221,23 @@ class calculo_subsidio{
     }
 
     /**
-     * @param PDO $link
+     * Calcula el subsidio por nomina
+     * @param PDO $link conexion a la base de datos
      * @param int $nom_nomina_id Registro de nomina en ejecucion
      * @param string|float|int $total_gravado Monto gravable de nomina
      * @return float|array
+     * @version 0.185.6
      */
     private function subsidio_nomina(PDO $link, int $nom_nomina_id, string|float|int $total_gravado): float|array
     {
+        if($nom_nomina_id <=0){
+            return  $this->error->error(mensaje: 'Error al obtener registro $nom_nomina_id debe ser mayor a 0',
+                data: $nom_nomina_id);
+        }
+        if($total_gravado<=0.0){
+            return $this->error->error(mensaje: 'Error $total_gravado debe ser mayor o igual a 0', data: $total_gravado);
+        }
+
         $nom_nomina = (new nom_nomina($link))->registro(registro_id: $nom_nomina_id, retorno_obj: true);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al obtener nomina', data: $nom_nomina);
