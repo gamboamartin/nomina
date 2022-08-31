@@ -39,6 +39,30 @@ class calculo_isr{
 
     }
 
+    /**
+     * @param PDO $link
+     * @param int $nom_nomina_id
+     * @return float|array
+     */
+    public function calcula_isr_por_nomina(PDO $link, int $nom_nomina_id): float|array
+    {
+
+        $isr = 0.0;
+        $total_gravado = (new nom_nomina($link))->total_gravado(nom_nomina_id: $nom_nomina_id);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al calcular total gravado', data: $total_gravado);
+        }
+
+        if($total_gravado >0.0) {
+            $isr = $this->isr_nomina(link:$link, nom_nomina_id: $nom_nomina_id,
+                total_gravado: $total_gravado);
+            if (errores::$error) {
+                return $this->error->error(mensaje: 'Error al obtener isr', data: $isr);
+            }
+        }
+        return $isr;
+    }
+
 
 
     /**
@@ -253,7 +277,7 @@ class calculo_isr{
      * @param string|float|int $total_gravado Monto gravable de nomina
      * @return float|array
      */
-    public function isr_nomina(PDO $link, int $nom_nomina_id, string|float|int $total_gravado): float|array
+    private function isr_nomina(PDO $link, int $nom_nomina_id, string|float|int $total_gravado): float|array
     {
         $nom_nomina = (new nom_nomina($link))->registro(registro_id: $nom_nomina_id, retorno_obj: true);
         if (errores::$error) {

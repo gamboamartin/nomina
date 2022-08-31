@@ -243,28 +243,7 @@ class nominas extends modelo {
     }
 
 
-    /**
-     * @param int $nom_nomina_id
-     * @return float|array
-     */
-    private function calcula_isr_por_nomina(int $nom_nomina_id): float|array
-    {
 
-        $isr = 0.0;
-        $total_gravado = (new nom_nomina($this->link))->total_gravado(nom_nomina_id: $nom_nomina_id);
-        if(errores::$error){
-            return $this->error->error(mensaje: 'Error al calcular total gravado', data: $total_gravado);
-        }
-
-        if($total_gravado >0.0) {
-            $isr = (new calculo_isr())->isr_nomina(link:$this->link, nom_nomina_id: $nom_nomina_id,
-                total_gravado: $total_gravado);
-            if (errores::$error) {
-                return $this->error->error(mensaje: 'Error al obtener isr', data: $isr);
-            }
-        }
-        return $isr;
-    }
 
     private function campos_base(modelo $modelo, array $registro): array
     {
@@ -738,7 +717,7 @@ class nominas extends modelo {
      */
     protected function transacciona_isr_por_nomina(int $nom_nomina_id): float|array
     {
-        $isr = $this->calcula_isr_por_nomina(nom_nomina_id: $nom_nomina_id);
+        $isr = (new calculo_isr())->calcula_isr_por_nomina(link:$this->link, nom_nomina_id: $nom_nomina_id);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al obtener isr', data: $isr);
         }
