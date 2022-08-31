@@ -252,29 +252,7 @@ class nom_nomina extends modelo
         return $registro;
     }
 
-    /**
-     * Genera la suma del la cuota exedente y lacuota fija
-     * @param float $cuota_excedente Monto calculado en base a la tabla de isr
-     * @param stdClass $row_isr Registro de isr
-     * @return float|array
-     * @version 0.129.16
-     */
-    private function calcula_isr(float $cuota_excedente, stdClass $row_isr): float|array
-    {
-        $keys = array('cat_sat_isr_cuota_fija');
-        $valida = $this->validacion->valida_double_mayores_igual_0(keys: $keys, registro: $row_isr);
-        if (errores::$error) {
-            return $this->error->error(mensaje: 'Error al validar row isr', data: $valida);
-        }
-        if($cuota_excedente<0.0){
-            return $this->error->error(mensaje: 'Error $cuota_excedente debe ser mayor o igual a 0',
-                data: $cuota_excedente);
-        }
 
-        $isr = $cuota_excedente + $row_isr->cat_sat_isr_cuota_fija;
-        return round($isr,2);
-
-    }
 
     private function codigo_nomina(int $org_sucursal_id, array $registro): array|string
     {
@@ -397,7 +375,7 @@ class nom_nomina extends modelo
             return $this->error->error(mensaje: 'Error al obtener cuota excedente', data: $cuota_excedente);
         }
 
-        $isr = $this->calcula_isr(cuota_excedente: $cuota_excedente,row_isr:  $row_isr);
+        $isr = (new calculo_isr())->calcula_isr(cuota_excedente: $cuota_excedente,row_isr:  $row_isr);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al calcular isr', data: $isr);
         }

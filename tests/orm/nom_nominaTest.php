@@ -136,28 +136,7 @@ class nom_nominaTest extends test {
 
     }
 
-    public function test_calcula_isr(): void
-    {
-        errores::$error = false;
 
-        $_GET['seccion'] = 'cat_sat_tipo_persona';
-        $_GET['accion'] = 'lista';
-        $_SESSION['grupo_id'] = 1;
-        $_SESSION['usuario_id'] = 2;
-        $_GET['session_id'] = '1';
-
-        $nomina = new nom_nomina($this->link);
-        $nomina = new liberator($nomina);
-
-        $row_isr = new stdClass();
-        $row_isr->cat_sat_isr_cuota_fija = 25;
-        $cuota_excedente = 1;
-        $resultado = $nomina->calcula_isr($cuota_excedente, $row_isr);
-        $this->assertIsFloat($resultado);
-        $this->assertNotTrue(errores::$error);
-        $this->assertEquals(26, $resultado);
-
-    }
 
 
 
