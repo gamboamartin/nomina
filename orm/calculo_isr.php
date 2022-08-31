@@ -1,5 +1,6 @@
 <?php
 namespace models;
+use base\orm\modelo;
 use gamboamartin\errores\errores;
 use gamboamartin\validacion\validacion;
 use PDO;
@@ -242,6 +243,29 @@ class calculo_isr{
 
         return $isr;
 
+    }
+
+    /**
+     * @param modelo $modelo
+     * @param int $partida_percepcion_id otro pago o percepcion id
+     * @param string|float|int $total_gravado Monto gravable de nomina
+     * @return float|array
+     */
+    public function isr_total_nomina_por_percepcion(modelo $modelo, int $partida_percepcion_id, string|float|int $total_gravado): float|array
+    {
+        $nom_par_percepcion = $modelo->registro(registro_id: $partida_percepcion_id, retorno_obj: true);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al obtener nom_par_percepcion', data: $nom_par_percepcion);
+        }
+
+        $isr = $this->isr(
+            cat_sat_periodicidad_pago_nom_id: $nom_par_percepcion->cat_sat_periodicidad_pago_nom_id, link: $modelo->link,
+            monto: $total_gravado, fecha: $nom_par_percepcion->nom_nomina_fecha_final_pago);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al obtener isr', data: $isr);
+        }
+
+        return $isr;
     }
 
 }

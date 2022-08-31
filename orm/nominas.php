@@ -219,7 +219,7 @@ class nominas extends modelo {
      * @param int $partida_percepcion_id otro pago o percepcion id
      * @return float|array
      */
-    PUBLIC function calcula_isr_nomina(int $partida_percepcion_id): float|array
+    private function calcula_isr_nomina(int $partida_percepcion_id): float|array
     {
         $nom_partida = $this->registro(registro_id:$partida_percepcion_id, retorno_obj: true);
         if(errores::$error){
@@ -233,7 +233,7 @@ class nominas extends modelo {
         }
 
         if($total_gravado >0.0) {
-            $isr = $this->isr_total_nomina_por_percepcion(
+            $isr = (new calculo_isr())->isr_total_nomina_por_percepcion(modelo:$this,
                 partida_percepcion_id: $partida_percepcion_id, total_gravado: $total_gravado);
             if (errores::$error) {
                 return $this->error->error(mensaje: 'Error al obtener isr', data: $isr);
@@ -584,27 +584,7 @@ class nominas extends modelo {
         return $isr;
     }
 
-    /**
-     * @param int $partida_percepcion_id otro pago o percepcion id
-     * @param string|float|int $total_gravado Monto gravable de nomina
-     * @return float|array
-     */
-    private function isr_total_nomina_por_percepcion(int $partida_percepcion_id, string|float|int $total_gravado): float|array
-    {
-        $nom_par_percepcion = $this->registro(registro_id: $partida_percepcion_id, retorno_obj: true);
-        if (errores::$error) {
-            return $this->error->error(mensaje: 'Error al obtener nom_par_percepcion', data: $nom_par_percepcion);
-        }
 
-        $isr = (new calculo_isr())->isr(
-            cat_sat_periodicidad_pago_nom_id: $nom_par_percepcion->cat_sat_periodicidad_pago_nom_id, link: $this->link,
-            monto: $total_gravado, fecha: $nom_par_percepcion->nom_nomina_fecha_final_pago);
-        if (errores::$error) {
-            return $this->error->error(mensaje: 'Error al obtener isr', data: $isr);
-        }
-
-        return $isr;
-    }
 
     /**
      * @throws JsonException
