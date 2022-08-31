@@ -131,7 +131,7 @@ class calculo_isrTest extends test {
         $_SESSION['grupo_id'] = 1;
         $_GET['session_id'] = '1';
         $calculo = new calculo_isr();
-        //$calculo = new liberator($calculo);
+        $calculo = new liberator($calculo);
 
 
         $monto = 1;
@@ -157,13 +157,115 @@ class calculo_isrTest extends test {
         $_GET['session_id'] = '1';
 
         $calculo = new calculo_isr();
-        //$calculo = new liberator($calculo);
+        $calculo = new liberator($calculo);
         $monto = 0.01;
         $cat_sat_periodicidad_pago_nom_id = 1;
         $resultado = $calculo->get_isr($cat_sat_periodicidad_pago_nom_id, $this->link, $monto);
         $this->assertIsObject($resultado);
         $this->assertNotTrue(errores::$error);
         $this->assertEquals(1, $resultado->cat_sat_isr_id);
+        errores::$error = false;
+    }
+
+    public function test_isr(): void
+    {
+        errores::$error = false;
+
+        $_GET['seccion'] = 'cat_sat_tipo_persona';
+        $_GET['accion'] = 'lista';
+        $_SESSION['grupo_id'] = 1;
+        $_GET['session_id'] = '1';
+        $calculo = new calculo_isr();
+        //$calculo = new liberator($calculo);
+
+        $cat_sat_periodicidad_pago_nom_id = 1;
+        $monto = .01;
+        $resultado = $calculo->isr($cat_sat_periodicidad_pago_nom_id, $this->link, $monto);
+
+
+        $this->assertIsFloat($resultado);
+        $this->assertNotTrue(errores::$error);
+        $this->assertEquals(0.0, $resultado);
+
+        errores::$error = false;
+
+        $_GET['seccion'] = 'cat_sat_tipo_persona';
+        $_GET['accion'] = 'lista';
+        $_SESSION['grupo_id'] = 1;
+        $_GET['session_id'] = '1';
+
+
+        $cat_sat_periodicidad_pago_nom_id = 1;
+        $monto = 179.97	;
+        $resultado = $calculo->isr($cat_sat_periodicidad_pago_nom_id, $this->link, $monto);
+        $this->assertIsFloat($resultado);
+        $this->assertNotTrue(errores::$error);
+        $this->assertEquals(10.57, $resultado);
+
+
+        errores::$error = false;
+
+        $_GET['seccion'] = 'cat_sat_tipo_persona';
+        $_GET['accion'] = 'lista';
+        $_SESSION['grupo_id'] = 1;
+        $_GET['session_id'] = '1';
+
+
+        $cat_sat_periodicidad_pago_nom_id = 1;
+        $monto = 10685.7	;
+        $resultado = $calculo->isr($cat_sat_periodicidad_pago_nom_id, $this->link, $monto);
+        $this->assertIsFloat($resultado);
+        $this->assertNotTrue(errores::$error);
+        $this->assertEquals(3351.21, $resultado);
+
+        errores::$error = false;
+
+        $_GET['seccion'] = 'cat_sat_tipo_persona';
+        $_GET['accion'] = 'lista';
+        $_SESSION['grupo_id'] = 1;
+        $_GET['session_id'] = '1';
+
+
+        $cat_sat_periodicidad_pago_nom_id = 2;
+        $monto = 10685.7	;
+        $resultado = $calculo->isr($cat_sat_periodicidad_pago_nom_id, $this->link, $monto);
+        $this->assertIsFloat($resultado);
+        $this->assertNotTrue(errores::$error);
+        $this->assertEquals(2104.9, $resultado);
+
+        errores::$error = false;
+
+        $_GET['seccion'] = 'cat_sat_tipo_persona';
+        $_GET['accion'] = 'lista';
+        $_SESSION['grupo_id'] = 1;
+        $_GET['session_id'] = '1';
+
+
+        $cat_sat_periodicidad_pago_nom_id = 3;
+        $monto = 10685.7	;
+        $resultado = $calculo->isr($cat_sat_periodicidad_pago_nom_id, $this->link, $monto);
+        $this->assertIsFloat($resultado);
+        $this->assertNotTrue(errores::$error);
+        $this->assertEquals(1571.43, $resultado);
+
+        errores::$error = false;
+
+        $_GET['seccion'] = 'cat_sat_tipo_persona';
+        $_GET['accion'] = 'lista';
+        $_SESSION['grupo_id'] = 1;
+        $_SESSION['usuario_id'] = 1;
+        $_GET['session_id'] = '1';
+
+
+        $cat_sat_periodicidad_pago_nom_id = 4;
+        $monto = 10685.7	;
+        $resultado = $calculo->isr($cat_sat_periodicidad_pago_nom_id, $this->link, $monto);
+
+
+        $this->assertIsFloat($resultado);
+        $this->assertNotTrue(errores::$error);
+        $this->assertEquals(943.46, $resultado);
+
         errores::$error = false;
     }
 

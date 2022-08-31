@@ -132,7 +132,7 @@ class calculo_isr{
      * @return float|array
      * @version 0.163.6
      */
-    public function genera_isr(float|int $monto, stdClass $row_isr): float|array
+    private function genera_isr(float|int $monto, stdClass $row_isr): float|array
     {
         $keys = array('cat_sat_isr_limite_inferior');
         $valida = $this->validacion->valida_double_mayores_0(keys: $keys, registro: $row_isr);
@@ -171,7 +171,7 @@ class calculo_isr{
      * @return array|stdClass
      * @version 0.113.11
      */
-    public function get_isr(int $cat_sat_periodicidad_pago_nom_id, PDO $link, float|int $monto,
+    private function get_isr(int $cat_sat_periodicidad_pago_nom_id, PDO $link, float|int $monto,
                              string $fecha = ''):array|stdClass{
 
         if($cat_sat_periodicidad_pago_nom_id<=0){
@@ -208,6 +208,40 @@ class calculo_isr{
 
 
         return $r_isr->registros_obj[0];
+    }
+
+    /**
+     * Calcula el isr
+     * @param int $cat_sat_periodicidad_pago_nom_id
+     * @param PDO $link conexion a la bd
+     * @param float|int $monto Monto gravable de nomina
+     * @param string $fecha Fecha din del periodo de pago
+     * @return float|array
+     */
+    public function isr(int $cat_sat_periodicidad_pago_nom_id, PDO $link, float|int $monto, string $fecha = ''): float|array
+    {
+        if($cat_sat_periodicidad_pago_nom_id<=0){
+            return $this->error->error(mensaje: 'Error $cat_sat_periodicidad_pago_nom_id debe ser mayor a 0',
+                data: $cat_sat_periodicidad_pago_nom_id);
+        }
+
+        if($fecha === ''){
+            $fecha = date('Y-m-d');
+        }
+
+        $row_isr = $this->get_isr(cat_sat_periodicidad_pago_nom_id: $cat_sat_periodicidad_pago_nom_id,
+            link: $link, monto:$monto, fecha: $fecha);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al obtener isr', data: $row_isr);
+        }
+
+        $isr = $this->genera_isr(monto: $monto, row_isr: $row_isr);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al calcular isr', data: $isr);
+        }
+
+        return $isr;
+
     }
 
 }

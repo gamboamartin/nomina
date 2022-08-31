@@ -174,7 +174,7 @@ class nom_par_percepcionTest extends test {
 
         $nom_par_percepcion_id = 1;
         $resultado = $percepcion->calcula_isr_nomina(partida_percepcion_id: $nom_par_percepcion_id);
-        print_r($resultado);
+
         $this->assertNotTrue(errores::$error);
         $this->assertIsFloat($resultado);
         $this->assertEquals(168.61, $resultado);

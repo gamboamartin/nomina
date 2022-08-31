@@ -567,38 +567,7 @@ class nom_nomina extends modelo
         return $r_alta_factura;
     }
 
-    /**
-     * Calcula el isr
-     * @param int $cat_sat_periodicidad_pago_nom_id
-     * @param float|int $monto Monto gravable de nomina
-     * @param string $fecha Fecha din del periodo de pago
-     * @return float|array
-     */
-    public function isr(int $cat_sat_periodicidad_pago_nom_id, float|int $monto, string $fecha = ''): float|array
-    {
-        if($cat_sat_periodicidad_pago_nom_id<=0){
-            return $this->error->error(mensaje: 'Error $cat_sat_periodicidad_pago_nom_id debe ser mayor a 0',
-                data: $cat_sat_periodicidad_pago_nom_id);
-        }
 
-        if($fecha === ''){
-            $fecha = date('Y-m-d');
-        }
-
-        $row_isr = (new calculo_isr())->get_isr(cat_sat_periodicidad_pago_nom_id: $cat_sat_periodicidad_pago_nom_id,
-            link: $this->link, monto:$monto, fecha: $fecha);
-        if(errores::$error){
-            return $this->error->error(mensaje: 'Error al obtener isr', data: $row_isr);
-        }
-
-        $isr = (new calculo_isr())->genera_isr(monto: $monto, row_isr: $row_isr);
-        if(errores::$error){
-            return $this->error->error(mensaje: 'Error al calcular isr', data: $isr);
-        }
-
-        return $isr;
-
-    }
 
     private function limpia_campos(array $registro, array $campos_limpiar): array
     {
