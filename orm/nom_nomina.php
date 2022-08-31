@@ -665,6 +665,10 @@ class nom_nomina extends modelo
 
     public function otros_pagos(int $nom_nomina_id): array
     {
+        if($nom_nomina_id<=0){
+            return $this->error->error(mensaje: 'Error $nom_nomina_id debe ser mayor a 0', data: $nom_nomina_id);
+        }
+
         $filtro['nom_nomina.id'] = $nom_nomina_id;
         $r_nom_par_otro_pago = (new nom_par_otro_pago($this->link))->filtro_and(filtro: $filtro);
         if(errores::$error){
