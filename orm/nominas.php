@@ -623,6 +623,10 @@ class nominas extends modelo {
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al integrar deducciones', data: $transacciones_deduccion);
         }
+        $transacciones_deduccion = $this->transacciona_imss_por_nomina(nom_nomina_id: $nom_percepcion->nom_nomina_id);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al integrar deducciones', data: $transacciones_deduccion);
+        }
         return $r_modifica_bd;
     }
 
