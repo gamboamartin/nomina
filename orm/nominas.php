@@ -2,6 +2,7 @@
 namespace models;
 use base\orm\modelo;
 use gamboamartin\errores\errores;
+use html\fc_partida_html;
 use JsonException;
 use stdClass;
 
@@ -59,8 +60,6 @@ class nominas extends modelo {
 
         return $transaccion;
     }
-
-
 
     public function aplica_imss(int $registro_id): bool|array
     {
@@ -268,7 +267,6 @@ class nominas extends modelo {
 
         return $nom_par_percepcion;
     }
-
 
     private function campos_base(modelo $modelo, array $registro): array
     {
@@ -535,6 +533,67 @@ class nominas extends modelo {
         $data->existe = $existe;
         return $data;
     }
+
+    private function fc_factura(int $nom_nomina_id): array|stdClass
+    {
+
+        $nom_nomina = (new nom_nomina($this->link))->registro(registro_id: $nom_nomina_id, retorno_obj: true);
+        if(errores::$error){
+            return $this->error->error(mensaje:'Error al obtener nomina' , data: $nom_nomina);
+        }
+
+        $fc_factura = (new fc_factura($this->link))->registro(registro_id: $nom_nomina->fc_factura_id, retorno_obj: true);
+        if(errores::$error){
+            return $this->error->error(mensaje:'Error al obtener factura' , data: $fc_factura);
+        }
+        return $fc_factura;
+
+    }
+
+    private function fc_factura_id(int $nom_nomina_id): int|array
+    {
+        $fc_factura = $this->fc_factura(nom_nomina_id: $nom_nomina_id);
+        if(errores::$error){
+            return $this->error->error(mensaje:'Error al obtener factura' , data: $fc_factura);
+        }
+        return (int)$fc_factura->fc_factura_id;
+
+    }
+
+    private function fc_partida_nom(int $nom_nomina_id){
+        $fc_factura_id = $this->fc_factura_id(nom_nomina_id: $nom_nomina_id);
+        if(errores::$error){
+            return $this->error->error(mensaje:'Error al obtener factura id' , data: $fc_factura_id);
+        }
+
+        $filtro['fc_factura.id'] = $fc_factura_id;
+        $r_fc_partida = (new fc_partida($this->link))->filtro_and(filtro: $filtro);
+        if(errores::$error){
+            return $this->error->error(mensaje:'Error al obtener partidas' , data: $r_fc_partida);
+        }
+        if($r_fc_partida->n_registros === 0){
+            return $this->error->error(mensaje:'Error no existe partida' , data: $r_fc_partida);
+        }
+        if($r_fc_partida->n_registros > 1){
+            return $this->error->error(mensaje:'Error  existe mas de una partida' , data: $r_fc_partida);
+        }
+        return $r_fc_partida->registros[0];
+
+
+    }
+
+    protected function fc_partida_nom_id(int $nom_nomina_id): int|array
+    {
+        $fc_partida_nom = $this->fc_partida_nom(nom_nomina_id: $nom_nomina_id);
+        if(errores::$error){
+            return $this->error->error(mensaje:'Error al obtener partida' , data: $fc_partida_nom);
+        }
+
+        return (int)$fc_partida_nom['fc_partida_id'];
+
+    }
+
+
 
     /**
      * Genera un filtro para una partida de nomina
