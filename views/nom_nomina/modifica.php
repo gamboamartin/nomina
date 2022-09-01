@@ -11,8 +11,6 @@
                     <?php include (new views())->ruta_templates."mensajes.php"; ?>
                     <form method="post" action="<?php echo $controlador->link_nom_nomina_modifica_bd; ?>" class="form-additional">
                         <?php echo $controlador->inputs->id; ?>
-                        <?php echo $controlador->inputs->codigo; ?>
-                        <?php echo $controlador->inputs->codigo_bis; ?>
                         <?php echo $controlador->inputs->select->im_registro_patronal_id; ?>
                         <?php echo $controlador->inputs->select->em_empleado_id; ?>
                         <?php echo $controlador->inputs->select->em_cuenta_bancaria_id; ?>
