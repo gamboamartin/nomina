@@ -67,7 +67,9 @@ class transaccion_fc{
 
     }
 
-    public function fc_partida_nom(PDO $link, int $nom_nomina_id){
+
+
+    private function fc_partida_nom(PDO $link, int $nom_nomina_id){
         if($nom_nomina_id <=0){
             return  $this->error->error(mensaje: 'Error al obtener registro $nom_nomina_id debe ser mayor a 0',
                 data: $nom_nomina_id);
@@ -90,6 +92,21 @@ class transaccion_fc{
         }
         return $r_fc_partida->registros[0];
 
+
+    }
+
+    public function fc_partida_nom_id(PDO $link, int $nom_nomina_id): int|array
+    {
+        if($nom_nomina_id <=0){
+            return  $this->error->error(mensaje: 'Error al obtener registro $nom_nomina_id debe ser mayor a 0',
+                data: $nom_nomina_id);
+        }
+        $fc_partida_nom = $this->fc_partida_nom(link:$link, nom_nomina_id: $nom_nomina_id);
+        if(errores::$error){
+            return $this->error->error(mensaje:'Error al obtener partida' , data: $fc_partida_nom);
+        }
+
+        return (int)$fc_partida_nom['fc_partida_id'];
 
     }
 

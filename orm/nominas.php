@@ -36,7 +36,7 @@ class nominas extends modelo {
      */
     protected function actualiza_fc_partida_factura(int $nom_nomina_id): array|stdClass
     {
-        $fc_partida_id = $this->fc_partida_nom_id(nom_nomina_id: $nom_nomina_id);
+        $fc_partida_id = (new transaccion_fc())->fc_partida_nom_id(link: $this->link, nom_nomina_id: $nom_nomina_id);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al obtener $fc_partida_id', data: $fc_partida_id);
         }
@@ -607,21 +607,6 @@ class nominas extends modelo {
         return $data;
     }
 
-
-    private function fc_partida_nom_id(int $nom_nomina_id): int|array
-    {
-        if($nom_nomina_id <=0){
-            return  $this->error->error(mensaje: 'Error al obtener registro $nom_nomina_id debe ser mayor a 0',
-                data: $nom_nomina_id);
-        }
-        $fc_partida_nom = (new transaccion_fc())->fc_partida_nom(link:$this->link, nom_nomina_id: $nom_nomina_id);
-        if(errores::$error){
-            return $this->error->error(mensaje:'Error al obtener partida' , data: $fc_partida_nom);
-        }
-
-        return (int)$fc_partida_nom['fc_partida_id'];
-
-    }
 
     /**
      * @throws JsonException
