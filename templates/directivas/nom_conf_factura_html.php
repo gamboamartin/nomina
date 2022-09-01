@@ -26,7 +26,7 @@ class nom_conf_factura_html extends html_controler {
         $controler->inputs->select->com_tipo_cambio_id = $inputs->selects->com_tipo_cambio_id;
         $controler->inputs->select->cat_sat_uso_cfdi_id = $inputs->selects->cat_sat_uso_cfdi_id;
         $controler->inputs->select->cat_sat_tipo_de_comprobante_id = $inputs->selects->cat_sat_tipo_de_comprobante_id;
-
+        $controler->inputs->select->com_producto_id = $inputs->selects->com_producto_id;
         return $controler->inputs;
     }
     private function btn_next_action(string $label, string $value): array|string
@@ -182,6 +182,13 @@ class nom_conf_factura_html extends html_controler {
         }
         $selects->cat_sat_tipo_de_comprobante_id = $select;
 
+        $select = (new com_producto_html(html:$this->html_base))->select_com_producto_id(
+            cols: 6, con_registros:true, id_selected:-1,link: $link);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al generar select',data:  $select);
+        }
+        $selects->com_producto_id = $select;
+
         return $selects;
     }
 
@@ -230,6 +237,13 @@ class nom_conf_factura_html extends html_controler {
             return $this->error->error(mensaje: 'Error al generar select',data:  $select);
         }
         $selects->cat_sat_tipo_de_comprobante_id = $select;
+
+        $select = (new com_producto_html(html:$this->html_base))->select_com_producto_id(
+            cols: 6, con_registros:true, id_selected:$row_upd->com_producto_id,link: $link);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al generar select',data:  $select);
+        }
+        $selects->com_producto_id = $select;
 
         return $selects;
     }
