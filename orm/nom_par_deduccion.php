@@ -1,6 +1,5 @@
 <?php
 namespace models;
-use base\orm\modelo;
 use gamboamartin\errores\errores;
 use JsonException;
 use PDO;
@@ -51,6 +50,12 @@ class nom_par_deduccion extends nominas{
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al obtener $fc_partida_id', data: $fc_partida_id);
         }
+
+        $total_deducciones = $this->total_deducciones(nom_nomina_id: $this->registro['nom_nomina_id']);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al obtener total deducciones', data: $total_deducciones);
+        }
+
 
 
         return $r_alta_bd;

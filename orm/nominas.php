@@ -616,7 +616,6 @@ class nominas extends modelo {
     }
 
 
-
     /**
      * Genera un filtro para una partida de nomina
      * @param int $id Id de la deduccion base
@@ -700,9 +699,6 @@ class nominas extends modelo {
     }
 
 
-
-
-
     /**
      * @throws JsonException
      */
@@ -769,6 +765,15 @@ class nominas extends modelo {
         return $r_modifica_nom_par_otro_pago;
     }
 
+    private function nom_nomina_id(int $nom_par_id): int|array
+    {
+        $nom_nomina = $this->registro(registro_id: $nom_par_id, retorno_obj: true);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al obtener nomina',data:  $nom_nomina);
+        }
+        return (int)$nom_nomina->noim_nomina_id;
+    }
+
     private function nom_par_deduccion_aut(float $monto, int $nom_deduccion_id, int $nom_nomina_id): array
     {
         $nom_par_deduccion_ins = array();
@@ -787,6 +792,47 @@ class nominas extends modelo {
         $nom_par_otro_pago_ins['importe_gravado'] = 0.0;
         $nom_par_otro_pago_ins['importe_exento'] = $monto;
         return $nom_par_otro_pago_ins;
+    }
+
+    protected function total_deducciones(int $nom_nomina_id): float|array
+    {
+        $exento = $this->total_deducciones_exento(nom_nomina_id: $nom_nomina_id);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al obtener total deducciones exento',data:  $exento);
+        }
+
+        $gravado = $this->total_deducciones_gravado(nom_nomina_id: $nom_nomina_id);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al obtener total deducciones gravado',data:  $gravado);
+        }
+
+        $total = $exento + $gravado;
+        return round($total,2);
+
+    }
+
+    private function total_deducciones_exento(int $nom_nomina_id): float|array
+    {
+        $campos['total_deducciones_exento'] = 'nom_par_deduccion.importe_exento';
+        $filtro['nom_nomina.id'] = $nom_nomina_id;
+        $total_deducciones = $this->suma(campos: $campos,filtro: $filtro);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al obtener total deducciones',data:  $total_deducciones);
+        }
+
+        return round($total_deducciones['total_deducciones_exento'],2);
+    }
+
+    private function total_deducciones_gravado(int $nom_nomina_id): float|array
+    {
+        $campos['total_deducciones_gravado'] = 'nom_par_deduccion.importe_gravado';
+        $filtro['nom_nomina.id'] = $nom_nomina_id;
+        $total_deducciones = $this->suma(campos: $campos,filtro: $filtro);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al obtener total deducciones',data:  $total_deducciones);
+        }
+
+        return round($total_deducciones['total_deducciones_gravado'],2);
     }
 
     protected function total_percepcion(array $registro): float|array
