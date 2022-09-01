@@ -146,10 +146,22 @@ class nominas extends modelo {
         return $transaccion;
     }
 
+    /**
+     * Asigna el codigo a una partida
+     * @param array $registro Registro en alta
+     * @return array
+     * @version 0.196.6
+     */
     private function asigna_codigo_partida(array $registro): array
     {
         $keys_registro = array('nom_nomina_id');
         $keys_row = array('cat_sat_periodicidad_pago_nom_id','em_empleado_rfc','im_registro_patronal_id');
+
+        $valida = $this->validacion->valida_ids(keys: $keys_registro, registro: $registro);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al validar registro', data: $valida);
+        }
+
         $modelo = new nom_nomina($this->link);
         $registro = $this->asigna_codigo(keys_registro: $keys_registro,keys_row:  $keys_row,
             modelo:  $modelo,registro:  $registro);

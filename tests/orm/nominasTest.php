@@ -29,6 +29,28 @@ class nominasTest extends test {
         $this->paths_conf->views = '/var/www/html/cat_sat/config/views.php';
     }
 
+    public function test_asigna_codigo_partida(): void
+    {
+        errores::$error = false;
+
+        $_GET['seccion'] = 'cat_sat_tipo_persona';
+        $_GET['accion'] = 'lista';
+        $_SESSION['grupo_id'] = 1;
+        $_SESSION['usuario_id'] = 2;
+        $_GET['session_id'] = '1';
+        $nominas = new nom_par_deduccion($this->link);
+        $nominas = new liberator($nominas);
+
+
+        $registro = array();
+        $registro['nom_nomina_id'] = '1';
+        $resultado = $nominas->asigna_codigo_partida($registro);
+        $this->assertIsArray($resultado);
+        $this->assertNotTrue(errores::$error);
+        $this->assertEquals('1', $resultado['nom_nomina_id']);
+        errores::$error = false;
+    }
+
     public function test_base_calculo_impuesto(): void
     {
         errores::$error = false;
