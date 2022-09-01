@@ -628,6 +628,11 @@ class nominas extends modelo {
 
     }
 
+    /**
+     * Obtiene el id d ela factura
+     * @param int $nom_nomina_id Nomina en ejecucion
+     * @return int|array
+     */
     private function fc_factura_id(int $nom_nomina_id): int|array
     {
         if($nom_nomina_id <=0){
@@ -808,6 +813,11 @@ class nominas extends modelo {
             if (errores::$error) {
                 return $this->error->error(mensaje: 'Error al integrar deducciones', data: $transacciones);
             }
+        }
+
+        $fc_partida_upd = $this->actualiza_fc_partida_factura(nom_nomina_id: $nom_percepcion->nom_nomina_id);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al actualizar $fc_partida', data: $fc_partida_upd);
         }
 
         return $r_modifica_bd;

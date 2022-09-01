@@ -58,6 +58,7 @@ class nom_par_otro_pago extends nominas
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al modificar registro',data:  $r_modifica_bd);
         }
+
         return $r_modifica_bd;
 
     }
