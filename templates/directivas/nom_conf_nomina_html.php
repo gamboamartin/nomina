@@ -20,6 +20,7 @@ class nom_conf_nomina_html extends html_controler {
         $controler->inputs->select = new stdClass();
         $controler->inputs->select->nom_conf_factura_id = $inputs->selects->nom_conf_factura_id;
         $controler->inputs->select->cat_sat_periodicidad_pago_nom_id = $inputs->selects->cat_sat_periodicidad_pago_nom_id;
+        $controler->inputs->select->cat_sat_tipo_nomina_id = $inputs->selects->cat_sat_tipo_nomina_id;
 
         return $controler->inputs;
     }
@@ -121,6 +122,14 @@ class nom_conf_nomina_html extends html_controler {
         }
         $selects->cat_sat_periodicidad_pago_nom_id = $select;
 
+
+        $select = (new cat_sat_tipo_nomina_html(html:$this->html_base))->select_cat_sat_tipo_nomina_id(
+            cols: 12, con_registros:true, id_selected:-1,link: $link);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al generar select',data:  $select);
+        }
+        $selects->cat_sat_tipo_nomina_id = $select;
+
         return $selects;
     }
 
@@ -141,6 +150,13 @@ class nom_conf_nomina_html extends html_controler {
             return $this->error->error(mensaje: 'Error al generar select',data:  $select);
         }
         $selects->cat_sat_periodicidad_pago_nom_id = $select;
+
+        $select = (new cat_sat_tipo_nomina_html(html:$this->html_base))->select_cat_sat_tipo_nomina_id(
+            cols: 12, con_registros:true, id_selected:$row_upd->cat_sat_tipo_nomina_id,link: $link);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al generar select',data:  $select);
+        }
+        $selects->cat_sat_tipo_nomina_id = $select;
 
         return $selects;
     }
