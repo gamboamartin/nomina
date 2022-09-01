@@ -56,6 +56,11 @@ class nom_par_deduccion extends nominas{
             return $this->error->error(mensaje: 'Error al obtener total deducciones', data: $total_deducciones);
         }
 
+        $fc_partida_upd['descuento'] = $total_deducciones;
+        $r_fc_partida_upd = (new fc_partida($this->link))->modifica_bd(registro: $fc_partida_upd,id:  $fc_partida_id);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al obtener total deducciones', data: $r_fc_partida_upd);
+        }
 
 
         return $r_alta_bd;
