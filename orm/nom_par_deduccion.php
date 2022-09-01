@@ -46,17 +46,35 @@ class nom_par_deduccion extends nominas{
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al insertar percepcion', data: $r_alta_bd);
         }
+
         $fc_partida_id = $this->fc_partida_nom_id(nom_nomina_id: $this->registro['nom_nomina_id']);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al obtener $fc_partida_id', data: $fc_partida_id);
         }
-
         $total_deducciones = $this->total_deducciones(nom_nomina_id: $this->registro['nom_nomina_id']);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al obtener total deducciones', data: $total_deducciones);
         }
 
         $fc_partida_upd['descuento'] = $total_deducciones;
+        $r_fc_partida_upd = (new fc_partida($this->link))->modifica_bd(registro: $fc_partida_upd,id:  $fc_partida_id);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al obtener total deducciones', data: $r_fc_partida_upd);
+        }
+
+        $total_percepciones = $this->total_percepciones(nom_nomina_id: $this->registro['nom_nomina_id']);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al obtener total deducciones', data: $total_percepciones);
+        }
+
+        $total_otros_pagos = $this->total_otros_pagos(nom_nomina_id: $this->registro['nom_nomina_id']);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al obtener total otros pagos', data: $total_otros_pagos);
+        }
+
+        $total_ingreso_bruto = $total_percepciones + $total_otros_pagos;
+
+        $fc_partida_upd['valor_unitario'] = $total_ingreso_bruto;
         $r_fc_partida_upd = (new fc_partida($this->link))->modifica_bd(registro: $fc_partida_upd,id:  $fc_partida_id);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al obtener total deducciones', data: $r_fc_partida_upd);
