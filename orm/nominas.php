@@ -534,8 +534,18 @@ class nominas extends modelo {
         return $data;
     }
 
+    /**
+     * Obtiene una factura en base a la nomina cargada
+     * @param int $nom_nomina_id Identificador de nomina
+     * @return array|stdClass
+     * @version 0.194.6
+     */
     private function fc_factura(int $nom_nomina_id): array|stdClass
     {
+        if($nom_nomina_id <=0){
+            return  $this->error->error(mensaje: 'Error al obtener registro $nom_nomina_id debe ser mayor a 0',
+                data: $nom_nomina_id);
+        }
 
         $nom_nomina = (new nom_nomina($this->link))->registro(registro_id: $nom_nomina_id, retorno_obj: true);
         if(errores::$error){
@@ -552,6 +562,10 @@ class nominas extends modelo {
 
     private function fc_factura_id(int $nom_nomina_id): int|array
     {
+        if($nom_nomina_id <=0){
+            return  $this->error->error(mensaje: 'Error al obtener registro $nom_nomina_id debe ser mayor a 0',
+                data: $nom_nomina_id);
+        }
         $fc_factura = $this->fc_factura(nom_nomina_id: $nom_nomina_id);
         if(errores::$error){
             return $this->error->error(mensaje:'Error al obtener factura' , data: $fc_factura);
@@ -561,6 +575,10 @@ class nominas extends modelo {
     }
 
     private function fc_partida_nom(int $nom_nomina_id){
+        if($nom_nomina_id <=0){
+            return  $this->error->error(mensaje: 'Error al obtener registro $nom_nomina_id debe ser mayor a 0',
+                data: $nom_nomina_id);
+        }
         $fc_factura_id = $this->fc_factura_id(nom_nomina_id: $nom_nomina_id);
         if(errores::$error){
             return $this->error->error(mensaje:'Error al obtener factura id' , data: $fc_factura_id);
@@ -584,6 +602,10 @@ class nominas extends modelo {
 
     protected function fc_partida_nom_id(int $nom_nomina_id): int|array
     {
+        if($nom_nomina_id <=0){
+            return  $this->error->error(mensaje: 'Error al obtener registro $nom_nomina_id debe ser mayor a 0',
+                data: $nom_nomina_id);
+        }
         $fc_partida_nom = $this->fc_partida_nom(nom_nomina_id: $nom_nomina_id);
         if(errores::$error){
             return $this->error->error(mensaje:'Error al obtener partida' , data: $fc_partida_nom);
