@@ -451,6 +451,12 @@ class nom_nomina extends modelo
             return $this->error->error(mensaje: 'Error al validar registro', data: $valida);
         }
 
+        $keys = array('com_sucursal_id');
+        $valida = $this->validacion->valida_ids(keys: $keys, registro: $empleado_sucursal);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al validar registro', data: $valida);
+        }
+
         $folio = $this->registro['folio'];
         $serie = $registros->fc_csd_serie;
         $fecha = $this->registro['fecha'];
@@ -479,6 +485,14 @@ class nom_nomina extends modelo
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al validar registro', data: $valida);
         }
+
+        $keys = array('fc_factura_id');
+        $valida = $this->validacion->valida_ids(keys: $keys, registro: $fc_factura->registro);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al validar registro', data: $valida);
+        }
+
+
         $codigo = "PN".$fc_factura->registro['fc_factura_id'];
         $descripcion = "pago nomina".$fc_factura->registro['fc_factura_id'];
         $descripcion_select = "PAGO NOMINA".$fc_factura->registro['fc_factura_id'];
