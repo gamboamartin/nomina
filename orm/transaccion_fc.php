@@ -3,6 +3,7 @@
 namespace models;
 use gamboamartin\errores\errores;
 use gamboamartin\validacion\validacion;
+use JsonException;
 use PDO;
 use stdClass;
 
@@ -108,6 +109,19 @@ class transaccion_fc{
 
         return (int)$fc_partida_nom['fc_partida_id'];
 
+    }
+
+    /**
+     * @throws JsonException
+     */
+    public function upd_descuento_fc_partida(int $fc_partida_id, PDO $link, float|int $total_deducciones): array|stdClass
+    {
+        $fc_partida_upd['descuento'] = $total_deducciones;
+        $r_fc_partida_upd = (new fc_partida($link))->modifica_bd(registro: $fc_partida_upd,id:  $fc_partida_id);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al obtener total deducciones', data: $r_fc_partida_upd);
+        }
+        return $r_fc_partida_upd;
     }
 
 
