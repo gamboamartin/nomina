@@ -95,6 +95,11 @@ class nominas extends modelo {
             return $this->error->error(mensaje: 'Error al integrar deducciones', data: $transacciones);
         }
 
+        $fc_partida_upd = $this->actualiza_fc_partida_factura(nom_nomina_id: $this->registro['nom_nomina_id']);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al actualizar $fc_partida', data: $fc_partida_upd);
+        }
+
         return $r_alta_bd;
     }
 
@@ -815,10 +820,7 @@ class nominas extends modelo {
             }
         }
 
-        $fc_partida_upd = $this->actualiza_fc_partida_factura(nom_nomina_id: $nom_percepcion->nom_nomina_id);
-        if(errores::$error){
-            return $this->error->error(mensaje: 'Error al actualizar $fc_partida', data: $fc_partida_upd);
-        }
+
 
         return $r_modifica_bd;
     }
@@ -1253,10 +1255,16 @@ class nominas extends modelo {
                 data: $transacciones_otro_pago_subsidio);
         }
 
+        $fc_partida_upd = $this->actualiza_fc_partida_factura(nom_nomina_id: $nom_nomina_id);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al actualizar $fc_partida', data: $fc_partida_upd);
+        }
+
         $data = new stdClass();
         $data->isr = $transacciones_deduccion_isr;
         $data->imss = $transacciones_deduccion_imss;
         $data->otro_pago = $transacciones_otro_pago_subsidio;
+        $data->fc_partida = $fc_partida_upd;
         return $data;
     }
 
