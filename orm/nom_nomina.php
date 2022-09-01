@@ -43,7 +43,8 @@ class nom_nomina extends modelo
             return $this->error->error(mensaje: 'Error al dar de alta la factura', data: $r_alta_factura);
         }
 
-        $registros_cfd_partida = $this->genera_registro_cfd_partida(fc_factura: $r_alta_factura,em_empleado: $registros['em_empleado']);
+        $registros_cfd_partida = $this->genera_registro_cfd_partida(fc_factura: $r_alta_factura,em_empleado: $registros['em_empleado'],
+            conf_empleado: $registros['nom_conf_empleado']);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al generar registros de cfd partida', data: $registros_cfd_partida);
         }
@@ -471,7 +472,7 @@ class nom_nomina extends modelo
         return $regisro_factura;
     }
 
-    private function genera_registro_cfd_partida(mixed $fc_factura, mixed $em_empleado) : array{
+    private function genera_registro_cfd_partida(mixed $fc_factura, mixed $em_empleado, mixed $conf_empleado) : array{
 
         $keys = array('num_dias_pagados','descuento');
         $valida = $this->validacion->valida_existencia_keys(keys: $keys,registro:  $this->registro);
@@ -483,7 +484,7 @@ class nom_nomina extends modelo
         $descripcion_select = mt_rand();
         $alias = mt_rand();
         $codigo_bis = mt_rand();
-        $com_producto_id = 1;
+        $com_producto_id = $conf_empleado->nom_conf_factura_com_producto_id;
         $cantidad = 1;
         $valor_unitario= $this->registro['num_dias_pagados'] * $em_empleado->em_empleado_salario_diario;
         $descuento = $this->registro['descuento'];
