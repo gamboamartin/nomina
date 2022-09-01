@@ -11,6 +11,7 @@ use models\calcula_imss;
 use models\calculo_isr;
 use models\fc_cfd_partida;
 use models\fc_factura;
+use models\fc_partida;
 use models\nom_nomina;
 use models\nom_par_deduccion;
 use models\nom_par_percepcion;
@@ -66,6 +67,63 @@ class calculo_isrTest extends test {
 
 
         $calculo = new calculo_isr();
+
+        $del_percepcion = $percepcion->elimina_todo();
+        if(errores::$error){
+            $error = (new errores())->error(mensaje: 'Error al eliminar $del_percepcion', data: $del_percepcion);
+            print_r($error);
+            exit;
+        }
+
+        $del_deduccion = (new nom_par_deduccion($this->link))->elimina_todo();
+        if(errores::$error){
+            $error = (new errores())->error(mensaje: 'Error al eliminar $del_deduccion', data: $del_deduccion);
+            print_r($error);
+            exit;
+        }
+
+        $del_nomina = (new nom_nomina($this->link))->elimina_todo();
+        if(errores::$error){
+            $error = (new errores())->error(mensaje: 'Error al eliminar $del_nomina', data: $del_nomina);
+            print_r($error);
+            exit;
+        }
+
+        $del_partida_factura = (new fc_partida($this->link))->elimina_todo();
+        if(errores::$error){
+            $error = (new errores())->error(mensaje: 'Error al eliminar $del_partida_factura', data: $del_partida_factura);
+            print_r($error);
+            exit;
+        }
+
+        $del_factura = (new fc_factura($this->link))->elimina_todo();
+        if(errores::$error){
+            $error = (new errores())->error(mensaje: 'Error al eliminar $del_factura', data: $del_factura);
+            print_r($error);
+            exit;
+        }
+
+
+
+        $nom_nomina = array();
+        $nom_nomina['id'] = 1;
+        $nom_nomina['im_registro_patronal_id'] = 1;
+        $nom_nomina['em_empleado_id'] = 1;
+        $nom_nomina['folio'] = 1;
+        $nom_nomina['fecha'] = '2022-01-01';
+        $nom_nomina['fecha_inicial_pago'] = '2022-01-01';
+        $nom_nomina['fecha_final_pago'] = '2022-01-01';
+        $nom_nomina['num_dias_pagados'] = 1;
+        $nom_nomina['descuento'] = 1;
+        $nom_nomina['cat_sat_periodicidad_pago_nom_id'] = 1;
+        $nom_nomina['em_cuenta_bancaria_id'] = 1;
+
+        $alta_nomina = (new nom_nomina($this->link))->alta_registro($nom_nomina);
+        if(errores::$error){
+            $error = (new errores())->error(mensaje: 'Error al insertar nomina ', data: $alta_nomina);
+            print_r($error);
+            exit;
+        }
 
         $del_percepcion = $percepcion->elimina_todo();
         if(errores::$error){
