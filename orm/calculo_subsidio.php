@@ -55,7 +55,7 @@ class calculo_subsidio{
      * @param PDO $link Conexion a la base de datos
      * @param int $nom_nomina_id Nomina identificador
      * @return float|array
-     * @version
+     * @version @0.190.6
      */
     public function calcula_subsidio_por_nomina(PDO $link, int $nom_nomina_id): float|array
     {

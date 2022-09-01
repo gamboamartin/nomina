@@ -14,6 +14,7 @@ use models\fc_factura;
 use models\fc_partida;
 use models\nom_nomina;
 use models\nom_par_deduccion;
+use models\nom_par_otro_pago;
 use models\nom_par_percepcion;
 use stdClass;
 
@@ -78,6 +79,13 @@ class calculo_isrTest extends test {
         $del_deduccion = (new nom_par_deduccion($this->link))->elimina_todo();
         if(errores::$error){
             $error = (new errores())->error(mensaje: 'Error al eliminar $del_deduccion', data: $del_deduccion);
+            print_r($error);
+            exit;
+        }
+
+        $del_otro_pago = (new nom_par_otro_pago($this->link))->elimina_todo();
+        if(errores::$error){
+            $error = (new errores())->error(mensaje: 'Error al eliminar $del_otro_pago', data: $del_otro_pago);
             print_r($error);
             exit;
         }
