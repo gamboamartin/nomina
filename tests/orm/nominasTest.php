@@ -97,27 +97,7 @@ class nominasTest extends test {
         errores::$error = false;
     }
 
-    public function test_fc_factura(): void
-    {
-        errores::$error = false;
 
-        $_GET['seccion'] = 'cat_sat_tipo_persona';
-        $_GET['accion'] = 'lista';
-        $_SESSION['grupo_id'] = 1;
-        $_SESSION['usuario_id'] = 2;
-        $_GET['session_id'] = '1';
-        $nominas = new nom_par_percepcion($this->link);
-        $nominas = new liberator($nominas);
-
-
-        $nom_nomina_id = 1;
-
-        $resultado = $nominas->fc_factura($nom_nomina_id);
-        $this->assertIsObject($resultado);
-        $this->assertNotTrue(errores::$error);
-
-        errores::$error = false;
-    }
 
 
     public function test_filtro_partida(): void
