@@ -47,24 +47,11 @@ class nom_par_deduccion extends nominas{
             return $this->error->error(mensaje: 'Error al insertar percepcion', data: $r_alta_bd);
         }
 
-        $fc_partida_id = $this->fc_partida_nom_id(nom_nomina_id: $this->registro['nom_nomina_id']);
+        $fc_partida_upd = $this->actualiza_fc_partida_factura(nom_nomina_id: $this->registro['nom_nomina_id']);
         if(errores::$error){
-            return $this->error->error(mensaje: 'Error al obtener $fc_partida_id', data: $fc_partida_id);
+            return $this->error->error(mensaje: 'Error al actualizar $fc_partida', data: $fc_partida_upd);
         }
 
-
-        $fc_partida_upd = $this->actualiza_deduccion(fc_partida_id: $fc_partida_id,
-            nom_nomina_id: $this->registro['nom_nomina_id']);
-        if(errores::$error){
-            return $this->error->error(mensaje: 'Error al obtener actualizar descuento', data: $fc_partida_upd);
-        }
-
-
-        $fc_partida_upd = $this->actualiza_valor_unitario(fc_partida_id: $fc_partida_id,
-            nom_nomina_id: $this->registro['nom_nomina_id']);
-        if(errores::$error){
-            return $this->error->error(mensaje: 'Error al actualizar ingreso', data: $fc_partida_upd);
-        }
 
 
         return $r_alta_bd;

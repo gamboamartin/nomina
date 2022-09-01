@@ -10,10 +10,12 @@ class nominas extends modelo {
 
     protected string $tabla_nom_conf = '';
 
+
+
     /**
      * @throws JsonException
      */
-    protected function actualiza_deduccion(int $fc_partida_id, int $nom_nomina_id): array|stdClass
+    private function actualiza_deduccion(int $fc_partida_id, int $nom_nomina_id): array|stdClass
     {
         $total_deducciones = $this->total_deducciones(nom_nomina_id: $nom_nomina_id);
         if(errores::$error){
@@ -32,7 +34,25 @@ class nominas extends modelo {
     /**
      * @throws JsonException
      */
-    protected function actualiza_valor_unitario(int $fc_partida_id, int $nom_nomina_id): array|stdClass
+    protected function actualiza_fc_partida_factura(int $nom_nomina_id): array|stdClass
+    {
+        $fc_partida_id = $this->fc_partida_nom_id(nom_nomina_id: $nom_nomina_id);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al obtener $fc_partida_id', data: $fc_partida_id);
+        }
+
+        $fc_partida_upd = $this->fc_partida_upd(fc_partida_id: $fc_partida_id, nom_nomina_id:  $nom_nomina_id);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al obtener actualizar partida', data: $fc_partida_upd);
+        }
+
+        return $fc_partida_upd;
+    }
+
+    /**
+     * @throws JsonException
+     */
+    private function actualiza_valor_unitario(int $fc_partida_id, int $nom_nomina_id): array|stdClass
     {
         $total_ingreso_bruto = $this->total_ingreso_bruto(nom_nomina_id: $nom_nomina_id);
         if(errores::$error){
@@ -648,7 +668,7 @@ class nominas extends modelo {
 
     }
 
-    protected function fc_partida_nom_id(int $nom_nomina_id): int|array
+    private function fc_partida_nom_id(int $nom_nomina_id): int|array
     {
         if($nom_nomina_id <=0){
             return  $this->error->error(mensaje: 'Error al obtener registro $nom_nomina_id debe ser mayor a 0',
@@ -661,6 +681,27 @@ class nominas extends modelo {
 
         return (int)$fc_partida_nom['fc_partida_id'];
 
+    }
+
+    /**
+     * @throws JsonException
+     */
+    private function fc_partida_upd(int $fc_partida_id, int $nom_nomina_id): array|stdClass
+    {
+        $upd = new stdClass();
+        $fc_partida_upd = $this->actualiza_deduccion(fc_partida_id: $fc_partida_id, nom_nomina_id: $nom_nomina_id);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al obtener actualizar descuento', data: $fc_partida_upd);
+        }
+        $upd->descuento = $fc_partida_upd;
+
+        $fc_partida_upd = $this->actualiza_valor_unitario(fc_partida_id: $fc_partida_id, nom_nomina_id: $nom_nomina_id);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al actualizar ingreso', data: $fc_partida_upd);
+        }
+        $upd->valor_unitario = $fc_partida_upd;
+
+        return $upd;
     }
 
 
