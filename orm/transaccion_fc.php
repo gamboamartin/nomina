@@ -53,7 +53,7 @@ class transaccion_fc{
      * @param int $nom_nomina_id Nomina en ejecucion
      * @return int|array
      */
-    public function fc_factura_id(PDO $link, int $nom_nomina_id): int|array
+    private function fc_factura_id(PDO $link, int $nom_nomina_id): int|array
     {
         if($nom_nomina_id <=0){
             return  $this->error->error(mensaje: 'Error al obtener registro $nom_nomina_id debe ser mayor a 0',
@@ -64,6 +64,32 @@ class transaccion_fc{
             return $this->error->error(mensaje:'Error al obtener factura' , data: $fc_factura);
         }
         return (int)$fc_factura->fc_factura_id;
+
+    }
+
+    public function fc_partida_nom(PDO $link, int $nom_nomina_id){
+        if($nom_nomina_id <=0){
+            return  $this->error->error(mensaje: 'Error al obtener registro $nom_nomina_id debe ser mayor a 0',
+                data: $nom_nomina_id);
+        }
+        $fc_factura_id = $this->fc_factura_id(link: $link, nom_nomina_id: $nom_nomina_id);
+        if(errores::$error){
+            return $this->error->error(mensaje:'Error al obtener factura id' , data: $fc_factura_id);
+        }
+
+        $filtro['fc_factura.id'] = $fc_factura_id;
+        $r_fc_partida = (new fc_partida($link))->filtro_and(filtro: $filtro);
+        if(errores::$error){
+            return $this->error->error(mensaje:'Error al obtener partidas' , data: $r_fc_partida);
+        }
+        if($r_fc_partida->n_registros === 0){
+            return $this->error->error(mensaje:'Error no existe partida' , data: $r_fc_partida);
+        }
+        if($r_fc_partida->n_registros > 1){
+            return $this->error->error(mensaje:'Error  existe mas de una partida' , data: $r_fc_partida);
+        }
+        return $r_fc_partida->registros[0];
+
 
     }
 
