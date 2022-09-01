@@ -43,13 +43,13 @@ class nom_nomina extends modelo
             return $this->error->error(mensaje: 'Error al dar de alta la factura', data: $r_alta_factura);
         }
 
-        $registros_cfd_partida = $this->genera_registro_cfd_partida(fc_factura: $r_alta_factura,em_empleado: $registros['em_empleado'],
+        $registros_cfd_partida = $this->genera_registro_partida(fc_factura: $r_alta_factura,em_empleado: $registros['em_empleado'],
             conf_empleado: $registros['nom_conf_empleado']);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al generar registros de cfd partida', data: $registros_cfd_partida);
         }
 
-        $r_alta_cfd_partida  = $this->inserta_cfd_partida(registro: $registros_cfd_partida);
+        $r_alta_cfd_partida  = $this->inserta_partida(registro: $registros_cfd_partida);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al dar de alta cfd partida', data: $r_alta_cfd_partida);
         }
@@ -451,6 +451,12 @@ class nom_nomina extends modelo
             return $this->error->error(mensaje: 'Error al validar registro', data: $valida);
         }
 
+        $keys = array('com_sucursal_id');
+        $valida = $this->validacion->valida_ids(keys: $keys, registro: $empleado_sucursal);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al validar registro', data: $valida);
+        }
+
         $folio = $this->registro['folio'];
         $serie = $registros->fc_csd_serie;
         $fecha = $this->registro['fecha'];
@@ -472,18 +478,26 @@ class nom_nomina extends modelo
         return $regisro_factura;
     }
 
-    private function genera_registro_cfd_partida(mixed $fc_factura, mixed $em_empleado, mixed $conf_empleado) : array{
+    private function genera_registro_partida(mixed $fc_factura, mixed $em_empleado, mixed $conf_empleado) : array{
 
         $keys = array('num_dias_pagados','descuento');
         $valida = $this->validacion->valida_existencia_keys(keys: $keys,registro:  $this->registro);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al validar registro', data: $valida);
         }
-        $codigo = mt_rand();
-        $descripcion = mt_rand();
-        $descripcion_select = mt_rand();
-        $alias = mt_rand();
-        $codigo_bis = mt_rand();
+
+        $keys = array('fc_factura_id');
+        $valida = $this->validacion->valida_ids(keys: $keys, registro: $fc_factura->registro);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al validar registro', data: $valida);
+        }
+
+
+        $codigo = "PN".$fc_factura->registro['fc_factura_id'];
+        $descripcion = "pago nomina".$fc_factura->registro['fc_factura_id'];
+        $descripcion_select = "PAGO NOMINA".$fc_factura->registro['fc_factura_id'];
+        $alias = "PN".$fc_factura->registro['fc_factura_id'];
+        $codigo_bis = "PN".$fc_factura->registro['fc_factura_id'];
         $com_producto_id = $conf_empleado->nom_conf_factura_com_producto_id;
         $cantidad = 1;
         $valor_unitario= $this->registro['num_dias_pagados'] * $em_empleado->em_empleado_salario_diario;
@@ -550,13 +564,13 @@ class nom_nomina extends modelo
 
 
 
-    private function inserta_cfd_partida(array $registro): array|stdClass
+    private function inserta_partida(array $registro): array|stdClass
     {
-        $r_alta_cfd_partida = (new fc_partida($this->link))->alta_registro(registro: $registro);
+        $r_alta_partida = (new fc_partida($this->link))->alta_registro(registro: $registro);
         if (errores::$error) {
-            return $this->error->error(mensaje: 'Error al dar de alta cfd partida', data: $r_alta_cfd_partida);
+            return $this->error->error(mensaje: 'Error al dar de alta cfd partida', data: $r_alta_partida);
         }
-        return $r_alta_cfd_partida;
+        return $r_alta_partida;
     }
 
     private function inserta_factura(array $registro): array|stdClass
