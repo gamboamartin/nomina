@@ -39,8 +39,8 @@ class transaccion_fcTest extends test {
         $_SESSION['grupo_id'] = 1;
         $_SESSION['usuario_id'] = 2;
         $_GET['session_id'] = '1';
-        $tr = new transaccion_fc($this->link);
-        //$nominas = new liberator($nominas);
+        $tr = new transaccion_fc();
+        $tr = new liberator($tr);
 
 
         $nom_nomina_id = 1;
