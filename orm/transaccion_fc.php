@@ -297,6 +297,46 @@ class transaccion_fc{
         return $dels;
     }
 
+    private function elimina_otro_pago_0(array $filtro, PDO $link): array
+    {
+        $r_nom_par_otro_pago = (new nom_par_otro_pago(link: $link))->filtro_and(filtro: $filtro);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al obtener deduccion', data: $r_nom_par_otro_pago);
+        }
+        $dels = array();
+        foreach ($r_nom_par_otro_pago->registros as $par_otro_pago) {
+
+            $filtro_npop = array();
+            $filtro_npop['nom_par_otro_pago.id'] = $par_otro_pago['nom_par_otro_pago_id'];
+            $existe_data_subsidio = (new nom_data_subsidio($link))->existe(filtro: $filtro_npop);
+            if (errores::$error) {
+                return $this->error->error(mensaje: 'Error al validar si existe data subsidio', data: $existe_data_subsidio);
+            }
+
+            if($existe_data_subsidio){
+
+                $nom_data_subsidio_id = (new nom_data_subsidio($link))->nom_data_subsidio_id(filtro: $filtro_npop);
+                if (errores::$error) {
+                    return $this->error->error(mensaje: 'Error al obtener id de data subsidio', data: $nom_data_subsidio_id);
+                }
+
+                $elimina_data_subsidio = (new nom_data_subsidio(link: $link))->elimina_bd(id: $nom_data_subsidio_id);
+                if (errores::$error) {
+                    return $this->error->error(mensaje: 'Error al eliminar data subsidio', data: $elimina_data_subsidio);
+                }
+            }
+            $nom_otro_pago_upd = array();
+            $nom_otro_pago_upd['importe_gravado'] = 0;
+            $nom_otro_pago_upd['importe_exento'] = 0;
+            $upd_otro_pago = (new nom_par_otro_pago(link: $link))->modifica_bd(registro:$nom_otro_pago_upd, id: $par_otro_pago['nom_par_otro_pago_id']);
+            if (errores::$error) {
+                return $this->error->error(mensaje: 'Error al eliminar deduccion', data: $upd_otro_pago);
+            }
+            $dels[] = $upd_otro_pago;
+        }
+        return $dels;
+    }
+
 
 
 
@@ -699,7 +739,13 @@ class transaccion_fc{
                 return $this->error->error(mensaje: 'Error al validar si existe deduccion', data: $data_existe);
             }
             if($data_existe->existe){
-                $elimina_deducciones = $this->elimina_otro_pago(filtro: $data_existe->filtro, link: $mod_nominas->link);
+
+                /*$elimina_deducciones = $this->elimina_otro_pago(filtro: $data_existe->filtro, link: $mod_nominas->link);
+                if(errores::$error){
+                    return $this->error->error(mensaje: 'Error al eliminar deducciones', data: $elimina_deducciones);
+                }*/
+
+                $elimina_deducciones = $this->elimina_otro_pago_0(filtro: $data_existe->filtro, link: $mod_nominas->link);
                 if(errores::$error){
                     return $this->error->error(mensaje: 'Error al eliminar deducciones', data: $elimina_deducciones);
                 }
