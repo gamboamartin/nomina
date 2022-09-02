@@ -301,9 +301,17 @@ class nominas extends modelo {
      * @param int $nom_deduccion_id Deduccion a verificar
      * @param int $nom_nomina_id Nomina a verificar
      * @return array|stdClass
+     * @version 0.232.6
      */
     public function existe_data_deduccion(int $nom_deduccion_id, int $nom_nomina_id): array|stdClass
     {
+        if($nom_deduccion_id<=0){
+            return $this->error->error(mensaje: 'Error $nom_deduccion_id debe ser mayor a 0', data: $nom_deduccion_id);
+        }
+        if($nom_nomina_id<=0){
+            return $this->error->error(mensaje: 'Error $nom_nomina_id debe ser mayor a 0', data: $nom_nomina_id);
+        }
+
         $filtro = $this->filtro_partida(id: $nom_deduccion_id, nom_nomina_id: $nom_nomina_id, tabla: 'nom_deduccion');
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al generar filtro', data: $filtro);

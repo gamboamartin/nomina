@@ -101,7 +101,62 @@ class nominasTest extends test {
     }
 
 
+    public function test_existe_data_deduccion(): void
+    {
+        errores::$error = false;
 
+        $_GET['seccion'] = 'cat_sat_tipo_persona';
+        $_GET['accion'] = 'lista';
+        $_SESSION['grupo_id'] = 1;
+        $_SESSION['usuario_id'] = 2;
+        $_GET['session_id'] = '1';
+        $nominas = new nom_par_deduccion($this->link);
+        //$nominas = new liberator($nominas);
+
+        $del = (new nom_par_deduccion($this->link))->elimina_todo();
+        if(errores::$error){
+            $error = (new errores())->error('Error al eliminar deduccion', $del);
+            print_r($error);
+            exit;
+        }
+
+        $nom_deduccion_id = 1;
+        $nom_nomina_id = 1;
+
+        $resultado = $nominas->existe_data_deduccion($nom_deduccion_id, $nom_nomina_id);
+        $this->assertIsObject($resultado);
+        $this->assertNotTrue(errores::$error);
+        $this->assertEquals(1, $resultado->filtro['nom_nomina.id']);
+        $this->assertEquals(1, $resultado->filtro['nom_deduccion.id']);
+        $this->assertFalse( $resultado->existe);
+
+        errores::$error = false;
+
+
+        $nom_par_deduccion = array();
+        $nom_par_deduccion['id'] = 1;
+        $nom_par_deduccion['nom_nomina_id'] = 1;
+        $nom_par_deduccion['nom_deduccion_id'] = 1;
+        $nom_par_deduccion['importe_exento'] = 100;
+
+        $alta = (new nom_par_deduccion($this->link))->alta_registro($nom_par_deduccion);
+        if(errores::$error){
+            $error = (new errores())->error('Error al eliminar deduccion', $alta);
+            print_r($error);
+            exit;
+        }
+
+        $nom_deduccion_id = 1;
+        $nom_nomina_id = 1;
+
+        $resultado = $nominas->existe_data_deduccion($nom_deduccion_id, $nom_nomina_id);
+        $this->assertIsObject($resultado);
+        $this->assertNotTrue(errores::$error);
+        $this->assertEquals(1, $resultado->filtro['nom_nomina.id']);
+        $this->assertEquals(1, $resultado->filtro['nom_deduccion.id']);
+        $this->assertTrue( $resultado->existe);
+        errores::$error = false;
+    }
 
     public function test_filtro_partida(): void
     {
