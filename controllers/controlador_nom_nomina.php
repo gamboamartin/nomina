@@ -356,7 +356,8 @@ class controlador_nom_nomina extends system
     public function modifica(bool $header, bool $ws = false, string $breadcrumbs = '', bool $aplica_form = true,
                              bool $muestra_btn = true): array|string
     {
-        $base = $this->base();
+        $params = $this->params_actions->modifica ?? new stdClass();
+        $base = $this->base(params: $params);
         if (errores::$error) {
             return $this->retorno_error(mensaje: 'Error al maquetar datos', data: $base,
                 header: $header, ws: $ws);
