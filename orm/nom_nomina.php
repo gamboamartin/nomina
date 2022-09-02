@@ -70,7 +70,6 @@ class nom_nomina extends modelo
             return $this->error->error(mensaje: 'Error al insertar nomina', data: $r_alta_bd);
         }
 
-
         $nom_par_percepcion_ins = array();
         $nom_par_percepcion_ins['nom_nomina_id'] = $r_alta_bd->registro_id;
         $nom_par_percepcion_ins['nom_percepcion_id'] = 1;
