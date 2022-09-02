@@ -3,6 +3,7 @@
 namespace models;
 
 use gamboamartin\errores\errores;
+use JsonException;
 use PDO;
 use stdClass;
 
@@ -60,6 +61,24 @@ class nom_par_otro_pago extends nominas
         }
 
         return $r_modifica_bd;
+
+    }
+
+    /**
+     * @throws JsonException
+
+     */
+    public function modifica_subsidio(int $nom_par_otro_pago_id, float $importe_gravable, float $importe_exento): array|stdClass
+    {
+        $nom_par_otro_pago_upd['importe_gravable'] = $importe_gravable;
+        $nom_par_otro_pago_upd['importe_exento'] = $importe_exento;
+        $r_nom_par_otro_pago = parent::modifica_bd(registro: $nom_par_otro_pago_upd, id:$nom_par_otro_pago_id);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al actualizar isr', data: $r_nom_par_otro_pago);
+        }
+
+        return $r_nom_par_otro_pago;
+
 
     }
 

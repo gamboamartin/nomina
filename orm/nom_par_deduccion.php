@@ -58,6 +58,23 @@ class nom_par_deduccion extends nominas{
         return $r_alta_bd;
     }
 
+    /**
+     * @throws JsonException
+     */
+    public function modifica_isr(int $nom_par_deduccion_id, float $importe_gravable, float $importe_exento): array|stdClass
+    {
+        $nom_par_deduccion_upd['importe_gravable'] = $importe_gravable;
+        $nom_par_deduccion_upd['importe_exento'] = $importe_exento;
+        $r_nom_par_deduccion = parent::modifica_bd(registro: $nom_par_deduccion_upd, id:$nom_par_deduccion_id);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al actualizar isr', data: $r_nom_par_deduccion);
+        }
+
+        return $r_nom_par_deduccion;
+
+
+    }
+
 
 
 
