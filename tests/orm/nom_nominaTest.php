@@ -137,6 +137,53 @@ class nom_nominaTest extends test {
     }
 
 
+    public function test_aplica_subsidio_percepcion(): void
+    {
+        errores::$error = false;
+
+        $_GET['seccion'] = 'cat_sat_tipo_persona';
+        $_GET['accion'] = 'lista';
+        $_SESSION['grupo_id'] = 1;
+        $_SESSION['usuario_id'] = 2;
+        $_GET['session_id'] = '1';
+        $nomina = new nom_nomina($this->link);
+
+        $del = (new nom_par_percepcion($this->link))->elimina_todo();
+        if(errores::$error){
+            $error = (new errores())->error('Error al eliminar percepciones', $del);
+            print_r($error);
+            exit;
+        }
+
+
+        $nom_nomina_id = 1;
+        $resultado = $nomina->aplica_subsidio_percepcion($nom_nomina_id);
+        $this->assertIsBool($resultado);
+        $this->assertNotTrue(errores::$error);
+        $this->assertNotTrue($resultado);
+
+        errores::$error = false;
+        $nom_par_percepcion = array();
+        $nom_par_percepcion['id'] = 1;
+        $nom_par_percepcion['nom_nomina_id'] = 1;
+        $nom_par_percepcion['nom_percepcion_id'] = 1;
+        $nom_par_percepcion['importe_gravado'] = 1000;
+        $alta = (new nom_par_percepcion($this->link))->alta_registro($nom_par_percepcion);
+        if(errores::$error){
+            $error = (new errores())->error('Error al dar de alta percepciones', $alta);
+            print_r($error);
+            exit;
+        }
+
+
+
+        $nom_nomina_id = 1;
+        $resultado = $nomina->aplica_subsidio_percepcion($nom_nomina_id);
+        $this->assertIsBool($resultado);
+        $this->assertNotTrue(errores::$error);
+        $this->assertTrue($resultado);
+        errores::$error = false;
+    }
 
 
 

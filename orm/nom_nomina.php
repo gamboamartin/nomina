@@ -212,6 +212,25 @@ class nom_nomina extends modelo
         return $aplica_imss_bool;
     }
 
+    /**
+     * Verifica si aplica subsidio percepcion
+     * @param int $nom_nomina_id Nomina a validar
+     * @return bool|array
+     */
+    public function aplica_subsidio_percepcion(int $nom_nomina_id): bool|array
+    {
+        if($nom_nomina_id <= 0){
+            return $this->error->error(mensaje: 'Error nom_nomina_id es menor a 1', data: $nom_nomina_id);
+        }
+        $filtro['nom_percepcion.aplica_subsidio'] = 'activo';
+        $filtro['nom_nomina.id'] = $nom_nomina_id;
+        $existe = (new nom_par_percepcion($this->link))->existe(filtro: $filtro);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al verificar si existe registro', data: $existe);
+        }
+        return $existe;
+    }
+
     private function asigna_campo(array $registro, string $campo, array $campos_asignar): array
     {
         if (!isset($registro[$campo])) {
@@ -253,8 +272,6 @@ class nom_nomina extends modelo
         return $registro;
     }
 
-
-
     private function codigo_nomina(int $org_sucursal_id, array $registro): array|string
     {
 
@@ -269,8 +286,6 @@ class nom_nomina extends modelo
         }
         return $codigo;
     }
-
-
 
     /**
      * Obtiene todas las deducciones de una nomina
@@ -305,8 +320,6 @@ class nom_nomina extends modelo
         return $descripcion;
     }
 
-
-
     private function es_imss_activo(array $partida, string $tabla): bool
     {
         return $partida[$tabla.'_aplica_imss'] === 'activo';
@@ -328,8 +341,6 @@ class nom_nomina extends modelo
         return isset($partida[$tabla.'_aplica_imss']);
     }
 
-
-
     private function genera_codigo_nomina(stdClass $org_sucursal, array $registro): string
     {
         $serie = $org_sucursal->org_sucursal_serie;
@@ -345,8 +356,6 @@ class nom_nomina extends modelo
             $em_empleado->em_empleado_am .
             $em_empleado->em_empleado_rfc;
     }
-
-
 
     public function get_descuento_nomina(int $fc_factura_id): float
     {

@@ -438,6 +438,10 @@ class nominas extends modelo {
             }
         }
 
+        /*$filtro = array();
+        $filtro['']
+        $existe_isr = (new nom_nomina($this->link))->existe($filtro)*/
+
         return $r_modifica_bd;
     }
 
