@@ -3,13 +3,9 @@ namespace html;
 
 use gamboamartin\errores\errores;
 use gamboamartin\nomina\controllers\controlador_nom_conf_nomina;
-use gamboamartin\nomina\controllers\controlador_nom_deduccion;
 
 use gamboamartin\system\html_controler;
-use models\nom_conf_factura;
 use models\nom_conf_nomina;
-use models\nom_deduccion;
-use models\nom_nomina;
 use PDO;
 use stdClass;
 

@@ -1,17 +1,14 @@
 <?php
 namespace html;
 
-use gamboamartin\comercial\controllers\controlador_emempleado;
-use gamboamartin\empleado\controllers\controlador_em_empleado;
+
 use gamboamartin\errores\errores;
 use gamboamartin\nomina\controllers\controlador_nom_conf_factura;
-use gamboamartin\nomina\controllers\controlador_nom_percepcion;
+
 use gamboamartin\system\html_controler;
-use models\cat_sat_tipo_percepcion_nom;
-use models\com_sucursal;
-use models\em_empleado;
+
 use models\nom_conf_factura;
-use models\nom_percepcion;
+
 use PDO;
 use stdClass;
 

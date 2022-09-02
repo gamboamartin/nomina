@@ -2,14 +2,10 @@
 
 namespace html;
 
-use gamboamartin\comercial\controllers\controlador_emempleado;
-use gamboamartin\empleado\controllers\controlador_em_empleado;
 use gamboamartin\errores\errores;
 use gamboamartin\nomina\controllers\controlador_nom_nomina;
 use gamboamartin\system\html_controler;
-use models\com_sucursal;
 use models\em_empleado;
-use models\fc_cfd;
 use models\fc_factura;
 use models\nom_nomina;
 use PDO;
