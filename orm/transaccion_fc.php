@@ -276,6 +276,7 @@ class transaccion_fc{
             }
 
             if($existe_data_subsidio){
+
                 $nom_data_subsidio_id = (new nom_data_subsidio($link))->nom_data_subsidio_id(filtro: $filtro_npop);
                 if (errores::$error) {
                     return $this->error->error(mensaje: 'Error al obtener id de data subsidio', data: $nom_data_subsidio_id);
