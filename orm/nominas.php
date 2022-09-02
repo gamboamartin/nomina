@@ -44,8 +44,6 @@ class nominas extends modelo {
         return $r_alta_bd;
     }
 
-
-
     public function aplica_imss(int $registro_id): bool|array
     {
 
@@ -63,8 +61,6 @@ class nominas extends modelo {
         return $aplica_imss;
 
     }
-
-
 
     /**
      * Asigna el codigo a una partida
@@ -273,6 +269,8 @@ class nominas extends modelo {
         $data_existe->row_ins = $nom_par_deduccion_ins;
         return $data_existe;
     }
+
+
 
     public function elimina_bd(int $id): array
     {

@@ -397,8 +397,14 @@ class transaccion_fc{
         $transaccion = new stdClass();
         $transaccion_aplicada = false;
         if ((float)$imss['total'] > 0.0) {
+
+            $nom_deduccion_id = (new nom_deduccion($mod_nominas->link))->nom_deduccion_imss_id();
+            if (errores::$error) {
+                return $this->error->error(mensaje: 'Error al obtener deduccion imss id', data: $nom_deduccion_id);
+            }
+
             $transaccion = $this->aplica_deduccion(mod_nominas: $mod_nominas,
-                monto: (float)$imss['total'], nom_deduccion_id: 2, nom_nomina_id: $nom_nomina_id);
+                monto: (float)$imss['total'], nom_deduccion_id: $nom_deduccion_id, nom_nomina_id: $nom_nomina_id);
             if (errores::$error) {
                 return $this->error->error(mensaje: 'Error al generar transaccion', data: $transaccion);
             }
