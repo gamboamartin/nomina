@@ -13,7 +13,7 @@ class nom_data_subsidio extends nominas_confs
     public function __construct(PDO $link)
     {
         $tabla = __CLASS__;
-        $columnas = array($tabla => false);
+        $columnas = array($tabla => false,'nom_par_deduccion'=>$tabla, 'nom_par_otro_pago'=>$tabla);
         $campos_obligatorios = array('descripcion','codigo','alias','codigo_bis','nom_par_deduccion_id',
             'nom_par_otro_pago_id','monto_isr_bruto','monto_subsidio_bruto');
 
@@ -75,6 +75,23 @@ class nom_data_subsidio extends nominas_confs
         }
         return $r_alta_bd;
     }
+
+    public function nom_data_subsidio_id(array $filtro): array|int
+    {
+        $r_nom_data_subsidio = $this->filtro_and(filtro: $filtro);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al obtener data subsidio',data:  $r_nom_data_subsidio);
+        }
+        if($r_nom_data_subsidio->n_registros === 0){
+            return $this->error->error(mensaje: 'Error no existe data subsidio',data:  $r_nom_data_subsidio);
+        }
+        if($r_nom_data_subsidio->n_registros > 1){
+            return $this->error->error(mensaje: 'Error existe mas de un registro de data subsidio',
+                data:  $r_nom_data_subsidio);
+        }
+        return (int)$r_nom_data_subsidio->registros[0]['nom_data_subsidio_id'];
+    }
+
 
 
 }

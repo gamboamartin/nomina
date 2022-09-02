@@ -480,25 +480,46 @@ class nominas extends modelo {
                 return $this->error->error(mensaje: 'Error al obtener impuestos', data: $impuestos);
             }
 
-            $nom_data_subsidio = array();
-            $nom_data_subsidio['nom_par_deduccion_id'] = $deduccion_isr_id;
-            $nom_data_subsidio['nom_par_otro_pago_id'] = $otro_pago_subsidio_id;
-            $nom_data_subsidio['monto_isr_bruto'] = $impuestos->isr;
-            $nom_data_subsidio['monto_subsidio_bruto'] = $impuestos->subsidio;
+            $nom_data_subsidio = $this->nom_data_subsidio(deduccion_isr_id: $deduccion_isr_id,
+                impuestos:  $impuestos, otro_pago_subsidio_id: $otro_pago_subsidio_id);
 
-            /*
-            $r_alta_nom_par_data_subsidio = (new nom_data_subsidio(link: $this->link))->alta_registro(
-                registro:$nom_data_subsidio);
             if (errores::$error) {
-                return $this->error->error(mensaje: 'Error al insertar nom_par_data_subsidio',
-                    data: $r_alta_nom_par_data_subsidio);
+                return $this->error->error(mensaje: 'Error al $nom_data_subsidio nom data subsidio',
+                    data: $nom_data_subsidio);
             }
-            */
+
+            $filtro = array();
+            $filtro['nom_par_deduccion.id'] = $deduccion_isr_id;
+            $filtro['nom_par_otro_pago.id'] = $otro_pago_subsidio_id;
+            $existe = (new nom_data_subsidio($this->link))->existe(filtro: $filtro);
+            if(errores::$error){
+                return $this->error->error(mensaje: 'Error al verificar si existe data subsidio', data: $existe);
+            }
+
+            if(!$existe) {
+                $r_alta_nom_par_data_subsidio = (new nom_data_subsidio(link: $this->link))->alta_registro(
+                    registro: $nom_data_subsidio);
+                if (errores::$error) {
+                    return $this->error->error(mensaje: 'Error al insertar nom_par_data_subsidio',
+                        data: $r_alta_nom_par_data_subsidio);
+                }
+            }
+
 
 
         }
 
         return $r_modifica_bd;
+    }
+
+    private function nom_data_subsidio(int $deduccion_isr_id, stdClass $impuestos, int $otro_pago_subsidio_id): array
+    {
+        $nom_data_subsidio = array();
+        $nom_data_subsidio['nom_par_deduccion_id'] = $deduccion_isr_id;
+        $nom_data_subsidio['nom_par_otro_pago_id'] = $otro_pago_subsidio_id;
+        $nom_data_subsidio['monto_isr_bruto'] = $impuestos->isr;
+        $nom_data_subsidio['monto_subsidio_bruto'] = $impuestos->subsidio;
+        return $nom_data_subsidio;
     }
 
 

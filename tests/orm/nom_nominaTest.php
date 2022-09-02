@@ -10,6 +10,7 @@ use models\em_cuenta_bancaria;
 use models\fc_cfd_partida;
 use models\fc_factura;
 use models\fc_partida;
+use models\nom_data_subsidio;
 use models\nom_nomina;
 use models\nom_par_deduccion;
 use models\nom_par_otro_pago;
@@ -45,6 +46,13 @@ class nom_nominaTest extends test {
         $nom_par_otro_pago = new nom_par_otro_pago($this->link);
         $fc_factura = new fc_factura($this->link);
         $fc_cfd_partida = new fc_partida($this->link);
+
+        $del_nom_data_subsidio = (new nom_data_subsidio($this->link))->elimina_todo();
+        if(errores::$error){
+            $error = (new errores())->error(mensaje: 'Error al eliminar $del_nom_data_subsidio', data: $del_nom_data_subsidio);
+            print_r($error);
+            exit;
+        }
 
         $del_nom_par_otro_pago = $nom_par_otro_pago->elimina_todo();
         if(errores::$error){
@@ -371,6 +379,13 @@ class nom_nominaTest extends test {
         $fc_partida_modelo = new fc_partida($this->link);
         $nom_par_percepcion_modelo = new nom_par_percepcion($this->link);
         $nom_par_deduccion_modelo = new nom_par_deduccion($this->link);
+
+        $del_nom_data_subsidio = (new nom_data_subsidio($this->link))->elimina_todo();
+        if(errores::$error){
+            $error = (new errores())->error(mensaje: 'Error al eliminar $del_nom_data_subsidio', data: $del_nom_data_subsidio);
+            print_r($error);
+            exit;
+        }
 
         $del_nom_par_percepcion = $nom_par_percepcion_modelo->elimina_todo();
         if(errores::$error){

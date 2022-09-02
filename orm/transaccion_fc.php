@@ -255,6 +255,10 @@ class transaccion_fc{
         }
         return $elimina_deducciones;
     }
+
+    /**
+     * @throws JsonException
+     */
     private function elimina_otro_pago(array $filtro, PDO $link): array
     {
         $r_nom_par_otro_pago = (new nom_par_otro_pago(link: $link))->filtro_and(filtro: $filtro);
@@ -263,6 +267,26 @@ class transaccion_fc{
         }
         $dels = array();
         foreach ($r_nom_par_otro_pago->registros as $par_otro_pago) {
+
+            $filtro_npop = array();
+            $filtro_npop['nom_par_otro_pago.id'] = $par_otro_pago['nom_par_otro_pago_id'];
+            $existe_data_subsidio = (new nom_data_subsidio($link))->existe(filtro: $filtro_npop);
+            if (errores::$error) {
+                return $this->error->error(mensaje: 'Error al validar si existe data subsidio', data: $existe_data_subsidio);
+            }
+
+            if($existe_data_subsidio){
+                $nom_data_subsidio_id = (new nom_data_subsidio($link))->nom_data_subsidio_id(filtro: $filtro_npop);
+                if (errores::$error) {
+                    return $this->error->error(mensaje: 'Error al obtener id de data subsidio', data: $nom_data_subsidio_id);
+                }
+
+                $elimina_data_subsidio = (new nom_data_subsidio(link: $link))->elimina_bd(id: $nom_data_subsidio_id);
+                if (errores::$error) {
+                    return $this->error->error(mensaje: 'Error al eliminar data subsidio', data: $elimina_data_subsidio);
+                }
+            }
+
             $elimina_otro_pago = (new nom_par_otro_pago(link: $link))->elimina_bd(id: $par_otro_pago['nom_par_otro_pago_id']);
             if (errores::$error) {
                 return $this->error->error(mensaje: 'Error al eliminar deduccion', data: $elimina_otro_pago);

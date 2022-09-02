@@ -9,6 +9,7 @@ use JsonException;
 use models\calcula_imss;
 use models\fc_cfd_partida;
 use models\fc_factura;
+use models\nom_data_subsidio;
 use models\nom_nomina;
 use models\nom_par_deduccion;
 use models\nom_par_percepcion;
@@ -112,6 +113,13 @@ class nominasTest extends test {
         $_GET['session_id'] = '1';
         $nominas = new nom_par_deduccion($this->link);
         //$nominas = new liberator($nominas);
+
+        $del = (new nom_data_subsidio($this->link))->elimina_todo();
+        if(errores::$error){
+            $error = (new errores())->error('Error al eliminar data subsidio', $del);
+            print_r($error);
+            exit;
+        }
 
         $del = (new nom_par_deduccion($this->link))->elimina_todo();
         if(errores::$error){
