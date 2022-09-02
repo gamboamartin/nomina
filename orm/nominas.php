@@ -17,7 +17,7 @@ class nominas extends modelo {
      */
     private function actualiza_deduccion(int $fc_partida_id, int $nom_nomina_id): array|stdClass
     {
-        $total_deducciones = $this->total_deducciones(nom_nomina_id: $nom_nomina_id);
+        $total_deducciones = (new totales_nomina())->total_deducciones(link: $this->link, nom_nomina_id: $nom_nomina_id);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al obtener total deducciones', data: $total_deducciones);
         }
@@ -810,22 +810,7 @@ class nominas extends modelo {
         return $nom_par_otro_pago_ins;
     }
 
-    private function total_deducciones(int $nom_nomina_id): float|array
-    {
-        $exento = (new totales_nomina())->total_deducciones_exento(link: $this->link, nom_nomina_id: $nom_nomina_id);
-        if(errores::$error){
-            return $this->error->error(mensaje: 'Error al obtener total deducciones exento',data:  $exento);
-        }
 
-        $gravado = (new totales_nomina())->total_deducciones_gravado(link: $this->link, nom_nomina_id: $nom_nomina_id);
-        if(errores::$error){
-            return $this->error->error(mensaje: 'Error al obtener total deducciones gravado',data:  $gravado);
-        }
-
-        $total = $exento + $gravado;
-        return round($total,2);
-
-    }
 
 
 
