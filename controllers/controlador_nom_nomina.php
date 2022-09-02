@@ -45,6 +45,8 @@ class controlador_nom_nomina extends system
     public stdClass $percepciones;
     public stdClass $otros_pagos;
 
+    protected stdClass $params_actions;
+
     public function __construct(PDO      $link, html $html = new \gamboamartin\template_1\html(),
                                 stdClass $paths_conf = new stdClass())
     {
@@ -180,7 +182,8 @@ class controlador_nom_nomina extends system
             return $this->retorno_error(mensaje: 'Error al generar template', data: $r_alta, header: $header, ws: $ws);
         }
 
-        $params = new stdClass();
+        $params = $this->params_actions->crea_nomina ?? new stdClass();
+
         $inputs = (new nom_nomina_html(html: $this->html_base))->genera_inputs_crea_nomina(controler: $this,
             link: $this->link, params: $params);
         if (errores::$error) {
