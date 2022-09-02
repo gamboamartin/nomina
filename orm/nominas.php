@@ -812,7 +812,7 @@ class nominas extends modelo {
 
     private function total_deducciones(int $nom_nomina_id): float|array
     {
-        $exento = $this->total_deducciones_exento(nom_nomina_id: $nom_nomina_id);
+        $exento = (new totales_nomina())->total_deducciones_exento(link: $this->link, nom_nomina_id: $nom_nomina_id);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al obtener total deducciones exento',data:  $exento);
         }
@@ -827,17 +827,7 @@ class nominas extends modelo {
 
     }
 
-    private function total_deducciones_exento(int $nom_nomina_id): float|array
-    {
-        $campos['total_deducciones_exento'] = 'nom_par_deduccion.importe_exento';
-        $filtro['nom_nomina.id'] = $nom_nomina_id;
-        $total_deducciones = (new nom_par_deduccion($this->link))->suma(campos: $campos,filtro: $filtro);
-        if(errores::$error){
-            return $this->error->error(mensaje: 'Error al obtener total deducciones',data:  $total_deducciones);
-        }
 
-        return round($total_deducciones['total_deducciones_exento'],2);
-    }
 
     private function total_deducciones_gravado(int $nom_nomina_id): float|array
     {
