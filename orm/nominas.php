@@ -14,41 +14,6 @@ class nominas extends modelo {
 
 
 
-    /**
-     * @throws JsonException
-     */
-    protected function actualiza_fc_partida_factura(int $nom_nomina_id): array|stdClass
-    {
-        $fc_partida_id = (new transaccion_fc())->fc_partida_nom_id(link: $this->link, nom_nomina_id: $nom_nomina_id);
-        if(errores::$error){
-            return $this->error->error(mensaje: 'Error al obtener $fc_partida_id', data: $fc_partida_id);
-        }
-
-        $fc_partida_upd = $this->fc_partida_upd(fc_partida_id: $fc_partida_id, nom_nomina_id:  $nom_nomina_id);
-        if(errores::$error){
-            return $this->error->error(mensaje: 'Error al obtener actualizar partida', data: $fc_partida_upd);
-        }
-
-        return $fc_partida_upd;
-    }
-
-    /**
-     * @throws JsonException
-     */
-    private function actualiza_valor_unitario(int $fc_partida_id, int $nom_nomina_id): array|stdClass
-    {
-        $total_ingreso_bruto = $this->total_ingreso_bruto(nom_nomina_id: $nom_nomina_id);
-        if(errores::$error){
-            return $this->error->error(mensaje: 'Error al obtener total ingreso', data: $total_ingreso_bruto);
-        }
-
-        $fc_partida_upd = $this->upd_valor_unitario_fc_partida(fc_partida_id: $fc_partida_id,
-            total_ingreso_bruto:  $total_ingreso_bruto);
-        if(errores::$error){
-            return $this->error->error(mensaje: 'Error al actualizar ingreso', data: $fc_partida_upd);
-        }
-        return $fc_partida_upd;
-    }
 
     /**
      * @throws JsonException
@@ -78,7 +43,7 @@ class nominas extends modelo {
             return $this->error->error(mensaje: 'Error al integrar deducciones', data: $transacciones);
         }
 
-        $fc_partida_upd = $this->actualiza_fc_partida_factura(nom_nomina_id: $this->registro['nom_nomina_id']);
+        $fc_partida_upd = (new transaccion_fc())->actualiza_fc_partida_factura(link: $this->link, nom_nomina_id: $this->registro['nom_nomina_id']);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al actualizar $fc_partida', data: $fc_partida_upd);
         }
@@ -591,27 +556,7 @@ class nominas extends modelo {
     }
 
 
-    /**
-     * @throws JsonException
-     */
-    private function fc_partida_upd(int $fc_partida_id, int $nom_nomina_id): array|stdClass
-    {
-        $upd = new stdClass();
-        $fc_partida_upd = (new transaccion_fc())->actualiza_deduccion(fc_partida_id: $fc_partida_id,
-            link: $this->link, nom_nomina_id: $nom_nomina_id);
-        if(errores::$error){
-            return $this->error->error(mensaje: 'Error al obtener actualizar descuento', data: $fc_partida_upd);
-        }
-        $upd->descuento = $fc_partida_upd;
 
-        $fc_partida_upd = $this->actualiza_valor_unitario(fc_partida_id: $fc_partida_id, nom_nomina_id: $nom_nomina_id);
-        if(errores::$error){
-            return $this->error->error(mensaje: 'Error al actualizar ingreso', data: $fc_partida_upd);
-        }
-        $upd->valor_unitario = $fc_partida_upd;
-
-        return $upd;
-    }
 
 
     /**
@@ -792,25 +737,6 @@ class nominas extends modelo {
         $nom_par_otro_pago_ins['importe_gravado'] = 0.0;
         $nom_par_otro_pago_ins['importe_exento'] = $monto;
         return $nom_par_otro_pago_ins;
-    }
-
-
-
-
-
-    private function total_ingreso_bruto(int $nom_nomina_id): float|array
-    {
-        $total_percepciones = (new totales_nomina())->total_percepciones(link: $this->link, nom_nomina_id: $nom_nomina_id);
-        if(errores::$error){
-            return $this->error->error(mensaje: 'Error al obtener total deducciones', data: $total_percepciones);
-        }
-
-        $total_otros_pagos = (new totales_nomina())->total_otros_pagos(link: $this->link,nom_nomina_id:$nom_nomina_id);
-        if(errores::$error){
-            return $this->error->error(mensaje: 'Error al obtener total otros pagos', data: $total_otros_pagos);
-        }
-
-        return $total_percepciones + $total_otros_pagos;
     }
 
 
@@ -1038,7 +964,7 @@ class nominas extends modelo {
                 data: $transacciones_otro_pago_subsidio);
         }
 
-        $fc_partida_upd = $this->actualiza_fc_partida_factura(nom_nomina_id: $nom_nomina_id);
+        $fc_partida_upd = (new transaccion_fc())->actualiza_fc_partida_factura(link: $this->link, nom_nomina_id: $nom_nomina_id);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al actualizar $fc_partida', data: $fc_partida_upd);
         }
@@ -1050,25 +976,6 @@ class nominas extends modelo {
         $data->fc_partida = $fc_partida_upd;
         return $data;
     }
-
-
-
-    /**
-     * @throws JsonException
-     */
-    private function upd_valor_unitario_fc_partida(int $fc_partida_id, float|int $total_ingreso_bruto): array|stdClass
-    {
-        $fc_partida_upd['valor_unitario'] = $total_ingreso_bruto;
-        $r_fc_partida_upd = (new fc_partida($this->link))->modifica_bd(registro: $fc_partida_upd,id:  $fc_partida_id);
-        if(errores::$error){
-            return $this->error->error(mensaje: 'Error al actualizar valor unitario', data: $r_fc_partida_upd);
-        }
-        return $r_fc_partida_upd;
-
-    }
-
-
-
 
 
 

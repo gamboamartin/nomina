@@ -22,7 +22,7 @@ class transaccion_fc{
     /**
      * @throws JsonException
      */
-    public function actualiza_deduccion(int $fc_partida_id, PDO $link, int $nom_nomina_id): array|stdClass
+    private function actualiza_deduccion(int $fc_partida_id, PDO $link, int $nom_nomina_id): array|stdClass
     {
         $total_deducciones = (new totales_nomina())->total_deducciones(link: $link, nom_nomina_id: $nom_nomina_id);
         if(errores::$error){
@@ -37,6 +37,44 @@ class transaccion_fc{
 
         return $fc_partida_upd;
     }
+
+    /**
+     * @throws JsonException
+     */
+    public function actualiza_fc_partida_factura(PDO $link,int $nom_nomina_id): array|stdClass
+    {
+        $fc_partida_id = $this->fc_partida_nom_id(link: $link, nom_nomina_id: $nom_nomina_id);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al obtener $fc_partida_id', data: $fc_partida_id);
+        }
+
+        $fc_partida_upd = $this->fc_partida_upd(fc_partida_id: $fc_partida_id, link: $link, nom_nomina_id:  $nom_nomina_id);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al obtener actualizar partida', data: $fc_partida_upd);
+        }
+
+        return $fc_partida_upd;
+    }
+
+    /**
+     * @throws JsonException
+     */
+    private function actualiza_valor_unitario(int $fc_partida_id, PDO $link, int $nom_nomina_id): array|stdClass
+    {
+        $total_ingreso_bruto = (new totales_nomina())->total_ingreso_bruto(link: $link, nom_nomina_id: $nom_nomina_id);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al obtener total ingreso', data: $total_ingreso_bruto);
+        }
+
+        $fc_partida_upd = $this->upd_valor_unitario_fc_partida(fc_partida_id: $fc_partida_id, link: $link,
+            total_ingreso_bruto:  $total_ingreso_bruto);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al actualizar ingreso', data: $fc_partida_upd);
+        }
+        return $fc_partida_upd;
+    }
+
+
 
 
 
@@ -115,7 +153,7 @@ class transaccion_fc{
 
     }
 
-    public function fc_partida_nom_id(PDO $link, int $nom_nomina_id): int|array
+    private function fc_partida_nom_id(PDO $link, int $nom_nomina_id): int|array
     {
         if($nom_nomina_id <=0){
             return  $this->error->error(mensaje: 'Error al obtener registro $nom_nomina_id debe ser mayor a 0',
@@ -133,6 +171,29 @@ class transaccion_fc{
     /**
      * @throws JsonException
      */
+    private function fc_partida_upd(int $fc_partida_id, PDO $link, int $nom_nomina_id): array|stdClass
+    {
+        $upd = new stdClass();
+        $fc_partida_upd = $this->actualiza_deduccion(fc_partida_id: $fc_partida_id,
+            link: $link, nom_nomina_id: $nom_nomina_id);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al obtener actualizar descuento', data: $fc_partida_upd);
+        }
+        $upd->descuento = $fc_partida_upd;
+
+        $fc_partida_upd = $this->actualiza_valor_unitario(fc_partida_id: $fc_partida_id,
+            link: $link, nom_nomina_id: $nom_nomina_id);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al actualizar ingreso', data: $fc_partida_upd);
+        }
+        $upd->valor_unitario = $fc_partida_upd;
+
+        return $upd;
+    }
+
+    /**
+     * @throws JsonException
+     */
     private function upd_descuento_fc_partida(int $fc_partida_id, PDO $link, float|int $total_deducciones): array|stdClass
     {
         $fc_partida_upd['descuento'] = $total_deducciones;
@@ -141,6 +202,20 @@ class transaccion_fc{
             return $this->error->error(mensaje: 'Error al obtener total deducciones', data: $r_fc_partida_upd);
         }
         return $r_fc_partida_upd;
+    }
+
+    /**
+     * @throws JsonException
+     */
+    private function upd_valor_unitario_fc_partida(int $fc_partida_id, PDO $link, float|int $total_ingreso_bruto): array|stdClass
+    {
+        $fc_partida_upd['valor_unitario'] = $total_ingreso_bruto;
+        $r_fc_partida_upd = (new fc_partida($link))->modifica_bd(registro: $fc_partida_upd,id:  $fc_partida_id);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al actualizar valor unitario', data: $r_fc_partida_upd);
+        }
+        return $r_fc_partida_upd;
+
     }
 
 

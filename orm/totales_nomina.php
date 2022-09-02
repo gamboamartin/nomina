@@ -60,7 +60,22 @@ class totales_nomina{
         return round($total_deducciones['total_deducciones_gravado'],2);
     }
 
-    public function total_otros_pagos(PDO $link, int $nom_nomina_id): float|array
+    public function total_ingreso_bruto(PDO $link, int $nom_nomina_id): float|array
+    {
+        $total_percepciones = $this->total_percepciones(link: $link, nom_nomina_id: $nom_nomina_id);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al obtener total deducciones', data: $total_percepciones);
+        }
+
+        $total_otros_pagos = $this->total_otros_pagos(link: $link,nom_nomina_id:$nom_nomina_id);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al obtener total otros pagos', data: $total_otros_pagos);
+        }
+
+        return $total_percepciones + $total_otros_pagos;
+    }
+
+    private function total_otros_pagos(PDO $link, int $nom_nomina_id): float|array
     {
         $exento = $this->total_otros_pagos_exento(link: $link, nom_nomina_id: $nom_nomina_id);
         if(errores::$error){
@@ -102,7 +117,7 @@ class totales_nomina{
     }
 
 
-    public function total_percepciones(PDO $link, int $nom_nomina_id): float|array
+    private function total_percepciones(PDO $link, int $nom_nomina_id): float|array
     {
         $exento = $this->total_percepciones_exento(link: $link, nom_nomina_id: $nom_nomina_id);
         if(errores::$error){

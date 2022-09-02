@@ -47,7 +47,8 @@ class nom_par_deduccion extends nominas{
             return $this->error->error(mensaje: 'Error al insertar percepcion', data: $r_alta_bd);
         }
 
-        $fc_partida_upd = $this->actualiza_fc_partida_factura(nom_nomina_id: $this->registro['nom_nomina_id']);
+        $fc_partida_upd = (new transaccion_fc())->actualiza_fc_partida_factura(
+            link: $this->link, nom_nomina_id: $this->registro['nom_nomina_id']);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al actualizar $fc_partida', data: $fc_partida_upd);
         }
