@@ -68,9 +68,9 @@ class nom_par_otro_pago extends nominas
      * @throws JsonException
 
      */
-    public function modifica_subsidio(int $nom_par_otro_pago_id, float $importe_gravable, float $importe_exento): array|stdClass
+    public function modifica_subsidio(int $nom_par_otro_pago_id, float $importe_gravado, float $importe_exento): array|stdClass
     {
-        $nom_par_otro_pago_upd['importe_gravable'] = $importe_gravable;
+        $nom_par_otro_pago_upd['importe_gravado'] = $importe_gravado;
         $nom_par_otro_pago_upd['importe_exento'] = $importe_exento;
         $r_nom_par_otro_pago = parent::modifica_bd(registro: $nom_par_otro_pago_upd, id:$nom_par_otro_pago_id);
         if(errores::$error){
