@@ -180,8 +180,9 @@ class controlador_nom_nomina extends system
             return $this->retorno_error(mensaje: 'Error al generar template', data: $r_alta, header: $header, ws: $ws);
         }
 
+        $params = new stdClass();
         $inputs = (new nom_nomina_html(html: $this->html_base))->genera_inputs_crea_nomina(controler: $this,
-            link: $this->link);
+            link: $this->link, params: $params);
         if (errores::$error) {
             $error = $this->errores->error(mensaje: 'Error al generar inputs', data: $inputs);
             print_r($error);
