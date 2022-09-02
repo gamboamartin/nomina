@@ -68,12 +68,18 @@ class calculo_isr{
     }
 
     /**
-     * @param PDO $link
-     * @param int $nom_nomina_id
+     * Calcula el isr por una nomina dada
+     * @param PDO $link Conexion a la base de datos
+     * @param int $nom_nomina_id Nomina en proceso
      * @return float|array
+     * @version 0.226.6
      */
     public function calcula_isr_por_nomina(PDO $link, int $nom_nomina_id): float|array
     {
+        if($nom_nomina_id <=0){
+            return  $this->error->error(mensaje: 'Error al obtener registro $nom_nomina_id debe ser mayor a 0',
+                data: $nom_nomina_id);
+        }
 
         $isr = 0.0;
         $total_gravado = (new nom_nomina($link))->total_gravado(nom_nomina_id: $nom_nomina_id);

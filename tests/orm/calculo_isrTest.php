@@ -67,6 +67,7 @@ class calculo_isrTest extends test {
         $percepcion = new nom_par_percepcion($this->link);
 
 
+
         $calculo = new calculo_isr();
 
         $del_percepcion = $percepcion->elimina_todo();
@@ -189,6 +190,46 @@ class calculo_isrTest extends test {
         $this->assertIsFloat($resultado);
         $this->assertEquals(442.74, $resultado);
 
+        errores::$error = false;
+    }
+
+    public function test_calcula_isr_por_nomina(): void
+    {
+        errores::$error = false;
+
+        $_GET['seccion'] = 'cat_sat_tipo_persona';
+        $_GET['accion'] = 'lista';
+        $_SESSION['grupo_id'] = 1;
+        $_SESSION['usuario_id'] = 2;
+        $_GET['session_id'] = '1';
+
+        $calculo = new calculo_isr();
+        //$calculo = new liberator($calculo);
+
+        $del = (new nom_par_percepcion($this->link))->elimina_todo();
+        if(errores::$error){
+            $error = (new errores())->error(mensaje: 'Error al eliminar nomina percepcion', data: $del);
+            print_r($error);
+            exit;
+        }
+
+        $nom_par_percepcion = array();
+        $nom_par_percepcion['id'] = 1;
+        $nom_par_percepcion['nom_nomina_id'] = 1;
+        $nom_par_percepcion['importe_gravado'] = 1000;
+        $nom_par_percepcion['nom_percepcion_id'] = 1;
+        $alta_nom_par_percepcion = (new nom_par_percepcion($this->link))->alta_registro($nom_par_percepcion);
+        if(errores::$error){
+            $error = (new errores())->error(mensaje: 'Error al insertar nomina percepcion', data: $alta_nom_par_percepcion);
+            print_r($error);
+            exit;
+        }
+
+        $nom_nomina_id = 1;
+        $resultado = $calculo->calcula_isr_por_nomina($this->link, $nom_nomina_id);
+        $this->assertNotTrue(errores::$error);
+        $this->assertIsFloat($resultado);
+        $this->assertEquals(168.61, $resultado);
         errores::$error = false;
     }
 
