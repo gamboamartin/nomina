@@ -115,10 +115,6 @@ class nom_data_subsidio extends nominas_confs
 
 
 
-
-
-
-
         return $r_modifica_bd;
     }
 
