@@ -465,6 +465,7 @@ class nominas extends modelo {
         }
 
         if($aplica_subsidio){
+
             $deduccion_isr_id = (new nom_nomina($this->link))->deduccion_isr_id(nom_nomina_id: $nom_percepcion->nom_nomina_id);
             if (errores::$error) {
                 return $this->error->error(mensaje: 'Error al obtener deduccion isr id', data: $deduccion_isr_id);
@@ -503,6 +504,23 @@ class nominas extends modelo {
                     return $this->error->error(mensaje: 'Error al insertar nom_par_data_subsidio',
                         data: $r_alta_nom_par_data_subsidio);
                 }
+            }
+            else{
+
+                $nom_data_subsidio_id = (new nom_data_subsidio($this->link))->nom_data_subsidio_id(filtro: $filtro);
+                if (errores::$error) {
+                    return $this->error->error(mensaje: 'Error al obtener nom_par_data_subsidio',
+                        data: $nom_data_subsidio_id);
+                }
+
+                $r_nom_data_subsidio = (new nom_data_subsidio($this->link))->modifica_bd(
+                    registro: $nom_data_subsidio, id: $nom_data_subsidio_id);
+
+                if (errores::$error) {
+                    return $this->error->error(mensaje: 'Error al actualizar nom_par_data_subsidio',
+                        data: $r_nom_data_subsidio);
+                }
+
             }
 
 
