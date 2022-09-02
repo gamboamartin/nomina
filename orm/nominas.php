@@ -444,6 +444,13 @@ class nominas extends modelo {
             return $this->error->error(mensaje: 'Error al validar si aplica subsidio registro', data: $aplica_subsidio);
         }
 
+        if($aplica_subsidio){
+            $deduccion_isr_id = (new nom_nomina($this->link))->deduccion_isr_id(nom_nomina_id: $nom_percepcion->nom_nomina_id);
+            if (errores::$error) {
+                return $this->error->error(mensaje: 'Error al obtener deduccion isr id', data: $deduccion_isr_id);
+            }
+        }
+
         return $r_modifica_bd;
     }
 

@@ -289,6 +289,42 @@ class nom_nomina extends modelo
         return $codigo;
     }
 
+    private function deduccion_isr(int $nom_nomina_id){
+
+        $existe_deduccion_isr = $this->existe_deduccion_isr(nom_nomina_id: $nom_nomina_id);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al validar si existe deduccion isr',data:  $existe_deduccion_isr);
+        }
+        if(!$existe_deduccion_isr){
+            return $this->error->error(mensaje: 'Error no existe la deduccion ISR',data:  $existe_deduccion_isr);
+        }
+
+        $filtro['nom_deduccion.es_isr']  = 'activo';
+        $filtro['nom_nomina.id']  = $nom_nomina_id;
+        $r_nom_par_deduccion = (new nom_par_deduccion($this->link))->filtro_and(filtro: $filtro);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al obtener deduccion',data:  $r_nom_par_deduccion);
+        }
+        if($r_nom_par_deduccion->n_registros > 1){
+            return $this->error->error(mensaje: 'Error solo puede existir una deduccion de tipo ISR',
+                data:  $r_nom_par_deduccion);
+        }
+        return $r_nom_par_deduccion->registros[0];
+
+
+    }
+
+    public function deduccion_isr_id(int $nom_nomina_id): array|int
+    {
+
+        $deduccion_isr = $this->deduccion_isr(nom_nomina_id: $nom_nomina_id);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al obtener deduccion',data:  $deduccion_isr);
+        }
+        return (int)$deduccion_isr['nom_par_deduccion_id'];
+
+    }
+
     /**
      * Obtiene todas las deducciones de una nomina
      * @param int $nom_nomina_id Identificador de nomina
@@ -325,6 +361,17 @@ class nom_nomina extends modelo
     private function es_imss_activo(array $partida, string $tabla): bool
     {
         return $partida[$tabla.'_aplica_imss'] === 'activo';
+    }
+
+    private function existe_deduccion_isr(int $nom_nomina_id): bool|array
+    {
+        $filtro['nom_deduccion.es_isr']  = 'activo';
+        $filtro['nom_nomina.id']  = $nom_nomina_id;
+        $existe = (new nom_par_deduccion($this->link))->existe(filtro: $filtro);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al obtener deduccion',data:  $existe);
+        }
+        return $existe;
     }
 
     /**
