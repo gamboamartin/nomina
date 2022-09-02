@@ -90,4 +90,8 @@ class controlador_nom_periodo extends system {
         return $data;
     }
 
+    public function procesa_nomina(){
+
+    }
+
 }
