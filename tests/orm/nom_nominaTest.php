@@ -137,6 +137,8 @@ class nom_nominaTest extends test {
     }
 
 
+
+
     public function test_aplica_subsidio_percepcion(): void
     {
         errores::$error = false;

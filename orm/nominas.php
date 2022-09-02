@@ -438,9 +438,11 @@ class nominas extends modelo {
             }
         }
 
-        /*$filtro = array();
-        $filtro['']
-        $existe_isr = (new nom_nomina($this->link))->existe($filtro)*/
+        $aplica_subsidio = (new nom_nomina($this->link))->aplica_subsidio_percepcion(
+            nom_nomina_id: $nom_percepcion->nom_nomina_id);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al validar si aplica subsidio registro', data: $aplica_subsidio);
+        }
 
         return $r_modifica_bd;
     }

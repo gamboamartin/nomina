@@ -212,10 +212,12 @@ class nom_nomina extends modelo
         return $aplica_imss_bool;
     }
 
+
     /**
      * Verifica si aplica subsidio percepcion
      * @param int $nom_nomina_id Nomina a validar
      * @return bool|array
+     * @version 0.220.6
      */
     public function aplica_subsidio_percepcion(int $nom_nomina_id): bool|array
     {
