@@ -45,6 +45,9 @@ class nominasTest extends test {
         $registro = array();
         $registro['nom_nomina_id'] = '1';
         $resultado = $nominas->asigna_codigo_partida($registro);
+
+
+
         $this->assertIsArray($resultado);
         $this->assertNotTrue(errores::$error);
         $this->assertEquals('1', $resultado['nom_nomina_id']);

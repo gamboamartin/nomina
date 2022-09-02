@@ -82,9 +82,15 @@ class nominas extends modelo {
             return $this->error->error(mensaje: 'Error al validar registro', data: $valida);
         }
 
-        $modelo = new nom_nomina($this->link);
+        $nom_nomina_modelo = new nom_nomina($this->link);
+        $nom_nomina = $nom_nomina_modelo->registro(registro_id: $registro['nom_nomina_id']);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al obtener nomina', data: $nom_nomina);
+        }
+        $nom_nomina_modelo->registro = $nom_nomina;
+
         $registro = $this->asigna_codigo(keys_registro: $keys_registro,keys_row:  $keys_row,
-            modelo:  $modelo,registro:  $registro);
+            modelo:  $nom_nomina_modelo,registro:  $registro);
 
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al asignar codigo', data: $registro);
@@ -449,6 +455,19 @@ class nominas extends modelo {
             if (errores::$error) {
                 return $this->error->error(mensaje: 'Error al obtener deduccion isr id', data: $deduccion_isr_id);
             }
+            /*
+            $nom_data_subsidio = array();
+            $nom_data_subsidio['nom_par_deduccion_id'] = $deduccion_isr_id;
+            $nom_data_subsidio['nom_nomina_id'] = $nom_percepcion->nom_nomina_id;
+
+            $r_alta_nom_par_data_subsidio = (new nom_data_subsidio(link: $this->link))->alta_registro(
+                registro:$nom_data_subsidio);
+            if (errores::$error) {
+                return $this->error->error(mensaje: 'Error al insertar nom_par_data_subsidio',
+                    data: $r_alta_nom_par_data_subsidio);
+            }
+            */
+
         }
 
         return $r_modifica_bd;
