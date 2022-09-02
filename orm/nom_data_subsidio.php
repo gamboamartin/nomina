@@ -24,7 +24,7 @@ class nom_data_subsidio extends nominas_confs
     public function alta_bd(): array|stdClass
     {
 
-        $keys = array('nom_nomina_id');
+        $keys = array('nom_par_deduccion_id');
         $valida = $this->validacion->valida_ids(keys: $keys,registro:  $this->registro);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al validar registro',data:  $valida);
@@ -33,7 +33,7 @@ class nom_data_subsidio extends nominas_confs
         $keys_registro = array();
         $keys_row = array();
 
-        $modelo = new nom_nomina($this->link);
+        $modelo = new nom_par_deduccion($this->link);
 
         $registro = $this->asigna_codigo(keys_registro: $keys_registro, keys_row: $keys_row, modelo: $modelo,
             registro:  $this->registro);

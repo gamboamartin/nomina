@@ -12,6 +12,7 @@ use models\calculo_isr;
 use models\fc_cfd_partida;
 use models\fc_factura;
 use models\fc_partida;
+use models\nom_data_subsidio;
 use models\nom_nomina;
 use models\nom_par_deduccion;
 use models\nom_par_otro_pago;
@@ -69,6 +70,13 @@ class calculo_isrTest extends test {
 
 
         $calculo = new calculo_isr();
+
+        $del_nom_data_subsidio = (new nom_data_subsidio($this->link))->elimina_todo();
+        if(errores::$error){
+            $error = (new errores())->error(mensaje: 'Error al eliminar $del_nom_data_subsidio', data: $del_nom_data_subsidio);
+            print_r($error);
+            exit;
+        }
 
         $del_percepcion = $percepcion->elimina_todo();
         if(errores::$error){

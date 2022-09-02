@@ -474,17 +474,20 @@ class nominas extends modelo {
                 return $this->error->error(mensaje: 'Error al obtener impuestos', data: $impuestos);
             }
 
-            /*$nom_data_subsidio = array();
+            $nom_data_subsidio = array();
             $nom_data_subsidio['nom_par_deduccion_id'] = $deduccion_isr_id;
             $nom_data_subsidio['nom_par_otro_pago_id'] = $otro_pago_subsidio_id;
-            $nom_data_subsidio['nom_nomina_id'] = $nom_percepcion->nom_nomina_id;
+            $nom_data_subsidio['monto_isr_bruto'] = $impuestos->isr;
+            $nom_data_subsidio['monto_subsidio_bruto'] = $impuestos->subsidio;
 
+            /*
             $r_alta_nom_par_data_subsidio = (new nom_data_subsidio(link: $this->link))->alta_registro(
                 registro:$nom_data_subsidio);
             if (errores::$error) {
                 return $this->error->error(mensaje: 'Error al insertar nom_par_data_subsidio',
                     data: $r_alta_nom_par_data_subsidio);
-            }*/
+            }
+            */
 
 
         }
