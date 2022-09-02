@@ -12,24 +12,7 @@ class nominas extends modelo {
 
 
 
-    /**
-     * @throws JsonException
-     */
-    private function actualiza_deduccion(int $fc_partida_id, int $nom_nomina_id): array|stdClass
-    {
-        $total_deducciones = (new totales_nomina())->total_deducciones(link: $this->link, nom_nomina_id: $nom_nomina_id);
-        if(errores::$error){
-            return $this->error->error(mensaje: 'Error al obtener total deducciones', data: $total_deducciones);
-        }
 
-        $fc_partida_upd = (new transaccion_fc())->upd_descuento_fc_partida(fc_partida_id: $fc_partida_id, link: $this->link,
-            total_deducciones:  $total_deducciones);
-        if(errores::$error){
-            return $this->error->error(mensaje: 'Error al obtener actualizar descuento', data: $fc_partida_upd);
-        }
-
-        return $fc_partida_upd;
-    }
 
     /**
      * @throws JsonException
@@ -614,7 +597,8 @@ class nominas extends modelo {
     private function fc_partida_upd(int $fc_partida_id, int $nom_nomina_id): array|stdClass
     {
         $upd = new stdClass();
-        $fc_partida_upd = $this->actualiza_deduccion(fc_partida_id: $fc_partida_id, nom_nomina_id: $nom_nomina_id);
+        $fc_partida_upd = (new transaccion_fc())->actualiza_deduccion(fc_partida_id: $fc_partida_id,
+            link: $this->link, nom_nomina_id: $nom_nomina_id);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al obtener actualizar descuento', data: $fc_partida_upd);
         }
