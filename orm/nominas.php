@@ -51,24 +51,7 @@ class nominas extends modelo {
         return $r_alta_bd;
     }
 
-    /**
-     * @throws JsonException
-     */
-    private function aplica_deduccion(float $monto, int $nom_deduccion_id, int $nom_nomina_id): array|stdClass
-    {
-        $data_existe = $this->data_deduccion(monto: $monto, nom_deduccion_id: $nom_deduccion_id,
-            nom_nomina_id: $nom_nomina_id);
-        if(errores::$error){
-            return $this->error->error(mensaje: 'Error al validar si existe deduccion', data: $data_existe);
-        }
 
-        $transaccion = $this->transaccion_deduccion(data_existe: $data_existe,nom_par_deduccion_ins: $data_existe->row_ins);
-        if(errores::$error){
-            return $this->error->error(mensaje: 'Error al generar transaccion', data: $transaccion);
-        }
-
-        return $transaccion;
-    }
 
     public function aplica_imss(int $registro_id): bool|array
     {
@@ -115,6 +98,9 @@ class nominas extends modelo {
         return $data;
     }
 
+    /**
+     * @throws JsonException
+     */
     private function aplica_imss_valor_por_nomina(int $nom_nomina_id): array|stdClass
     {
         $transaccion_aplicada = false;
@@ -124,7 +110,7 @@ class nominas extends modelo {
             return $this->error->error(mensaje: 'Error al calcular imss', data: $imss);
         }
         if ((float)$imss['total'] > 0.0) {
-            $transaccion = $this->aplica_deduccion(monto: (float)$imss['total'], nom_deduccion_id: 2,
+            $transaccion = (new transaccion_fc())->aplica_deduccion(mod_nominas: $this, monto: (float)$imss['total'], nom_deduccion_id: 2,
                 nom_nomina_id: $nom_nomina_id);
             if (errores::$error) {
                 return $this->error->error(mensaje: 'Error al generar transaccion', data: $transaccion);
@@ -318,7 +304,7 @@ class nominas extends modelo {
         return $registro;
     }
 
-    private function data_deduccion(float $monto, int $nom_deduccion_id, int $nom_nomina_id): array|stdClass
+    public function data_deduccion(float $monto, int $nom_deduccion_id, int $nom_nomina_id): array|stdClass
     {
         $data_existe = $this->existe_data_deduccion(nom_deduccion_id:$nom_deduccion_id, nom_nomina_id: $nom_nomina_id);
         if(errores::$error){
@@ -669,27 +655,7 @@ class nominas extends modelo {
         return $r_modifica_bd;
     }
 
-    /**
-     * @throws JsonException
-     */
-    private function modifica_deduccion(array $filtro, array $nom_par_deduccion_upd): array|\stdClass
-    {
 
-        $nom_par_deduccion_modelo = new nom_par_deduccion($this->link);
-
-        $nom_par_deduccion = $nom_par_deduccion_modelo->filtro_and(filtro: $filtro);
-        if(errores::$error){
-            return $this->error->error(mensaje: 'Error al obtener deduccion', data: $nom_par_deduccion);
-        }
-
-        $r_modifica_nom_par_deduccion = $nom_par_deduccion_modelo->modifica_bd(
-            registro:$nom_par_deduccion_upd, id: $nom_par_deduccion->registros[0]['nom_par_deduccion_id']);
-        if(errores::$error){
-            return $this->error->error(mensaje: 'Error al modificar deduccion', data: $r_modifica_nom_par_deduccion);
-        }
-
-        return $r_modifica_nom_par_deduccion;
-    }
 
     private function modifica_otro_pago(array $filtro, array $nom_par_otro_pago_upd): array|\stdClass
     {
@@ -753,36 +719,7 @@ class nominas extends modelo {
 
 
 
-    /**
-     * @throws JsonException
-     */
-    private function transaccion_deduccion(stdClass $data_existe, array $nom_par_deduccion_ins): array|stdClass
-    {
-        $result = new stdClass();
-        if($data_existe->existe){
-            $r_modifica_nom_par_deduccion = $this->modifica_deduccion(
-                filtro: $data_existe->filtro,nom_par_deduccion_upd:  $nom_par_deduccion_ins);
-            if(errores::$error){
-                return $this->error->error(
-                    mensaje: 'Error al modificar deduccion', data: $r_modifica_nom_par_deduccion);
-            }
-            $result->data = $r_modifica_nom_par_deduccion;
-            $result->transaccion = 'modifica';
-        }
-        else{
-            $r_alta_nom_par_deduccion = (new nom_par_deduccion($this->link))->alta_registro(
-                registro: $nom_par_deduccion_ins);
-            if(errores::$error){
-                return $this->error->error(mensaje: 'Error al registrar deduccion', data: $r_alta_nom_par_deduccion);
-            }
-            $result->data = $r_alta_nom_par_deduccion;
-            $result->transaccion = 'alta';
 
-        }
-        return $result;
-
-
-    }
 
     private function transaccion_otro_pago(stdClass $data_existe, array $nom_par_otro_pago_ins): array|stdClass
     {
@@ -891,7 +828,7 @@ class nominas extends modelo {
             return $this->error->error(mensaje: 'Error al obtener isr', data: $isr);
         }
         if($isr>0.0){
-            $transaccion = $this->aplica_deduccion(monto: (float)$isr, nom_deduccion_id: 1,
+            $transaccion = (new transaccion_fc())->aplica_deduccion(mod_nominas: $this, monto: (float)$isr, nom_deduccion_id: 1,
                 nom_nomina_id:  $nom_nomina_id);
             if(errores::$error){
                 return $this->error->error(mensaje: 'Error al generar transaccion', data: $transaccion);

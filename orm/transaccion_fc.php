@@ -74,6 +74,25 @@ class transaccion_fc{
         return $fc_partida_upd;
     }
 
+    /**
+     * @throws JsonException
+     */
+    public function aplica_deduccion(nominas $mod_nominas, float $monto, int $nom_deduccion_id, int $nom_nomina_id): array|stdClass
+    {
+        $data_existe = $mod_nominas->data_deduccion(monto: $monto, nom_deduccion_id: $nom_deduccion_id,
+            nom_nomina_id: $nom_nomina_id);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al validar si existe deduccion', data: $data_existe);
+        }
+
+        $transaccion = $this->transaccion_deduccion(data_existe: $data_existe,link: $mod_nominas->link,nom_par_deduccion_ins: $data_existe->row_ins);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al generar transaccion', data: $transaccion);
+        }
+
+        return $transaccion;
+    }
+
 
 
 
@@ -189,6 +208,59 @@ class transaccion_fc{
         $upd->valor_unitario = $fc_partida_upd;
 
         return $upd;
+    }
+
+    /**
+     * @throws JsonException
+     */
+    private function modifica_deduccion(array $filtro, PDO $link, array $nom_par_deduccion_upd): array|\stdClass
+    {
+
+        $nom_par_deduccion_modelo = new nom_par_deduccion($link);
+
+        $nom_par_deduccion = $nom_par_deduccion_modelo->filtro_and(filtro: $filtro);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al obtener deduccion', data: $nom_par_deduccion);
+        }
+
+        $r_modifica_nom_par_deduccion = $nom_par_deduccion_modelo->modifica_bd(
+            registro:$nom_par_deduccion_upd, id: $nom_par_deduccion->registros[0]['nom_par_deduccion_id']);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al modificar deduccion', data: $r_modifica_nom_par_deduccion);
+        }
+
+        return $r_modifica_nom_par_deduccion;
+    }
+
+    /**
+     * @throws JsonException
+     */
+    private function transaccion_deduccion(stdClass $data_existe, PDO $link, array $nom_par_deduccion_ins): array|stdClass
+    {
+        $result = new stdClass();
+        if($data_existe->existe){
+            $r_modifica_nom_par_deduccion = $this->modifica_deduccion(
+                filtro: $data_existe->filtro, link: $link,nom_par_deduccion_upd:  $nom_par_deduccion_ins);
+            if(errores::$error){
+                return $this->error->error(
+                    mensaje: 'Error al modificar deduccion', data: $r_modifica_nom_par_deduccion);
+            }
+            $result->data = $r_modifica_nom_par_deduccion;
+            $result->transaccion = 'modifica';
+        }
+        else{
+            $r_alta_nom_par_deduccion = (new nom_par_deduccion($link))->alta_registro(
+                registro: $nom_par_deduccion_ins);
+            if(errores::$error){
+                return $this->error->error(mensaje: 'Error al registrar deduccion', data: $r_alta_nom_par_deduccion);
+            }
+            $result->data = $r_alta_nom_par_deduccion;
+            $result->transaccion = 'alta';
+
+        }
+        return $result;
+
+
     }
 
     /**
