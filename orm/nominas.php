@@ -10,11 +10,6 @@ class nominas extends modelo {
 
     protected string $tabla_nom_conf = '';
 
-
-
-
-
-
     /**
      * @throws JsonException
      */
@@ -38,15 +33,13 @@ class nominas extends modelo {
             return $this->error->error(mensaje: 'Error al insertar otro pago', data: $r_alta_bd);
         }
 
-        $transacciones = $this->transacciones_por_nomina(nom_nomina_id: $this->registro['nom_nomina_id']);
+        $transacciones = (new transaccion_fc())->transacciones_por_nomina(
+            mod_nominas: $this, nom_nomina_id: $this->registro['nom_nomina_id']);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al integrar deducciones', data: $transacciones);
         }
 
-        $fc_partida_upd = (new transaccion_fc())->actualiza_fc_partida_factura(link: $this->link, nom_nomina_id: $this->registro['nom_nomina_id']);
-        if(errores::$error){
-            return $this->error->error(mensaje: 'Error al actualizar $fc_partida', data: $fc_partida_upd);
-        }
+
 
         return $r_alta_bd;
     }
@@ -71,75 +64,7 @@ class nominas extends modelo {
 
     }
 
-    /**
-     * @throws JsonException
-     */
-    private function aplica_imss_valor(int $nom_nomina_id, int $partida_percepcion_id): array|stdClass
-    {
-        $transaccion_aplicada = false;
-        $transaccion = new stdClass();
-        $imss = $this->imss(partida_percepcion_id: $partida_percepcion_id);
-        if (errores::$error) {
-            return $this->error->error(mensaje: 'Error al calcular imss', data: $imss);
-        }
-        if ((float)$imss['total'] > 0.0) {
-            $transaccion = $this->aplica_deduccion(monto: (float)$imss['total'], nom_deduccion_id: 2,
-                nom_nomina_id: $nom_nomina_id);
-            if (errores::$error) {
-                return $this->error->error(mensaje: 'Error al generar transaccion', data: $transaccion);
-            }
-            $transaccion_aplicada = true;
-        }
-        $data = new stdClass();
-        $data->imss = $imss;
-        $data->transaccion_aplicada = $transaccion_aplicada;
-        $data->transaccion = $transaccion;
 
-        return $data;
-    }
-
-    /**
-     * @throws JsonException
-     */
-    private function aplica_imss_valor_por_nomina(int $nom_nomina_id): array|stdClass
-    {
-        $transaccion_aplicada = false;
-        $transaccion = new stdClass();
-        $imss = $this->imss_por_nomina(nom_nomina_id: $nom_nomina_id);
-        if (errores::$error) {
-            return $this->error->error(mensaje: 'Error al calcular imss', data: $imss);
-        }
-        if ((float)$imss['total'] > 0.0) {
-            $transaccion = (new transaccion_fc())->aplica_deduccion(mod_nominas: $this, monto: (float)$imss['total'], nom_deduccion_id: 2,
-                nom_nomina_id: $nom_nomina_id);
-            if (errores::$error) {
-                return $this->error->error(mensaje: 'Error al generar transaccion', data: $transaccion);
-            }
-            $transaccion_aplicada = true;
-        }
-        $data = new stdClass();
-        $data->imss = $imss;
-        $data->transaccion_aplicada = $transaccion_aplicada;
-        $data->transaccion = $transaccion;
-
-        return $data;
-    }
-
-    private function aplica_otro_pago(float $monto, int $nom_otro_pago_id, int $nom_nomina_id): array|stdClass
-    {
-        $data_existe = $this->data_otro_pago(monto: $monto, nom_otro_pago_id: $nom_otro_pago_id,
-            nom_nomina_id: $nom_nomina_id);
-        if(errores::$error){
-            return $this->error->error(mensaje: 'Error al validar si existe deduccion', data: $data_existe);
-        }
-
-        $transaccion = $this->transaccion_otro_pago(data_existe: $data_existe,nom_par_otro_pago_ins: $data_existe->row_ins);
-        if(errores::$error){
-            return $this->error->error(mensaje: 'Error al generar transaccion', data: $transaccion);
-        }
-
-        return $transaccion;
-    }
 
     /**
      * Asigna el codigo a una partida
@@ -320,7 +245,7 @@ class nominas extends modelo {
         return $data_existe;
     }
 
-    private function data_otro_pago(float $monto, int $nom_otro_pago_id, int $nom_nomina_id): array|stdClass
+    public function data_otro_pago(float $monto, int $nom_otro_pago_id, int $nom_nomina_id): array|stdClass
     {
         $data_existe = $this->existe_data_otro_pago(nom_otro_pago_id:$nom_otro_pago_id, nom_nomina_id: $nom_nomina_id);
         if(errores::$error){
@@ -336,64 +261,6 @@ class nominas extends modelo {
         return $data_existe;
     }
 
-    /**
-     * @throws JsonException
-     */
-    private function ejecuta_transaccion_imss(bool $aplica_imss, int $nom_nomina_id, int $partida_percepcion_id): array|stdClass
-    {
-        $data = new stdClass();
-        $data->transaccion_aplicada = false;
-        $data->transaccion = new stdClass();
-        $data->dels = array();
-        $data->imss = array();
-        if($aplica_imss) {
-            $aplicacion_imss = $this->aplica_imss_valor(nom_nomina_id: $nom_nomina_id,
-                partida_percepcion_id: $partida_percepcion_id);
-            if (errores::$error) {
-                return $this->error->error(mensaje: 'Error al generar transaccion', data: $aplicacion_imss);
-            }
-            $data->transaccion_aplicada = $aplicacion_imss->transaccion_aplicada;
-            $data->transaccion = $aplicacion_imss->transaccion;
-            $data->imss = $aplicacion_imss->imss;
-
-        }
-        else{
-            $elimina_deducciones = $this->elimina_imss(nom_nomina_id: $nom_nomina_id);
-            if(errores::$error){
-                return $this->error->error(mensaje: 'Error al eliminar deducciones', data: $elimina_deducciones);
-            }
-            $data->dels = $elimina_deducciones;
-        }
-        return $data;
-    }
-
-    private function ejecuta_transaccion_imss_por_nomina(bool $aplica_imss, int $nom_nomina_id): array|stdClass
-    {
-        $data = new stdClass();
-        $data->transaccion_aplicada = false;
-        $data->transaccion = new stdClass();
-        $data->dels = array();
-        $data->imss = array();
-        if($aplica_imss) {
-            $aplicacion_imss = $this->aplica_imss_valor_por_nomina(nom_nomina_id: $nom_nomina_id);
-            if (errores::$error) {
-                return $this->error->error(mensaje: 'Error al generar transaccion', data: $aplicacion_imss);
-            }
-            $data->transaccion_aplicada = $aplicacion_imss->transaccion_aplicada;
-            $data->transaccion = $aplicacion_imss->transaccion;
-            $data->imss = $aplicacion_imss->imss;
-
-        }
-        else{
-            $elimina_deducciones = $this->elimina_imss(nom_nomina_id: $nom_nomina_id);
-            if(errores::$error){
-                return $this->error->error(mensaje: 'Error al eliminar deducciones', data: $elimina_deducciones);
-            }
-            $data->dels = $elimina_deducciones;
-        }
-        return $data;
-    }
-
     public function elimina_bd(int $id): array
     {
         $nom_percepcion = $this->registro(registro_id:$id, retorno_obj: true);
@@ -406,7 +273,7 @@ class nominas extends modelo {
             return $this->error->error(mensaje: 'Error al eliminar registro', data: $r_elimina_bd);
         }
 
-        $transacciones = $this->transacciones_por_nomina(nom_nomina_id: $nom_percepcion->nom_nomina_id);
+        $transacciones = (new transaccion_fc())->transacciones_por_nomina(mod_nominas: $this, nom_nomina_id: $nom_percepcion->nom_nomina_id);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al integrar deducciones', data: $transacciones);
         }
@@ -415,70 +282,13 @@ class nominas extends modelo {
         return $r_elimina_bd;
     }
 
-    /**
-     * @throws JsonException
-     */
-    private function elimina_deduccion(array $filtro): array
-    {
-        $r_nom_par_deduccion = (new nom_par_deduccion(link: $this->link))->filtro_and(filtro: $filtro);
-        if(errores::$error){
-            return $this->error->error(mensaje: 'Error al obtener deduccion', data: $r_nom_par_deduccion);
-        }
-        $dels = array();
-        foreach ($r_nom_par_deduccion->registros as $par_deduccion) {
-            $elimina_deduccion = (new nom_par_deduccion(link: $this->link))->elimina_bd(
-                id: $par_deduccion['nom_par_deduccion_id']);
-            if (errores::$error) {
-                return $this->error->error(mensaje: 'Error al eliminar deduccion', data: $elimina_deduccion);
-            }
-            $dels[] = $elimina_deduccion;
-        }
-        return $dels;
-    }
-
-    /**
-     * @throws JsonException
-     */
-    private function elimina_imss(int $nom_nomina_id): array
-    {
-        $elimina_deducciones = array();
-        $data_existe = $this->existe_data_deduccion(nom_deduccion_id:2, nom_nomina_id: $nom_nomina_id);
-        if(errores::$error){
-            return $this->error->error(mensaje: 'Error al validar si existe deduccion', data: $data_existe);
-        }
-        if($data_existe->existe){
-            $elimina_deducciones = $this->elimina_deduccion(filtro: $data_existe->filtro);
-            if(errores::$error){
-                return $this->error->error(mensaje: 'Error al eliminar deducciones', data: $elimina_deducciones);
-            }
-        }
-        return $elimina_deducciones;
-    }
-
-    private function elimina_otro_pago(array $filtro): array
-    {
-        $r_nom_par_otro_pago = (new nom_par_otro_pago(link: $this->link))->filtro_and(filtro: $filtro);
-        if(errores::$error){
-            return $this->error->error(mensaje: 'Error al obtener deduccion', data: $r_nom_par_otro_pago);
-        }
-        $dels = array();
-        foreach ($r_nom_par_otro_pago->registros as $par_otro_pago) {
-            $elimina_otro_pago = (new nom_par_otro_pago(link: $this->link))->elimina_bd(
-                id: $par_otro_pago['nom_par_otro_pago_id']);
-            if (errores::$error) {
-                return $this->error->error(mensaje: 'Error al eliminar deduccion', data: $elimina_otro_pago);
-            }
-            $dels[] = $elimina_otro_pago;
-        }
-        return $dels;
-    }
 
     /**
      * @param int $nom_deduccion_id
      * @param int $nom_nomina_id
      * @return array|stdClass
      */
-    private function existe_data_deduccion(int $nom_deduccion_id, int $nom_nomina_id): array|stdClass
+    public function existe_data_deduccion(int $nom_deduccion_id, int $nom_nomina_id): array|stdClass
     {
         $filtro = $this->filtro_partida(id: $nom_deduccion_id, nom_nomina_id: $nom_nomina_id, tabla: 'nom_deduccion');
         if(errores::$error){
@@ -524,7 +334,7 @@ class nominas extends modelo {
         return $data;
     }
 
-    private function existe_data_otro_pago(int $nom_otro_pago_id, int $nom_nomina_id): array|stdClass
+    public function existe_data_otro_pago(int $nom_otro_pago_id, int $nom_nomina_id): array|stdClass
     {
         $filtro = $this->filtro_partida(id: $nom_otro_pago_id, nom_nomina_id: $nom_nomina_id, tabla: 'nom_otro_pago');
         if(errores::$error){
@@ -540,10 +350,6 @@ class nominas extends modelo {
         $data->existe = $existe;
         return $data;
     }
-
-
-
-
 
     /**
      * Genera un filtro para una partida de nomina
@@ -578,7 +384,7 @@ class nominas extends modelo {
      * @param int $partida_percepcion_id Registro de deduccion, percepcion u otro pago
      * @return array
      */
-    private function imss(int $partida_percepcion_id): array
+    public function imss(int $partida_percepcion_id): array
     {
         $nom_partida = $this->registro(registro_id:$partida_percepcion_id, retorno_obj: true);
         if(errores::$error){
@@ -592,7 +398,7 @@ class nominas extends modelo {
             sbc: $nom_partida->em_empleado_salario_diario_integrado, sd: $nom_partida->em_empleado_salario_diario);
     }
 
-    private function imss_por_nomina(int $nom_nomina_id): array
+    public function imss_por_nomina(int $nom_nomina_id): array
     {
         $nom_nomina = (new nom_nomina($this->link))->registro(registro_id:$nom_nomina_id, retorno_obj: true);
         if(errores::$error){
@@ -606,26 +412,7 @@ class nominas extends modelo {
             sbc: $nom_nomina->em_empleado_salario_diario_integrado, sd: $nom_nomina->em_empleado_salario_diario);
     }
 
-    /**
-     * @throws JsonException
-     */
-    protected function integra_deducciones(int $nom_nomina_id): array|stdClass
-    {
 
-        $transaccion_isr = $this->transacciona_isr_por_nomina(nom_nomina_id: $nom_nomina_id);
-        if (errores::$error) {
-            return $this->error->error(mensaje: 'Error al generar isr', data: $transaccion_isr);
-        }
-
-        $transaccion_imss = $this->transacciona_imss_por_nomina(nom_nomina_id: $nom_nomina_id);
-        if(errores::$error){
-            return $this->error->error(mensaje: 'Error al generar transaccion imss', data: $transaccion_imss);
-        }
-        $data = new stdClass();
-        $data->imss = $transaccion_imss;
-        $data->isr = $transaccion_isr;
-        return $data;
-    }
 
 
     /**
@@ -644,37 +431,17 @@ class nominas extends modelo {
         }
 
         if(!$es_subsidio) {
-            $transacciones = $this->transacciones_por_nomina(nom_nomina_id: $nom_percepcion->nom_nomina_id);
+            $transacciones = (new transaccion_fc())->transacciones_por_nomina(
+                mod_nominas: $this, nom_nomina_id: $nom_percepcion->nom_nomina_id);
             if (errores::$error) {
                 return $this->error->error(mensaje: 'Error al integrar deducciones', data: $transacciones);
             }
         }
 
-
-
         return $r_modifica_bd;
     }
 
 
-
-    private function modifica_otro_pago(array $filtro, array $nom_par_otro_pago_upd): array|\stdClass
-    {
-
-        $nom_par_otro_pago_modelo = new nom_par_otro_pago($this->link);
-
-        $nom_par_otro_pago = $nom_par_otro_pago_modelo->filtro_and(filtro: $filtro);
-        if(errores::$error){
-            return $this->error->error(mensaje: 'Error al obtener otro pago', data: $nom_par_otro_pago);
-        }
-
-        $r_modifica_nom_par_otro_pago = $nom_par_otro_pago_modelo->modifica_bd(
-            registro:$nom_par_otro_pago_upd, id: $nom_par_otro_pago->registros[0]['nom_par_otro_pago_id']);
-        if(errores::$error){
-            return $this->error->error(mensaje: 'Error al modificar otro pago', data: $r_modifica_nom_par_otro_pago);
-        }
-
-        return $r_modifica_nom_par_otro_pago;
-    }
 
     private function nom_nomina_id(int $nom_par_id): int|array
     {
@@ -715,203 +482,6 @@ class nominas extends modelo {
             return $this->error->error(mensaje: 'Error total es 0', data: $total);
         }
         return $total;
-    }
-
-
-
-
-
-    private function transaccion_otro_pago(stdClass $data_existe, array $nom_par_otro_pago_ins): array|stdClass
-    {
-        $result = new stdClass();
-        if($data_existe->existe){
-            $r_modifica_nom_par_otro_pago = $this->modifica_otro_pago(
-                filtro: $data_existe->filtro,nom_par_otro_pago_upd:  $nom_par_otro_pago_ins);
-            if(errores::$error){
-                return $this->error->error(
-                    mensaje: 'Error al modificar otro pago', data: $r_modifica_nom_par_otro_pago);
-            }
-            $result->data = $r_modifica_nom_par_otro_pago;
-            $result->transaccion = 'modifica';
-        }
-        else{
-            $r_alta_nom_par_otro_pago = (new nom_par_otro_pago($this->link))->alta_registro(
-                registro: $nom_par_otro_pago_ins);
-            if(errores::$error){
-                return $this->error->error(mensaje: 'Error al registrar otro_pago', data: $r_alta_nom_par_otro_pago);
-            }
-            $result->data = $r_alta_nom_par_otro_pago;
-            $result->transaccion = 'alta';
-
-        }
-        return $result;
-
-
-    }
-
-
-    /**
-     * Transacciona la deduccion de imss
-     * @param int $nom_nomina_id Nomina para transaccionar imss
-     * @param int $partida_percepcion_id Registro de deduccion, percepcion u otro pago
-     * @return array|stdClass
-     * @throws JsonException
-     */
-    protected function transacciona_imss(int $nom_nomina_id, int $partida_percepcion_id): array|stdClass
-    {
-
-        $aplica_imss = (new nom_nomina($this->link))->aplica_imss(nom_nomina_id: $nom_nomina_id);
-        if(errores::$error){
-            return $this->error->error(mensaje: 'Error al validar si aplica imss', data: $aplica_imss);
-        }
-
-        $aplicacion_imss = $this->ejecuta_transaccion_imss(aplica_imss: $aplica_imss,
-            nom_nomina_id:  $nom_nomina_id, partida_percepcion_id: $partida_percepcion_id);
-        if (errores::$error) {
-            return $this->error->error(mensaje: 'Error al generar transaccion', data: $aplicacion_imss);
-        }
-        return $aplicacion_imss;
-
-    }
-
-    protected function transacciona_imss_por_nomina(int $nom_nomina_id): array|stdClass
-    {
-
-        $aplica_imss = (new nom_nomina($this->link))->aplica_imss(nom_nomina_id: $nom_nomina_id);
-        if(errores::$error){
-            return $this->error->error(mensaje: 'Error al validar si aplica imss', data: $aplica_imss);
-        }
-
-        $aplicacion_imss = $this->ejecuta_transaccion_imss_por_nomina(aplica_imss: $aplica_imss,
-            nom_nomina_id:  $nom_nomina_id);
-        if (errores::$error) {
-            return $this->error->error(mensaje: 'Error al generar transaccion', data: $aplicacion_imss);
-        }
-        return $aplicacion_imss;
-
-    }
-
-
-    /**
-     * @param int $partida_percepcion_id Identificador ya sea otto_pago o percepcion
-     * @throws JsonException
-     */
-    private function transacciona_isr(int $nom_nomina_id, int $partida_percepcion_id): float|array
-    {
-        $isr = (new calculo_isr())->calcula_isr_nomina(modelo: $this, partida_percepcion_id: $partida_percepcion_id);
-        if (errores::$error) {
-            return $this->error->error(mensaje: 'Error al obtener isr', data: $isr);
-        }
-
-        if($isr>0.0){
-
-            $transaccion = $this->aplica_deduccion(monto: (float)$isr, nom_deduccion_id: 1,
-                nom_nomina_id:  $nom_nomina_id);
-            if(errores::$error){
-                return $this->error->error(mensaje: 'Error al generar transaccion', data: $transaccion);
-            }
-
-
-        }
-        return $isr;
-    }
-
-    /**
-     * @param int $nom_nomina_id
-     * @return float|array
-     * @throws JsonException
-     */
-    protected function transacciona_isr_por_nomina(int $nom_nomina_id): float|array
-    {
-        $isr = (new calculo_isr())->calcula_isr_por_nomina(link:$this->link, nom_nomina_id: $nom_nomina_id);
-        if (errores::$error) {
-            return $this->error->error(mensaje: 'Error al obtener isr', data: $isr);
-        }
-        if($isr>0.0){
-            $transaccion = (new transaccion_fc())->aplica_deduccion(mod_nominas: $this, monto: (float)$isr, nom_deduccion_id: 1,
-                nom_nomina_id:  $nom_nomina_id);
-            if(errores::$error){
-                return $this->error->error(mensaje: 'Error al generar transaccion', data: $transaccion);
-            }
-        }
-        elseif($isr<=0.0){
-            $data_existe = $this->existe_data_deduccion(nom_deduccion_id:1, nom_nomina_id: $nom_nomina_id);
-            if(errores::$error){
-                return $this->error->error(mensaje: 'Error al validar si existe deduccion', data: $data_existe);
-            }
-            if($data_existe->existe){
-                $elimina_deducciones = $this->elimina_deduccion(filtro: $data_existe->filtro);
-                if(errores::$error){
-                    return $this->error->error(mensaje: 'Error al eliminar deducciones', data: $elimina_deducciones);
-                }
-            }
-
-        }
-        return $isr;
-    }
-
-    protected function transacciona_subsidio_por_nomina(int $nom_nomina_id): float|array
-    {
-        $subsidio = (new calculo_subsidio())->calcula_subsidio_por_nomina(link:$this->link, nom_nomina_id: $nom_nomina_id);
-        if (errores::$error) {
-            return $this->error->error(mensaje: 'Error al obtener isr', data: $subsidio);
-        }
-        if($subsidio>0.0){
-            $transaccion = $this->aplica_otro_pago(monto: (float)$subsidio, nom_otro_pago_id: 2,
-                nom_nomina_id:  $nom_nomina_id);
-            if(errores::$error){
-                return $this->error->error(mensaje: 'Error al generar transaccion', data: $transaccion);
-            }
-        }
-        elseif($subsidio<=0.0){
-            $data_existe = $this->existe_data_otro_pago(nom_otro_pago_id:2, nom_nomina_id: $nom_nomina_id);
-            if(errores::$error){
-                return $this->error->error(mensaje: 'Error al validar si existe deduccion', data: $data_existe);
-            }
-            if($data_existe->existe){
-                $elimina_deducciones = $this->elimina_otro_pago(filtro: $data_existe->filtro);
-                if(errores::$error){
-                    return $this->error->error(mensaje: 'Error al eliminar deducciones', data: $elimina_deducciones);
-                }
-            }
-
-        }
-        return $subsidio;
-    }
-
-    /**
-     * @throws JsonException
-     */
-    private function transacciones_por_nomina(int $nom_nomina_id): array|stdClass
-    {
-        $transacciones_deduccion_isr = $this->transacciona_isr_por_nomina(nom_nomina_id: $nom_nomina_id);
-        if (errores::$error) {
-            return $this->error->error(mensaje: 'Error al integrar deducciones isr',
-                data: $transacciones_deduccion_isr);
-        }
-        $transacciones_deduccion_imss = $this->transacciona_imss_por_nomina(nom_nomina_id: $nom_nomina_id);
-        if (errores::$error) {
-            return $this->error->error(mensaje: 'Error al integrar deducciones imss',
-                data: $transacciones_deduccion_imss);
-        }
-
-        $transacciones_otro_pago_subsidio = $this->transacciona_subsidio_por_nomina(nom_nomina_id: $nom_nomina_id);
-        if (errores::$error) {
-            return $this->error->error(mensaje: 'Error al integrar otros pagos subsidio',
-                data: $transacciones_otro_pago_subsidio);
-        }
-
-        $fc_partida_upd = (new transaccion_fc())->actualiza_fc_partida_factura(link: $this->link, nom_nomina_id: $nom_nomina_id);
-        if(errores::$error){
-            return $this->error->error(mensaje: 'Error al actualizar $fc_partida', data: $fc_partida_upd);
-        }
-
-        $data = new stdClass();
-        $data->isr = $transacciones_deduccion_isr;
-        $data->imss = $transacciones_deduccion_imss;
-        $data->otro_pago = $transacciones_otro_pago_subsidio;
-        $data->fc_partida = $fc_partida_upd;
-        return $data;
     }
 
 
