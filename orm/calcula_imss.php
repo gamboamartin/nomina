@@ -210,12 +210,14 @@ class calcula_imss{
     }
 
     /**
+     * Inicializa los elementos basicos para el calculo de imss
      * @param int $cat_sat_periodicidad_pago_nom_id Identificador de periodicidad
      * @param string $fecha Fecha de nomina
      * @param float $n_dias Numero de dias de periodo de pago
      * @param float $sbc Salario diario integrado
-     * @param float $sd
+     * @param float $sd Salario diario de pago real
      * @return stdClass|array
+     * @version 0.229.6
      */
     private function init_base(int  $cat_sat_periodicidad_pago_nom_id, string $fecha, float $n_dias, float $sbc,
                               float $sd): stdClass|array
@@ -234,7 +236,7 @@ class calcula_imss{
         /**
          * REFACTORIZAR POR AÑO
          */
-        $this->monto_uma = $this->uma[2022];
+        $this->monto_uma = $this->uma[$this->year];
 
         $dias = $this->n_dias(cat_sat_periodicidad_pago_nom_id: $cat_sat_periodicidad_pago_nom_id, fecha: $fecha,
             n_dias: $n_dias);
