@@ -325,6 +325,8 @@ class nom_nomina extends modelo
 
     }
 
+
+
     /**
      * Obtiene todas las deducciones de una nomina
      * @param int $nom_nomina_id Identificador de nomina
@@ -397,6 +399,20 @@ class nom_nomina extends modelo
             return $this->error->error(mensaje: 'Error tabla vacia', data: $tabla);
         }
         return isset($partida[$tabla.'_aplica_imss']);
+    }
+
+    private function existe_otro_pago_subsidio(int $nom_nomina_id): bool|array
+    {
+        if($nom_nomina_id <=0 ){
+            return $this->error->error(mensaje: 'Error $nom_nomina_id debe ser mayor a 0',data:  $nom_nomina_id);
+        }
+        $filtro['nom_otro_pago.es_subsidio']  = 'activo';
+        $filtro['nom_nomina.id']  = $nom_nomina_id;
+        $existe = (new nom_par_otro_pago($this->link))->existe(filtro: $filtro);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al obtener deduccion',data:  $existe);
+        }
+        return $existe;
     }
 
     private function genera_codigo_nomina(stdClass $org_sucursal, array $registro): string
@@ -689,6 +705,41 @@ class nom_nomina extends modelo
         }
 
         return $r_modifica_bd;
+    }
+
+    private function otro_pago_subsidio(int $nom_nomina_id){
+
+        $existe_otro_pago_subsidio = $this->existe_otro_pago_subsidio(nom_nomina_id: $nom_nomina_id);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al validar si existe deduccion isr',data:  $existe_otro_pago_subsidio);
+        }
+        if(!$existe_otro_pago_subsidio){
+            return $this->error->error(mensaje: 'Error no existe otro pago subsidio',data:  $existe_otro_pago_subsidio);
+        }
+
+        $filtro['nom_otro_pago.es_subsidio']  = 'activo';
+        $filtro['nom_nomina.id']  = $nom_nomina_id;
+        $r_nom_par_otro_pago = (new nom_par_otro_pago($this->link))->filtro_and(filtro: $filtro);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al obtener otro pago',data:  $r_nom_par_otro_pago);
+        }
+        if($r_nom_par_otro_pago->n_registros > 1){
+            return $this->error->error(mensaje: 'Error solo puede existir un otro pago de tipo SUBSIDIO',
+                data:  $r_nom_par_otro_pago);
+        }
+        return $r_nom_par_otro_pago->registros[0];
+
+
+    }
+    public function otro_pago_subsidio_id(int $nom_nomina_id): array|int
+    {
+
+        $otro_pago_subsidio = $this->otro_pago_subsidio(nom_nomina_id: $nom_nomina_id);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al obtener otro pago',data:  $otro_pago_subsidio);
+        }
+        return (int)$otro_pago_subsidio['nom_par_otro_pago_id'];
+
     }
 
     /**
