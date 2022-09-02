@@ -363,8 +363,17 @@ class nom_nomina extends modelo
         return $partida[$tabla.'_aplica_imss'] === 'activo';
     }
 
+    /**
+     * Valida si existe una deduccion de tipo ISR
+     * @param int $nom_nomina_id Nomina a validar
+     * @return bool|array
+     * @version 0.224.6
+     */
     private function existe_deduccion_isr(int $nom_nomina_id): bool|array
     {
+        if($nom_nomina_id <=0 ){
+            return $this->error->error(mensaje: 'Error $nom_nomina_id debe ser mayor a 0',data:  $nom_nomina_id);
+        }
         $filtro['nom_deduccion.es_isr']  = 'activo';
         $filtro['nom_nomina.id']  = $nom_nomina_id;
         $existe = (new nom_par_deduccion($this->link))->existe(filtro: $filtro);

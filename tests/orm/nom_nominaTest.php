@@ -207,6 +207,56 @@ class nom_nominaTest extends test {
         errores::$error = false;
     }
 
+    public function test_existe_deduccion_isr(): void
+    {
+        errores::$error = false;
+
+        $_GET['seccion'] = 'cat_sat_tipo_persona';
+        $_GET['accion'] = 'lista';
+        $_SESSION['grupo_id'] = 1;
+        $_SESSION['usuario_id'] = 2;
+        $_GET['session_id'] = '1';
+        $nomina = new nom_nomina($this->link);
+        $nomina = new liberator($nomina);
+
+        $del = (new nom_par_deduccion($this->link))->elimina_todo();
+        if(errores::$error){
+            $error = (new errores())->error('Error al eliminar deducciones', $del);
+            print_r($error);
+            exit;
+        }
+
+        $nom_nomina_id = 1;
+        $resultado = $nomina->existe_deduccion_isr($nom_nomina_id);
+        $this->assertIsBool($resultado);
+        $this->assertNotTrue(errores::$error);
+        $this->assertNotTrue($resultado);
+        errores::$error = false;
+
+        $nom_par_deduccion = array();
+        $nom_par_deduccion['id'] = 1;
+        $nom_par_deduccion['nom_nomina_id'] = 1;
+        $nom_par_deduccion['nom_deduccion_id'] = 1;
+        $nom_par_deduccion['importe_gravado'] = 100;
+
+        $alta = (new nom_par_deduccion($this->link))->alta_registro($nom_par_deduccion);
+        if(errores::$error){
+            $error = (new errores())->error('Error al dar de alta deduccion', $alta);
+            print_r($error);
+            exit;
+        }
+
+
+        $nom_nomina_id = 1;
+        $resultado = $nomina->existe_deduccion_isr($nom_nomina_id);
+        $this->assertIsBool($resultado);
+        $this->assertNotTrue(errores::$error);
+        $this->assertTrue($resultado);
+
+        errores::$error = false;
+
+    }
+
 
 
 
