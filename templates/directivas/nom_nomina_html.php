@@ -462,7 +462,7 @@ class nom_nomina_html extends html_controler
         $selects->im_registro_patronal_id = $select;
 
 
-        $cols_em_empleado_id = $params->im_registro_patronal_id->cols ?? 6;
+        $cols_em_empleado_id = $params->em_empleado_id->cols ?? 6;
         $select = (new em_empleado_html(html: $this->html_base))->select_em_empleado_id(
             cols: $cols_em_empleado_id, con_registros: true, id_selected: $row_upd->em_empleado_id, link: $link);
         if (errores::$error) {
