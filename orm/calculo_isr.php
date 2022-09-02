@@ -280,6 +280,9 @@ class calculo_isr{
             return $this->error->error(mensaje: 'Error $cat_sat_periodicidad_pago_nom_id debe ser mayor a 0',
                 data: $cat_sat_periodicidad_pago_nom_id);
         }
+        if($monto<=0.0){
+            return $this->error->error(mensaje: 'Error monto debe ser mayor o igual a 0', data: $monto);
+        }
 
         if($fecha === ''){
             $fecha = date('Y-m-d');
@@ -301,13 +304,22 @@ class calculo_isr{
     }
 
     /**
-     * @param PDO $link
+     * @param PDO $link Conexion a la base de datos
      * @param int $nom_nomina_id Registro de nomina en ejecucion
      * @param string|float|int $total_gravado Monto gravable de nomina
      * @return float|array
+     * @version 0.222.6
      */
     private function isr_nomina(PDO $link, int $nom_nomina_id, string|float|int $total_gravado): float|array
     {
+        if($nom_nomina_id <=0){
+            return  $this->error->error(mensaje: 'Error al obtener registro $nom_nomina_id debe ser mayor a 0',
+                data: $nom_nomina_id);
+        }
+        if($total_gravado<=0.0){
+            return $this->error->error(mensaje: 'Error $total_gravado debe ser mayor o igual a 0', data: $total_gravado);
+        }
+
         $nom_nomina = (new nom_nomina($link))->registro(registro_id: $nom_nomina_id, retorno_obj: true);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al obtener nomina', data: $nom_nomina);
