@@ -231,7 +231,7 @@ class nom_nomina_html extends html_controler
 
     private function init_modifica(PDO $link, stdClass $row_upd, stdClass $params = new stdClass()): array|stdClass
     {
-        $selects = $this->selects_selects_modifica_crea_nomina(link: $link, row_upd: $row_upd);
+        $selects = $this->selects_selects_modifica_crea_nomina(link: $link, row_upd: $row_upd, params: $params);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al generar selects', data: $selects);
         }
@@ -445,20 +445,26 @@ class nom_nomina_html extends html_controler
         return $selects;
     }
 
-    private function selects_selects_modifica_crea_nomina(PDO $link, stdClass $row_upd): array|stdClass
+    private function selects_selects_modifica_crea_nomina(PDO $link, stdClass $row_upd,
+                                                          stdClass $params = new stdClass()): array|stdClass
     {
 
         $selects = new stdClass();
 
+        $cols_im_registro_patronal_id = $params->im_registro_patronal_id->cols ?? 6;
+
         $select = (new im_registro_patronal_html(html: $this->html_base))->select_im_registro_patronal_id(
-            cols: 6, con_registros: true, id_selected: $row_upd->im_registro_patronal_id, link: $link);
+            cols: $cols_im_registro_patronal_id, con_registros: true, id_selected: $row_upd->im_registro_patronal_id,
+            link: $link);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al generar select', data: $select);
         }
         $selects->im_registro_patronal_id = $select;
 
+
+        $cols_em_empleado_id = $params->im_registro_patronal_id->cols ?? 6;
         $select = (new em_empleado_html(html: $this->html_base))->select_em_empleado_id(
-            cols: 6, con_registros: true, id_selected: $row_upd->em_empleado_id, link: $link);
+            cols: $cols_em_empleado_id, con_registros: true, id_selected: $row_upd->em_empleado_id, link: $link);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al generar select', data: $select);
         }
@@ -467,30 +473,35 @@ class nom_nomina_html extends html_controler
         if(!isset($row_upd->nom_conf_empleado_id)){
             $row_upd->nom_conf_empleado_id = -1;
         }
+
+        $cols_nom_conf_empleado_id = $params->nom_conf_empleado_id->cols ?? 6;
         $select = (new nom_conf_empleado_html(html: $this->html_base))->select_nom_conf_empleado_id(
-            cols: 6, con_registros: true, id_selected: $row_upd->nom_conf_empleado_id, link: $link);
+            cols: $cols_nom_conf_empleado_id, con_registros: true, id_selected: $row_upd->nom_conf_empleado_id, link: $link);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al generar select', data: $select);
         }
         $selects->nom_conf_empleado_id = $select;
 
+        $cols_cat_sat_tipo_nomina_id = $params->cat_sat_tipo_nomina_id->cols ?? 6;
         $select = (new cat_sat_tipo_nomina_html(html: $this->html_base))->select_cat_sat_tipo_nomina_id(
-            cols: 6, con_registros: true, id_selected: $row_upd->cat_sat_tipo_nomina_id, link: $link);
+            cols: $cols_cat_sat_tipo_nomina_id, con_registros: true, id_selected: $row_upd->cat_sat_tipo_nomina_id, link: $link);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al generar select', data: $select);
         }
         $selects->cat_sat_tipo_nomina_id = $select;
-
+        $cols_cat_sat_periodicidad_pago_nom_id = $params->cat_sat_periodicidad_pago_nom_id->cols ?? 6;
         $select = (new cat_sat_periodicidad_pago_nom_html(html: $this->html_base))->select_cat_sat_periodicidad_pago_nom_id(
-            cols: 6, con_registros: true, id_selected: $row_upd->cat_sat_periodicidad_pago_nom_id, link: $link);
+            cols: $cols_cat_sat_periodicidad_pago_nom_id, con_registros: true, id_selected: $row_upd->cat_sat_periodicidad_pago_nom_id, link: $link);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al generar select', data: $select);
         }
         $selects->cat_sat_periodicidad_pago_nom_id = $select;
 
         $filtro['em_empleado.id'] = $row_upd->em_empleado_id;
+
+        $cols_em_cuenta_bancaria_id = $params->em_cuenta_bancaria_id->cols ?? 12;
         $select = (new em_cuenta_bancaria_html(html: $this->html_base))->select_em_cuenta_bancaria_id(
-            cols: 12, con_registros: true, id_selected: $row_upd->em_cuenta_bancaria_id, link: $link,filtro: $filtro);
+            cols: $cols_em_cuenta_bancaria_id, con_registros: true, id_selected: $row_upd->em_cuenta_bancaria_id, link: $link,filtro: $filtro);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al generar select', data: $select);
         }
