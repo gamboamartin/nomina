@@ -235,6 +235,13 @@ class nominas extends modelo {
         return $registro;
     }
 
+    /**
+     * Obtiene los datos de una deduccion
+     * @param float $monto
+     * @param int $nom_deduccion_id
+     * @param int $nom_nomina_id
+     * @return array|stdClass
+     */
     public function data_deduccion(float $monto, int $nom_deduccion_id, int $nom_nomina_id): array|stdClass
     {
         $data_existe = $this->existe_data_deduccion(nom_deduccion_id:$nom_deduccion_id, nom_nomina_id: $nom_nomina_id);
@@ -290,8 +297,9 @@ class nominas extends modelo {
 
 
     /**
-     * @param int $nom_deduccion_id
-     * @param int $nom_nomina_id
+     * Verifica si existe una deduccion1
+     * @param int $nom_deduccion_id Deduccion a verificar
+     * @param int $nom_nomina_id Nomina a verificar
      * @return array|stdClass
      */
     public function existe_data_deduccion(int $nom_deduccion_id, int $nom_nomina_id): array|stdClass

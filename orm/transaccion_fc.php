@@ -75,6 +75,12 @@ class transaccion_fc{
     }
 
     /**
+     * Verifica si aplica una deduccion automatica
+     * @param nominas $mod_nominas
+     * @param float $monto
+     * @param int $nom_deduccion_id
+     * @param int $nom_nomina_id
+     * @return array|stdClass
      * @throws JsonException
      */
     private function aplica_deduccion(nominas $mod_nominas, float $monto, int $nom_deduccion_id, int $nom_nomina_id): array|stdClass
@@ -94,59 +100,42 @@ class transaccion_fc{
     }
 
     /**
-     * @throws JsonException
      */
     private function aplica_imss_valor(nominas $mod_nominas, int $nom_nomina_id, int $partida_percepcion_id): array|stdClass
     {
-        $transaccion_aplicada = false;
-        $transaccion = new stdClass();
+
         $imss = $mod_nominas->imss(partida_percepcion_id: $partida_percepcion_id);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al calcular imss', data: $imss);
         }
-        if ((float)$imss['total'] > 0.0) {
-            $transaccion = $this->aplica_deduccion(mod_nominas: $mod_nominas, monto: (float)$imss['total'], nom_deduccion_id: 2,
-                nom_nomina_id: $nom_nomina_id);
-            if (errores::$error) {
-                return $this->error->error(mensaje: 'Error al generar transaccion', data: $transaccion);
-            }
-            $transaccion_aplicada = true;
-        }
-        $data = new stdClass();
-        $data->imss = $imss;
-        $data->transaccion_aplicada = $transaccion_aplicada;
-        $data->transaccion = $transaccion;
 
-        return $data;
+        $genera_imss = $this->result_imss(imss: $imss, mod_nominas: $mod_nominas, nom_nomina_id: $nom_nomina_id);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al generar transaccion', data: $genera_imss);
+        }
+
+
+
+        return $genera_imss;
     }
 
 
 
     /**
-     * @throws JsonException
      */
     private function aplica_imss_valor_por_nomina(nominas $mod_nominas, int $nom_nomina_id): array|stdClass
     {
-        $transaccion_aplicada = false;
-        $transaccion = new stdClass();
+
         $imss = $mod_nominas->imss_por_nomina(nom_nomina_id: $nom_nomina_id);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al calcular imss', data: $imss);
         }
-        if ((float)$imss['total'] > 0.0) {
-            $transaccion = $this->aplica_deduccion(mod_nominas: $mod_nominas,
-                monto: (float)$imss['total'], nom_deduccion_id: 2, nom_nomina_id: $nom_nomina_id);
-            if (errores::$error) {
-                return $this->error->error(mensaje: 'Error al generar transaccion', data: $transaccion);
-            }
-            $transaccion_aplicada = true;
-        }
-        $data = new stdClass();
-        $data->imss = $imss;
-        $data->transaccion_aplicada = $transaccion_aplicada;
-        $data->transaccion = $transaccion;
 
-        return $data;
+        $genera_imss = $this->result_imss(imss: $imss, mod_nominas: $mod_nominas, nom_nomina_id: $nom_nomina_id);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al generar transaccion', data: $genera_imss);
+        }
+        return $genera_imss;
     }
 
     private function aplica_otro_pago(nominas $mod_nominas, float $monto, int $nom_otro_pago_id, int $nom_nomina_id): array|stdClass
@@ -402,6 +391,29 @@ class transaccion_fc{
     /**
      * @throws JsonException
      */
+    private function genera_imss(array $imss, nominas $mod_nominas, int $nom_nomina_id): array|stdClass
+    {
+        $data = new stdClass();
+        $transaccion = new stdClass();
+        $transaccion_aplicada = false;
+        if ((float)$imss['total'] > 0.0) {
+            $transaccion = $this->aplica_deduccion(mod_nominas: $mod_nominas,
+                monto: (float)$imss['total'], nom_deduccion_id: 2, nom_nomina_id: $nom_nomina_id);
+            if (errores::$error) {
+                return $this->error->error(mensaje: 'Error al generar transaccion', data: $transaccion);
+            }
+            $transaccion_aplicada = true;
+        }
+
+        $data->transaccion = $transaccion;
+        $data->transaccion_aplicada = $transaccion_aplicada;
+        return $data;
+
+    }
+
+    /**
+     * @throws JsonException
+     */
     private function integra_deducciones(nominas $mod_nominas, int $nom_nomina_id): array|stdClass
     {
 
@@ -459,6 +471,22 @@ class transaccion_fc{
         }
 
         return $r_modifica_nom_par_otro_pago;
+    }
+
+    private function result_imss(array $imss, nominas $mod_nominas, int $nom_nomina_id): array|stdClass
+    {
+        $genera_imss = $this->genera_imss(imss: $imss,mod_nominas:  $mod_nominas,nom_nomina_id:  $nom_nomina_id);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al generar transaccion', data: $genera_imss);
+        }
+
+
+        $data = new stdClass();
+        $data->imss = $imss;
+        $data->transaccion_aplicada = $genera_imss->transaccion_aplicada;
+        $data->transaccion = $genera_imss->transaccion;
+
+        return $data;
     }
 
     /**
