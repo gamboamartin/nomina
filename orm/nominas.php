@@ -39,6 +39,7 @@ class nominas extends modelo {
             return $this->error->error(mensaje: 'Error al integrar deducciones', data: $transacciones);
         }
 
+        
 
 
         return $r_alta_bd;
@@ -530,7 +531,7 @@ class nominas extends modelo {
         return $r_modifica_bd;
     }
 
-    private function nom_data_subsidio(int $deduccion_isr_id, stdClass $impuestos, int $otro_pago_subsidio_id): array
+    public function nom_data_subsidio(int $deduccion_isr_id, stdClass $impuestos, int $otro_pago_subsidio_id): array
     {
         $nom_data_subsidio = array();
         $nom_data_subsidio['nom_par_deduccion_id'] = $deduccion_isr_id;

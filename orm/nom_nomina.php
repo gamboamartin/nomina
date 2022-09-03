@@ -81,6 +81,9 @@ class nom_nomina extends modelo
         }
 
 
+
+
+
         return $r_alta_bd;
     }
 
