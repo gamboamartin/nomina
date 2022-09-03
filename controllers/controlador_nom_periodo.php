@@ -132,7 +132,8 @@ class controlador_nom_periodo extends system {
     public function procesa_nomina(bool $header, bool $ws = false, string $breadcrumbs = '', bool $aplica_form = true,
                              bool $muestra_btn = true): array|string
     {
-        $resultado = (new nom_periodo($this->link))->genera_registro_nomina();
+
+        $resultado = (new nom_periodo($this->link))->genera_registro_nomina(nom_periodo_id: $this->registro_id);
         if(errores::$error){
            return $this->retorno_error(mensaje: 'Error al generar mensaje', data: $resultado,header:  $header,ws:  $ws);
         }
