@@ -132,13 +132,16 @@ class controlador_nom_periodo extends system {
     public function procesa_nomina(bool $header, bool $ws = false, string $breadcrumbs = '', bool $aplica_form = true,
                              bool $muestra_btn = true): array|string
     {
-        $base = $this->base();
+        $resultado = (new nom_periodo($this->link))->genera_registro_nomina();
         if(errores::$error){
-            return $this->retorno_error(mensaje: 'Error al maquetar datos',data:  $base,
-                header: $header,ws:$ws);
+           return $this->retorno_error(mensaje: 'Error al generar mensaje', data: $resultado,header:  $header,ws:  $ws);
         }
+        $link = "./index.php?seccion=nom_nomina&accion=lista";
+        $link.="&session_id=$this->session_id";
+        header('Location:' . $link);
+        exit;
 
-        return $base->template;
+
     }
 
     private function asigna_link_procesa_nomina_row(stdClass $row): array|stdClass

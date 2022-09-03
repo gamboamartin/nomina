@@ -19,11 +19,6 @@ class nom_periodo extends nominas_confs {
     public function alta_bd(): array|stdClass
     {
 
-       /* $resultado = $this->genera_registro_nomina();
-        if(errores::$error){
-            return $this->error->error(mensaje: 'Error al generar registro', data: $resultado);
-        }*/
-
         $r_alta_bd = parent::alta_bd();
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al insertar registro', data: $r_alta_bd);
@@ -43,7 +38,7 @@ class nom_periodo extends nominas_confs {
         return $r_empleados->registros;
     }
 
-    private function genera_registro_nomina() : array|stdClass{
+    public function genera_registro_nomina() : array|stdClass{
 
         $registros_empleados = $this->get_empleados(im_registro_patronal_id: 1);
         if (errores::$error) {
@@ -60,7 +55,7 @@ class nom_periodo extends nominas_confs {
             if (errores::$error) {
                 return $this->error->error(mensaje: 'Error al dar de alta la nomina del empleado', data: $alta_empleado);
             }
-            print_r($alta_empleado);exit();
+
         }
 
         return array();
