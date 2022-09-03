@@ -505,7 +505,10 @@ class nom_nomina extends modelo
             return $this->error->error(mensaje: 'Error al generar registros de empleado ', data: $em_empleado);
         }
 
-        $nom_conf_empleado = $this->registro_por_id(new nom_conf_empleado($this->link), $this->registro['em_empleado_id']);
+        /**
+         * REVBISAR HARDCODEO
+         */
+        $nom_conf_empleado = $this->registro_por_id(new nom_conf_empleado($this->link), 1);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al generar registros de conf factura',
                 data: $nom_conf_empleado);
