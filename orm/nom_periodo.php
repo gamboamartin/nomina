@@ -18,8 +18,18 @@ class nom_periodo extends nominas_confs {
 
     public function alta_bd(): array|stdClass
     {
-        $this->genera_registro_nomina();
-        return parent::alta_bd();
+
+       /* $resultado = $this->genera_registro_nomina();
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al generar registro', data: $resultado);
+        }*/
+
+        $r_alta_bd = parent::alta_bd();
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al insertar registro', data: $r_alta_bd);
+        }
+
+        return $r_alta_bd;
     }
 
     public function get_empleados(int $im_registro_patronal_id){
