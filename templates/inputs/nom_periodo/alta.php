@@ -10,3 +10,4 @@
 <?php echo $controlador->inputs->fecha_final_pago; ?>
 <?php echo $controlador->inputs->fecha_pago; ?>
 <?php include (new views())->ruta_templates.'botons/submit/alta_bd_otro.php';?>
+
