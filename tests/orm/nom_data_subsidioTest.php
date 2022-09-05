@@ -31,7 +31,7 @@ class nom_data_subsidioTest extends test {
     }
 
 
-    public function test_get_data_by_op(): void
+    public function test_get_data_by_otro_pago(): void
     {
         errores::$error = false;
 
@@ -43,7 +43,7 @@ class nom_data_subsidioTest extends test {
         $data = new nom_data_subsidio($this->link);
 
         $nom_par_deduccion_id = 1;
-        $resultado = $data->get_data_by_op($nom_par_deduccion_id);
+        $resultado = $data->get_data_by_otro_pago($nom_par_deduccion_id);
 
         $this->assertIsArray($resultado);
         $this->assertNotTrue(errores::$error);

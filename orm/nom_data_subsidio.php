@@ -77,12 +77,12 @@ class nom_data_subsidio extends nominas_confs
     }
 
     /**
-     * Obtiene los registros basados de una partida de deduccion
-     * @param int $nom_par_deduccion_id Deduccion a obtener
+     * Obtiene los registros basados de una partida de percepcion
+     * @param int $nom_par_deduccion_id Identificador de la deduccion
      * @return array
-     * @version 0.249.7
+
      */
-    public function get_data_by_op(int $nom_par_deduccion_id): array
+    public function get_data_by_deduccion(int $nom_par_deduccion_id): array
     {
         if($nom_par_deduccion_id<=0){
             return $this->error->error(
@@ -95,6 +95,28 @@ class nom_data_subsidio extends nominas_confs
         }
         return $r_nom_data_subsidio->registros;
     }
+
+    /**
+     * Obtiene los registros basados de una partida de deduccion
+     * @param int $nom_par_otro_pago_id Otro pago a obtener
+     * @return array
+     * @version 0.249.7
+     */
+    public function get_data_by_otro_pago(int $nom_par_otro_pago_id): array
+    {
+        if($nom_par_otro_pago_id<=0){
+            return $this->error->error(
+                mensaje: 'Error $nom_par_otro_pago_id debe ser mayor a 0', data: $nom_par_otro_pago_id);
+        }
+        $filtro['nom_par_otro_pago.id'] = $nom_par_otro_pago_id;
+        $r_nom_data_subsidio = $this->filtro_and(filtro: $filtro);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al obtener data subsidio', data: $r_nom_data_subsidio);
+        }
+        return $r_nom_data_subsidio->registros;
+    }
+
+
 
     public function modifica_bd(array $registro, int $id, bool $reactiva = false): array|stdClass
     {

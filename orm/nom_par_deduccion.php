@@ -59,7 +59,7 @@ class nom_par_deduccion extends nominas{
     public function elimina_bd(int $id): array
     {
 
-        $nom_datas_subsidios = (new nom_data_subsidio($this->link))->get_data_by_op(nom_par_deduccion_id: $id);
+        $nom_datas_subsidios = (new nom_data_subsidio($this->link))->get_data_by_deduccion(nom_par_deduccion_id: $id);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al obtener data subsidio', data: $nom_datas_subsidios);
         }
