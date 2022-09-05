@@ -85,13 +85,14 @@ class transaccion_fc{
      */
     private function aplica_deduccion(nominas $mod_nominas, float $monto, int $nom_deduccion_id, int $nom_nomina_id): array|stdClass
     {
-        $data_existe = $mod_nominas->data_deduccion(monto: $monto, nom_deduccion_id: $nom_deduccion_id,
-            nom_nomina_id: $nom_nomina_id);
+        $data_existe = $mod_nominas->data_deduccion(monto_exento: 0,monto_gravado: $monto,
+            nom_deduccion_id: $nom_deduccion_id, nom_nomina_id: $nom_nomina_id);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al validar si existe deduccion', data: $data_existe);
         }
 
-        $transaccion = $this->transaccion_deduccion(data_existe: $data_existe,link: $mod_nominas->link,nom_par_deduccion_ins: $data_existe->row_ins);
+        $transaccion = $this->transaccion_deduccion(data_existe: $data_existe,link: $mod_nominas->link,
+            nom_par_deduccion_ins: $data_existe->row_ins);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al generar transaccion', data: $transaccion);
         }

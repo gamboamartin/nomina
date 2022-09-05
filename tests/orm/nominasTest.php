@@ -166,6 +166,33 @@ class nominasTest extends test {
         errores::$error = false;
     }
 
+    public function test_data_deduccion(): void{
+        errores::$error = false;
+
+        $_GET['seccion'] = 'cat_sat_tipo_persona';
+        $_GET['accion'] = 'lista';
+        $_SESSION['grupo_id'] = 1;
+        $_GET['session_id'] = '1';
+        $nominas = new nom_par_percepcion($this->link);
+        //$nominas = new liberator($nominas);
+
+        $monto_exento = 0;
+        $monto_gravado = 0;
+        $nom_deduccion_id = 1;
+        $nom_nomina_id = 1;
+
+        $resultado = $nominas->data_deduccion($monto_exento, $monto_gravado, $nom_deduccion_id, $nom_nomina_id);
+        $this->assertIsObject($resultado);
+        $this->assertNotTrue(errores::$error);
+        $this->assertEquals(1, $resultado->row_ins['nom_nomina_id']);
+        $this->assertEquals(1, $resultado->row_ins['nom_deduccion_id']);
+        $this->assertEquals(0, $resultado->row_ins['importe_gravado']);
+        $this->assertEquals(0, $resultado->row_ins['importe_exento']);
+        $this->assertTrue($resultado->existe);
+
+        errores::$error = false;
+    }
+
     public function test_filtro_partida(): void
     {
         errores::$error = false;
@@ -198,7 +225,7 @@ class nominasTest extends test {
         $_SESSION['grupo_id'] = 1;
         $_GET['session_id'] = '1';
         $nominas = new nom_par_percepcion($this->link);
-        //$nominas = new liberator($nominas);
+        $nominas = new liberator($nominas);
 
         $monto_gravado = -0.000;
         $monto_exento = 0;

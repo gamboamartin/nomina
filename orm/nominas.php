@@ -232,18 +232,29 @@ class nominas extends modelo {
 
     /**
      * Obtiene los datos de una deduccion
-     * @param float $monto
-     * @param int $nom_deduccion_id
-     * @param int $nom_nomina_id
+     * @param float $monto_exento Monto exento no aplica calculo de impuestos
+     * @param float $monto_gravado  Monto gravado aplica para calculo de impuestos
+     * @param int $nom_deduccion_id Deduccion a aplicar
+     * @param int $nom_nomina_id Nomina a aplicar
      * @return array|stdClass
+     * @version 0.244.7
      */
-    public function data_deduccion(float $monto, int $nom_deduccion_id, int $nom_nomina_id): array|stdClass
+    public function data_deduccion(float $monto_exento, float $monto_gravado, int $nom_deduccion_id,
+                                   int $nom_nomina_id): array|stdClass
     {
+
+        if($nom_deduccion_id<=0){
+            return $this->error->error(mensaje: 'Error $nom_deduccion_id debe ser mayor a 0', data: $nom_deduccion_id);
+        }
+        if($nom_nomina_id<=0){
+            return $this->error->error(mensaje: 'Error $nom_nomina_id debe ser mayor a 0', data: $nom_nomina_id);
+        }
+
         $data_existe = $this->existe_data_deduccion(nom_deduccion_id:$nom_deduccion_id, nom_nomina_id: $nom_nomina_id);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al validar si existe deduccion', data: $data_existe);
         }
-        $nom_par_deduccion_ins = $this->nom_par_deduccion_aut(monto_exento: 0.0,monto_gravado: $monto,
+        $nom_par_deduccion_ins = $this->nom_par_deduccion_aut(monto_exento: $monto_exento,monto_gravado: $monto_gravado,
             nom_deduccion_id: $nom_deduccion_id, nom_nomina_id: $nom_nomina_id);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al generar deduccion', data: $nom_par_deduccion_ins);
@@ -531,6 +542,13 @@ class nominas extends modelo {
 
     public function nom_data_subsidio(int $deduccion_isr_id, stdClass $impuestos, int $otro_pago_subsidio_id): array
     {
+
+        $keys = array('isr','subsidio');
+        $valida = $this->validacion->valida_double_mayores_igual_0(keys: $keys, registro: $impuestos);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al validar impuestos',data:  $valida);
+        }
+
         $nom_data_subsidio = array();
         $nom_data_subsidio['nom_par_deduccion_id'] = $deduccion_isr_id;
         $nom_data_subsidio['nom_par_otro_pago_id'] = $otro_pago_subsidio_id;
@@ -559,7 +577,7 @@ class nominas extends modelo {
      * @return array
      * @version 0.243.7
      */
-    PUBLIC function nom_par_deduccion_aut(float $monto_exento, float $monto_gravado, int $nom_deduccion_id,
+    private function nom_par_deduccion_aut(float $monto_exento, float $monto_gravado, int $nom_deduccion_id,
                                           int $nom_nomina_id): array
     {
         if($monto_exento< 0.0){
