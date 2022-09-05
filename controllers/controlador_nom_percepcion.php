@@ -114,7 +114,10 @@ class controlador_nom_percepcion extends system {
         }
         $this->link->commit();
 
-        $_SESSION['exito'][]['mensaje'] = 'Se ajusto el estatus de manera el registro con el id '.$this->registro_id;
+        if ($id_nom_percepcion !== $this->registro_id) {
+            $_SESSION['exito'][]['mensaje'] = 'Se ajusto el estatus de manera el registro con el id '.$this->registro_id;
+        }
+
         $this->header_out(result: $upd, header: $header,ws:  $ws);
         return $upd;
     }
