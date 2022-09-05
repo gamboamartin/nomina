@@ -76,8 +76,18 @@ class nom_data_subsidio extends nominas_confs
         return $r_alta_bd;
     }
 
+    /**
+     * Obtiene los registros basados de una partida de deduccion
+     * @param int $nom_par_deduccion_id Deduccion a obtener
+     * @return array
+     * @version 0.249.7
+     */
     public function get_data_by_op(int $nom_par_deduccion_id): array
     {
+        if($nom_par_deduccion_id<=0){
+            return $this->error->error(
+                mensaje: 'Error $nom_par_deduccion_id debe ser mayor a 0', data: $nom_par_deduccion_id);
+        }
         $filtro['nom_par_deduccion.id'] = $nom_par_deduccion_id;
         $r_nom_data_subsidio = $this->filtro_and(filtro: $filtro);
         if(errores::$error){
