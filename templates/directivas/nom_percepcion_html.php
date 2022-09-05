@@ -15,7 +15,8 @@ class nom_percepcion_html extends html_controler {
     {
         $controler->inputs->select = new stdClass();
         $controler->inputs->select->cat_sat_tipo_percepcion_nom_id = $inputs->selects->cat_sat_tipo_percepcion_nom_id;
-
+        $controler->inputs->aplica_imss = $inputs->texts->aplica_imss;
+        $controler->inputs->aplica_subsidio = $inputs->texts->aplica_subsidio;
         return $controler->inputs;
     }
 
@@ -67,6 +68,50 @@ class nom_percepcion_html extends html_controler {
         $alta_inputs->texts = $texts;
 
         return $alta_inputs;
+    }
+
+    public function input_aplica_imss(int $cols, stdClass $row_upd, bool $value_vacio, bool $disabled = false):
+    array|string
+    {
+        $valida = $this->directivas->valida_cols(cols: $cols);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al validar columnas', data: $valida);
+        }
+
+        $html = $this->directivas->input_text_required(disable: $disabled, name: 'aplica_imss',
+            place_holder: 'IMSS', row_upd: $row_upd, value_vacio: $value_vacio);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al generar input', data: $html);
+        }
+
+        $div = $this->directivas->html->div_group(cols: $cols, html: $html);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al integrar div', data: $div);
+        }
+
+        return $div;
+    }
+
+    public function input_aplica_subsidio(int $cols, stdClass $row_upd, bool $value_vacio, bool $disabled = false):
+    array|string
+    {
+        $valida = $this->directivas->valida_cols(cols: $cols);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al validar columnas', data: $valida);
+        }
+
+        $html = $this->directivas->input_text_required(disable: $disabled, name: 'aplica_subsidio',
+            place_holder: 'Subsidio', row_upd: $row_upd, value_vacio: $value_vacio);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al generar input', data: $html);
+        }
+
+        $div = $this->directivas->html->div_group(cols: $cols, html: $html);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al integrar div', data: $div);
+        }
+
+        return $div;
     }
 
     private function init_modifica(PDO $link, stdClass $row_upd, stdClass $params = new stdClass()): array|stdClass
@@ -144,6 +189,19 @@ class nom_percepcion_html extends html_controler {
     private function texts_alta(stdClass $row_upd, bool $value_vacio, stdClass $params = new stdClass()): array|stdClass
     {
         $texts = new stdClass();
+
+        $in_aplica_imss = $this->input_aplica_imss(cols: 6, row_upd: $row_upd, value_vacio: $value_vacio);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al generar input', data: $in_aplica_imss);
+        }
+        $texts->aplica_imss = $in_aplica_imss;
+
+        $in_aplica_subsidio = $this->input_aplica_subsidio(cols: 6, row_upd: $row_upd, value_vacio: $value_vacio);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al generar input', data: $in_aplica_subsidio);
+        }
+        $texts->aplica_subsidio = $in_aplica_subsidio;
+
         return $texts;
     }
 
