@@ -436,6 +436,8 @@ class nominas extends modelo {
 
     }
 
+
+
     /**
      * Calcula los datos de imss de una nomina
      * @param int $partida_percepcion_id Registro de deduccion, percepcion u otro pago
