@@ -425,6 +425,17 @@ class nominas extends modelo {
         return $filtro;
     }
 
+    public function get_by_nomina(int $nom_nomina_id): array
+    {
+        $filtro['nom_nomina.id'] = $nom_nomina_id;
+        $r_nominas = $this->filtro_and(filtro: $filtro);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al eliminar nomina',data: $r_nominas);
+        }
+        return $r_nominas->registros;
+
+    }
+
     /**
      * Calcula los datos de imss de una nomina
      * @param int $partida_percepcion_id Registro de deduccion, percepcion u otro pago
@@ -457,8 +468,6 @@ class nominas extends modelo {
             fecha:$nom_nomina->nom_nomina_fecha_final_pago, n_dias: $nom_nomina->nom_nomina_num_dias_pagados,
             sbc: $nom_nomina->em_empleado_salario_diario_integrado, sd: $nom_nomina->em_empleado_salario_diario);
     }
-
-
 
 
     /**
@@ -572,8 +581,6 @@ class nominas extends modelo {
         $nom_data_subsidio['monto_subsidio_bruto'] = $impuestos->subsidio;
         return $nom_data_subsidio;
     }
-
-
 
     private function nom_nomina_id(int $nom_par_id): int|array
     {
