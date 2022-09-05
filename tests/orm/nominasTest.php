@@ -190,6 +190,34 @@ class nominasTest extends test {
         errores::$error = false;
     }
 
+    public function test_nom_par_deduccion_aut(): void{
+        errores::$error = false;
+
+        $_GET['seccion'] = 'cat_sat_tipo_persona';
+        $_GET['accion'] = 'lista';
+        $_SESSION['grupo_id'] = 1;
+        $_GET['session_id'] = '1';
+        $nominas = new nom_par_percepcion($this->link);
+        //$nominas = new liberator($nominas);
+
+        $monto_gravado = -0.000;
+        $monto_exento = 0;
+        $nom_deduccion_id = 1;
+        $nom_nomina_id = 1;
+
+        $resultado = $nominas->nom_par_deduccion_aut($monto_exento, $monto_gravado, $nom_deduccion_id, $nom_nomina_id);
+        $this->assertIsArray($resultado);
+        $this->assertNotTrue(errores::$error);
+        $this->assertEquals(1, $resultado['nom_nomina_id']);
+        $this->assertEquals(1, $resultado['nom_deduccion_id']);
+        $this->assertEquals(0, $resultado['importe_gravado']);
+        $this->assertEquals(0, $resultado['importe_exento']);
+        errores::$error = false;
+
+    }
+
+
+
 
 
 

@@ -40,8 +40,6 @@ class nominas extends modelo {
         }
 
 
-
-
         return $r_alta_bd;
     }
 
@@ -245,8 +243,8 @@ class nominas extends modelo {
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al validar si existe deduccion', data: $data_existe);
         }
-        $nom_par_deduccion_ins = $this->nom_par_deduccion_aut(monto: $monto, nom_deduccion_id: $nom_deduccion_id,
-            nom_nomina_id: $nom_nomina_id);
+        $nom_par_deduccion_ins = $this->nom_par_deduccion_aut(monto_exento: 0.0,monto_gravado: $monto,
+            nom_deduccion_id: $nom_deduccion_id, nom_nomina_id: $nom_nomina_id);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al generar deduccion', data: $nom_par_deduccion_ins);
         }
@@ -552,13 +550,36 @@ class nominas extends modelo {
         return (int)$nom_nomina->noim_nomina_id;
     }
 
-    private function nom_par_deduccion_aut(float $monto, int $nom_deduccion_id, int $nom_nomina_id): array
+    /**
+     * Maqueta un registro para si insersion
+     * @param float $monto_exento Monto exento
+     * @param float $monto_gravado Monto gravado
+     * @param int $nom_deduccion_id Deduccion precargada
+     * @param int $nom_nomina_id Nomina a ejecutar
+     * @return array
+     * @version 0.243.7
+     */
+    PUBLIC function nom_par_deduccion_aut(float $monto_exento, float $monto_gravado, int $nom_deduccion_id,
+                                          int $nom_nomina_id): array
     {
+        if($monto_exento< 0.0){
+            return $this->error->error(mensaje: 'Error $monto_exento es menor a 0', data: $monto_exento);
+        }
+        if($monto_gravado< 0.0){
+            return $this->error->error(mensaje: 'Error $monto_gravado es menor a 0', data: $monto_gravado);
+        }
+        if($nom_deduccion_id<= 0){
+            return $this->error->error(mensaje: 'Error $nom_deduccion_id es menor a 0', data: $nom_deduccion_id);
+        }
+        if($nom_nomina_id<= 0){
+            return $this->error->error(mensaje: 'Error $nom_nomina_id es menor a 0', data: $nom_nomina_id);
+        }
+
         $nom_par_deduccion_ins = array();
         $nom_par_deduccion_ins['nom_nomina_id'] =$nom_nomina_id;
         $nom_par_deduccion_ins['nom_deduccion_id'] = $nom_deduccion_id;
-        $nom_par_deduccion_ins['importe_gravado'] = $monto;
-        $nom_par_deduccion_ins['importe_exento'] = 0.0;
+        $nom_par_deduccion_ins['importe_gravado'] = $monto_gravado;
+        $nom_par_deduccion_ins['importe_exento'] = $monto_exento;
         return $nom_par_deduccion_ins;
     }
 

@@ -771,7 +771,8 @@ class transaccion_fc{
                 data: $transacciones_deduccion_imss);
         }
 
-        $transacciones_otro_pago_subsidio = $this->transacciona_subsidio_por_nomina(mod_nominas: $mod_nominas, nom_nomina_id: $nom_nomina_id);
+        $transacciones_otro_pago_subsidio = $this->transacciona_subsidio_por_nomina(
+            mod_nominas: $mod_nominas, nom_nomina_id: $nom_nomina_id);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al integrar otros pagos subsidio',
                 data: $transacciones_otro_pago_subsidio);

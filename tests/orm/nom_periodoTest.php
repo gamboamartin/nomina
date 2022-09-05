@@ -48,7 +48,7 @@ class nom_periodoTest extends test {
         $resultado = $modelo->get_empleados($im_registro_patronal_id);
         $this->assertIsArray($resultado);
         $this->assertNotTrue(errores::$error);
-        
+
         errores::$error = false;
 
     }
