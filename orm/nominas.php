@@ -280,6 +280,22 @@ class nominas extends modelo {
         return $data_existe;
     }
 
+    /**
+     * @throws JsonException
+     */
+    protected function del_data_subsidio(array $nom_datas_subsidios): array
+    {
+        $dels = array();
+        foreach ($nom_datas_subsidios as $nom_data_subsidio){
+            $r_nom_data_subsidio = (new nom_data_subsidio($this->link))->elimina_bd(
+                id:$nom_data_subsidio['nom_data_subsidio_id']);
+            if(errores::$error){
+                return $this->error->error(mensaje: 'Error al eliminar nom data subsidio', data: $r_nom_data_subsidio);
+            }
+            $dels = $r_nom_data_subsidio;
+        }
+        return $dels;
+    }
 
 
     public function elimina_bd(int $id): array
