@@ -79,7 +79,7 @@ class nom_nomina extends modelo
         }
 
         $id_nom_percepcion = $modelo->id_registro_estado_subsidio($r_nom_percepcion);
-        if (errores::$error) {
+        if (errores::$error || $id_nom_percepcion === -1) {
             return $this->error->error(mensaje: 'Error no existe una percepcion activa',data:  $id_nom_percepcion);
         }
 
