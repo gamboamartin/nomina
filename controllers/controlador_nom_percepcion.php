@@ -9,19 +9,10 @@
 namespace gamboamartin\nomina\controllers;
 
 use gamboamartin\errores\errores;
-use gamboamartin\system\links_menu;
 use gamboamartin\system\system;
 use gamboamartin\template\html;
-use html\cat_sat_moneda_html;
-use html\com_cliente_html;
-use html\com_producto_html;
-use html\com_sucursal_html;
-use html\em_empleado_html;
 use html\nom_percepcion_html;
-use models\com_cliente;
-use models\com_producto;
-use models\com_sucursal;
-use models\em_empleado;
+use links\secciones\link_nom_percepcion;
 use models\nom_percepcion;
 use PDO;
 use stdClass;
@@ -30,12 +21,16 @@ class controlador_nom_percepcion extends system {
 
     public function __construct(PDO $link, html $html = new \gamboamartin\template_1\html(),
                                 stdClass $paths_conf = new stdClass()){
-        $modelo = new nom_percepcion(link: $link, html: $html);
+        $modelo = new nom_percepcion(link: $link);
         $html_ = new nom_percepcion_html(html: $html);
-        $obj_link = new links_menu($this->registro_id);
+        $obj_link = new link_nom_percepcion($this->registro_id);
+        $this->rows_lista[] = 'aplica_subsidio';
         parent::__construct(html:$html_, link: $link,modelo:  $modelo, obj_link: $obj_link, paths_conf: $paths_conf);
 
         $this->titulo_lista = 'Percepcion';
+        $this->acciones->aplica_subsidio = new stdClass();
+        $this->acciones->aplica_subsidio->style = '';
+        $this->acciones->aplica_subsidio->style_status = true;
     }
 
     public function alta(bool $header, bool $ws = false): array|string
@@ -85,6 +80,43 @@ class controlador_nom_percepcion extends system {
         $data->inputs = $inputs;
 
         return $data;
+    }
+
+    public function cambiar_estado_subsidio(bool $header, bool $ws): array|stdClass
+    {
+        $modelo = new nom_percepcion(link: $this->link);
+
+        $r_nom_percepcion = $modelo->registro_estado_subsidio();
+        if (errores::$error) {
+            return $this->errores->error(mensaje: 'Error al obtener percepcion',data:  $r_nom_percepcion);
+        }
+
+        $id_nom_percepcion = $modelo->id_registro_estado_subsidio($r_nom_percepcion);
+        if (errores::$error) {
+            return $this->errores->error(mensaje: 'Error al obtener el id de percepcion',data:  $id_nom_percepcion);
+        }
+
+        if ($id_nom_percepcion !== -1) {
+            $this->link->beginTransaction();
+            $upd = $this->modelo->status('aplica_subsidio', $id_nom_percepcion);
+            if(errores::$error){
+                $this->link->rollBack();
+                return $this->retorno_error(mensaje: 'Error al modificar registro', data: $upd,header:  $header, ws: $ws);
+            }
+            $this->link->commit();
+        }
+
+        $this->link->beginTransaction();
+        $upd = $this->modelo->status('aplica_subsidio', $this->registro_id);
+        if(errores::$error){
+            $this->link->rollBack();
+            return $this->retorno_error(mensaje: 'Error al modificar registro', data: $upd,header:  $header, ws: $ws);
+        }
+        $this->link->commit();
+
+        $_SESSION['exito'][]['mensaje'] = 'Se ajusto el estatus de manera el registro con el id '.$this->registro_id;
+        $this->header_out(result: $upd, header: $header,ws:  $ws);
+        return $upd;
     }
 
 }
