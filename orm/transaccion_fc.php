@@ -721,6 +721,30 @@ class transaccion_fc{
         return $isr;
     }
 
+    /**
+     * @throws JsonException
+     */
+    private function transacciona_isr_subsidio(nominas $mod_nominas, int $nom_nomina_id): array|stdClass
+    {
+        $transacciones_deduccion_isr = $this->transacciona_isr_por_nomina(mod_nominas: $mod_nominas, nom_nomina_id: $nom_nomina_id);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al integrar deducciones isr',
+                data: $transacciones_deduccion_isr);
+        }
+        $transacciones_otro_pago_subsidio = $this->transacciona_subsidio_por_nomina(
+            mod_nominas: $mod_nominas, nom_nomina_id: $nom_nomina_id);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al integrar otros pagos subsidio',
+                data: $transacciones_otro_pago_subsidio);
+        }
+
+        $data = new stdClass();
+        $data->isr = $transacciones_deduccion_isr;
+        $data->otro_pago = $transacciones_otro_pago_subsidio;
+        return $data;
+
+    }
+
     private function transacciona_subsidio_por_nomina(nominas $mod_nominas, int $nom_nomina_id): float|array
     {
         $subsidio = (new calculo_subsidio())->calcula_subsidio_por_nomina(link:$mod_nominas->link, nom_nomina_id: $nom_nomina_id);
@@ -741,10 +765,6 @@ class transaccion_fc{
             }
             if($data_existe->existe){
 
-                /*$elimina_deducciones = $this->elimina_otro_pago(filtro: $data_existe->filtro, link: $mod_nominas->link);
-                if(errores::$error){
-                    return $this->error->error(mensaje: 'Error al eliminar deducciones', data: $elimina_deducciones);
-                }*/
 
                 $elimina_deducciones = $this->elimina_otro_pago_0(filtro: $data_existe->filtro, link: $mod_nominas->link);
                 if(errores::$error){
@@ -761,22 +781,15 @@ class transaccion_fc{
      */
     public function transacciones_por_nomina(nominas $mod_nominas, int $nom_nomina_id): array|stdClass
     {
-        $transacciones_deduccion_isr = $this->transacciona_isr_por_nomina(mod_nominas: $mod_nominas, nom_nomina_id: $nom_nomina_id);
+        $transacciones_deduccion_isr_subsidio = $this->transacciona_isr_subsidio(mod_nominas: $mod_nominas,nom_nomina_id:  $nom_nomina_id);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al integrar deducciones isr',
-                data: $transacciones_deduccion_isr);
+                data: $transacciones_deduccion_isr_subsidio);
         }
         $transacciones_deduccion_imss = $this->transacciona_imss_por_nomina(mod_nominas: $mod_nominas,nom_nomina_id: $nom_nomina_id);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al integrar deducciones imss',
                 data: $transacciones_deduccion_imss);
-        }
-
-        $transacciones_otro_pago_subsidio = $this->transacciona_subsidio_por_nomina(
-            mod_nominas: $mod_nominas, nom_nomina_id: $nom_nomina_id);
-        if (errores::$error) {
-            return $this->error->error(mensaje: 'Error al integrar otros pagos subsidio',
-                data: $transacciones_otro_pago_subsidio);
         }
 
         $fc_partida_upd = $this->actualiza_fc_partida_factura(link: $mod_nominas->link, nom_nomina_id: $nom_nomina_id);
@@ -785,9 +798,9 @@ class transaccion_fc{
         }
 
         $data = new stdClass();
-        $data->isr = $transacciones_deduccion_isr;
+        $data->isr = $transacciones_deduccion_isr_subsidio->isr;
         $data->imss = $transacciones_deduccion_imss;
-        $data->otro_pago = $transacciones_otro_pago_subsidio;
+        $data->otro_pago = $transacciones_deduccion_isr_subsidio->otro_pago;
         $data->fc_partida = $fc_partida_upd;
         return $data;
     }
