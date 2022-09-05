@@ -71,9 +71,21 @@ class nom_nomina extends modelo
             return $this->error->error(mensaje: 'Error al insertar nomina', data: $r_alta_bd);
         }
 
+        $modelo = new nom_percepcion(link: $this->link);
+
+        $r_nom_percepcion = $modelo->registro_estado_subsidio();
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al obtener percepcion',data:  $r_nom_percepcion);
+        }
+
+        $id_nom_percepcion = $modelo->id_registro_estado_subsidio($r_nom_percepcion);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error no existe una percepcion activa',data:  $id_nom_percepcion);
+        }
+
         $nom_par_percepcion_ins = array();
         $nom_par_percepcion_ins['nom_nomina_id'] = $r_alta_bd->registro_id;
-        $nom_par_percepcion_ins['nom_percepcion_id'] = 1;
+        $nom_par_percepcion_ins['nom_percepcion_id'] = $id_nom_percepcion;
         $nom_par_percepcion_ins['importe_gravado'] = $registros_cfd_partida['valor_unitario'] * $registros_cfd_partida['cantidad'];
 
         $r_alta_nom_par_percepcion = (new nom_par_percepcion($this->link))->alta_registro(registro: $nom_par_percepcion_ins);
