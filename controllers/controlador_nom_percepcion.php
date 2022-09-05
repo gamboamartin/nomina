@@ -30,7 +30,7 @@ class controlador_nom_percepcion extends system {
 
     public function __construct(PDO $link, html $html = new \gamboamartin\template_1\html(),
                                 stdClass $paths_conf = new stdClass()){
-        $modelo = new nom_percepcion(link: $link);
+        $modelo = new nom_percepcion(link: $link, html: $html);
         $html_ = new nom_percepcion_html(html: $html);
         $obj_link = new links_menu($this->registro_id);
         parent::__construct(html:$html_, link: $link,modelo:  $modelo, obj_link: $obj_link, paths_conf: $paths_conf);
@@ -53,6 +53,7 @@ class controlador_nom_percepcion extends system {
         }
         return $r_alta;
     }
+
 
     public function modifica(bool $header, bool $ws = false, string $breadcrumbs = '', bool $aplica_form = true,
                              bool $muestra_btn = true): array|string
