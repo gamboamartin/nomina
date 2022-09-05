@@ -135,8 +135,6 @@ class controlador_nom_nomina extends system
         if (isset($_GET['nom_par_otro_pago_id'])){
             $this->nom_par_otro_pago_id = $_GET['nom_par_otro_pago_id'];
         }
-
-        print_r($this->registro_id);
     }
 
     public function alta(bool $header, bool $ws = false): array|string
