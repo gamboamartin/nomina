@@ -27,7 +27,20 @@ class nom_periodo extends nominas_confs {
         return $r_alta_bd;
     }
 
-    public function get_empleados(int $im_registro_patronal_id){
+    /**
+     * Obtiene un conjunto de empleados de un registro patronal
+     * @param int $im_registro_patronal_id Registro patronal integrado
+     * @return array
+     * @version 0.242.7
+     */
+    public function get_empleados(int $im_registro_patronal_id): array
+    {
+
+        if($im_registro_patronal_id<=0){
+            return $this->error->error(mensaje: 'Error $im_registro_patronal_id debe ser mayor a 0',
+                data: $im_registro_patronal_id);
+        }
+
         $filtro['im_registro_patronal.id'] = $im_registro_patronal_id;
 
         $r_empleados = (new em_empleado($this->link))->filtro_and(filtro: $filtro);

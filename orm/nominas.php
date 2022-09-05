@@ -39,7 +39,7 @@ class nominas extends modelo {
             return $this->error->error(mensaje: 'Error al integrar deducciones', data: $transacciones);
         }
 
-        
+
 
 
         return $r_alta_bd;
