@@ -176,6 +176,29 @@ class transaccion_fc{
         return $elimina_deducciones;
     }
 
+    /**
+     * @throws JsonException
+     */
+    private function ejecuta_isr(float $isr, nominas $mod_nominas, int $nom_nomina_id): array|stdClass
+    {
+        $transaccion = array();
+        if($isr>0.0){
+            $transaccion = $this->aplica_deduccion(mod_nominas: $mod_nominas, monto: $isr, nom_deduccion_id: 1,
+                nom_nomina_id:  $nom_nomina_id);
+            if(errores::$error){
+                return $this->error->error(mensaje: 'Error al generar transaccion', data: $transaccion);
+            }
+        }
+        elseif($isr<=0.0){
+            $transaccion = $this->del_nodo(mod_nominas: $mod_nominas, nom_nomina_id: $nom_nomina_id);
+            if(errores::$error){
+                return $this->error->error(mensaje: 'Error al eliminar deducciones', data: $transaccion);
+            }
+        }
+
+        return $transaccion;
+    }
+
 
 
     /**
@@ -718,20 +741,11 @@ class transaccion_fc{
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al obtener isr', data: $isr);
         }
-        if($isr>0.0){
-            $transaccion = $this->aplica_deduccion(mod_nominas: $mod_nominas, monto: (float)$isr, nom_deduccion_id: 1,
-                nom_nomina_id:  $nom_nomina_id);
-            if(errores::$error){
-                return $this->error->error(mensaje: 'Error al generar transaccion', data: $transaccion);
-            }
+        $transaccion = $this->ejecuta_isr(isr: $isr,mod_nominas:  $mod_nominas, nom_nomina_id: $nom_nomina_id);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al generar transaccion', data: $transaccion);
         }
-        elseif($isr<=0.0){
-            $elimina_deducciones = $this->del_nodo(mod_nominas: $mod_nominas, nom_nomina_id: $nom_nomina_id);
-            if(errores::$error){
-                return $this->error->error(mensaje: 'Error al eliminar deducciones', data: $elimina_deducciones);
-            }
 
-        }
         return $isr;
     }
 
@@ -795,7 +809,8 @@ class transaccion_fc{
      */
     public function transacciones_por_nomina(nominas $mod_nominas, int $nom_nomina_id): array|stdClass
     {
-        $transacciones_deduccion_isr_subsidio = $this->transacciona_isr_subsidio(mod_nominas: $mod_nominas,nom_nomina_id:  $nom_nomina_id);
+        $transacciones_deduccion_isr_subsidio = $this->transacciona_isr_subsidio(
+            mod_nominas: $mod_nominas,nom_nomina_id:  $nom_nomina_id);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al integrar deducciones isr',
                 data: $transacciones_deduccion_isr_subsidio);
