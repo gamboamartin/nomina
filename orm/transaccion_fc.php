@@ -179,6 +179,26 @@ class transaccion_fc{
     /**
      * @throws JsonException
      */
+    private function del_nodo_0(nominas $mod_nominas, int $nom_nomina_id): array
+    {
+        $elimina_deducciones = array();
+        $data_existe = $mod_nominas->existe_data_deduccion(nom_deduccion_id:1, nom_nomina_id: $nom_nomina_id);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al validar si existe deduccion', data: $data_existe);
+        }
+        if($data_existe->existe){
+            $elimina_deducciones = $this->elimina_deduccion_0(filtro: $data_existe->filtro, link: $mod_nominas->link);
+            if(errores::$error){
+                return $this->error->error(mensaje: 'Error al eliminar deducciones', data: $elimina_deducciones);
+            }
+
+        }
+        return $elimina_deducciones;
+    }
+
+    /**
+     * @throws JsonException
+     */
     private function ejecuta_isr(float $isr, nominas $mod_nominas, int $nom_nomina_id): array|stdClass
     {
         $transaccion = array();
@@ -190,7 +210,7 @@ class transaccion_fc{
             }
         }
         elseif($isr<=0.0){
-            $transaccion = $this->del_nodo(mod_nominas: $mod_nominas, nom_nomina_id: $nom_nomina_id);
+            $transaccion = $this->del_nodo_0(mod_nominas: $mod_nominas, nom_nomina_id: $nom_nomina_id);
             if(errores::$error){
                 return $this->error->error(mensaje: 'Error al eliminar deducciones', data: $transaccion);
             }
@@ -273,6 +293,29 @@ class transaccion_fc{
         foreach ($r_nom_par_deduccion->registros as $par_deduccion) {
             $elimina_deduccion = (new nom_par_deduccion(link: $link))->elimina_bd(
                 id: $par_deduccion['nom_par_deduccion_id']);
+            if (errores::$error) {
+                return $this->error->error(mensaje: 'Error al eliminar deduccion', data: $elimina_deduccion);
+            }
+            $dels[] = $elimina_deduccion;
+        }
+        return $dels;
+    }
+
+    /**
+     * @throws JsonException
+     */
+    private function elimina_deduccion_0(array $filtro, PDO $link): array
+    {
+        $r_nom_par_deduccion = (new nom_par_deduccion(link: $link))->filtro_and(filtro: $filtro);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al obtener deduccion', data: $r_nom_par_deduccion);
+        }
+        $dels = array();
+        foreach ($r_nom_par_deduccion->registros as $par_deduccion) {
+            $nom_par_deduccion['importe_exento'] = 0;
+            $nom_par_deduccion['importe_gravado'] = 0;
+            $elimina_deduccion = (new nom_par_deduccion(link: $link))->modifica_bd(
+                registro: $nom_par_deduccion, id: $par_deduccion['nom_par_deduccion_id']);
             if (errores::$error) {
                 return $this->error->error(mensaje: 'Error al eliminar deduccion', data: $elimina_deduccion);
             }
