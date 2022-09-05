@@ -4,6 +4,7 @@ namespace models;
 
 use base\orm\modelo;
 use gamboamartin\errores\errores;
+use JsonException;
 use PDO;
 use stdClass;
 
@@ -348,6 +349,23 @@ class nom_nomina extends modelo
         return $r_nom_par_deduccion->registros;
     }
 
+    /**
+     * @throws JsonException
+     */
+    private function del_partida(string $name_model, array $row): array
+    {
+        $modelo = $this->genera_modelo(modelo: $name_model);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al generar modelo', data: $modelo);
+        }
+        $key_id = $name_model.'_id';
+        $del = $modelo->elimina_bd(id: $row[$key_id]);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al eliminar registro', data: $del);
+        }
+        return $del;
+    }
+
     private function descripcion_nomina(int $em_empleado_id, array $registro): array|string
     {
         $em_empleado = (new em_empleado($this->link))->registro(registro_id: $em_empleado_id, retorno_obj: true);
@@ -371,19 +389,19 @@ class nom_nomina extends modelo
         }
 
         foreach ($data->percepciones as $percepcion){
-            $del = (new nom_par_percepcion($this->link))->elimina_bd(id: $percepcion['nom_par_percepcion_id']);
+            $del = $this->del_partida(name_model: 'nom_par_percepcion',row: $percepcion);
             if(errores::$error){
                 return $this->error->error(mensaje: 'Error al eliminar percepciones', data: $del);
             }
         }
         foreach ($data->deduccion as $deduccion){
-            $del = (new nom_par_deduccion($this->link))->elimina_bd(id: $deduccion['nom_par_deduccion_id']);
+            $del = $this->del_partida(name_model: 'nom_par_deduccion',row: $deduccion);
             if(errores::$error){
                 return $this->error->error(mensaje: 'Error al eliminar percepciones', data: $del);
             }
         }
         foreach ($data->otros_pagos as $otro_pago){
-            $del = (new nom_par_otro_pago($this->link))->elimina_bd(id: $otro_pago['nom_par_otro_pago_id']);
+            $del = $this->del_partida(name_model: 'nom_par_otro_pago',row: $otro_pago);
             if(errores::$error){
                 return $this->error->error(mensaje: 'Error al eliminar otros pagos', data: $del);
             }
