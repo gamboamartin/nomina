@@ -156,6 +156,26 @@ class transaccion_fc{
         return $transaccion;
     }
 
+    /**
+     * @throws JsonException
+     */
+    private function del_nodo(nominas $mod_nominas, int $nom_nomina_id): array
+    {
+        $elimina_deducciones = array();
+        $data_existe = $mod_nominas->existe_data_deduccion(nom_deduccion_id:1, nom_nomina_id: $nom_nomina_id);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al validar si existe deduccion', data: $data_existe);
+        }
+        if($data_existe->existe){
+            $elimina_deducciones = $this->elimina_deduccion(filtro: $data_existe->filtro, link: $mod_nominas->link);
+            if(errores::$error){
+                return $this->error->error(mensaje: 'Error al eliminar deducciones', data: $elimina_deducciones);
+            }
+
+        }
+        return $elimina_deducciones;
+    }
+
 
 
     /**
@@ -706,15 +726,9 @@ class transaccion_fc{
             }
         }
         elseif($isr<=0.0){
-            $data_existe = $mod_nominas->existe_data_deduccion(nom_deduccion_id:1, nom_nomina_id: $nom_nomina_id);
+            $elimina_deducciones = $this->del_nodo(mod_nominas: $mod_nominas, nom_nomina_id: $nom_nomina_id);
             if(errores::$error){
-                return $this->error->error(mensaje: 'Error al validar si existe deduccion', data: $data_existe);
-            }
-            if($data_existe->existe){
-                $elimina_deducciones = $this->elimina_deduccion(filtro: $data_existe->filtro, link: $mod_nominas->link);
-                if(errores::$error){
-                    return $this->error->error(mensaje: 'Error al eliminar deducciones', data: $elimina_deducciones);
-                }
+                return $this->error->error(mensaje: 'Error al eliminar deducciones', data: $elimina_deducciones);
             }
 
         }
@@ -726,7 +740,8 @@ class transaccion_fc{
      */
     private function transacciona_isr_subsidio(nominas $mod_nominas, int $nom_nomina_id): array|stdClass
     {
-        $transacciones_deduccion_isr = $this->transacciona_isr_por_nomina(mod_nominas: $mod_nominas, nom_nomina_id: $nom_nomina_id);
+        $transacciones_deduccion_isr = $this->transacciona_isr_por_nomina(
+            mod_nominas: $mod_nominas, nom_nomina_id: $nom_nomina_id);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al integrar deducciones isr',
                 data: $transacciones_deduccion_isr);
@@ -764,7 +779,6 @@ class transaccion_fc{
                 return $this->error->error(mensaje: 'Error al validar si existe deduccion', data: $data_existe);
             }
             if($data_existe->existe){
-
 
                 $elimina_deducciones = $this->elimina_otro_pago_0(filtro: $data_existe->filtro, link: $mod_nominas->link);
                 if(errores::$error){
