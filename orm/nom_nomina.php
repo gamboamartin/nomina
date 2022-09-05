@@ -20,7 +20,7 @@ class nom_nomina extends modelo
             cat_sat_periodicidad_pago_nom'=>$tabla,'im_registro_patronal'=>$tabla);
 
         $campos_obligatorios = array('cat_sat_periodicidad_pago_nom_id','em_cuenta_bancaria_id','fecha_inicial_pago',
-            'fecha_final_pago','num_dias_pagados','im_registro_patronal_id','em_empleado_id');
+            'fecha_final_pago','num_dias_pagados','im_registro_patronal_id','em_empleado_id','nom_periodo_id');
 
         parent::__construct(link: $link, tabla: $tabla, campos_obligatorios: $campos_obligatorios,
             columnas: $columnas);
