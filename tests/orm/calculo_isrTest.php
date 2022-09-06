@@ -17,6 +17,7 @@ use models\nom_nomina;
 use models\nom_par_deduccion;
 use models\nom_par_otro_pago;
 use models\nom_par_percepcion;
+use models\nom_periodo;
 use stdClass;
 
 
@@ -120,6 +121,28 @@ class calculo_isrTest extends test {
             exit;
         }
 
+        $del_nom_periodo = (new nom_periodo($this->link))->elimina_todo();
+        if(errores::$error){
+            $error = (new errores())->error(mensaje: 'Error al eliminar $del_nom_periodo', data: $del_nom_periodo);
+            print_r($error);
+            exit;
+        }
+
+        $nom_periodo = array();
+        $nom_periodo['id'] = 1;
+        $nom_periodo['codigo'] = 1;
+        $nom_periodo['descripcion'] = 1;
+        $nom_periodo['cat_sat_periodicidad_pago_nom_id'] = 1;
+        $nom_periodo['im_registro_patronal_id'] = 1;
+        $nom_periodo['nom_tipo_periodo_id'] = 1;
+
+        $alta_periodo = (new nom_periodo($this->link))->alta_registro($nom_periodo);
+        if(errores::$error){
+            $error = (new errores())->error(mensaje: 'Error al insertar periodo ', data: $alta_periodo);
+            print_r($error);
+            exit;
+        }
+
 
 
         $nom_nomina = array();
@@ -134,6 +157,7 @@ class calculo_isrTest extends test {
         $nom_nomina['descuento'] = 1;
         $nom_nomina['cat_sat_periodicidad_pago_nom_id'] = 1;
         $nom_nomina['em_cuenta_bancaria_id'] = 1;
+        $nom_nomina['nom_periodo_id'] = 1;
 
         $alta_nomina = (new nom_nomina($this->link))->alta_registro($nom_nomina);
         if(errores::$error){

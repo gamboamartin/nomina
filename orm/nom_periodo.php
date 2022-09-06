@@ -10,7 +10,7 @@ class nom_periodo extends nominas_confs {
     public function __construct(PDO $link){
         $tabla = __CLASS__;
         $columnas = array($tabla=>false, );
-        $campos_obligatorios = array();
+        $campos_obligatorios = array('cat_sat_periodicidad_pago_nom_id','im_registro_patronal_id','nom_tipo_periodo_id');
 
         parent::__construct(link: $link,tabla:  $tabla, campos_obligatorios: $campos_obligatorios,
             columnas: $columnas);

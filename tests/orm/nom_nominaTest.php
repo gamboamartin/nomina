@@ -15,6 +15,7 @@ use models\nom_nomina;
 use models\nom_par_deduccion;
 use models\nom_par_otro_pago;
 use models\nom_par_percepcion;
+use models\nom_periodo;
 use stdClass;
 
 
@@ -401,6 +402,13 @@ class nom_nominaTest extends test {
             exit;
         }
 
+        $del_nom_par_otro_pago = (new nom_par_otro_pago($this->link))->elimina_todo();
+        if(errores::$error){
+            $error = (new errores())->error(mensaje: 'Error al eliminar $del_nom_par_otro_pago', data: $del_nom_par_otro_pago);
+            print_r($error);
+            exit;
+        }
+
         $del_nom_nomina = $nomina->elimina_todo();
         if(errores::$error){
             $error = (new errores())->error(mensaje: 'Error al eliminar $nom_nomina', data: $del_nom_nomina);
@@ -423,6 +431,29 @@ class nom_nominaTest extends test {
             exit;
         }
 
+        $del_nom_periodo = (new nom_periodo($this->link))->elimina_todo();
+        if(errores::$error){
+            $error = (new errores())->error(mensaje: 'Error al eliminar nom periodo', data: $del_nom_periodo);
+            print_r($error);
+            exit;
+        }
+
+        $nom_periodo = array();
+        $nom_periodo['id'] = 1;
+        $nom_periodo['codigo'] = 1;
+        $nom_periodo['descripcion'] = 1;
+        $nom_periodo['cat_sat_periodicidad_pago_nom_id'] = 1;
+        $nom_periodo['im_registro_patronal_id'] = 1;
+        $nom_periodo['nom_tipo_periodo_id'] = 1;
+
+
+        $alta_nom_periodo = (new nom_periodo($this->link))->alta_registro($nom_periodo);
+        if(errores::$error){
+            $error = (new errores())->error(mensaje: 'Error al insertar periodo', data: $alta_nom_periodo);
+            print_r($error);
+            exit;
+        }
+
 
         $nom_nomina = array();
         $nom_nomina['id'] = 1;
@@ -436,6 +467,7 @@ class nom_nominaTest extends test {
         $nom_nomina['fecha_final_pago'] = '2022-01-01';
         $nom_nomina['num_dias_pagados'] = '1';
         $nom_nomina['descuento'] = '0';
+        $nom_nomina['nom_periodo_id'] = 1;
 
         $alta_nom_nomina = $nomina->alta_registro($nom_nomina);
         if(errores::$error){

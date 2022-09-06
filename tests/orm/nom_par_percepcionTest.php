@@ -120,6 +120,7 @@ class nom_par_percepcionTest extends test {
         $nom_nomina['fecha_final_pago'] = '2022-01-01';
         $nom_nomina['num_dias_pagados'] = '1';
         $nom_nomina['descuento'] = '0';
+        $nom_nomina['nom_periodo_id'] = 1;
 
         $alta_nom_nomina = $nom_nomina_modelo->alta_registro($nom_nomina);
         if(errores::$error){
