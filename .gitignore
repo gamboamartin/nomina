@@ -53,4 +53,5 @@ vendor/
 archivos
 .idea
 .idea/*
+.phpunit.result.cache
 
