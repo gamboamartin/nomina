@@ -72,6 +72,7 @@ class nom_nomina_html extends html_controler
         $controler->inputs->select->cat_sat_periodicidad_pago_nom_id = $inputs->selects->cat_sat_periodicidad_pago_nom_id;
         $controler->inputs->select->em_cuenta_bancaria_id = $inputs->selects->em_cuenta_bancaria_id;
         $controler->inputs->select->nom_periodo_id = $inputs->selects->nom_periodo_id;
+        $controler->inputs->select->org_puesto_id = $inputs->selects->org_puesto_id;
         $controler->inputs->codigo = $inputs->texts->codigo;
         $controler->inputs->codigo_bis = $inputs->texts->codigo_bis;
         $controler->inputs->rfc = $inputs->texts->rfc;
@@ -394,6 +395,14 @@ class nom_nomina_html extends html_controler
     {
         $selects = new stdClass();
 
+        $cols_im_org_puesto_id = $params->org_puesto_id->cols ?? 6;
+
+        $select = (new org_puesto_html(html: $this->html_base))->select_org_puesto_id(
+            cols: $cols_im_org_puesto_id, con_registros: true, id_selected: -1, link: $link);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al generar select', data: $select);
+        }
+        $selects->org_puesto_id = $select;
 
         $cols_im_registro_patronal_id = $params->im_registro_patronal_id->cols ?? 6;
 
@@ -412,7 +421,7 @@ class nom_nomina_html extends html_controler
         }
         $selects->nom_periodo_id = $select;
 
-        $cols_em_empleado_id = $params->em_empleado_id->cols ?? 6;
+        $cols_em_empleado_id = $params->em_empleado_id->cols ?? 12;
         $select = (new em_empleado_html(html: $this->html_base))->select_em_empleado_id(
             cols: $cols_em_empleado_id, con_registros: true, id_selected: -1, link: $link);
         if (errores::$error) {
