@@ -425,8 +425,16 @@ class nominas extends modelo {
         return $filtro;
     }
 
+    /**
+     * Obtiene las partidas de una nomina
+     * @param int $nom_nomina_id Identificador de nomina
+     * @return array
+     */
     public function get_by_nomina(int $nom_nomina_id): array
     {
+        if($nom_nomina_id<=0){
+            return $this->error->error(mensaje: 'Error $nom_nomina_id debe ser mayor a 0',data: $nom_nomina_id);
+        }
         $filtro['nom_nomina.id'] = $nom_nomina_id;
         $r_nominas = $this->filtro_and(filtro: $filtro);
         if(errores::$error){

@@ -217,6 +217,25 @@ class nominasTest extends test {
         errores::$error = false;
     }
 
+    public function test_get_by_nomina(): void{
+        errores::$error = false;
+
+        $_GET['seccion'] = 'cat_sat_tipo_persona';
+        $_GET['accion'] = 'lista';
+        $_SESSION['grupo_id'] = 1;
+        $_GET['session_id'] = '1';
+        $nominas = new nom_par_percepcion($this->link);
+        //$nominas = new liberator($nominas);
+
+
+        $nom_nomina_id = 1;
+
+        $resultado = $nominas->get_by_nomina($nom_nomina_id);
+        $this->assertIsArray($resultado);
+        $this->assertNotTrue(errores::$error);
+        errores::$error = false;
+    }
+
     public function test_nom_par_deduccion_aut(): void{
         errores::$error = false;
 
