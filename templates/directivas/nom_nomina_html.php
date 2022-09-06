@@ -398,7 +398,7 @@ class nom_nomina_html extends html_controler
         $cols_im_org_puesto_id = $params->org_puesto_id->cols ?? 6;
 
         $select = (new org_puesto_html(html: $this->html_base))->select_org_puesto_id(
-            cols: $cols_im_org_puesto_id, con_registros: true, id_selected: -1, link: $link);
+            cols: $cols_im_org_puesto_id, con_registros: true, id_selected: -1, link: $link, disabled: true);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al generar select', data: $select);
         }
