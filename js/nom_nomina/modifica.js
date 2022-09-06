@@ -19,7 +19,7 @@ let txt_subtotal = $('#subtotal');
 
 $(function() {
 
-    let parent_id = $('#id').parent().addClass('w-25 mw-25').parent().removeClass('col-sm-4').addClass('col-sm-12')
+    //let parent_id = $('#id').parent().addClass('w-25 mw-25').parent().removeClass('col-sm-4').addClass('col-sm-4')
 
 
     //let selected = sl_nom_empleado.find('option:selected');

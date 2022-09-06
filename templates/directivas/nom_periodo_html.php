@@ -245,19 +245,25 @@ class nom_periodo_html extends html_controler {
     {
         $texts = new stdClass();
 
-        $in_fecha_inicial_pago = $this->input_fecha_inicial_pago(cols: 6, row_upd: $row_upd, value_vacio: $value_vacio);
+        $row_upd->fecha_inicial_pago = date('Y-m-d');
+
+        $in_fecha_inicial_pago = $this->input_fecha_inicial_pago(cols: 6, row_upd: $row_upd, value_vacio: false);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al generar input', data: $in_fecha_inicial_pago);
         }
         $texts->fecha_inicial_pago = $in_fecha_inicial_pago;
 
-        $in_fecha_final_pago = $this->input_fecha_final_pago(cols: 6, row_upd: $row_upd, value_vacio: $value_vacio);
+        $row_upd->fecha_final_pago = date('Y-m-d');
+
+        $in_fecha_final_pago = $this->input_fecha_final_pago(cols: 6, row_upd: $row_upd, value_vacio: false);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al generar input', data: $in_fecha_final_pago);
         }
         $texts->fecha_final_pago = $in_fecha_final_pago;
 
-        $in_fecha_pago = $this->input_fecha_pago(cols: 6, row_upd: $row_upd, value_vacio: $value_vacio);
+        $row_upd->fecha_pago = date('Y-m-d');
+
+        $in_fecha_pago = $this->input_fecha_pago(cols: 6, row_upd: $row_upd, value_vacio: false);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al generar input', data: $in_fecha_pago);
         }

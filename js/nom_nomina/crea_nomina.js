@@ -7,6 +7,7 @@ let sl_cat_sat_periodicidad_pago_nom = $("#cat_sat_periodicidad_pago_nom_id");
 let sl_em_cuenta_bancaria_id = $("#em_cuenta_bancaria_id");
 let sl_nom_conf_empleado = $("#nom_conf_empleado_id");
 let sl_cat_sat_tipo_nomina = $("#cat_sat_tipo_nomina_id");
+let sl_org_puesto = $("#org_puesto_id");
 
 let txt_rfc = $('#rfc');
 let txt_curp = $('#curp');
@@ -33,6 +34,7 @@ sl_nom_empleado.change(function(){
     let salario_diario = selected.data('em_empleado_salario_diario');
     let salario_diario_integrado = selected.data('em_empleado_salario_diario_integrado');
     let fecha_inicio_rel_laboral  = selected.data('em_empleado_fecha_inicio_rel_laboral');
+    let org_puesto_id  = selected.data('em_empleado_org_puesto_id');
 
     txt_rfc.val(rfc);
     txt_curp.val(curp);
@@ -85,6 +87,7 @@ sl_nom_empleado.change(function(){
 
     sl_cat_sat_tipo_nomina.val("").change();
     sl_cat_sat_periodicidad_pago_nom.val("").change();
+    sl_org_puesto.val(org_puesto_id).change();
 });
 
 sl_nom_conf_empleado.change(function () {

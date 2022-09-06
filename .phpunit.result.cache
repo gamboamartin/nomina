@@ -1,0 +1,1 @@
+{"version":1,"defects":[],"times":{"tests\\controllers\\nom_nominaTest::test_alta_bd":0.273,"tests\\controllers\\nom_nominaTest::test_aplica_subsidio_percepcion":0.131,"tests\\controllers\\nom_nominaTest::test_deducciones":0.023}}
