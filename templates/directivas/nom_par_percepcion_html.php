@@ -116,10 +116,12 @@ class nom_par_percepcion_html extends html_controler {
 
     private function init_modifica(PDO $link, stdClass $row_upd, stdClass $params = new stdClass()): array|stdClass
     {
+
         $selects = $this->selects_modifica(link: $link, row_upd: $row_upd,params: $params);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al generar selects',data:  $selects);
         }
+        
 
         $texts = $this->texts_modifica(row_upd: $row_upd, value_vacio: false, params: $params);
         if(errores::$error){
@@ -172,6 +174,7 @@ class nom_par_percepcion_html extends html_controler {
 
     private function selects_modifica(PDO $link, stdClass $row_upd, stdClass $params = new stdClass()): array|stdClass
     {
+
         $cols_nom_nomina_id = $params->nom_nomina_id->cols ?? 6;
         $disabled_nom_nomina_id = $params->nom_nomina_id->disabled ?? false;
         $filtro_nom_nomina_id = $params->nom_nomina_id->filtro ?? array();
@@ -192,6 +195,7 @@ class nom_par_percepcion_html extends html_controler {
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al generar select',data:  $select);
         }
+
         $selects->nom_percepcion_id = $select;
 
         return $selects;
