@@ -32,6 +32,8 @@ use stdClass;
 
 class controlador_nom_periodo extends system {
 
+    public int $nom_periodo_id = -1;
+
     public function __construct(PDO $link, html $html = new \gamboamartin\template_1\html(),
                                 stdClass $paths_conf = new stdClass()){
         $modelo = new nom_periodo(link: $link);
@@ -47,6 +49,7 @@ class controlador_nom_periodo extends system {
             exit;
         }
         $this->keys_row_lista = $keys_row_lista;
+        $this->nom_periodo_id = $this->registro_id;
     }
 
     public function alta(bool $header, bool $ws = false): array|string
