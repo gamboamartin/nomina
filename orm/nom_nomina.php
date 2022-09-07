@@ -638,20 +638,21 @@ class nom_nomina extends modelo
             return $this->error->error(mensaje: 'Error al validar registro', data: $valida);
         }
 
-        $im_registro_patronal = $this->registro_por_id(new im_registro_patronal($this->link),
-            $this->registro['im_registro_patronal_id']);
+        $im_registro_patronal = $this->registro_por_id(entidad: new im_registro_patronal(link: $this->link),
+            id:  $this->registro['im_registro_patronal_id']);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al generar registros de registro patronal',
                 data: $im_registro_patronal);
         }
 
-        $fc_csd_id = $this->registro_por_id(new fc_csd($this->link),
-            $im_registro_patronal->im_registro_patronal_fc_csd_id);
+        $fc_csd_id = $this->registro_por_id(entidad: new fc_csd($this->link),
+            id: $im_registro_patronal->im_registro_patronal_fc_csd_id);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al generar registros de fcd', data: $fc_csd_id);
         }
 
-        $em_empleado = $this->registro_por_id(new em_empleado($this->link), $this->registro['em_empleado_id']);
+        $em_empleado = $this->registro_por_id(
+            entidad: new em_empleado($this->link), id: $this->registro['em_empleado_id']);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al generar registros de empleado ', data: $em_empleado);
         }
@@ -659,7 +660,7 @@ class nom_nomina extends modelo
         /**
          * REVBISAR HARDCODEO
          */
-        $nom_conf_empleado = $this->registro_por_id(new nom_conf_empleado($this->link), 1);
+        $nom_conf_empleado = $this->registro_por_id(entidad: new nom_conf_empleado($this->link), id: 1);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al generar registros de conf factura',
                 data: $nom_conf_empleado);
@@ -672,11 +673,9 @@ class nom_nomina extends modelo
         }
 
 
-        $registros = array('im_registro_patronal' => $im_registro_patronal, 'em_empleado' => $em_empleado,
+        return array('im_registro_patronal' => $im_registro_patronal, 'em_empleado' => $em_empleado,
             'fc_csd' => $fc_csd_id, 'nom_rel_empleado_sucursal' => $nom_rel_empleado_sucursal,
             'nom_conf_empleado' => $nom_conf_empleado);
-
-        return $registros;
     }
 
     private function genera_registro_factura(mixed $registros, mixed $empleado_sucursal, mixed $cat_sat): array
