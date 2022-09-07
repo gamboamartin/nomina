@@ -10,4 +10,10 @@
 <?php echo $controlador->inputs->fecha_inicial_pago; ?>
 <?php echo $controlador->inputs->fecha_final_pago; ?>
 <?php echo $controlador->inputs->fecha_pago; ?>
-<?php include (new views())->ruta_templates.'botons/submit/alta_bd_otro.php';?>
+<?php include (new views())->ruta_templates.'botons/submit/modifica_bd.php';?>
+<div class="control-group btn-modifica">
+    <div class="controls">
+        <?php include 'templates/botons/nom_periodo/procesa_nomina.php';?>
+    </div>
+</div>
+
