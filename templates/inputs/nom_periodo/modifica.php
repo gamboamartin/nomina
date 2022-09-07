@@ -7,6 +7,7 @@
 <?php echo $controlador->inputs->select->cat_sat_periodicidad_pago_nom_id; ?>
 <?php echo $controlador->inputs->select->im_registro_patronal_id; ?>
 <?php echo $controlador->inputs->select->nom_tipo_periodo_id; ?>
+<?php echo $controlador->inputs->select->cat_sat_tipo_nomina_id; ?>
 <?php echo $controlador->inputs->fecha_inicial_pago; ?>
 <?php echo $controlador->inputs->fecha_final_pago; ?>
 <?php echo $controlador->inputs->fecha_pago; ?>

@@ -22,6 +22,7 @@ class nom_periodo_html extends html_controler {
         $controler->inputs->select->cat_sat_periodicidad_pago_nom_id = $inputs->selects->cat_sat_periodicidad_pago_nom_id;
         $controler->inputs->select->im_registro_patronal_id = $inputs->selects->im_registro_patronal_id;
         $controler->inputs->select->nom_tipo_periodo_id = $inputs->selects->nom_tipo_periodo_id;
+        $controler->inputs->select->cat_sat_tipo_nomina_id = $inputs->selects->cat_sat_tipo_nomina_id;
         $controler->inputs->fecha_inicial_pago = $inputs->texts->fecha_inicial_pago;
         $controler->inputs->fecha_final_pago = $inputs->texts->fecha_final_pago;
         $controler->inputs->fecha_pago = $inputs->texts->fecha_pago;
@@ -200,11 +201,18 @@ class nom_periodo_html extends html_controler {
         $selects->im_registro_patronal_id = $select;
 
         $select = (new nom_tipo_periodo_html(html:$this->html_base))->select_nom_tipo_periodo_id(
-            cols: 12, con_registros:true, id_selected:-1,link: $link);
+            cols: 6, con_registros:true, id_selected:-1,link: $link);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al generar select',data:  $select);
         }
         $selects->nom_tipo_periodo_id = $select;
+
+        $select = (new cat_sat_tipo_nomina_html(html:$this->html_base))->select_cat_sat_tipo_nomina_id(
+            cols: 6, con_registros:true, id_selected:-1,link: $link);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al generar select',data:  $select);
+        }
+        $selects->cat_sat_tipo_nomina_id = $select;
 
         return $selects;
     }
@@ -235,11 +243,18 @@ class nom_periodo_html extends html_controler {
         $selects->im_registro_patronal_id = $select;
 
         $select = (new nom_tipo_periodo_html(html:$this->html_base))->select_nom_tipo_periodo_id(
-            cols: 12, con_registros:true, id_selected:$row_upd->nom_tipo_periodo_id,link: $link);
+            cols: 6, con_registros:true, id_selected:$row_upd->nom_tipo_periodo_id,link: $link);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al generar select',data:  $select);
         }
         $selects->nom_tipo_periodo_id = $select;
+
+        $select = (new cat_sat_tipo_nomina_html(html:$this->html_base))->select_cat_sat_tipo_nomina_id(
+            cols: 6, con_registros:true, id_selected:$row_upd->cat_sat_tipo_nomina_id,link: $link);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al generar select',data:  $select);
+        }
+        $selects->cat_sat_tipo_nomina_id = $select;
 
         return $selects;
     }

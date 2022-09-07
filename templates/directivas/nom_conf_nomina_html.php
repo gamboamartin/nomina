@@ -164,6 +164,7 @@ class nom_conf_nomina_html extends html_controler {
 
         $extra_params_keys[] = 'nom_conf_nomina_id';
         $extra_params_keys[] = 'nom_conf_nomina_cat_sat_periodicidad_pago_nom_id';
+        $extra_params_keys[] = 'nom_conf_nomina_cat_sat_tipo_nomina_id';
 
         $select = $this->select_catalogo(cols:$cols,con_registros:$con_registros,id_selected:$id_selected,
             modelo: $modelo, extra_params_keys:$extra_params_keys, label: 'Configuracion Nomina',required: $required);
