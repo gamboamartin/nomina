@@ -516,6 +516,12 @@ class nom_nomina extends modelo
         return isset($partida[$tabla.'_aplica_imss']);
     }
 
+    /**
+     * Verifica si existe un pago cargado para subsidio
+     * @param int $nom_nomina_id Nomina en ejecucion
+     * @return bool|array
+     * @version 0.281.8
+     */
     private function existe_otro_pago_subsidio(int $nom_nomina_id): bool|array
     {
         if($nom_nomina_id <=0 ){

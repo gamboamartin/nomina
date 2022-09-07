@@ -289,6 +289,60 @@ class nom_nominaTest extends test {
         errores::$error = false;
     }
 
+    public function test_existe_otro_pago_subsidio(): void
+    {
+        errores::$error = false;
+
+        $_GET['seccion'] = 'cat_sat_tipo_persona';
+        $_GET['accion'] = 'lista';
+        $_SESSION['grupo_id'] = 1;
+        $_SESSION['usuario_id'] = 2;
+        $_GET['session_id'] = '1';
+        $nomina = new nom_nomina($this->link);
+        $nomina = new liberator($nomina);
+
+
+        $del = (new nom_data_subsidio($this->link))->elimina_todo();
+        if(errores::$error){
+            $error = (new errores())->error('Error al eliminar', $del);
+            print_r($error);
+            exit;
+        }
+
+        $del = (new nom_par_otro_pago($this->link))->elimina_todo();
+        if(errores::$error){
+            $error = (new errores())->error('Error al eliminar', $del);
+            print_r($error);
+            exit;
+        }
+
+        $nom_nomina_id = 1;
+        $resultado = $nomina->existe_otro_pago_subsidio($nom_nomina_id);
+        $this->assertIsBool($resultado);
+        $this->assertNotTrue(errores::$error);
+        $this->assertNotTrue($resultado);
+
+
+        errores::$error = false;
+
+        $nom_otro_pago_ins['id'] = 1;
+        $nom_otro_pago_ins['nom_nomina_id'] = 1;
+        $nom_otro_pago_ins['nom_otro_pago_id'] = 2;
+        $alta = (new nom_par_otro_pago($this->link))->alta_registro($nom_otro_pago_ins);
+        if(errores::$error){
+            $error = (new errores())->error('Error al dar de alta otro pago', $alta);
+            print_r($error);
+            exit;
+        }
+
+
+
+        $nom_nomina_id = 1;
+        $resultado = $nomina->existe_otro_pago_subsidio($nom_nomina_id);
+
+        errores::$error = false;
+    }
+
     public function test_otros_pagos(): void
     {
         errores::$error = false;
