@@ -51,8 +51,16 @@ class controlador_nom_conf_factura extends system {
 
         $this->total_items_sections = 1;
 
-        $this->actions_number['alta'] = 1;
-        $this->actions_number['modifica'] = 1;
+
+
+        $this->actions_number['lista']['item'] = 1;
+        $this->actions_number['lista']['etiqueta'] = 'Nueva Configuracion';
+
+        $this->actions_number['alta']['item'] = 1;
+        $this->actions_number['alta']['etiqueta'] = 'Nueva Configuracion';
+
+        $this->actions_number['modifica']['item'] = 1;
+        $this->actions_number['modifica']['etiqueta'] = 'Nueva Configuracion';
 
 
         if(isset($this->actions_number[$this->accion])){
