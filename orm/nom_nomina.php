@@ -26,6 +26,25 @@ class nom_nomina extends modelo
             columnas: $columnas);
     }
 
+    private function ajusta_otro_pago_sub_base(int $nom_nomina_id): array|stdClass
+    {
+        $r_nom_par_otro_pago = new stdClass();
+        $existe_otro_pago_subsidio = $this->existe_otro_pago_subsidio(nom_nomina_id: $nom_nomina_id);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al validar si existe deduccion isr',data:  $existe_otro_pago_subsidio);
+        }
+        if(!$existe_otro_pago_subsidio){
+
+            $r_nom_par_otro_pago = ($this->inserta_otro_pago_sub_base(nom_nomina_id: $nom_nomina_id));
+            if(errores::$error){
+                return $this->error->error(mensaje: 'Error al dar de alta otro pago',data:  $r_nom_par_otro_pago);
+            }
+
+        }
+
+        return $r_nom_par_otro_pago;
+    }
+
     public function alta_bd(): array|stdClass
     {
         $registros = $this->genera_registros();
@@ -527,6 +546,21 @@ class nom_nomina extends modelo
             $em_empleado->em_empleado_rfc;
     }
 
+    private function genera_nom_par_otro_pago_ins(int $nom_nomina_id): array
+    {
+        $otro_pago_subsidio_id = (new nom_otro_pago($this->link))->nom_otro_pago_subsidio_id();
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al obtener pago subsidio',data:  $otro_pago_subsidio_id);
+        }
+
+        $nom_par_otro_pago_ins = $this->nom_par_otro_pago_ins_init(nom_nomina_id: $nom_nomina_id,
+            otro_pago_subsidio_id:$otro_pago_subsidio_id);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al maquetar otro pago',data:  $nom_par_otro_pago_ins);
+        }
+        return $nom_par_otro_pago_ins;
+    }
+
     public function get_descuento_nomina(int $fc_factura_id): float
     {
         $descuento = (new fc_factura($this->link))->get_descuento( fc_factura_id: $fc_factura_id);
@@ -770,6 +804,19 @@ class nom_nomina extends modelo
     }
 
 
+    private function inserta_otro_pago_sub_base(int $nom_nomina_id): array|stdClass
+    {
+        $nom_par_otro_pago_ins = $this->genera_nom_par_otro_pago_ins(nom_nomina_id: $nom_nomina_id);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al maquetar otro pago',data:  $nom_par_otro_pago_ins);
+        }
+
+        $r_nom_par_otro_pago = (new nom_par_otro_pago($this->link))->alta_registro(registro: $nom_par_otro_pago_ins);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al dar de alta otro pago',data:  $r_nom_par_otro_pago);
+        }
+        return $r_nom_par_otro_pago;
+    }
 
     private function inserta_partida(array $registro): array|stdClass
     {
@@ -831,29 +878,23 @@ class nom_nomina extends modelo
         return $r_modifica_bd;
     }
 
+    private function nom_par_otro_pago_ins_init(int $nom_nomina_id, int $otro_pago_subsidio_id): array
+    {
+        $nom_par_otro_pago_ins = array();
+        $nom_par_otro_pago_ins['nom_nomina_id'] = $nom_nomina_id;
+        $nom_par_otro_pago_ins['nom_otro_pago_id'] = $otro_pago_subsidio_id;
+        $nom_par_otro_pago_ins['importe_gravado'] = 0;
+        $nom_par_otro_pago_ins['importe_exento'] = 0;
+
+        return $nom_par_otro_pago_ins;
+    }
+
     private function otro_pago_subsidio(int $nom_nomina_id){
 
-        $existe_otro_pago_subsidio = $this->existe_otro_pago_subsidio(nom_nomina_id: $nom_nomina_id);
+
+        $r_nom_par_otro_pago = $this->ajusta_otro_pago_sub_base(nom_nomina_id: $nom_nomina_id);
         if(errores::$error){
-            return $this->error->error(mensaje: 'Error al validar si existe deduccion isr',data:  $existe_otro_pago_subsidio);
-        }
-        if(!$existe_otro_pago_subsidio){
-
-            $otro_pago_subsidio_id = (new nom_otro_pago($this->link))->nom_otro_pago_subsidio_id();
-            if(errores::$error){
-                return $this->error->error(mensaje: 'Error al obtener pago subsidio',data:  $otro_pago_subsidio_id);
-            }
-
-            $nom_par_otro_pago_ins = array();
-            $nom_par_otro_pago_ins['nom_nomina_id'] = $nom_nomina_id;
-            $nom_par_otro_pago_ins['nom_otro_pago_id'] = $otro_pago_subsidio_id;
-            $nom_par_otro_pago_ins['importe_gravado'] = 0;
-            $nom_par_otro_pago_ins['importe_exento'] = 0;
-            $r_nom_par_otro_pago = (new nom_par_otro_pago($this->link))->alta_registro(registro: $nom_par_otro_pago_ins);
-            if(errores::$error){
-                return $this->error->error(mensaje: 'Error al dar de alta otro pago',data:  $r_nom_par_otro_pago);
-            }
-
+            return $this->error->error(mensaje: 'Error al dar de alta otro pago',data:  $r_nom_par_otro_pago);
         }
 
         $filtro['nom_otro_pago.es_subsidio']  = 'activo';
