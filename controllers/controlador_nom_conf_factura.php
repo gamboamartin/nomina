@@ -64,7 +64,7 @@ class controlador_nom_conf_factura extends system {
 
 
         if(isset($this->actions_number[$this->accion])){
-            $this->number_active = $this->actions_number[$this->accion];
+            $this->number_active = $this->actions_number[$this->accion]['item'];
         }
     }
 
