@@ -380,9 +380,7 @@ class nom_nomina extends modelo
         return $r_nom_par_deduccion->registros;
     }
 
-    /**
-     * @throws JsonException
-     */
+
     private function del_data_modelo(stdClass $data): array
     {
         $dels_model = array();
@@ -396,9 +394,7 @@ class nom_nomina extends modelo
         return $dels_model;
     }
 
-    /**
-     * @throws JsonException
-     */
+
     private function del_partida(string $name_model, array $row): array
     {
         $modelo = $this->genera_modelo(modelo: $name_model);
@@ -413,9 +409,7 @@ class nom_nomina extends modelo
         return $del;
     }
 
-    /**
-     * @throws JsonException
-     */
+
     private function del_partidas(array $datas, string $name_model): array
     {
         $dels = array();
@@ -458,9 +452,7 @@ class nom_nomina extends modelo
         return $r_elimina_bd;
     }
 
-    /**
-     * @throws JsonException
-     */
+
     private function elimina_partidas(int $nom_nomina_id): array
     {
         $data = $this->get_partidas(nom_nomina_id: $nom_nomina_id);

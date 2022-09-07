@@ -276,9 +276,7 @@ class nominas extends modelo {
         return $data_existe;
     }
 
-    /**
-     * @throws JsonException
-     */
+
     protected function del_data_subsidio(array $nom_datas_subsidios): array
     {
         $dels = array();

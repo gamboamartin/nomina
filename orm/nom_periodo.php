@@ -124,12 +124,12 @@ class nom_periodo extends nominas_confs {
         $registros['em_cuenta_bancaria_id'] = 1;
         $registros['folio'] = rand();
         $registros['fecha'] = $nom_periodo['nom_periodo_fecha_pago'];
-        $registros['cat_sat_tipo_nomina_id'] = 1;
+        $registros['cat_sat_tipo_nomina_id'] = $nom_periodo['nom_periodo_cat_sat_tipo_nomina_id'];
         $registros['cat_sat_periodicidad_pago_nom_id'] = $nom_periodo['nom_periodo_cat_sat_periodicidad_pago_nom_id'];
         $registros['fecha_pago'] =$nom_periodo['nom_periodo_fecha_pago'];
         $registros['fecha_inicial_pago'] = $nom_periodo['nom_periodo_fecha_inicial_pago'];
         $registros['fecha_final_pago'] = $nom_periodo['nom_periodo_fecha_final_pago'];
-        $registros['num_dias_pagados'] = 15;
+        $registros['num_dias_pagados'] = $nom_periodo['cat_sat_periodicidad_pago_nom_n_dias'];
         $registros['nom_periodo_id'] = $nom_periodo['nom_periodo_id'];
         $registros['descuento'] = 0;
 
