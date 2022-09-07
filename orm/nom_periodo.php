@@ -20,8 +20,18 @@ class nom_periodo extends nominas_confs {
     public function alta_bd(): array|stdClass
     {
 
+        if(!isset($this->registro['codigo_bis'])){
+            $this->registro['codigo_bis'] = strtoupper($this->registro['codigo']);
+        }
+
         if(!isset($this->registro['descripcion_select'])){
             $this->registro['descripcion_select'] = strtoupper($this->registro['descripcion']);
+        }
+
+        $this->registro = $this->limpia_campos(registro: $this->registro,
+            campos_limpiar: array('nom_conf_nomina_id'));
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al limpiar campos', data: $this->registro);
         }
 
         $r_alta_bd = parent::alta_bd();
@@ -117,6 +127,16 @@ class nom_periodo extends nominas_confs {
         $registros['descuento'] = 0;
 
         return $registros;
+    }
+
+    private function limpia_campos(array $registro, array $campos_limpiar): array
+    {
+        foreach ($campos_limpiar as $valor) {
+            if (isset($registro[$valor])) {
+                unset($registro[$valor]);
+            }
+        }
+        return $registro;
     }
 
     public function modifica_bd(array $registro, int $id, bool $reactiva = false): array|stdClass

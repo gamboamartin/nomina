@@ -1,7 +1,7 @@
 <?php /** @var  \gamboamartin\nomina\controllers\controlador_nom_periodo $controlador  controlador en ejecucion */ ?>
 <?php use config\views; ?>
 <?php echo $controlador->inputs->codigo; ?>
-<?php echo $controlador->inputs->codigo_bis; ?>
+<?php echo $controlador->inputs->select->nom_conf_nomina_id; ?>
 <?php echo $controlador->inputs->descripcion; ?>
 <?php echo $controlador->inputs->select->cat_sat_periodicidad_pago_nom_id; ?>
 <?php echo $controlador->inputs->select->im_registro_patronal_id; ?>
