@@ -185,6 +185,7 @@ class nominasTest extends test {
         $nom_conf_empleado_ins['descripcion'] = 1;
         $nom_conf_empleado_ins['em_empleado_id'] = 1;
         $nom_conf_empleado_ins['nom_conf_nomina_id'] = 1;
+        $nom_conf_empleado_ins['descripcion_select'] = 1;
 
 
         $alta = (new nom_conf_empleado($this->link))->alta_registro($nom_conf_empleado_ins);
