@@ -146,9 +146,6 @@ class nom_nominaTest extends test {
 
     }
 
-
-
-
     public function test_aplica_subsidio_percepcion(): void
     {
         errores::$error = false;
@@ -196,8 +193,6 @@ class nom_nominaTest extends test {
         $this->assertTrue($resultado);
         errores::$error = false;
     }
-
-
 
     public function test_deducciones(): void
     {
@@ -267,10 +262,6 @@ class nom_nominaTest extends test {
 
     }
 
-
-
-
-
     public function test_existe_key_imss(): void
     {
         errores::$error = false;
@@ -297,12 +288,6 @@ class nom_nominaTest extends test {
         $this->assertTrue($resultado);
         errores::$error = false;
     }
-
-
-
-
-
-
 
     public function test_otros_pagos(): void
     {
@@ -364,8 +349,6 @@ class nom_nominaTest extends test {
 
         errores::$error = false;
     }
-
-
 
     public function test_total_gravado(): void
     {
@@ -534,6 +517,34 @@ class nom_nominaTest extends test {
         $this->assertIsFloat($resultado);
         $this->assertNotTrue(errores::$error);
         $this->assertEquals(600.35, $resultado);
+
+        errores::$error = false;
+
+        $del = (new nom_par_percepcion($this->link))->elimina_todo();
+        if(errores::$error){
+            $error = (new errores())->error(mensaje: 'Error al eliminar', data: $del);
+            print_r($error);
+            exit;
+        }
+
+        $nom_par_percepcion = array();
+        $nom_par_percepcion['id'] = 1;
+        $nom_par_percepcion['nom_nomina_id'] = 1;
+        $nom_par_percepcion['importe_gravado'] = 3000.0000;
+        $nom_par_percepcion['nom_percepcion_id'] = 1;
+        $alta_nom_par_percepcion = $nom_par_percepcion_modelo->alta_registro($nom_par_percepcion);
+        if(errores::$error){
+            $error = (new errores())->error(mensaje: 'Error al insertar nom_par_percepcion', data: $alta_nom_par_percepcion);
+            print_r($error);
+            exit;
+        }
+
+        $nom_nomina_id = 1;
+
+        $resultado = $nomina->total_gravado($nom_nomina_id);
+        $this->assertIsFloat($resultado);
+        $this->assertNotTrue(errores::$error);
+        $this->assertEquals(3000, $resultado);
 
         errores::$error = false;
     }

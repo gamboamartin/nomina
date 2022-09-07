@@ -310,6 +310,19 @@ class calculo_isrTest extends test {
         $this->assertIsFloat($resultado);
         $this->assertNotTrue(errores::$error);
         $this->assertEquals(40.0, $resultado);
+
+        errores::$error = false;
+
+
+        $monto = 3000;
+        $row_isr = new stdClass();
+        $row_isr->cat_sat_isr_limite_inferior = 2699.41;
+        $resultado = $calculo->diferencia_li($monto, $row_isr);
+        $this->assertIsFloat($resultado);
+        $this->assertNotTrue(errores::$error);
+        $this->assertEquals(300.59, $resultado);
+
+
         errores::$error = false;
     }
 
@@ -380,6 +393,18 @@ class calculo_isrTest extends test {
         $this->assertIsObject($resultado);
         $this->assertNotTrue(errores::$error);
         $this->assertEquals(1, $resultado->cat_sat_isr_id);
+
+        errores::$error = false;
+
+        $monto = 3000;
+        $cat_sat_periodicidad_pago_nom_id = 3;
+        $resultado = $calculo->get_isr($cat_sat_periodicidad_pago_nom_id, $this->link, $monto);
+        $this->assertIsObject($resultado);
+        $this->assertNotTrue(errores::$error);
+        $this->assertEquals(2699.41, $resultado->cat_sat_isr_limite_inferior);
+        $this->assertEquals(10.88, $resultado->cat_sat_isr_porcentaje_excedente);
+
+
         errores::$error = false;
     }
 
