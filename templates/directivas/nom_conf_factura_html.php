@@ -26,8 +26,20 @@ class nom_conf_factura_html extends html_controler {
         $controler->inputs->select->com_producto_id = $inputs->selects->com_producto_id;
         return $controler->inputs;
     }
+
+    /**
+     * Genera un boton para siguiente accion
+     * @param string $label Etiqueta del boton
+     * @param string $value Valor de boton de la siguiente accion
+     * @return array|string
+     * @version 0.272.8
+     */
     private function btn_next_action(string $label, string $value): array|string
     {
+        $valida  = $this->directivas->valida_data_base(label: $label,value:  $value);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al validar datos', data: $valida);
+        }
 
         $btn = $this->directivas->btn_action_next_div(label: $label, value: $value, cols: 12);
         if(errores::$error){
