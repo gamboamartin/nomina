@@ -3,11 +3,11 @@ let url = getAbsolutePath();
 let session_id = getParameterByName('session_id');
 
 let sl_cat_sat_periodicidad_pago_nom = $("#cat_sat_periodicidad_pago_nom_id");
+let sl_nom_conf_nomina = $("#nom_conf_nomina_id");
 
 let txt_fecha_inicial_pago = $('#fecha_inicial_pago');
 let txt_fecha_final_pago = $('#fecha_final_pago');
-
-
+let txt_fecha_pago = $('#fecha_pago');
 
 sl_cat_sat_periodicidad_pago_nom.change(function(){
     let selected = $(this).find('option:selected');
@@ -21,7 +21,7 @@ sl_cat_sat_periodicidad_pago_nom.change(function(){
          fechaFinal = fecha(txt_fecha_inicial_pago)
     }
     txt_fecha_final_pago.val(fechaFinal)
-
+    txt_fecha_pago.val(fechaFinal)
 });
 
 txt_fecha_inicial_pago.change(function() {
@@ -37,7 +37,19 @@ txt_fecha_inicial_pago.change(function() {
         fechaFinal = fecha(txt_fecha_inicial_pago, num_dias_pagados)
     }
     txt_fecha_final_pago.val(fechaFinal)
+    txt_fecha_pago.val(fechaFinal)
 });
+
+sl_nom_conf_nomina.change(function () {
+    let selected = $(this).find('option:selected');
+    let cat_sat_periodicidad_pago_nom_id = selected.data('nom_conf_nomina_cat_sat_periodicidad_pago_nom_id');
+
+    sl_cat_sat_periodicidad_pago_nom.val("").change();
+
+    if (selected !== "") {
+        sl_cat_sat_periodicidad_pago_nom.val(cat_sat_periodicidad_pago_nom_id).change();
+    }
+})
 
 
 let fecha = (fechaInicio, numDias = 1) => {

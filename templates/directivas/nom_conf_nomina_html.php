@@ -157,12 +157,16 @@ class nom_conf_nomina_html extends html_controler {
         return $selects;
     }
 
-    public function select_nom_conf_nomina(int $cols, bool $con_registros, int $id_selected, PDO $link): array|string
+    public function select_nom_conf_nomina(int $cols, bool $con_registros, int $id_selected, PDO $link,
+                                           bool $required = true): array|string
     {
         $modelo = new nom_conf_nomina(link: $link);
 
+        $extra_params_keys[] = 'nom_conf_nomina_id';
+        $extra_params_keys[] = 'nom_conf_nomina_cat_sat_periodicidad_pago_nom_id';
+
         $select = $this->select_catalogo(cols:$cols,con_registros:$con_registros,id_selected:$id_selected,
-            modelo: $modelo, label: 'Configuracion Nomina',required: true);
+            modelo: $modelo, extra_params_keys:$extra_params_keys, label: 'Configuracion Nomina',required: $required);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al generar select', data: $select);
         }
