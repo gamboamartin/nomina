@@ -136,6 +136,7 @@ class calculo_isrTest extends test {
         $nom_periodo['im_registro_patronal_id'] = 1;
         $nom_periodo['nom_tipo_periodo_id'] = 1;
 
+
         $alta_periodo = (new nom_periodo($this->link))->alta_registro($nom_periodo);
         if(errores::$error){
             $error = (new errores())->error(mensaje: 'Error al insertar periodo ', data: $alta_periodo);
