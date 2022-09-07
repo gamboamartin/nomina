@@ -838,7 +838,22 @@ class nom_nomina extends modelo
             return $this->error->error(mensaje: 'Error al validar si existe deduccion isr',data:  $existe_otro_pago_subsidio);
         }
         if(!$existe_otro_pago_subsidio){
-            return $this->error->error(mensaje: 'Error no existe otro pago subsidio',data:  $existe_otro_pago_subsidio);
+
+            $otro_pago_subsidio_id = (new nom_otro_pago($this->link))->nom_otro_pago_subsidio_id();
+            if(errores::$error){
+                return $this->error->error(mensaje: 'Error al obtener pago subsidio',data:  $otro_pago_subsidio_id);
+            }
+
+            $nom_par_otro_pago_ins = array();
+            $nom_par_otro_pago_ins['nom_nomina_id'] = $nom_nomina_id;
+            $nom_par_otro_pago_ins['nom_otro_pago_id'] = $otro_pago_subsidio_id;
+            $nom_par_otro_pago_ins['importe_gravado'] = 0;
+            $nom_par_otro_pago_ins['importe_exento'] = 0;
+            $r_nom_par_otro_pago = (new nom_par_otro_pago($this->link))->alta_registro(registro: $nom_par_otro_pago_ins);
+            if(errores::$error){
+                return $this->error->error(mensaje: 'Error al dar de alta otro pago',data:  $r_nom_par_otro_pago);
+            }
+
         }
 
         $filtro['nom_otro_pago.es_subsidio']  = 'activo';

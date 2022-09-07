@@ -2,6 +2,7 @@
 
 namespace models;
 
+use gamboamartin\errores\errores;
 use PDO;
 
 
@@ -16,6 +17,22 @@ class nom_otro_pago extends nominas_confs
 
         parent::__construct(link: $link, tabla: $tabla, campos_obligatorios: $campos_obligatorios,
             columnas: $columnas);
+    }
+
+    public function nom_otro_pago_subsidio_id(): array|int
+    {
+        $filtro['nom_otro_pago.es_subsidio'] = 'activo';
+        $r_nom_otro_pago = $this->filtro_and(filtro: $filtro);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al obtener pago subsidio',data:  $r_nom_otro_pago);
+        }
+        if($r_nom_otro_pago->n_registros === 0){
+            return $this->error->error(mensaje: 'Error no existe subsidio configurado',data:  $r_nom_otro_pago);
+        }
+        if($r_nom_otro_pago->n_registros > 1){
+            return $this->error->error(mensaje: 'Error existe subsidio mas de un subsidio',data:  $r_nom_otro_pago);
+        }
+        return (int)$r_nom_otro_pago->registros[0]['nom_otro_pago_id'];
     }
 
 
