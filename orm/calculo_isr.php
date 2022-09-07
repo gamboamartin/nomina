@@ -86,7 +86,6 @@ class calculo_isr{
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al calcular total gravado', data: $total_gravado);
         }
-
         if($total_gravado >0.0) {
             $isr = $this->isr_nomina(link:$link, nom_nomina_id: $nom_nomina_id,
                 total_gravado: $total_gravado);
@@ -96,6 +95,8 @@ class calculo_isr{
         }
         return $isr;
     }
+
+
 
 
 
@@ -210,6 +211,7 @@ class calculo_isr{
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al obtener diferencia limite inferior', data: $diferencia_li);
         }
+
 
         $cuota_excedente = $this->cuota_excedente_isr(diferencia_li: $diferencia_li,row_isr:  $row_isr);
         if(errores::$error){

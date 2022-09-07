@@ -784,6 +784,9 @@ class transaccion_fc{
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al obtener isr', data: $isr);
         }
+
+
+
         $transaccion = $this->ejecuta_isr(isr: $isr,mod_nominas:  $mod_nominas, nom_nomina_id: $nom_nomina_id);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al generar transaccion', data: $transaccion);

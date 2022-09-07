@@ -8,7 +8,7 @@ class nom_conf_empleado extends modelo{
     public function __construct(PDO $link){
         $tabla = __CLASS__;
         $columnas = array($tabla=>false,'em_empleado' => $tabla,'nom_conf_nomina' => $tabla,'nom_conf_factura' => 'nom_conf_nomina');
-        $campos_obligatorios = array();
+        $campos_obligatorios = array('em_empleado_id','nom_conf_nomina_id');
 
         parent::__construct(link: $link,tabla:  $tabla, campos_obligatorios: $campos_obligatorios,
             columnas: $columnas);

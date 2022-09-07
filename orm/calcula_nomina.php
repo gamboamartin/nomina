@@ -17,8 +17,48 @@ class calcula_nomina{
 
     }
 
+    public function calcula_impuestos_netos_por_nomina(PDO $link, int $nom_nomina_id): array|stdClass
+    {
+        if($nom_nomina_id <=0){
+            return  $this->error->error(mensaje: 'Error al obtener registro $nom_nomina_id debe ser mayor a 0',
+                data: $nom_nomina_id);
+        }
+        $impuestos = $this->calculos(link:$link, nom_nomina_id: $nom_nomina_id);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al obtener impuestos', data: $impuestos);
+        }
+
+        $monto_isr_bruto = round($impuestos->isr,2);
+        $monto_subsidio_bruto = round($impuestos->subsidio,2);
+
+        $monto_isr_neto = $monto_isr_bruto;
+        $monto_subsidio_neto = $monto_subsidio_bruto;
+
+        if($monto_isr_bruto >= $monto_subsidio_bruto){
+            $monto_isr_neto = round($monto_isr_bruto-$monto_subsidio_bruto,2);
+            $monto_subsidio_neto = 0;
+
+        }
+        if($monto_isr_bruto < $monto_subsidio_bruto){
+            $monto_isr_neto = 0;
+            $monto_subsidio_neto = round($monto_subsidio_bruto-$monto_isr_bruto,2);
+        }
+
+        $data = new stdClass();
+        $data->isr_neto = $monto_isr_neto;
+        $data->subsidio_neto = $monto_subsidio_neto;
+
+        return $data;
+
+
+    }
+
     public function calculos(PDO $link, int $nom_nomina_id): array|stdClass
     {
+        if($nom_nomina_id <=0){
+            return  $this->error->error(mensaje: 'Error al obtener registro $nom_nomina_id debe ser mayor a 0',
+                data: $nom_nomina_id);
+        }
         $isr = (new calculo_isr())->calcula_isr_por_nomina(link: $link,nom_nomina_id:  $nom_nomina_id);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al obtener isr',data:  $isr);

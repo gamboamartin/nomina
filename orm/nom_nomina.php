@@ -684,6 +684,9 @@ class nom_nomina extends modelo
 
     private function genera_registro_partida(mixed $fc_factura, mixed $em_empleado, mixed $conf_empleado) : array{
 
+        /**
+         * REFACTORIZAR
+         */
         $keys = array('num_dias_pagados','descuento');
         $valida = $this->validacion->valida_existencia_keys(keys: $keys,registro:  $this->registro);
         if(errores::$error){
@@ -961,7 +964,9 @@ class nom_nomina extends modelo
         $total_percepciones = round($r_nom_par_percepcion['total_importe_gravado'],2);
         $total_otros_pagos = round($r_nom_par_otro_pago['total_importe_gravado'],2);
 
+
         $total_gravado = $total_percepciones + $total_otros_pagos;
+
         return round($total_gravado, 2);
 
     }

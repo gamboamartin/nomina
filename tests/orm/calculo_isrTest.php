@@ -57,6 +57,8 @@ class calculo_isrTest extends test {
 
     }
 
+
+
     public function test_calcula_isr_nomina(): void
     {
         errores::$error = false;

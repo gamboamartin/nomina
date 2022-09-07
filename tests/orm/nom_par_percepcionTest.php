@@ -10,8 +10,10 @@ use models\em_cuenta_bancaria;
 use models\fc_cfd_partida;
 use models\fc_factura;
 use models\fc_partida;
+use models\nom_data_subsidio;
 use models\nom_nomina;
 use models\nom_par_deduccion;
+use models\nom_par_otro_pago;
 use models\nom_par_percepcion;
 use stdClass;
 
@@ -49,6 +51,12 @@ class nom_par_percepcionTest extends test {
         $em_cuenta_bancaria_modelo = new em_cuenta_bancaria($this->link);
 
 
+        $del_nom_data_subsidio = (new nom_data_subsidio($this->link))->elimina_todo();
+        if(errores::$error){
+            $error = (new errores())->error(mensaje: 'Error al eliminar $nom_nom_data_subsidio_modelo', data: $del_nom_data_subsidio);
+            print_r($error);
+            exit;
+        }
 
         $del_nom_par_percepcion = $nom_nom_par_percepcion_modelo->elimina_todo();
         if(errores::$error){
@@ -60,6 +68,13 @@ class nom_par_percepcionTest extends test {
         $del_nom_par_deduccion = $nom_nom_par_deduccion_modelo->elimina_todo();
         if(errores::$error){
             $error = (new errores())->error(mensaje: 'Error al eliminar $nom_nom_par_deduccion_modelo', data: $del_nom_par_deduccion);
+            print_r($error);
+            exit;
+        }
+
+        $del_nom_par_otro_pago = (new nom_par_otro_pago($this->link))->elimina_todo();
+        if(errores::$error){
+            $error = (new errores())->error(mensaje: 'Error al eliminar $nom_nom_par_otro_pago_modelo', data: $del_nom_par_otro_pago);
             print_r($error);
             exit;
         }
