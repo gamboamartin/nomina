@@ -40,11 +40,13 @@ class calculo_isr{
     }
 
     /**
-     * @param modelo $modelo
+     * VCalcula el isr basado en una partida
+     * @param nominas $modelo $modelo Modelo de integracion
      * @param int $partida_percepcion_id otro pago o percepcion id
      * @return float|array
+     * @version 0.278.8
      */
-    public function calcula_isr_nomina(modelo $modelo, int $partida_percepcion_id): float|array
+    public function calcula_isr_nomina(nominas $modelo, int $partida_percepcion_id): float|array
     {
         $nom_partida = $modelo->registro(registro_id:$partida_percepcion_id, retorno_obj: true);
         if(errores::$error){

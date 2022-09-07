@@ -196,9 +196,7 @@ class transaccion_fc{
         return $elimina_deducciones;
     }
 
-    /**
-     * @throws JsonException
-     */
+
     private function ejecuta_isr(float $isr, nominas $mod_nominas, int $nom_nomina_id): array|stdClass
     {
         $transaccion = array();
@@ -776,23 +774,24 @@ class transaccion_fc{
      * @param nominas $mod_nominas
      * @param int $nom_nomina_id
      * @return float|array
-     * @throws JsonException
+
      */
     private function transacciona_isr_por_nomina(nominas $mod_nominas, int $nom_nomina_id): float|array
     {
-        $isr = (new calculo_isr())->calcula_isr_por_nomina(link:$mod_nominas->link, nom_nomina_id: $nom_nomina_id);
+
+        $data_isr = (new calcula_nomina())->calcula_impuestos_netos_por_nomina(
+            link: $mod_nominas->link,nom_nomina_id:  $nom_nomina_id);
         if (errores::$error) {
-            return $this->error->error(mensaje: 'Error al obtener isr', data: $isr);
+            return $this->error->error(mensaje: 'Error al obtener isr', data: $data_isr);
         }
 
-
-
-        $transaccion = $this->ejecuta_isr(isr: $isr,mod_nominas:  $mod_nominas, nom_nomina_id: $nom_nomina_id);
+        $transaccion = $this->ejecuta_isr(
+            isr: $data_isr->isr_neto,mod_nominas:  $mod_nominas, nom_nomina_id: $nom_nomina_id);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al generar transaccion', data: $transaccion);
         }
 
-        return $isr;
+        return $data_isr->isr_neto;
     }
 
     /**
@@ -826,9 +825,16 @@ class transaccion_fc{
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al obtener isr', data: $subsidio);
         }
+        $data_isr = (new calcula_nomina())->calcula_impuestos_netos_por_nomina(link: $mod_nominas->link,
+            nom_nomina_id: $nom_nomina_id);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al obtener isr', data: $data_isr);
+        }
+
+
         if($subsidio>0.0){
-            $transaccion = $this->aplica_otro_pago(mod_nominas: $mod_nominas, monto: (float)$subsidio, nom_otro_pago_id: 2,
-                nom_nomina_id:  $nom_nomina_id);
+            $transaccion = $this->aplica_otro_pago(mod_nominas: $mod_nominas,
+                monto: (float)$data_isr->subsidio_neto, nom_otro_pago_id: 2, nom_nomina_id:  $nom_nomina_id);
             if(errores::$error){
                 return $this->error->error(mensaje: 'Error al generar transaccion', data: $transaccion);
             }

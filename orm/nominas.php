@@ -142,10 +142,6 @@ class nominas extends modelo {
             return $this->error->error(mensaje: 'Error al asignar importes', data: $registro);
         }
 
-        if((float)$registro['importe_gravado'] <= 0.0 && (float)$registro['importe_exento']<=0.0){
-            return $this->error->error(mensaje: 'Error ingrese un importe valido exento o gravado mayor a 0',
-                data: $registro);
-        }
 
 
         return $registro;
