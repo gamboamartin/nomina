@@ -20,6 +20,13 @@ class nom_periodo extends nominas_confs {
     public function alta_bd(): array|stdClass
     {
 
+        $keys = array('codigo','descripcion');
+
+        $valida = $this->validacion->valida_existencia_keys(keys: $keys, registro: $this->registro);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al validar registro', data: $valida);
+        }
+
         if(!isset($this->registro['codigo_bis'])){
             $this->registro['codigo_bis'] = strtoupper($this->registro['codigo']);
         }

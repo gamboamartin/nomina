@@ -8,6 +8,7 @@ use gamboamartin\nomina\controllers\controlador_nom_deduccion;
 
 use gamboamartin\nomina\controllers\controlador_nom_periodo;
 use gamboamartin\system\html_controler;
+use gamboamartin\validacion\validacion;
 use models\nom_deduccion;
 use models\nom_periodo;
 use PDO;
@@ -48,6 +49,15 @@ class nom_periodo_html extends html_controler {
     private function genera_inputs_modifica(controlador_nom_periodo $controler,PDO $link,
                                             stdClass $params = new stdClass()): array|stdClass
     {
+        $keys = array('cat_sat_periodicidad_pago_nom_id','im_registro_patronal_id','cat_sat_tipo_nomina_id',
+            'nom_tipo_periodo_id');
+
+        $valida = (new validacion())->valida_existencia_keys(keys: $keys, registro: $controler->row_upd);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al validar row upd',data:  $valida);
+        }
+
+
         $inputs = $this->init_modifica(link: $link, row_upd: $controler->row_upd, params: $params);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al generar inputs',data:  $inputs);
@@ -148,6 +158,15 @@ class nom_periodo_html extends html_controler {
 
     private function init_modifica(PDO $link, stdClass $row_upd, stdClass $params = new stdClass()): array|stdClass
     {
+        $keys = array('cat_sat_periodicidad_pago_nom_id','im_registro_patronal_id','cat_sat_tipo_nomina_id',
+            'nom_tipo_periodo_id');
+
+        $valida = (new validacion())->valida_existencia_keys(keys: $keys, registro: $row_upd);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al validar row upd',data:  $valida);
+        }
+
+
         $selects = $this->selects_modifica(link: $link, row_upd: $row_upd);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al generar selects',data:  $selects);
@@ -167,6 +186,15 @@ class nom_periodo_html extends html_controler {
     public function inputs_nom_periodo(controlador_nom_periodo $controlador,
                                        stdClass $params = new stdClass()): array|stdClass
     {
+
+        $keys = array('cat_sat_periodicidad_pago_nom_id','im_registro_patronal_id','cat_sat_tipo_nomina_id',
+            'nom_tipo_periodo_id');
+
+        $valida = (new validacion())->valida_existencia_keys(keys: $keys, registro: $controlador->row_upd);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al validar row upd',data:  $valida);
+        }
+
         $inputs = $this->genera_inputs_modifica(controler: $controlador,
             link: $controlador->link, params: $params);
         if(errores::$error){
@@ -219,6 +247,15 @@ class nom_periodo_html extends html_controler {
 
     private function selects_modifica(PDO $link, stdClass $row_upd): array|stdClass
     {
+
+        $keys = array('cat_sat_periodicidad_pago_nom_id','im_registro_patronal_id','cat_sat_tipo_nomina_id',
+            'nom_tipo_periodo_id');
+
+        $valida = (new validacion())->valida_existencia_keys(keys: $keys, registro: $row_upd);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al validar row upd',data:  $valida);
+        }
+
         $selects = new stdClass();
 
         $select = (new nom_conf_nomina_html(html:$this->html_base))->select_nom_conf_nomina(

@@ -19,6 +19,7 @@ use models\nom_nomina;
 use models\nom_par_deduccion;
 use models\nom_par_otro_pago;
 use models\nom_par_percepcion;
+use models\nom_periodo;
 use models\nom_rel_empleado_sucursal;
 use stdClass;
 
@@ -127,6 +128,13 @@ class calcula_nominaTest extends test {
             exit;
         }
 
+        $del = (new nom_periodo($this->link))->elimina_todo();
+        if(errores::$error){
+            $error = (new errores())->error(mensaje: 'Error al eliminar', data: $del);
+            print_r($error);
+            exit;
+        }
+
 
         $em_empleado_ins = array();
         $em_empleado_ins['id'] = 1;
@@ -194,6 +202,22 @@ class calcula_nominaTest extends test {
         $em_cuenta_bancaria_ins['descripcion_select'] = 1;
 
         $alta = (new em_cuenta_bancaria($this->link))->alta_registro($em_cuenta_bancaria_ins);
+        if(errores::$error){
+            $error = (new errores())->error('Error al dar de alta ', $alta);
+            print_r($error);
+            exit;
+        }
+
+        $nom_periodo_ins = array();
+        $nom_periodo_ins['id'] = 1;
+        $nom_periodo_ins['codigo'] = 1;
+        $nom_periodo_ins['descripcion'] = 1;
+        $nom_periodo_ins['cat_sat_periodicidad_pago_nom_id'] = 1;
+        $nom_periodo_ins['im_registro_patronal_id'] = 1;
+        $nom_periodo_ins['nom_tipo_periodo_id'] = 1;
+
+
+        $alta = (new nom_periodo($this->link))->alta_registro($nom_periodo_ins);
         if(errores::$error){
             $error = (new errores())->error('Error al dar de alta ', $alta);
             print_r($error);

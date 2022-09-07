@@ -87,6 +87,15 @@ class controlador_nom_periodo extends system {
             return $this->errores->error(mensaje: 'Error al generar template',data:  $r_modifica);
         }
 
+        $keys = array('cat_sat_periodicidad_pago_nom_id','im_registro_patronal_id','cat_sat_tipo_nomina_id',
+            'nom_tipo_periodo_id');
+
+        foreach ($keys as $key){
+            if(!isset($this->row_upd->$key)){
+                $this->row_upd->$key = -1;
+            }
+        }
+
         $inputs = (new nom_periodo_html(html: $this->html_base))->inputs_nom_periodo(
             controlador:$this, params: $params);
         if(errores::$error){
