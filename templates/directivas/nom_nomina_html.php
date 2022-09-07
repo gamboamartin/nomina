@@ -5,6 +5,7 @@ namespace html;
 use gamboamartin\errores\errores;
 use gamboamartin\nomina\controllers\controlador_nom_nomina;
 use gamboamartin\system\html_controler;
+use gamboamartin\validacion\validacion;
 use models\em_empleado;
 use models\fc_factura;
 use models\nom_nomina;
@@ -64,6 +65,16 @@ class nom_nomina_html extends html_controler
 
     private function asigna_inputs_crea_nomina(controlador_nom_nomina $controler, stdClass $inputs): array|stdClass
     {
+
+        $keys = array('cat_sat_periodicidad_pago_nom_id','cat_sat_tipo_nomina_id','em_cuenta_bancaria_id',
+            'em_empleado_id','im_registro_patronal_id','nom_periodo_id','nom_conf_empleado_id','org_puesto_id');
+
+        $valida = (new validacion())->valida_existencia_keys(keys:  $keys,registro: $inputs->selects,
+            valida_vacio: false);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al validar selects', data: $valida);
+        }
+
         $controler->inputs->select = new stdClass();
         $controler->inputs->select->im_registro_patronal_id = $inputs->selects->im_registro_patronal_id;
         $controler->inputs->select->em_empleado_id = $inputs->selects->em_empleado_id;
@@ -181,11 +192,29 @@ class nom_nomina_html extends html_controler
     private function genera_inputs_modifica(controlador_nom_nomina $controler, PDO $link,
                                             stdClass               $params = new stdClass()): array|stdClass
     {
+        $keys = array('cat_sat_tipo_nomina_id','em_empleado_id','im_registro_patronal_id','nom_conf_empleado_id',
+            'nom_periodo_id','org_puesto_id');
+
+        $valida = (new validacion())->valida_existencia_keys(keys:  $keys,registro: $controler->row_upd);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al validar row upd', data: $valida);
+        }
+
+
         $inputs = $this->init_modifica(link: $link, row_upd: $controler->row_upd, params: $params);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al generar inputs', data: $inputs);
-
         }
+
+        $keys = array('cat_sat_periodicidad_pago_nom_id','cat_sat_tipo_nomina_id','em_cuenta_bancaria_id',
+            'em_empleado_id','im_registro_patronal_id','nom_periodo_id','nom_conf_empleado_id','org_puesto_id');
+
+        $valida = (new validacion())->valida_existencia_keys(keys:  $keys,registro: $inputs->selects,
+            valida_vacio: false);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al validar selects', data: $valida);
+        }
+
         $inputs_asignados = $this->asigna_inputs_crea_nomina(controler: $controler, inputs: $inputs);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al asignar inputs', data: $inputs_asignados);
@@ -234,6 +263,15 @@ class nom_nomina_html extends html_controler
 
     private function init_modifica(PDO $link, stdClass $row_upd, stdClass $params = new stdClass()): array|stdClass
     {
+        $keys = array('cat_sat_tipo_nomina_id','em_empleado_id','im_registro_patronal_id','nom_conf_empleado_id',
+            'nom_periodo_id','org_puesto_id');
+
+        $valida = (new validacion())->valida_existencia_keys(keys:  $keys,registro: $row_upd);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al validar row upd', data: $valida);
+        }
+
+
         $selects = $this->selects_selects_modifica_crea_nomina(link: $link, row_upd: $row_upd, params: $params);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al generar selects', data: $selects);
@@ -253,6 +291,15 @@ class nom_nomina_html extends html_controler
     public function inputs_nom_nomina(controlador_nom_nomina $controlador, stdClass $params = new stdClass()):
     array|stdClass
     {
+
+        $keys = array('cat_sat_tipo_nomina_id','em_empleado_id','im_registro_patronal_id','nom_conf_empleado_id',
+            'nom_periodo_id','org_puesto_id');
+
+        $valida = (new validacion())->valida_existencia_keys(keys:  $keys,registro: $controlador->row_upd);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al validar row upd', data: $valida);
+        }
+
         $inputs = $this->genera_inputs_modifica(controler: $controlador,
             link: $controlador->link, params: $params);
         if (errores::$error) {
@@ -470,6 +517,14 @@ class nom_nomina_html extends html_controler
                                                           stdClass $params = new stdClass()): array|stdClass
     {
 
+        $keys = array('cat_sat_tipo_nomina_id','em_empleado_id','im_registro_patronal_id','nom_conf_empleado_id',
+            'nom_periodo_id','org_puesto_id');
+
+        $valida = (new validacion())->valida_existencia_keys(keys:  $keys,registro: $row_upd);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al validar row upd', data: $valida);
+        }
+
         $selects = new stdClass();
 
         $cols_im_registro_patronal_id = $params->im_registro_patronal_id->cols ?? 6;
@@ -530,11 +585,23 @@ class nom_nomina_html extends html_controler
 
         $cols_em_cuenta_bancaria_id = $params->em_cuenta_bancaria_id->cols ?? 12;
         $select = (new em_cuenta_bancaria_html(html: $this->html_base))->select_em_cuenta_bancaria_id(
-            cols: $cols_em_cuenta_bancaria_id, con_registros: true, id_selected: $row_upd->em_cuenta_bancaria_id, link: $link,filtro: $filtro);
+            cols: $cols_em_cuenta_bancaria_id, con_registros: true, id_selected: $row_upd->em_cuenta_bancaria_id,
+            link: $link,filtro: $filtro);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al generar select', data: $select);
         }
         $selects->em_cuenta_bancaria_id = $select;
+
+
+
+        $cols_org_puesto_id = $params->org_puesto_id->cols ?? 12;
+        $select = (new org_puesto_html(html: $this->html_base))->select_org_puesto_id(
+            cols: $cols_org_puesto_id, con_registros: true, id_selected: $row_upd->org_puesto_id, link: $link);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al generar select', data: $select);
+        }
+        $selects->org_puesto_id = $select;
+
 
         return $selects;
     }

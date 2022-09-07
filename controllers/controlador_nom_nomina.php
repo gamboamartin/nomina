@@ -160,6 +160,15 @@ class controlador_nom_nomina extends system
             return $this->errores->error(mensaje: 'Error al generar template', data: $r_modifica);
         }
 
+        $keys = array('cat_sat_tipo_nomina_id','em_empleado_id','im_registro_patronal_id','nom_conf_empleado_id',
+            'nom_periodo_id','org_puesto_id');
+
+        foreach ($keys as $key){
+            if(!isset($this->row_upd->$key)){
+                $this->row_upd->$key = -1;
+            }
+        }
+
         $inputs = (new nom_nomina_html(html: $this->html_base))->inputs_nom_nomina(
             controlador: $this, params: $params);
         if (errores::$error) {
