@@ -246,7 +246,6 @@ class nom_nomina extends modelo
         return $aplica_imss_bool;
     }
 
-
     /**
      * Verifica si aplica subsidio percepcion
      * @param int $nom_nomina_id Nomina a validar
@@ -359,8 +358,6 @@ class nom_nomina extends modelo
 
     }
 
-
-
     /**
      * Obtiene todas las deducciones de una nomina
      * @param int $nom_nomina_id Identificador de nomina
@@ -380,7 +377,6 @@ class nom_nomina extends modelo
         return $r_nom_par_deduccion->registros;
     }
 
-
     private function del_data_modelo(stdClass $data): array
     {
         $dels_model = array();
@@ -393,7 +389,6 @@ class nom_nomina extends modelo
         }
         return $dels_model;
     }
-
 
     private function del_partida(string $name_model, array $row): array
     {
@@ -408,7 +403,6 @@ class nom_nomina extends modelo
         }
         return $del;
     }
-
 
     private function del_partidas(array $datas, string $name_model): array
     {
@@ -439,6 +433,10 @@ class nom_nomina extends modelo
 
     public function elimina_bd(int $id): array
     {
+        $r_mom_momina = $this->registro(registro_id:  $id,columnas: array("nom_nomina_fc_factura_id"));
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al obtener los registros de la nomina', data: $r_mom_momina);
+        }
 
         $dels = $this->elimina_partidas(nom_nomina_id: $id);
         if(errores::$error){
@@ -449,9 +447,22 @@ class nom_nomina extends modelo
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al eliminar nomina', data: $r_elimina_bd);
         }
+
+        $elimina_Factura = $this->elimina_factura(factura_id: $r_mom_momina['nom_nomina_fc_factura_id']);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al eliminar la factura ligada a la monima', data: $elimina_Factura);
+        }
+
         return $r_elimina_bd;
     }
 
+    private function elimina_factura(int $factura_id) : array|stdClass{
+        $elimina_bd = (new fc_factura(link: $this->link))->elimina_bd($factura_id);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al eliminar factira', data: $elimina_bd);
+        }
+        return $elimina_bd;
+    }
 
     private function elimina_partidas(int $nom_nomina_id): array
     {
@@ -836,7 +847,6 @@ class nom_nomina extends modelo
         return implode($campos_asignar);
     }
 
-
     private function inserta_otro_pago_sub_base(int $nom_nomina_id): array|stdClass
     {
         $nom_par_otro_pago_ins = $this->genera_nom_par_otro_pago_ins(nom_nomina_id: $nom_nomina_id);
@@ -868,8 +878,6 @@ class nom_nomina extends modelo
         }
         return $r_alta_factura;
     }
-
-
 
     private function limpia_campos(array $registro, array $campos_limpiar): array
     {
