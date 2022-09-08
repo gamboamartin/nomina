@@ -17,7 +17,19 @@ class nom_conf_empleado_html extends html_controler {
     {
         $controler->inputs->select = new stdClass();
         $controler->inputs->select->em_empleado_id = $inputs->selects->em_empleado_id;
+        $controler->inputs->select->em_cuenta_bancaria_id = $inputs->selects->em_cuenta_bancaria_id;
         $controler->inputs->select->nom_conf_nomina_id = $inputs->selects->nom_conf_nomina_id;
+
+        return $controler->inputs;
+    }
+
+    private function asigna_modifica(controlador_nom_conf_empleado $controler, stdClass $inputs): array|stdClass
+    {
+        $controler->inputs->select = new stdClass();
+        $controler->inputs->select->em_empleado_id = $inputs->selects->em_empleado_id;
+        $controler->inputs->select->em_cuenta_bancaria_id = $inputs->selects->em_cuenta_bancaria_id;
+        $controler->inputs->select->nom_conf_nomina_id = $inputs->selects->nom_conf_nomina_id;
+        $controler->inputs->descripcion = $inputs->texts->descripcion;
 
         return $controler->inputs;
     }
@@ -45,7 +57,7 @@ class nom_conf_empleado_html extends html_controler {
             return $this->error->error(mensaje: 'Error al generar inputs',data:  $inputs);
 
         }
-        $inputs_asignados = $this->asigna_inputs(controler:$controler, inputs: $inputs);
+        $inputs_asignados = $this->asigna_modifica(controler:$controler, inputs: $inputs);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al asignar inputs',data:  $inputs_asignados);
         }
@@ -79,7 +91,7 @@ class nom_conf_empleado_html extends html_controler {
             return $this->error->error(mensaje: 'Error al generar selects',data:  $selects);
         }
 
-        $texts = $this->texts_alta(row_upd: $row_upd, value_vacio: false, params: $params);
+        $texts = $this->texts_modifica(row_upd: $row_upd, value_vacio: false, params: $params);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al generar texts',data:  $texts);
         }
@@ -112,6 +124,13 @@ class nom_conf_empleado_html extends html_controler {
         }
         $selects->em_empleado_id = $select;
 
+        $select = (new em_cuenta_bancaria_html(html:$this->html_base))->select_em_cuenta_bancaria_id(
+            cols: 6, con_registros:false, id_selected:-1,link: $link);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al generar select',data:  $select);
+        }
+        $selects->em_cuenta_bancaria_id = $select;
+
         $select = (new nom_conf_nomina_html(html:$this->html_base))->select_nom_conf_nomina(
             cols: 6, con_registros:true, id_selected:-1,link: $link);
         if(errores::$error){
@@ -119,20 +138,35 @@ class nom_conf_empleado_html extends html_controler {
         }
         $selects->nom_conf_nomina_id = $select;
 
-
         return $selects;
     }
 
     private function selects_modifica(PDO $link, stdClass $row_upd): array|stdClass
     {
+        $nom_conf_empleado = (new nom_conf_empleado(link: $link))->registro( registro_id: $row_upd->id,
+            columnas: array('em_empleado_id'));
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al obtener los registros de configuracion',
+                data: $nom_conf_empleado);
+        }
+
         $selects = new stdClass();
 
-        $select = (new em_empleado_html(html:$this->html_base))->select_em_empleado_id(
-            cols: 6, con_registros:true, id_selected:$row_upd->em_empleado_id,link: $link);
+        $filtro['em_empleado.id'] = $nom_conf_empleado['em_empleado_id'];
+        $select = (new em_empleado_html(html:$this->html_base))->select_em_empleado_id(cols: 8, con_registros:true,
+            id_selected:$nom_conf_empleado['em_empleado_id'],link: $link,filtro: $filtro,disabled: true);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al generar select',data:  $select);
         }
         $selects->em_empleado_id = $select;
+
+        $select = (new em_cuenta_bancaria_html(html: $this->html_base))->select_em_cuenta_bancaria_id(
+            cols: 6, con_registros: true, id_selected: $row_upd->em_cuenta_bancaria_id,
+            link: $link,filtro: $filtro);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al generar select',data:  $select);
+        }
+        $selects->em_cuenta_bancaria_id = $select;
 
         $select = (new nom_conf_nomina_html(html:$this->html_base))->select_nom_conf_nomina(
             cols: 6, con_registros:true, id_selected:$row_upd->nom_conf_nomina_id,link: $link);
@@ -168,6 +202,20 @@ class nom_conf_empleado_html extends html_controler {
     private function texts_alta(stdClass $row_upd, bool $value_vacio, stdClass $params = new stdClass()): array|stdClass
     {
         $texts = new stdClass();
+        return $texts;
+    }
+
+    private function texts_modifica(stdClass $row_upd, bool $value_vacio, stdClass $params = new stdClass()):
+    array|stdClass
+    {
+        $texts = new stdClass();
+
+        $in_descripcion = $this->input_descripcion(cols: 8, row_upd: $row_upd, value_vacio: $value_vacio);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al generar input', data: $in_descripcion);
+        }
+        $texts->descripcion = $in_descripcion;
+
         return $texts;
     }
 

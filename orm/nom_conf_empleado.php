@@ -3,16 +3,54 @@ namespace models;
 use base\orm\modelo;
 use gamboamartin\errores\errores;
 use PDO;
+use stdClass;
 
 class nom_conf_empleado extends modelo{
 
     public function __construct(PDO $link){
         $tabla = __CLASS__;
-        $columnas = array($tabla=>false,'em_empleado' => $tabla,'nom_conf_nomina' => $tabla,'nom_conf_factura' => 'nom_conf_nomina');
-        $campos_obligatorios = array('em_empleado_id','nom_conf_nomina_id','descripcion_select');
+        $columnas = array($tabla=>false,'em_cuenta_bancaria' => $tabla,'em_empleado'=>'em_cuenta_bancaria',
+            'nom_conf_nomina' => $tabla,'nom_conf_factura' => 'nom_conf_nomina');
+        $campos_obligatorios = array('em_cuenta_bancaria_id','nom_conf_nomina_id','codigo','descripcion');
 
         parent::__construct(link: $link,tabla:  $tabla, campos_obligatorios: $campos_obligatorios,
             columnas: $columnas);
+    }
+
+    public function alta_bd(): array|stdClass
+    {
+        $keys = array('codigo','descripcion');
+
+        $valida = $this->validacion->valida_existencia_keys(keys: $keys, registro: $this->registro);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al validar registro', data: $valida);
+        }
+
+        if(!isset($this->registro['codigo_bis'])){
+            $this->registro['codigo_bis'] = strtoupper($this->registro['codigo']);
+        }
+
+        if(!isset($this->registro['descripcion_select'])){
+            $this->registro['descripcion_select'] = strtoupper($this->registro['descripcion']);
+        }
+
+        $this->registro = $this->limpia_campos(registro: $this->registro,
+            campos_limpiar: array('em_empleado_id'));
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al limpiar campos', data: $this->registro);
+        }
+
+        return parent::alta_bd();
+    }
+
+    private function limpia_campos(array $registro, array $campos_limpiar): array
+    {
+        foreach ($campos_limpiar as $valor) {
+            if (isset($registro[$valor])) {
+                unset($registro[$valor]);
+            }
+        }
+        return $registro;
     }
 
     public function nom_conf_empleado(int $em_empleado_id, int $nom_conf_nomina_id){
