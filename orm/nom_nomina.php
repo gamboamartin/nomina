@@ -455,15 +455,51 @@ class nom_nomina extends modelo
 
     private function elimina_partidas(int $nom_nomina_id): array
     {
-        $data = $this->get_partidas(nom_nomina_id: $nom_nomina_id);
+
+        $dels = array();
+
+
+
+        $percepciones = (new nom_par_percepcion($this->link))->get_by_nomina(nom_nomina_id: $nom_nomina_id);
         if(errores::$error){
-            return $this->error->error(mensaje: 'Error al obtener partidas', data: $data);
+            return $this->error->error(mensaje: 'Error al obtener percepciones', data: $percepciones);
         }
 
-        $dels = $this->del_data_modelo(data: $data);
-        if(errores::$error){
-            return $this->error->error(mensaje: 'Error al eliminar datos', data: $dels);
+        foreach ($percepciones as $percepcion){
+            $del = (new nom_par_percepcion($this->link))->elimina_bd(id:$percepcion['nom_par_percepcion_id']);
+            if(errores::$error){
+                return $this->error->error(mensaje: 'Error al eliminar percepcion', data: $del);
+            }
+            $dels[] = $del;
         }
+
+        $otros_pagos = (new nom_par_otro_pago($this->link))->get_by_nomina(nom_nomina_id: $nom_nomina_id);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al obtener otros pagos', data: $otros_pagos);
+        }
+
+        foreach ($otros_pagos as $otro_pago){
+            $del = (new nom_par_otro_pago($this->link))->elimina_bd(id:$otro_pago['nom_par_otro_pago_id']);
+            if(errores::$error){
+                return $this->error->error(mensaje: 'Error al eliminar otro pago', data: $del);
+            }
+            $dels[] = $del;
+        }
+
+        $deducciones = (new nom_par_deduccion($this->link))->get_by_nomina(nom_nomina_id: $nom_nomina_id);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al obtener deducciones', data: $deducciones);
+        }
+
+        foreach ($deducciones as $deduccion){
+            $del = (new nom_par_deduccion($this->link))->elimina_bd(id:$deduccion['nom_par_deduccion_id']);
+            if(errores::$error){
+                return $this->error->error(mensaje: 'Error al eliminar deduccion', data: $del);
+            }
+            $dels[] = $del;
+        }
+
+
         return $dels;
     }
 
