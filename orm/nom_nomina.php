@@ -678,8 +678,7 @@ class nom_nomina extends modelo
 
     private function genera_registros(): array
     {
-
-        $keys = array('im_registro_patronal_id','em_empleado_id');
+        $keys = array('im_registro_patronal_id','em_empleado_id','nom_conf_empleado_id');
         $valida = $this->validacion->valida_ids(keys: $keys,registro:  $this->registro);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al validar registro', data: $valida);
@@ -698,16 +697,14 @@ class nom_nomina extends modelo
             return $this->error->error(mensaje: 'Error al generar registros de fcd', data: $fc_csd_id);
         }
 
-        $em_empleado = $this->registro_por_id(
-            entidad: new em_empleado($this->link), id: $this->registro['em_empleado_id']);
+        $em_empleado = $this->registro_por_id(entidad: new em_empleado($this->link),
+            id: $this->registro['em_empleado_id']);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al generar registros de empleado ', data: $em_empleado);
         }
 
-        /**
-         * REVBISAR HARDCODEO
-         */
-        $nom_conf_empleado = $this->registro_por_id(entidad: new nom_conf_empleado($this->link), id: 1);
+        $nom_conf_empleado = $this->registro_por_id(entidad: new nom_conf_empleado($this->link),
+            id: $this->registro['nom_conf_empleado_id']);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al generar registros de conf factura',
                 data: $nom_conf_empleado);
@@ -718,7 +715,6 @@ class nom_nomina extends modelo
             return $this->error->error(mensaje: 'Error al obtener sucursal de empleado para cfdi',
                 data: $nom_rel_empleado_sucursal);
         }
-
 
         return array('im_registro_patronal' => $im_registro_patronal, 'em_empleado' => $em_empleado,
             'fc_csd' => $fc_csd_id, 'nom_rel_empleado_sucursal' => $nom_rel_empleado_sucursal,
@@ -762,9 +758,6 @@ class nom_nomina extends modelo
 
     private function genera_registro_partida(mixed $fc_factura, mixed $em_empleado, mixed $conf_empleado) : array{
 
-        /**
-         * REFACTORIZAR
-         */
         $keys = array('num_dias_pagados','descuento');
         $valida = $this->validacion->valida_existencia_keys(keys: $keys,registro:  $this->registro);
         if(errores::$error){
@@ -777,12 +770,13 @@ class nom_nomina extends modelo
             return $this->error->error(mensaje: 'Error al validar registro', data: $valida);
         }
 
-
-        $codigo = "PN".$fc_factura->registro['fc_factura_id'];
-        $descripcion = "pago nomina".$fc_factura->registro['fc_factura_id'];
-        $descripcion_select = "PAGO NOMINA".$fc_factura->registro['fc_factura_id'];
-        $alias = "PN".$fc_factura->registro['fc_factura_id'];
-        $codigo_bis = "PN".$fc_factura->registro['fc_factura_id'];
+        $codigo = $this->genera_valor_campo(array($fc_factura->registro['fc_factura_id'], $conf_empleado->em_empleado_id,
+            $conf_empleado->em_cuenta_bancaria_id));
+        $descripcion = $this->genera_valor_campo(array($fc_factura->registro['fc_factura_id'], $conf_empleado->em_empleado_id,
+            $conf_empleado->em_cuenta_bancaria_id));
+        $codigo_bis = $codigo;
+        $descripcion_select = $descripcion;
+        $alias = $codigo.$descripcion;
         $com_producto_id = $conf_empleado->nom_conf_factura_com_producto_id;
         $cantidad = 1;
         $valor_unitario= $this->registro['num_dias_pagados'] * $em_empleado->em_empleado_salario_diario;

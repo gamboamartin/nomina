@@ -92,12 +92,7 @@ class controlador_nom_conf_empleado extends system {
 
     public function get_configuraciones_empleado(bool $header, bool $ws = true): array|stdClass
     {
-        $keys['nom_conf_empleado'] = array("id",'descripcion','codigo','alias','descripcion_select','codigo_bis');
-
-        $keys['em_empleado'] = array("id",'descripcion','codigo','alias','descripcion_select','codigo_bis',
-            'nombre', 'ap','am','rfc','curp','nss');
-
-        $keys['nom_conf_nomina'] = array("id",'descripcion','codigo','alias','descripcion_select','codigo_bis');
+        $keys['em_empleado'] = array("id");
 
         $salida = $this->get_out(header: $header,keys: $keys, ws: $ws);
         if(errores::$error){

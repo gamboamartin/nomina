@@ -65,6 +65,7 @@ sl_nom_empleado.change(function(){
         integra_new_option("#em_cuenta_bancaria_id",'Seleccione una cuenta bancaria','');
 
         $.each(data.registros, function( index, em_cuenta_bancaria ) {
+
             integra_new_option("#em_cuenta_bancaria_id",em_cuenta_bancaria.bn_banco_descripcion_select+' '+em_cuenta_bancaria.em_cuenta_bancaria_num_cuenta,em_cuenta_bancaria.em_cuenta_bancaria_id);
         });
 
@@ -75,6 +76,7 @@ sl_nom_empleado.change(function(){
 
     getData(url_conf,(data) => {
         sl_nom_conf_empleado.empty();
+
         integra_new_option("#nom_conf_empleado_id",'Seleccione una configuración','');
 
         $.each(data.registros, function( index, nom_conf_empleado ) {
