@@ -257,6 +257,114 @@ class calcula_nominaTest extends test {
 
     }
 
+    public function test_calculos(): void
+    {
+        errores::$error = false;
+
+        $_GET['seccion'] = 'cat_sat_tipo_persona';
+        $_GET['accion'] = 'lista';
+        $_SESSION['grupo_id'] = 1;
+        $_SESSION['usuario_id'] = 2;
+        $_GET['session_id'] = '1';
+        $calculo = new calcula_nomina();
+        //$calculo = new liberator($calculo);
+
+        $link = $this->link;
+
+        $del = (new nom_data_subsidio($this->link))->elimina_todo();
+        if(errores::$error){
+            $error = (new errores())->error('Error al eliminar', $del);
+            print_r($error);
+            exit;
+        }
+
+        $del = (new nom_par_percepcion($this->link))->elimina_todo();
+        if(errores::$error){
+            $error = (new errores())->error('Error al eliminar', $del);
+            print_r($error);
+            exit;
+        }
+
+        $del = (new nom_par_otro_pago($this->link))->elimina_todo();
+        if(errores::$error){
+            $error = (new errores())->error('Error al eliminar', $del);
+            print_r($error);
+            exit;
+        }
+
+        $del = (new nom_par_deduccion($this->link))->elimina_todo();
+        if(errores::$error){
+            $error = (new errores())->error('Error al eliminar', $del);
+            print_r($error);
+            exit;
+        }
+
+        $del = (new nom_nomina($this->link))->elimina_todo();
+        if(errores::$error){
+            $error = (new errores())->error('Error al eliminar', $del);
+            print_r($error);
+            exit;
+        }
+
+        $del = (new fc_partida($this->link))->elimina_todo();
+        if(errores::$error){
+            $error = (new errores())->error('Error al eliminar partida', $del);
+            print_r($error);
+            exit;
+        }
+
+        $del = (new fc_factura($this->link))->elimina_todo();
+        if(errores::$error){
+            $error = (new errores())->error('Error al eliminar factura', $del);
+            print_r($error);
+            exit;
+        }
+
+        $nom_nomina_ins['id'] = 1;
+        $nom_nomina_ins['im_registro_patronal_id'] = 1;
+        $nom_nomina_ins['em_empleado_id'] = 1;
+        $nom_nomina_ins['folio'] = 1;
+        $nom_nomina_ins['fecha'] = '2022-01-01';
+        $nom_nomina_ins['fecha_final_pago'] = '2022-01-01';
+        $nom_nomina_ins['fecha_inicial_pago'] = '2022-01-01';
+        $nom_nomina_ins['num_dias_pagados'] = 1;
+        $nom_nomina_ins['descuento'] = 0;
+        $nom_nomina_ins['cat_sat_periodicidad_pago_nom_id'] = 1;
+        $nom_nomina_ins['em_cuenta_bancaria_id'] = 1;
+        $nom_nomina_ins['nom_periodo_id'] = 1;
+
+        $alta = (new nom_nomina($this->link))->alta_registro($nom_nomina_ins);
+        if(errores::$error){
+            $error = (new errores())->error('Error al dar de alta nomina', $alta);
+            print_r($error);
+            exit;
+        }
+
+        $nom_par_percepcion['id'] = 1;
+        $nom_par_percepcion['nom_nomina_id'] = 1;
+        $nom_par_percepcion['nom_percepcion_id'] = 1;
+        $nom_par_percepcion['importe_gravado'] = 3000;
+        $alta = (new nom_par_percepcion($this->link))->alta_registro($nom_par_percepcion);
+        if(errores::$error){
+            $error = (new errores())->error('Error al dar de alta', $alta);
+            print_r($error);
+            exit;
+        }
+
+        $nom_nomina_id = 1;
+        $resultado = $calculo->calculos($link, $nom_nomina_id);
+
+
+
+        $this->assertIsObject($resultado);
+        $this->assertNotTrue(errores::$error);
+        $this->assertEquals(813.31,$resultado->isr);
+        $this->assertEquals(0,$resultado->subsidio);
+
+        errores::$error = false;
+
+    }
+
 
 
 

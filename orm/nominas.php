@@ -423,6 +423,7 @@ class nominas extends modelo {
      * Obtiene las partidas de una nomina
      * @param int $nom_nomina_id Identificador de nomina
      * @return array
+     * @version 0.287.9
      */
     public function get_by_nomina(int $nom_nomina_id): array
     {

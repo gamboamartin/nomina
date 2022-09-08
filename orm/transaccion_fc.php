@@ -794,9 +794,7 @@ class transaccion_fc{
         return $data_isr->isr_neto;
     }
 
-    /**
-     * @throws JsonException
-     */
+
     private function transacciona_isr_subsidio(nominas $mod_nominas, int $nom_nomina_id): array|stdClass
     {
         $transacciones_deduccion_isr = $this->transacciona_isr_por_nomina(
@@ -856,9 +854,7 @@ class transaccion_fc{
         return $subsidio;
     }
 
-    /**
-     * @throws JsonException
-     */
+
     public function transacciones_por_nomina(nominas $mod_nominas, int $nom_nomina_id): array|stdClass
     {
         $transacciones_deduccion_isr_subsidio = $this->transacciona_isr_subsidio(

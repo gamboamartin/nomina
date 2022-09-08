@@ -53,6 +53,13 @@ class calcula_nomina{
 
     }
 
+    /**
+     * Obtiene los calculos de isr y subsidio por nomina
+     * @param PDO $link Conexion a la base de datos
+     * @param int $nom_nomina_id Nomina en ejecucion
+     * @return array|stdClass
+     * @version 0.287.9
+     */
     public function calculos(PDO $link, int $nom_nomina_id): array|stdClass
     {
         if($nom_nomina_id <=0){
