@@ -228,6 +228,47 @@ class calcula_imssTest extends test {
         errores::$error = false;
     }
 
+    public function test_valida_exedente(): void
+    {
+        errores::$error = false;
+
+        $_GET['seccion'] = 'cat_sat_tipo_persona';
+        $_GET['accion'] = 'lista';
+        $_SESSION['grupo_id'] = 1;
+        $_GET['session_id'] = '1';
+        $calculo = new calcula_imss();
+        $calculo = new liberator($calculo);
+
+        $resultado = $calculo->valida_exedente();
+        $this->assertIsArray($resultado);
+        $this->assertTrue(errores::$error);
+        $this->assertStringContainsStringIgnoringCase('Error uma debe ser mayor a 0', $resultado['mensaje']);
+        errores::$error = false;
+
+        $calculo->monto_uma = 1;
+        $resultado = $calculo->valida_exedente();
+        $this->assertIsArray($resultado);
+        $this->assertTrue(errores::$error);
+        $this->assertStringContainsStringIgnoringCase('Error sbc debe ser mayor a 0', $resultado['mensaje']);
+        errores::$error = false;
+
+        $calculo->monto_uma = 1;
+        $calculo->sbc = 1;
+        $resultado = $calculo->valida_exedente();
+        $this->assertIsArray($resultado);
+        $this->assertTrue(errores::$error);
+        $this->assertStringContainsStringIgnoringCase('Error n_dias debe ser mayor a 0', $resultado['mensaje']);
+        errores::$error = false;
+
+        $calculo->monto_uma = 1;
+        $calculo->sbc = 1;
+        $calculo->n_dias = 1;
+        $resultado = $calculo->valida_exedente();
+        $this->assertIsBool($resultado);
+        $this->assertNotTrue(errores::$error);
+        errores::$error = false;
+    }
+
     public function test_valida_imss(): void
     {
         errores::$error = false;
