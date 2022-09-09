@@ -161,6 +161,7 @@ class calculo_isrTest extends test {
         $nom_nomina['cat_sat_periodicidad_pago_nom_id'] = 1;
         $nom_nomina['em_cuenta_bancaria_id'] = 1;
         $nom_nomina['nom_periodo_id'] = 1;
+        $nom_nomina['nom_conf_empleado_id'] = 1;
 
         $alta_nomina = (new nom_nomina($this->link))->alta_registro($nom_nomina);
         if(errores::$error){

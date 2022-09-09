@@ -10,6 +10,7 @@ use models\em_cuenta_bancaria;
 use models\fc_cfd_partida;
 use models\fc_factura;
 use models\fc_partida;
+use models\nom_conf_empleado;
 use models\nom_data_subsidio;
 use models\nom_nomina;
 use models\nom_par_deduccion;
@@ -102,6 +103,13 @@ class nom_par_otro_pagoTest extends test {
             exit;
         }
 
+        $del_nom_conf_empleado = (new nom_conf_empleado($this->link))->elimina_todo();
+        if(errores::$error){
+            $error = (new errores())->error(mensaje: 'Error al eliminar', data: $del_nom_conf_empleado);
+            print_r($error);
+            exit;
+        }
+
         $del_em_cuenta_bancaria = $em_cuenta_bancaria_modelo->elimina_todo();
         if(errores::$error){
             $error = (new errores())->error(mensaje: 'Error al eliminar em_cuenta_bancaria', data: $del_em_cuenta_bancaria);
@@ -125,6 +133,22 @@ class nom_par_otro_pagoTest extends test {
             exit;
         }
 
+        $nom_conf_empleado = array();
+        $nom_conf_empleado['id'] = 1;
+        $nom_conf_empleado['codigo'] = 1;
+        $nom_conf_empleado['descripcion'] = 1;
+        $nom_conf_empleado['em_cuenta_bancaria_id'] = 1;
+        $nom_conf_empleado['nom_conf_nomina_id'] = 1;
+
+
+
+        $alta = (new nom_conf_empleado($this->link))->alta_registro($nom_conf_empleado);
+        if(errores::$error){
+            $error = (new errores())->error(mensaje: 'Error al insertar', data: $alta);
+            print_r($error);
+            exit;
+        }
+
         $nom_nomina = array();
         $nom_nomina['id'] = 1;
         $nom_nomina['im_registro_patronal_id'] = 1;
@@ -138,6 +162,7 @@ class nom_par_otro_pagoTest extends test {
         $nom_nomina['num_dias_pagados'] = '1';
         $nom_nomina['descuento'] = '0';
         $nom_nomina['nom_periodo_id'] = 1;
+        $nom_nomina['nom_conf_empleado_id'] = 1;
 
         $alta_nom_nomina = $nom_nomina_modelo->alta_registro($nom_nomina);
         if(errores::$error){

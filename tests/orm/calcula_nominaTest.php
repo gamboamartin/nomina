@@ -135,6 +135,15 @@ class calcula_nominaTest extends test {
             exit;
         }
 
+        $del = (new em_cuenta_bancaria($this->link))->elimina_todo();
+        if(errores::$error){
+            $error = (new errores())->error(mensaje: 'Error al eliminar', data: $del);
+            print_r($error);
+            exit;
+        }
+
+
+
 
         $em_empleado_ins = array();
         $em_empleado_ins['id'] = 1;
@@ -162,6 +171,21 @@ class calcula_nominaTest extends test {
             exit;
         }
 
+        $em_cuenta_bancaria_ins = array();
+        $em_cuenta_bancaria_ins['id'] = 1;
+        $em_cuenta_bancaria_ins['codigo'] = 1;
+        $em_cuenta_bancaria_ins['descripcion'] = 1;
+        $em_cuenta_bancaria_ins['bn_sucursal_id'] = 1;
+        $em_cuenta_bancaria_ins['em_empleado_id'] = 1;
+        $em_cuenta_bancaria_ins['descripcion_select'] = 1;
+
+        $alta = (new em_cuenta_bancaria($this->link))->alta_registro($em_cuenta_bancaria_ins);
+        if(errores::$error){
+            $error = (new errores())->error('Error al dar de alta ', $alta);
+            print_r($error);
+            exit;
+        }
+
         $nom_conf_empleado_ins = array();
         $nom_conf_empleado_ins['id'] = 1;
         $nom_conf_empleado_ins['codigo'] = 1;
@@ -169,6 +193,7 @@ class calcula_nominaTest extends test {
         $nom_conf_empleado_ins['em_empleado_id'] = 1;
         $nom_conf_empleado_ins['nom_conf_nomina_id'] = 1;
         $nom_conf_empleado_ins['descripcion_select'] = 1;
+        $nom_conf_empleado_ins['em_cuenta_bancaria_id'] = 1;
 
 
         $alta = (new nom_conf_empleado($this->link))->alta_registro($nom_conf_empleado_ins);
@@ -193,20 +218,7 @@ class calcula_nominaTest extends test {
             exit;
         }
 
-        $em_cuenta_bancaria_ins = array();
-        $em_cuenta_bancaria_ins['id'] = 1;
-        $em_cuenta_bancaria_ins['codigo'] = 1;
-        $em_cuenta_bancaria_ins['descripcion'] = 1;
-        $em_cuenta_bancaria_ins['bn_sucursal_id'] = 1;
-        $em_cuenta_bancaria_ins['em_empleado_id'] = 1;
-        $em_cuenta_bancaria_ins['descripcion_select'] = 1;
 
-        $alta = (new em_cuenta_bancaria($this->link))->alta_registro($em_cuenta_bancaria_ins);
-        if(errores::$error){
-            $error = (new errores())->error('Error al dar de alta ', $alta);
-            print_r($error);
-            exit;
-        }
 
         $nom_periodo_ins = array();
         $nom_periodo_ins['id'] = 1;
@@ -237,6 +249,7 @@ class calcula_nominaTest extends test {
         $nom_nomina_ins['cat_sat_periodicidad_pago_nom_id'] = 3;
         $nom_nomina_ins['em_cuenta_bancaria_id'] = 1;
         $nom_nomina_ins['nom_periodo_id'] = 1;
+        $nom_nomina_ins['nom_conf_empleado_id'] = 1;
 
         $alta = (new nom_nomina($this->link))->alta_registro($nom_nomina_ins);
         if(errores::$error){
@@ -332,6 +345,7 @@ class calcula_nominaTest extends test {
         $nom_nomina_ins['cat_sat_periodicidad_pago_nom_id'] = 1;
         $nom_nomina_ins['em_cuenta_bancaria_id'] = 1;
         $nom_nomina_ins['nom_periodo_id'] = 1;
+        $nom_nomina_ins['nom_conf_empleado_id'] = 1;
 
         $alta = (new nom_nomina($this->link))->alta_registro($nom_nomina_ins);
         if(errores::$error){
