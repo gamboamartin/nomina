@@ -67,7 +67,8 @@ class nom_nomina_html extends html_controler
     {
 
         $keys = array('cat_sat_periodicidad_pago_nom_id','cat_sat_tipo_nomina_id','em_cuenta_bancaria_id',
-            'em_empleado_id','im_registro_patronal_id','nom_periodo_id','nom_conf_empleado_id','org_puesto_id');
+            'em_empleado_id','im_registro_patronal_id','nom_periodo_id','nom_conf_empleado_id','org_puesto_id',
+            'cat_sat_tipo_contrato_nom_id');
 
         $valida = (new validacion())->valida_existencia_keys(keys:  $keys,registro: $inputs->selects,
             valida_vacio: false);
@@ -84,6 +85,7 @@ class nom_nomina_html extends html_controler
         $controler->inputs->select->em_cuenta_bancaria_id = $inputs->selects->em_cuenta_bancaria_id;
         $controler->inputs->select->nom_periodo_id = $inputs->selects->nom_periodo_id;
         $controler->inputs->select->org_puesto_id = $inputs->selects->org_puesto_id;
+        $controler->inputs->select->cat_sat_tipo_contrato_nom_id = $inputs->selects->cat_sat_tipo_contrato_nom_id;
         $controler->inputs->codigo = $inputs->texts->codigo;
         $controler->inputs->codigo_bis = $inputs->texts->codigo_bis;
         $controler->inputs->rfc = $inputs->texts->rfc;
@@ -476,7 +478,7 @@ class nom_nomina_html extends html_controler
         }
         $selects->em_empleado_id = $select;
 
-        $cols_nom_conf_empleado_id = $params->nom_conf_empleado_id->cols ?? 6;
+        $cols_nom_conf_empleado_id = $params->nom_conf_empleado_id->cols ?? 12;
         $select = (new nom_conf_empleado_html(html: $this->html_base))->select_nom_conf_empleado_id(
             cols: $cols_nom_conf_empleado_id, con_registros: false, id_selected: -1, link: $link);
         if (errores::$error) {
@@ -507,6 +509,15 @@ class nom_nomina_html extends html_controler
             return $this->error->error(mensaje: 'Error al generar select', data: $select);
         }
         $selects->em_cuenta_bancaria_id = $select;
+
+        $cols_cat_sat_tipo_contrato_nom_id = $params->cat_sat_tipo_contrato_nom_id->cols ?? 6;
+        $select = (new cat_sat_tipo_contrato_nom_html(html: $this->html_base))->select_cat_sat_tipo_contrato_nom_id(
+            cols: $cols_cat_sat_tipo_contrato_nom_id, con_registros: true,
+            id_selected: -1, link: $link);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al generar select', data: $select);
+        }
+        $selects->cat_sat_tipo_contrato_nom_id = $select;
 
 
 
@@ -601,6 +612,16 @@ class nom_nomina_html extends html_controler
             return $this->error->error(mensaje: 'Error al generar select', data: $select);
         }
         $selects->org_puesto_id = $select;
+
+
+        $cols_cat_sat_tipo_contrato_nom_id = $params->cat_sat_tipo_contrato_nom_id->cols ?? 12;
+        $select = (new cat_sat_tipo_contrato_nom_html(html: $this->html_base))->select_cat_sat_tipo_contrato_nom_id(
+            cols: $cols_cat_sat_tipo_contrato_nom_id, con_registros: true,
+            id_selected: $row_upd->cat_sat_tipo_contrato_nom_id, link: $link);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al generar select', data: $select);
+        }
+        $selects->cat_sat_tipo_contrato_nom_id = $select;
 
 
         return $selects;
