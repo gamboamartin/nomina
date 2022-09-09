@@ -8,6 +8,7 @@ use gamboamartin\nomina\controllers\controlador_nom_deduccion;
 
 use gamboamartin\nomina\controllers\controlador_nom_periodo;
 use gamboamartin\system\html_controler;
+use gamboamartin\template\directivas;
 use gamboamartin\validacion\validacion;
 use models\nom_deduccion;
 use models\nom_periodo;
@@ -296,8 +297,27 @@ class nom_periodo_html extends html_controler {
         return $selects;
     }
 
+
+    /**
+     * Genera un select de tipo nom periodo
+     * @param int $cols No de columnas para css
+     * @param bool $con_registros si con registros integra los registros en options
+     * @param int $id_selected identificador para selected
+     * @param PDO $link Conexion a la base de datos
+     * @return array|string
+     * @version 0.294.10
+     */
     public function select_nom_periodo_id(int $cols, bool $con_registros, int $id_selected, PDO $link): array|string
     {
+        $valida = (new directivas(html:$this->html_base))->valida_cols(cols:$cols);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al validar cols', data: $valida);
+        }
+
+        if(is_null($id_selected)){
+            $id_selected = -1;
+        }
+
         $modelo = new nom_periodo(link: $link);
 
         $select = $this->select_catalogo(cols:$cols,con_registros:$con_registros,id_selected:$id_selected,
