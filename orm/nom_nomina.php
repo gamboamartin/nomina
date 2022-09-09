@@ -20,7 +20,8 @@ class nom_nomina extends modelo
             cat_sat_periodicidad_pago_nom'=>$tabla,'im_registro_patronal'=>$tabla,'cat_sat_tipo_contrato_nom'=>$tabla);
 
         $campos_obligatorios = array('cat_sat_periodicidad_pago_nom_id','em_cuenta_bancaria_id','fecha_inicial_pago',
-            'fecha_final_pago','num_dias_pagados','im_registro_patronal_id','em_empleado_id','nom_periodo_id');
+            'fecha_final_pago','num_dias_pagados','im_registro_patronal_id','em_empleado_id','nom_periodo_id',
+            'cat_sat_tipo_contrato_nom_id');
 
         parent::__construct(link: $link, tabla: $tabla, campos_obligatorios: $campos_obligatorios,
             columnas: $columnas);
@@ -47,6 +48,10 @@ class nom_nomina extends modelo
 
     public function alta_bd(): array|stdClass
     {
+        if(!isset($this->registro['cat_sat_tipo_contrato_nom_id'])){
+            $this->registro['cat_sat_tipo_contrato_nom_id'] = 1;
+        }
+
         $registros = $this->genera_registros();
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al generar registros', data: $registros);
@@ -111,10 +116,6 @@ class nom_nomina extends modelo
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al insertar percepcion default', data: $r_alta_nom_par_percepcion);
         }
-
-
-
-
 
         return $r_alta_bd;
     }
