@@ -415,8 +415,25 @@ class calcula_imss{
         return $this->total_percepciones;
     }
 
+    /**
+     * Valida los que los campos monto_uma, sbc, n_dias existan y sean mayores que 0
+     * @return bool|array
+     * @version 0.104.11
+     */
     private function valida_exedente(): bool|array
     {
+        if (property_exists(object_or_class:  'calcula_imss', property: 'monto_uma')){
+            return $this->error->error('Error no existe el campo monto_uma', $this);
+        }
+
+        if (property_exists(object_or_class: 'calcula_imss', property: 'sbc')){
+            return $this->error->error('Error no existe el campo sbc', $this);
+        }
+
+        if (property_exists(object_or_class: 'calcula_imss', property: 'n_dias')){
+            return $this->error->error('Error no existe el campo n_dias', $this);
+        }
+
         if($this->monto_uma<=0){
             return $this->error->error('Error uma debe ser mayor a 0', $this->monto_uma);
         }
