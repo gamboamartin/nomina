@@ -37,6 +37,37 @@ class calcula_nominaTest extends test {
         $this->paths_conf->views = '/var/www/html/cat_sat/config/views.php';
     }
 
+    public function test_antiguedad_empleado(): void
+    {
+        errores::$error = false;
+
+        $_GET['seccion'] = 'cat_sat_tipo_persona';
+        $_GET['accion'] = 'lista';
+        $_SESSION['grupo_id'] = 1;
+        $_SESSION['usuario_id'] = 2;
+        $_GET['session_id'] = '1';
+        $calculo = new calcula_nomina();
+        $fecha_final_pago = '2022-02-02';
+        $fecha_inicio_rel_laboral = '2022-02-02';
+        $resultado = $calculo->antiguedad_empleado($fecha_final_pago, $fecha_inicio_rel_laboral);
+
+        $this->assertIsString($resultado);
+        $this->assertNotTrue(errores::$error);
+        $this->assertEquals('P0W',$resultado);
+
+        errores::$error = false;
+
+        $fecha_final_pago = '2021-12-24';
+        $fecha_inicio_rel_laboral = '2015-01-01';
+        $resultado = $calculo->antiguedad_empleado($fecha_final_pago, $fecha_inicio_rel_laboral);
+        $this->assertIsString($resultado);
+        $this->assertNotTrue(errores::$error);
+        $this->assertEquals('P364W',$resultado);
+
+
+        errores::$error = false;
+    }
+
     public function test_calcula_impuestos_netos_por_nomina(): void
     {
         errores::$error = false;
