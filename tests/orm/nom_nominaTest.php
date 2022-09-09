@@ -378,6 +378,7 @@ class nom_nominaTest extends test {
         $_SESSION['usuario_id'] = 2;
         $_GET['session_id'] = '1';
         $nomina = new nom_nomina($this->link);
+        $nomina = new liberator($nomina);
 
         $del =  (new base_test())->del($this->link, 'nom_data_subsidio');
         if(errores::$error){

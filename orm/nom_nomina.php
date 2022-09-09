@@ -665,7 +665,7 @@ class nom_nomina extends modelo
      * @return array
      * @version 0.296.10
      */
-    PUBLIC function get_sucursal_by_empleado(int $em_empleado_id): array
+    private function get_sucursal_by_empleado(int $em_empleado_id): array
     {
         if($em_empleado_id<=0){
             return $this->error->error(mensaje: 'Error $em_empleado_id debe ser mayor a 0 ', data: $em_empleado_id);
