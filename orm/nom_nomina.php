@@ -659,7 +659,17 @@ class nom_nomina extends modelo
         return $subtotal;
     }
 
-    private function get_sucursal_by_empleado(int $em_empleado_id){
+    /**
+     * Obtiene el empleado ligado a una sucursal
+     * @param int $em_empleado_id Identificador del empleado
+     * @return array
+     * @version 0.296.10
+     */
+    PUBLIC function get_sucursal_by_empleado(int $em_empleado_id): array
+    {
+        if($em_empleado_id<=0){
+            return $this->error->error(mensaje: 'Error $em_empleado_id debe ser mayor a 0 ', data: $em_empleado_id);
+        }
         $filtro['em_empleado.id'] = $em_empleado_id;
         $nom_rel_empleado_sucursal = (new nom_rel_empleado_sucursal($this->link))->filtro_and( filtro: $filtro);
         if (errores::$error) {

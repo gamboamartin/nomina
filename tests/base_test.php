@@ -6,6 +6,7 @@ use models\em_cuenta_bancaria;
 use models\em_empleado;
 use models\nom_conf_empleado;
 use models\nom_nomina;
+use models\nom_periodo;
 use models\nom_rel_empleado_sucursal;
 use PDO;
 
@@ -95,6 +96,25 @@ class base_test{
         $alta = (new nom_nomina($link))->alta_registro($nom_nomina);
         if(errores::$error){
             return (new errores())->error(mensaje: 'Error al insertar', data: $alta);
+        }
+        return $alta;
+    }
+
+    public function alta_nom_periodo(PDO $link): array|\stdClass
+    {
+        $nom_periodo = array();
+        $nom_periodo['id'] = 1;
+        $nom_periodo['codigo'] = 1;
+        $nom_periodo['descripcion'] = 1;
+        $nom_periodo['cat_sat_periodicidad_pago_nom_id'] = 1;
+        $nom_periodo['im_registro_patronal_id'] = 1;
+        $nom_periodo['nom_tipo_periodo_id'] = 1;
+
+
+        $alta = (new nom_periodo($link))->alta_registro($nom_periodo);
+        if(errores::$error){
+            return (new errores())->error(mensaje: 'Error al insertar periodo', data: $alta);
+
         }
         return $alta;
     }
