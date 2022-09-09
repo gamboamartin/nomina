@@ -95,17 +95,20 @@ sl_nom_empleado.change(function(){
 sl_nom_conf_empleado.change(function () {
     let selected = $(this).find('option:selected').val();
 
+    sl_em_cuenta_bancaria_id.val("").change();
+    sl_cat_sat_tipo_nomina.val("").change();
+    sl_cat_sat_periodicidad_pago_nom.val("").change();
+
     if (selected !== "") {
         let elemento = Object.keys(configuraciones)
             .filter((key) => key.includes(selected))
             .reduce((obj, key) => {
                 return configuraciones[key];
             }, {});
+
+        sl_em_cuenta_bancaria_id.val(elemento.em_cuenta_bancaria_id).change();
         sl_cat_sat_tipo_nomina.val(elemento.nom_conf_nomina_cat_sat_tipo_nomina_id).change();
         sl_cat_sat_periodicidad_pago_nom.val(elemento.nom_conf_nomina_cat_sat_periodicidad_pago_nom_id).change();
-    } else {
-        sl_cat_sat_tipo_nomina.val("").change();
-        sl_cat_sat_periodicidad_pago_nom.val("").change();
     }
 })
 
