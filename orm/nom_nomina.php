@@ -17,7 +17,7 @@ class nom_nomina extends modelo
             'dp_colonia_postal' => 'dp_calle_pertenece', 'dp_colonia' => 'dp_colonia_postal',
             'dp_cp' => 'dp_colonia_postal', 'dp_municipio' => 'dp_cp', 'dp_estado' => 'dp_municipio',
             'dp_pais' => 'dp_estado', 'em_empleado' => $tabla, 'fc_factura' => $tabla,'
-            cat_sat_periodicidad_pago_nom'=>$tabla,'im_registro_patronal'=>$tabla);
+            cat_sat_periodicidad_pago_nom'=>$tabla,'im_registro_patronal'=>$tabla,'cat_sat_tipo_contrato_nom'=>$tabla);
 
         $campos_obligatorios = array('cat_sat_periodicidad_pago_nom_id','em_cuenta_bancaria_id','fecha_inicial_pago',
             'fecha_final_pago','num_dias_pagados','im_registro_patronal_id','em_empleado_id','nom_periodo_id');
@@ -608,7 +608,7 @@ class nom_nomina extends modelo
 
     public function get_descuento_nomina(int $fc_factura_id): float
     {
-        $descuento = (new fc_factura($this->link))->get_descuento( fc_factura_id: $fc_factura_id);
+        $descuento = (new fc_factura($this->link))->get_factura_descuento( fc_factura_id: $fc_factura_id);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al obtener el descuento  de la partida',
                 data: $descuento);

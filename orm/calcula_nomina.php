@@ -34,7 +34,8 @@ class calcula_nomina{
         }
         $fecha_inicio_rel_laboral = trim($fecha_inicio_rel_laboral);
         if($fecha_inicio_rel_laboral === ''){
-            return $this->error->error(mensaje: 'Error $fecha_inicio_rel_laboral esta vacia',data: $fecha_inicio_rel_laboral);
+            return $this->error->error(mensaje: 'Error $fecha_inicio_rel_laboral esta vacia',
+                data: $fecha_inicio_rel_laboral);
         }
         
         $valida = (new validacion())->valida_fecha(fecha: $fecha_final_pago);
