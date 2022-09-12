@@ -228,6 +228,30 @@ class calcula_imssTest extends test {
         errores::$error = false;
     }
 
+    public function test_prestaciones_en_dinero(): void
+    {
+        errores::$error = false;
+
+        $_GET['seccion'] = 'cat_sat_tipo_persona';
+        $_GET['accion'] = 'lista';
+        $_SESSION['grupo_id'] = 1;
+        $_GET['session_id'] = '1';
+        $calculo = new calcula_imss();
+        $calculo = new liberator($calculo);
+
+        $resultado = $calculo->prestaciones_en_dinero();
+        $this->assertIsArray($resultado);
+        $this->assertTrue(errores::$error);
+        $this->assertStringContainsStringIgnoringCase('Error total_percepciones debe ser mayor a 0', $resultado['mensaje']);
+        errores::$error = false;
+
+        $calculo->total_percepciones = 1;
+        $resultado = $calculo->prestaciones_en_dinero();
+        $this->assertIsFloat($resultado);
+        $this->assertNotTrue(errores::$error);
+        errores::$error = false;
+    }
+
     public function test_total(): void
     {
         errores::$error = false;

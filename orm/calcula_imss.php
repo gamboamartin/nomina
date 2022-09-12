@@ -367,11 +367,22 @@ class calcula_imss{
         return $this->pensionados_beneficiarios;
     }
 
+    /**
+     * Calcula el total de prestanciones en dinero
+     * Valida los que total_percepciones exista y sea mayor que 0.0
+     * @return float|array
+     * @version 0.300.10
+     */
     private function prestaciones_en_dinero(): float|array
     {
+        if (property_exists(object_or_class: 'calcula_imss', property: 'total_percepciones')){
+            return $this->error->error('Error no existe el campo total_percepciones', $this);
+        }
+
         if($this->total_percepciones <=0.0){
             return $this->error->error("Error total_percepciones debe ser mayor a 0", $this->total_percepciones);
         }
+
         $this->prestaciones_en_dinero = $this->total_percepciones * $this->porc_prestaciones_en_dinero_trabajador;
         $this->prestaciones_en_dinero = round($this->prestaciones_en_dinero,2);
         return $this->prestaciones_en_dinero;
