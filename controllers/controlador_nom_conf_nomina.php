@@ -37,7 +37,22 @@ class controlador_nom_conf_nomina extends system {
             return $this->retorno_error(mensaje: 'Error al generar template',data:  $r_alta, header: $header,ws:$ws);
         }
 
-        $inputs = (new nom_conf_nomina_html(html: $this->html_base))->genera_inputs_alta(controler: $this, link: $this->link);
+        $keys_selects = array();
+
+        $keys_selects['nom_conf_factura'] = new stdClass();
+        $keys_selects['nom_conf_factura']->label = 'Conf Factura';
+
+        $keys_selects['cat_sat_periodicidad_pago_nom'] = new stdClass();
+        $keys_selects['cat_sat_periodicidad_pago_nom']->label = 'Periodicidad de Pago';
+        $keys_selects['cat_sat_periodicidad_pago_nom']->cols = 6;
+
+        $keys_selects['cat_sat_tipo_nomina'] = new stdClass();
+        $keys_selects['cat_sat_tipo_nomina']->label = 'Tipo de Nomina';
+        $keys_selects['cat_sat_tipo_nomina']->cols = 6;
+
+
+        $inputs = (new nom_conf_nomina_html(html: $this->html_base))->genera_inputs_alta(controler: $this,
+            keys_selects: $keys_selects, link: $this->link);
         if(errores::$error){
             $error = $this->errores->error(mensaje: 'Error al generar inputs',data:  $inputs);
             print_r($error);

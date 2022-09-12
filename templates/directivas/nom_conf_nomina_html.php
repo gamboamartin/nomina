@@ -1,6 +1,7 @@
 <?php
 namespace html;
 
+use base\orm\modelo_base;
 use gamboamartin\errores\errores;
 use gamboamartin\nomina\controllers\controlador_nom_conf_nomina;
 
@@ -21,9 +22,9 @@ class nom_conf_nomina_html extends html_controler {
         return $controler->inputs;
     }
 
-    public function genera_inputs_alta(controlador_nom_conf_nomina $controler, PDO $link): array|stdClass
+    public function genera_inputs_alta(controlador_nom_conf_nomina $controler, array $keys_selects, PDO $link): array|stdClass
     {
-        $inputs = $this->init_alta(link: $link);
+        $inputs = $this->init_alta(keys_selects: $keys_selects, link: $link);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al generar inputs',data:  $inputs);
 
@@ -52,9 +53,9 @@ class nom_conf_nomina_html extends html_controler {
         return $inputs_asignados;
     }
 
-    private function init_alta(PDO $link): array|stdClass
+    private function init_alta(array $keys_selects, PDO $link): array|stdClass
     {
-        $selects = $this->selects_alta(link: $link);
+        $selects = $this->selects_alta(keys_selects: $keys_selects, link: $link);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al generar selects',data:  $selects);
         }
@@ -100,33 +101,36 @@ class nom_conf_nomina_html extends html_controler {
         return $inputs;
     }
 
-    private function selects_alta(PDO $link): array|stdClass
+    private function selects_alta(array $keys_selects, PDO $link): array|stdClass
     {
+
         $selects = new stdClass();
 
-        $select = (new nom_conf_factura_html(html:$this->html_base))->select_nom_conf_factura_id(
-            cols: 12, con_registros:true, id_selected:-1,link: $link);
-        if(errores::$error){
-            return $this->error->error(mensaje: 'Error al generar select',data:  $select);
-        }
-        $selects->nom_conf_factura_id = $select;
+        foreach ($keys_selects as $name_model=>$params){
 
-        $select = (new cat_sat_periodicidad_pago_nom_html(html:$this->html_base))->select_cat_sat_periodicidad_pago_nom_id(
-            cols: 12, con_registros:true, id_selected:-1,link: $link);
-        if(errores::$error){
-            return $this->error->error(mensaje: 'Error al generar select',data:  $select);
-        }
-        $selects->cat_sat_periodicidad_pago_nom_id = $select;
+            $cols = $params->cols ?? 12;
+            $con_registros = $params->con_registros ?? true;
+            $id_selected = $params->id_selected ?? -1;
+            $label = $params->label ?? str_replace('_',' ', strtoupper($name_model));
+            $required = $params->required ?? true;
 
+            $name_select_id = $name_model.'_id';
+            $modelo = (new modelo_base($link))->genera_modelo(modelo: $name_model);
+            if(errores::$error){
+                return $this->error->error(mensaje: 'Error al generar modelo', data: $modelo);
+            }
+            $select  = $this->select_catalogo(cols:$cols,con_registros:$con_registros, id_selected:$id_selected,
+                modelo: $modelo,label:$label,required: $required);
+            if(errores::$error){
+                return $this->error->error(mensaje: 'Error al generar select', data: $select);
+            }
 
-        $select = (new cat_sat_tipo_nomina_html(html:$this->html_base))->select_cat_sat_tipo_nomina_id(
-            cols: 12, con_registros:true, id_selected:-1,link: $link);
-        if(errores::$error){
-            return $this->error->error(mensaje: 'Error al generar select',data:  $select);
+            $selects->$name_select_id = $select;
         }
-        $selects->cat_sat_tipo_nomina_id = $select;
+
 
         return $selects;
+
     }
 
     private function selects_modifica(PDO $link, stdClass $row_upd): array|stdClass
