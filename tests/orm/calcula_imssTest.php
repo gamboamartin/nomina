@@ -228,6 +228,57 @@ class calcula_imssTest extends test {
         errores::$error = false;
     }
 
+    public function test_total(): void
+    {
+        errores::$error = false;
+
+        $_GET['seccion'] = 'cat_sat_tipo_persona';
+        $_GET['accion'] = 'lista';
+        $_SESSION['grupo_id'] = 1;
+        $_GET['session_id'] = '1';
+        $calculo = new calcula_imss();
+        $calculo = new liberator($calculo);
+
+        $resultado = $calculo->total();
+        $this->assertIsArray($resultado);
+        $this->assertTrue(errores::$error);
+        $this->assertStringContainsStringIgnoringCase('Error prestaciones_en_dinero debe ser mayor a 0', $resultado['mensaje']);
+        errores::$error = false;
+
+        $calculo->prestaciones_en_dinero = 1;
+        $resultado = $calculo->total();
+        $this->assertIsArray($resultado);
+        $this->assertTrue(errores::$error);
+        $this->assertStringContainsStringIgnoringCase('Error pensionados_beneficiarios debe ser mayor a 0', $resultado['mensaje']);
+        errores::$error = false;
+
+        $calculo->prestaciones_en_dinero = 1;
+        $calculo->pensionados_beneficiarios = 1;
+        $resultado = $calculo->total();
+        $this->assertIsArray($resultado);
+        $this->assertTrue(errores::$error);
+        $this->assertStringContainsStringIgnoringCase('Error invalidez_vida debe ser mayor a 0', $resultado['mensaje']);
+        errores::$error = false;
+
+        $calculo->prestaciones_en_dinero = 1;
+        $calculo->pensionados_beneficiarios = 1;
+        $calculo->invalidez_vida = 1;
+        $resultado = $calculo->total();
+        $this->assertIsArray($resultado);
+        $this->assertTrue(errores::$error);
+        $this->assertStringContainsStringIgnoringCase('Error cesantia debe ser mayor a 0', $resultado['mensaje']);
+        errores::$error = false;
+
+        $calculo->prestaciones_en_dinero = 1;
+        $calculo->pensionados_beneficiarios = 1;
+        $calculo->invalidez_vida = 1;
+        $calculo->cesantia = 1;
+        $resultado = $calculo->total();
+        $this->assertIsFloat($resultado);
+        $this->assertNotTrue(errores::$error);
+        errores::$error = false;
+    }
+
     public function test_total_percepciones(): void
     {
         errores::$error = false;

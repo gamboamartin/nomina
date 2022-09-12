@@ -377,22 +377,50 @@ class calcula_imss{
         return $this->prestaciones_en_dinero;
     }
 
+
+    /**
+     * Calcula el total de imss
+     * Valida los que los campos prestaciones_en_dinero, pensionados_beneficiarios,invalidez_vida,
+     * cesantia, y excedente existan y sean mayores que 0.0
+     * @return float|array
+     * @version 0.299.10
+     */
     private function total(): float|array
     {
+        if (property_exists(object_or_class: 'calcula_imss', property: 'prestaciones_en_dinero')){
+            return $this->error->error('Error no existe el campo prestaciones_en_dinero', $this);
+        }
+
+        if (property_exists(object_or_class: 'calcula_imss', property: 'pensionados_beneficiarios')){
+            return $this->error->error('Error no existe el campo pensionados_beneficiarios', $this);
+        }
+
+        if (property_exists(object_or_class: 'calcula_imss', property: 'invalidez_vida')){
+            return $this->error->error('Error no existe el campo invalidez_vida', $this);
+        }
+
+        if (property_exists(object_or_class: 'calcula_imss', property: 'cesantia')){
+            return $this->error->error('Error no existe el campo cesantia', $this);
+        }
+
+        if (property_exists(object_or_class: 'calcula_imss', property: 'excedente')){
+            return $this->error->error('Error no existe el campo excedente', $this);
+        }
+
         if($this->prestaciones_en_dinero<=0.0){
-            return $this->error->error('Error $this->prestaciones_en_dinero debe ser mayor a 0', $this->prestaciones_en_dinero);
+            return $this->error->error('Error prestaciones_en_dinero debe ser mayor a 0', $this->prestaciones_en_dinero);
         }
         if($this->pensionados_beneficiarios<=0.0){
-            return $this->error->error('Error $this->pensionados_beneficiarios debe ser mayor a 0', $this->pensionados_beneficiarios);
+            return $this->error->error('Error pensionados_beneficiarios debe ser mayor a 0', $this->pensionados_beneficiarios);
         }
         if($this->invalidez_vida<=0.0){
-            return $this->error->error('Error $this->invalidez_vida debe ser mayor a 0', $this->invalidez_vida);
+            return $this->error->error('Error invalidez_vida debe ser mayor a 0', $this->invalidez_vida);
         }
         if($this->cesantia<=0.0){
-            return $this->error->error('Error $this->cesantia debe ser mayor a 0', $this->cesantia);
+            return $this->error->error('Error cesantia debe ser mayor a 0', $this->cesantia);
         }
         if($this->excedente<0.0){
-            return $this->error->error('Error $this->excedente debe ser mayor a 0', $this->excedente);
+            return $this->error->error('Error excedente debe ser mayor a 0', $this->excedente);
         }
 
         $this->total = $this->prestaciones_en_dinero + $this->pensionados_beneficiarios + $this->invalidez_vida +
@@ -405,7 +433,7 @@ class calcula_imss{
      * Calcula el total de las percepciones
      * Valida los que los campos sbc, n_dias existan y sean mayores que 0
      * @return float|array
-     * @version 0.297.10
+     * @version 0.298.10
      */
     private function total_percepciones(): float|array
     {
