@@ -4,16 +4,14 @@ namespace html;
 
 use gamboamartin\errores\errores;
 use gamboamartin\nomina\controllers\controlador_nom_nomina;
-use gamboamartin\system\html_controler;
 use gamboamartin\validacion\validacion;
 use models\em_empleado;
 use models\fc_factura;
 use models\nom_nomina;
-use models\nom_periodo;
 use PDO;
 use stdClass;
 
-class nom_nomina_html extends html_controler
+class nom_nomina_html extends base_nominas
 {
 
     private function asigna_inputs(controlador_nom_nomina $controler, stdClass $inputs): array|stdClass
@@ -35,12 +33,13 @@ class nom_nomina_html extends html_controler
 
     private function asigna_inputs_nueva_percepcion(controlador_nom_nomina $controler, stdClass $inputs): array|stdClass
     {
-        $controler->inputs->select = new stdClass();
-        $controler->inputs->select->nom_nomina_id = $inputs->selects->nom_nomina_id;
-        $controler->inputs->select->nom_percepcion_id = $inputs->selects->nom_percepcion_id;
-        $controler->inputs->importe_gravado = $inputs->texts->importe_gravado;
-        $controler->inputs->importe_exento = $inputs->texts->importe_exento;
-        return $controler->inputs;
+
+        $data_inputs = $this->inputs_percepcion_partida(controler: $controler, inputs: $inputs);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al obtener inputs', data: $data_inputs);
+        }
+
+        return $data_inputs;
     }
 
     private function asigna_inputs_nueva_deduccion(controlador_nom_nomina $controler, stdClass $inputs): array|stdClass

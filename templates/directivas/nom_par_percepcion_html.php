@@ -9,17 +9,16 @@ use models\nom_par_percepcion;
 use PDO;
 use stdClass;
 
-class nom_par_percepcion_html extends html_controler {
+class nom_par_percepcion_html extends base_nominas {
 
     private function asigna_inputs(controlador_nom_par_percepcion $controler, stdClass $inputs): array|stdClass
     {
-        $controler->inputs->select = new stdClass();
-        $controler->inputs->select->nom_nomina_id = $inputs->selects->nom_nomina_id;
-        $controler->inputs->select->nom_percepcion_id = $inputs->selects->nom_percepcion_id;
-        $controler->inputs->importe_gravado = $inputs->texts->importe_gravado;
-        $controler->inputs->importe_exento = $inputs->texts->importe_exento;
+        $data_inputs = $this->inputs_percepcion_partida(controler: $controler, inputs: $inputs);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al obtener inputs', data: $data_inputs);
+        }
 
-        return $controler->inputs;
+        return $data_inputs;
     }
 
     public function genera_inputs_alta(controlador_nom_par_percepcion $controler, PDO $link): array|stdClass
