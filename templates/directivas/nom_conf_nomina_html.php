@@ -108,27 +108,12 @@ class nom_conf_nomina_html extends html_controler {
 
         foreach ($keys_selects as $name_model=>$params){
 
-
-            $params_select = $this->params_select(name_model: $name_model, params: $params);
+            $selects  = $this->select_aut(link: $link,name_model:  $name_model,params:  $params, selects: $selects);
             if(errores::$error){
-                return $this->error->error(mensaje: 'Error al maquetar params', data: $params_select);
+                return $this->error->error(mensaje: 'Error al generar select', data: $selects);
             }
 
-            $name_select_id = $name_model.'_id';
-            $modelo = (new modelo_base($link))->genera_modelo(modelo: $name_model);
-            if(errores::$error){
-                return $this->error->error(mensaje: 'Error al generar modelo', data: $modelo);
-            }
-            $select  = $this->select_catalogo(cols:$params_select->cols,con_registros:$params_select->con_registros,
-                id_selected:$params_select->id_selected, modelo: $modelo,label:$params_select->label,
-                required: $params_select->required);
-            if(errores::$error){
-                return $this->error->error(mensaje: 'Error al generar select', data: $select);
-            }
-
-            $selects->$name_select_id = $select;
         }
-
 
         return $selects;
 
