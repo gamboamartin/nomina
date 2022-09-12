@@ -161,7 +161,7 @@ class controlador_nom_nomina extends system
         }
 
         $keys = array('cat_sat_tipo_nomina_id','em_empleado_id','im_registro_patronal_id','nom_conf_empleado_id',
-            'nom_periodo_id','org_puesto_id');
+            'nom_periodo_id','org_puesto_id','cat_sat_tipo_contrato_nom_id');
 
         foreach ($keys as $key){
             if(!isset($this->row_upd->$key)){

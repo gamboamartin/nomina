@@ -195,7 +195,7 @@ class nom_nomina_html extends html_controler
                                             stdClass               $params = new stdClass()): array|stdClass
     {
         $keys = array('cat_sat_tipo_nomina_id','em_empleado_id','im_registro_patronal_id','nom_conf_empleado_id',
-            'nom_periodo_id','org_puesto_id');
+            'nom_periodo_id','org_puesto_id','cat_sat_tipo_contrato_nom_id');
 
         $valida = (new validacion())->valida_existencia_keys(keys:  $keys,registro: $controler->row_upd);
         if (errores::$error) {
@@ -266,7 +266,7 @@ class nom_nomina_html extends html_controler
     private function init_modifica(PDO $link, stdClass $row_upd, stdClass $params = new stdClass()): array|stdClass
     {
         $keys = array('cat_sat_tipo_nomina_id','em_empleado_id','im_registro_patronal_id','nom_conf_empleado_id',
-            'nom_periodo_id','org_puesto_id');
+            'nom_periodo_id','org_puesto_id','cat_sat_tipo_contrato_nom_id');
 
         $valida = (new validacion())->valida_existencia_keys(keys:  $keys,registro: $row_upd);
         if (errores::$error) {
@@ -295,7 +295,7 @@ class nom_nomina_html extends html_controler
     {
 
         $keys = array('cat_sat_tipo_nomina_id','em_empleado_id','im_registro_patronal_id','nom_conf_empleado_id',
-            'nom_periodo_id','org_puesto_id');
+            'nom_periodo_id','org_puesto_id','cat_sat_tipo_contrato_nom_id');
 
         $valida = (new validacion())->valida_existencia_keys(keys:  $keys,registro: $controlador->row_upd);
         if (errores::$error) {
@@ -529,7 +529,7 @@ class nom_nomina_html extends html_controler
     {
 
         $keys = array('cat_sat_tipo_nomina_id','em_empleado_id','im_registro_patronal_id','nom_conf_empleado_id',
-            'nom_periodo_id','org_puesto_id');
+            'nom_periodo_id','org_puesto_id','cat_sat_tipo_contrato_nom_id');
 
         $valida = (new validacion())->valida_existencia_keys(keys:  $keys,registro: $row_upd);
         if (errores::$error) {
