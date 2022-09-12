@@ -401,14 +401,27 @@ class calcula_imss{
         return $this->total;
     }
 
-
+    /**
+     * Calcula el total de las percepciones
+     * Valida los que los campos sbc, n_dias existan y sean mayores que 0
+     * @return float|array
+     * @version 0.297.10
+     */
     private function total_percepciones(): float|array
     {
+        if (property_exists(object_or_class: 'calcula_imss', property: 'sbc')){
+            return $this->error->error('Error no existe el campo sbc', $this);
+        }
+
+        if (property_exists(object_or_class: 'calcula_imss', property: 'n_dias')){
+            return $this->error->error('Error no existe el campo n_dias', $this);
+        }
+
         if($this->sbc<=0){
             return $this->error->error('Error sbc debe ser mayor a 0', $this->sbc);
         }
         if($this->n_dias<=0){
-            return $this->error->error('Error n dias debe ser mayor a 0', $this->n_dias);
+            return $this->error->error('Error n_dias debe ser mayor a 0', $this->n_dias);
         }
 
         $this->total_percepciones = round($this->sbc * $this->n_dias,2);
