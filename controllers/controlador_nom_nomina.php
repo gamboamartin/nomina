@@ -28,6 +28,7 @@ use stdClass;
 
 class controlador_nom_nomina extends system
 {
+    public string $link_crea_nomina = '';
     public string $link_nom_nomina_alta_bd = '';
     public string $link_nom_nomina_modifica_bd = '';
     public string $link_nom_par_percepcion_alta_bd = '';
@@ -111,6 +112,9 @@ class controlador_nom_nomina extends system
             die('Error');
         }
 
+        $link_crea_nomina = "index.php?seccion=$this->tabla&accion=crea_nomina&session_id=$this->session_id";
+        $this->link_crea_nomina = $link_crea_nomina;
+
         $this->titulo_lista = 'Nominas';
 
         $this->link_nom_nomina_alta_bd = $obj_link->links->nom_nomina->alta_bd;
@@ -121,6 +125,10 @@ class controlador_nom_nomina extends system
         $this->link_nom_par_percepcion_modifica_bd = $link_nom_par_percepcion_modifica_bd;
         $this->link_nom_par_deduccion_modifica_bd = $link_nom_par_deduccion_modifica_bd;
         $this->link_nom_par_otro_pago_modifica_bd = $link_nom_par_otro_pago_modifica_bd;
+
+
+
+
         $this->paths_conf = $paths_conf;
         $this->nom_nomina_id = $this->registro_id;
 
