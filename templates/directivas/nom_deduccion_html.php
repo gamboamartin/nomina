@@ -148,10 +148,5 @@ class nom_deduccion_html extends html_controler {
         return $select;
     }
 
-    private function texts_alta(stdClass $row_upd, bool $value_vacio, stdClass $params = new stdClass()): array|stdClass
-    {
-        $texts = new stdClass();
-        return $texts;
-    }
 
 }
