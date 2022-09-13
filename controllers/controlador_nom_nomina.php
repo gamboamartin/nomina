@@ -708,17 +708,20 @@ class controlador_nom_nomina extends system
             return $this->retorno_error(mensaje: 'Error al generar template', data: $r_alta, header: $header, ws: $ws);
         }
 
-        $params = new stdClass();
-        $params->nom_nomina_id = new stdClass();
-        $params->nom_nomina_id->cols = 12;
-        $params->nom_nomina_id->disabled = true;
-        $params->nom_nomina_id->filtro = array('nom_nomina.id' => $this->registro_id);
 
-        $params->nom_percepcion_id = new stdClass();
-        $params->nom_percepcion_id->cols = 12;
+        $keys_selects = array();
+        $keys_selects['nom_nomina'] = new stdClass();
+        $keys_selects['nom_nomina']->cols = 12;
+        $keys_selects['nom_nomina']->disabled = true;
+        $keys_selects['nom_nomina']->filtro = array('nom_nomina.id' => $this->registro_id);
 
-        $inputs = (new nom_nomina_html(html: $this->html_base))->genera_inputs_nueva_percepcion(controler: $this,
-            link: $this->link, params: $params);
+        $keys_selects['nom_percepcion'] = new stdClass();
+        $keys_selects['nom_percepcion']->cols = 12;
+
+
+
+        $inputs = (new nom_nomina_html(html: $this->html_base))->genera_inputs_nueva_percepcion(controler: $this, keys_selects: $keys_selects,
+            link: $this->link);
         if (errores::$error) {
             $error = $this->errores->error(mensaje: 'Error al generar inputs', data: $inputs);
             print_r($error);

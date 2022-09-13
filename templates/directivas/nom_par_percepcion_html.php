@@ -52,9 +52,9 @@ class nom_par_percepcion_html extends base_nominas {
         return $inputs_asignados;
     }
 
-    public function init_alta(PDO $link, int $nom_nomina_id = -1, stdClass $params = new stdClass()): array|stdClass
+    public function init_alta(array $keys_selects, PDO $link): array|stdClass
     {
-        $selects = $this->selects_alta(link: $link,nom_nomina_id: $nom_nomina_id, params: $params);
+        $selects = $this->selects_alta(keys_selects: $keys_selects, link: $link);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al generar selects',data:  $selects);
         }
@@ -144,32 +144,6 @@ class nom_par_percepcion_html extends base_nominas {
         return $inputs;
     }
 
-    private function selects_alta(PDO $link , int $nom_nomina_id = -1, stdClass $params = new stdClass()): array|stdClass
-    {
-        $selects = new stdClass();
-
-        $cols_nom_nomina_id = $params->nom_nomina_id->cols ?? 6;
-        $disabled_nom_nomina_id = $params->nom_nomina_id->disabled ?? false;
-        $filtro_nom_nomina_id = $params->nom_nomina_id->filtro ?? array();
-
-        $select = (new nom_nomina_html(html:$this->html_base))->select_nom_nomina_id(
-            cols: $cols_nom_nomina_id, con_registros:true, id_selected: $nom_nomina_id,link: $link,
-            disabled: $disabled_nom_nomina_id, filtro: $filtro_nom_nomina_id);
-        if(errores::$error){
-            return $this->error->error(mensaje: 'Error al generar select',data:  $select);
-        }
-        $selects->nom_nomina_id = $select;
-
-        $cols_nom_percepcion_id = $params->nom_percepcion_id->cols ?? 6;
-        $select = (new nom_percepcion_html(html:$this->html_base))->select_nom_percepcion_id(
-            cols: $cols_nom_percepcion_id, con_registros:true, id_selected:-1,link: $link);
-        if(errores::$error){
-            return $this->error->error(mensaje: 'Error al generar select',data:  $select);
-        }
-        $selects->nom_percepcion_id = $select;
-
-        return $selects;
-    }
 
     private function selects_modifica(PDO $link, stdClass $row_upd, stdClass $params = new stdClass()): array|stdClass
     {
@@ -212,7 +186,7 @@ class nom_par_percepcion_html extends base_nominas {
         return $select;
     }
 
-    private function texts_alta(stdClass $row_upd, bool $value_vacio, stdClass $params = new stdClass()): array|stdClass
+    protected function texts_alta(stdClass $row_upd, bool $value_vacio, stdClass $params = new stdClass()): array|stdClass
     {
         $texts = new stdClass();
 
