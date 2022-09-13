@@ -133,17 +133,15 @@ class controlador_nom_nomina extends system
         $this->paths_conf = $paths_conf;
         $this->nom_nomina_id = $this->registro_id;
 
-        if (isset($_GET['nom_par_percepcion_id'])){
-            $this->nom_par_percepcion_id = $_GET['nom_par_percepcion_id'];
+       
+
+        $init = $this->init_partidas_ids();
+        if (errores::$error) {
+            $error = $this->errores->error(mensaje: 'Error al inicializar ids', data: $init);
+            print_r($error);
+            die('Error');
         }
 
-        if (isset($_GET['nom_par_deduccion_id'])){
-            $this->nom_par_deduccion_id = $_GET['nom_par_deduccion_id'];
-        }
-
-        if (isset($_GET['nom_par_otro_pago_id'])){
-            $this->nom_par_otro_pago_id = $_GET['nom_par_otro_pago_id'];
-        }
     }
 
     public function alta(bool $header, bool $ws = false): array|string
@@ -372,6 +370,22 @@ class controlador_nom_nomina extends system
         $r_elimina->siguiente_view = $siguiente_view;
 
         return $r_elimina;
+    }
+
+    private function init_partidas_ids(): array
+    {
+        if (isset($_GET['nom_par_percepcion_id'])){
+            $this->nom_par_percepcion_id = $_GET['nom_par_percepcion_id'];
+        }
+
+        if (isset($_GET['nom_par_deduccion_id'])){
+            $this->nom_par_deduccion_id = $_GET['nom_par_deduccion_id'];
+        }
+
+        if (isset($_GET['nom_par_otro_pago_id'])){
+            $this->nom_par_otro_pago_id = $_GET['nom_par_otro_pago_id'];
+        }
+        return $_GET;
     }
 
     private function limpia_btn(): array
