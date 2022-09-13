@@ -145,7 +145,7 @@ class nom_conf_factura_html extends html_controler {
         return $inputs;
     }
 
-    private function selects_alta(PDO $link): array|stdClass
+    /**private function selects_alta(PDO $link): array|stdClass
     {
         $selects = new stdClass();
 
@@ -200,6 +200,7 @@ class nom_conf_factura_html extends html_controler {
 
         return $selects;
     }
+     * */
 
     private function selects_modifica(PDO $link, stdClass $row_upd): array|stdClass
     {

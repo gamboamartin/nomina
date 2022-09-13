@@ -100,23 +100,6 @@ class nom_deduccion_html extends html_controler {
         return $inputs;
     }
 
-    private function selects_alta(array $keys_selects, PDO $link): array|stdClass
-    {
-
-        $selects = new stdClass();
-
-        foreach ($keys_selects as $name_model=>$params){
-
-            $selects  = $this->select_aut(link: $link,name_model:  $name_model,params:  $params, selects: $selects);
-            if(errores::$error){
-                return $this->error->error(mensaje: 'Error al generar select', data: $selects);
-            }
-
-        }
-
-        return $selects;
-
-    }
 
 
     private function selects_modifica(PDO $link, stdClass $row_upd): array|stdClass

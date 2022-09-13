@@ -204,7 +204,7 @@ class nom_periodo_html extends html_controler {
         return $inputs;
     }
 
-    private function selects_alta(PDO $link): array|stdClass
+    /**private function selects_alta(PDO $link): array|stdClass
     {
         $selects = new stdClass();
 
@@ -244,7 +244,7 @@ class nom_periodo_html extends html_controler {
         $selects->cat_sat_tipo_nomina_id = $select;
 
         return $selects;
-    }
+    }*/
 
     private function selects_modifica(PDO $link, stdClass $row_upd): array|stdClass
     {

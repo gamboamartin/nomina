@@ -406,23 +406,6 @@ class nom_nomina_html extends base_nominas
         return $div;
     }
 
-    private function selects_alta(array $keys_selects, PDO $link): array|stdClass
-    {
-
-        $selects = new stdClass();
-
-        foreach ($keys_selects as $name_model=>$params){
-
-            $selects  = $this->select_aut(link: $link,name_model:  $name_model,params:  $params, selects: $selects);
-            if(errores::$error){
-                return $this->error->error(mensaje: 'Error al generar select', data: $selects);
-            }
-
-        }
-
-        return $selects;
-
-    }
 
     private function selects_alta_crea_nomina(PDO $link,stdClass $params = new stdClass()): array|stdClass
     {
