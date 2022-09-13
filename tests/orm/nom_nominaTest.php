@@ -159,6 +159,9 @@ class nom_nominaTest extends test {
         $nom_nomina_ins['fecha_final_pago'] = '2022-01-01';
         $nom_nomina_ins['nom_periodo_id'] = 1;
         $nom_nomina_ins['nom_conf_empleado_id'] = 1;
+        $nom_nomina_ins['cat_sat_tipo_jornada_nom_id'] = 1;
+        $nom_nomina_ins['cat_sat_tipo_nomina_id'] = 1;
+        $nom_nomina_ins['dp_calle_pertenece_id'] = 1;
 
         $nomina->registro = $nom_nomina_ins;
 
@@ -182,9 +185,52 @@ class nom_nominaTest extends test {
         $_GET['session_id'] = '1';
         $nomina = new nom_nomina($this->link);
 
-        $del = (new nom_par_percepcion($this->link))->elimina_todo();
+
+        $del = (new base_test())->del($this->link, 'nom_par_percepcion');
         if(errores::$error){
-            $error = (new errores())->error('Error al eliminar percepciones', $del);
+            $error = (new errores())->error('Error al eliminar', $del);
+            print_r($error);
+            exit;
+        }
+
+        $del = (new base_test())->del($this->link, 'nom_par_deduccion');
+        if(errores::$error){
+            $error = (new errores())->error('Error al eliminar', $del);
+            print_r($error);
+            exit;
+        }
+
+        $del = (new base_test())->del($this->link, 'nom_nomina');
+        if(errores::$error){
+            $error = (new errores())->error('Error al eliminar', $del);
+            print_r($error);
+            exit;
+        }
+
+        $del = (new base_test())->del($this->link, 'fc_partida');
+        if(errores::$error){
+            $error = (new errores())->error('Error al eliminar', $del);
+            print_r($error);
+            exit;
+        }
+
+        $del = (new base_test())->del($this->link, 'fc_factura');
+        if(errores::$error){
+            $error = (new errores())->error('Error al eliminar', $del);
+            print_r($error);
+            exit;
+        }
+
+        $alta = (new base_test())->alta_nom_nomina($this->link);
+        if(errores::$error){
+            $error = (new errores())->error('Error al insertar', $alta);
+            print_r($error);
+            exit;
+        }
+
+        $del = (new base_test())->del($this->link, 'nom_par_percepcion');
+        if(errores::$error){
+            $error = (new errores())->error('Error al eliminar', $del);
             print_r($error);
             exit;
         }
@@ -192,6 +238,7 @@ class nom_nominaTest extends test {
 
         $nom_nomina_id = 1;
         $resultado = $nomina->aplica_subsidio_percepcion($nom_nomina_id);
+
         $this->assertIsBool($resultado);
         $this->assertNotTrue(errores::$error);
         $this->assertNotTrue($resultado);

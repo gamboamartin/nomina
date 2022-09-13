@@ -2,15 +2,35 @@
 namespace tests;
 use base\orm\modelo_base;
 use gamboamartin\errores\errores;
+use models\cat_sat_tipo_jornada_nom;
+use models\cat_sat_tipo_nomina;
 use models\em_cuenta_bancaria;
 use models\em_empleado;
 use models\nom_conf_empleado;
+use models\nom_conf_nomina;
 use models\nom_nomina;
 use models\nom_periodo;
 use models\nom_rel_empleado_sucursal;
 use PDO;
 
 class base_test{
+
+    public function alta_cat_sat_tipo_nomina(PDO $link): array|\stdClass
+    {
+        $nom_periodo = array();
+        $nom_periodo['id'] = 1;
+        $nom_periodo['codigo'] = 1;
+        $nom_periodo['descripcion'] = 1;
+
+
+
+        $alta = (new cat_sat_tipo_nomina($link))->alta_registro($nom_periodo);
+        if(errores::$error){
+            return (new errores())->error(mensaje: 'Error al insertar periodo', data: $alta);
+
+        }
+        return $alta;
+    }
 
     public function alta_em_cuenta_bancaria(PDO $link): array|\stdClass
     {
@@ -30,7 +50,8 @@ class base_test{
         return $alta;
     }
 
-    public function alta_em_empleado(PDO $link): array|\stdClass
+    public function alta_em_empleado(PDO $link, float $salario_diario = 250,
+                                     float $salario_diario_integrado = 250): array|\stdClass
     {
         $em_empleado = array();
         $em_empleado['id'] = 1;
@@ -49,8 +70,8 @@ class base_test{
         $em_empleado['nss'] = 1;
         $em_empleado['fecha_inicio_rel_laboral'] = '2022-01-01';
         $em_empleado['org_puesto_id'] =1;
-        $em_empleado['salario_diario'] =250;
-        $em_empleado['salario_diario_integrado'] =250;
+        $em_empleado['salario_diario'] =$salario_diario;
+        $em_empleado['salario_diario_integrado'] =$salario_diario_integrado;
         $alta = (new em_empleado($link))->alta_registro($em_empleado);
         if(errores::$error){
            return (new errores())->error('Error al dar de alta ', $alta);
@@ -76,6 +97,23 @@ class base_test{
         return $alta;
     }
 
+    public function alta_nom_conf_nomina(PDO $link): array|\stdClass
+    {
+        $nom_conf_empleado = array();
+        $nom_conf_empleado['id'] = 1;
+        $nom_conf_empleado['codigo'] = 1;
+        $nom_conf_empleado['descripcion'] = 1;
+        $nom_conf_empleado['nom_conf_factura_id'] = 1;
+
+
+        $alta = (new nom_conf_nomina($link))->alta_registro($nom_conf_empleado);
+        if(errores::$error){
+            return (new errores())->error(mensaje: 'Error al insertar', data: $alta);
+
+        }
+        return $alta;
+    }
+
     public function alta_nom_nomina(PDO $link): array|\stdClass
     {
         $nom_nomina = array();
@@ -92,6 +130,9 @@ class base_test{
         $nom_nomina['descuento'] = '0';
         $nom_nomina['nom_periodo_id'] = 1;
         $nom_nomina['nom_conf_empleado_id'] = 1;
+        $nom_nomina['cat_sat_tipo_jornada_nom_id'] = 1;
+        $nom_nomina['dp_calle_pertenece_id'] = 1;
+        $nom_nomina['cat_sat_tipo_nomina_id'] = 1;
 
         $alta = (new nom_nomina($link))->alta_registro($nom_nomina);
         if(errores::$error){
