@@ -784,17 +784,18 @@ class controlador_nom_nomina extends system
             return $this->retorno_error(mensaje: 'Error al generar template', data: $r_alta, header: $header, ws: $ws);
         }
 
-        $params = new stdClass();
-        $params->nom_nomina_id = new stdClass();
-        $params->nom_nomina_id->cols = 12;
-        $params->nom_nomina_id->disabled = true;
-        $params->nom_nomina_id->filtro = array('nom_nomina.id' => $this->registro_id);
+        $keys_selects = array();
+        $keys_selects['nom_nomina'] = new stdClass();
+        $keys_selects['nom_nomina']->cols = 12;
+        $keys_selects['nom_nomina']->disabled = true;
+        $keys_selects['nom_nomina']->filtro = array('nom_nomina.id' => $this->registro_id);
 
-        $params->nom_otro_pago_id = new stdClass();
-        $params->nom_otro_pago_id->cols = 12;
+        $keys_selects['nom_otro_pago'] = new stdClass();
+        $keys_selects['nom_otro_pago']->cols = 12;
 
-        $inputs = (new nom_nomina_html(html: $this->html_base))->genera_inputs_otro_pago(controler: $this,
-            link: $this->link, params: $params);
+
+        $inputs = (new nom_nomina_html(html: $this->html_base))->genera_inputs_otro_pago(
+            controler: $this, keys_selects: $keys_selects, link: $this->link);
         if (errores::$error) {
             $error = $this->errores->error(mensaje: 'Error al generar inputs', data: $inputs);
             print_r($error);

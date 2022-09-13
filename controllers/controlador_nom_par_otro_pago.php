@@ -52,8 +52,17 @@ class controlador_nom_par_otro_pago extends system
         if(errores::$error){
             return $this->retorno_error(mensaje: 'Error al generar template',data:  $r_alta, header: $header,ws:$ws);
         }
+        $keys_selects = array();
+        $keys_selects['nom_nomina'] = new stdClass();
+        $keys_selects['nom_nomina']->cols = 12;
+        $keys_selects['nom_nomina']->disabled = false;
 
-        $inputs = (new nom_par_otro_pago_html(html: $this->html_base))->genera_inputs_alta(controler: $this, link: $this->link);
+        $keys_selects['nom_otro_pago'] = new stdClass();
+        $keys_selects['nom_otro_pago']->cols = 12;
+
+
+        $inputs = (new nom_par_otro_pago_html(html: $this->html_base))->genera_inputs_alta(
+            controler: $this, keys_selects: $keys_selects, link: $this->link);
         if(errores::$error){
             $error = $this->errores->error(mensaje: 'Error al generar inputs',data:  $inputs);
             print_r($error);
