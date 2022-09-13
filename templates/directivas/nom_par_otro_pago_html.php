@@ -10,7 +10,7 @@ use models\nom_par_otro_pago;
 use PDO;
 use stdClass;
 
-class nom_par_otro_pago_html extends html_controler
+class nom_par_otro_pago_html extends base_nominas
 {
 
     private function asigna_inputs(controlador_nom_par_otro_pago $controler, stdClass $inputs): array|stdClass
@@ -95,26 +95,7 @@ class nom_par_otro_pago_html extends html_controler
         return $div;
     }
 
-    public function input_importe_gravado(int $cols, stdClass $row_upd, bool $value_vacio): array|string
-    {
-        $valida = $this->directivas->valida_cols(cols: $cols);
-        if(errores::$error){
-            return $this->error->error(mensaje: 'Error al validar columnas', data: $valida);
-        }
 
-        $html =$this->directivas->input_text_required(disable: false,name: 'importe_gravado',place_holder: 'Importe gravado',
-            row_upd: $row_upd, value_vacio: $value_vacio);
-        if(errores::$error){
-            return $this->error->error(mensaje: 'Error al generar input', data: $html);
-        }
-
-        $div = $this->directivas->html->div_group(cols: $cols,html:  $html);
-        if(errores::$error){
-            return $this->error->error(mensaje: 'Error al integrar div', data: $div);
-        }
-
-        return $div;
-    }
 
     private function init_modifica(PDO $link, stdClass $row_upd, stdClass $params = new stdClass()): array|stdClass
     {
