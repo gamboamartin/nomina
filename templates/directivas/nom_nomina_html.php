@@ -44,12 +44,12 @@ class nom_nomina_html extends base_nominas
 
     private function asigna_inputs_nueva_deduccion(controlador_nom_nomina $controler, stdClass $inputs): array|stdClass
     {
-        $controler->inputs->select = new stdClass();
-        $controler->inputs->select->nom_nomina_id = $inputs->selects->nom_nomina_id;
-        $controler->inputs->select->nom_deduccion_id = $inputs->selects->nom_deduccion_id;
-        $controler->inputs->importe_gravado = $inputs->texts->importe_gravado;
-        $controler->inputs->importe_exento = $inputs->texts->importe_exento;
-        return $controler->inputs;
+        $inputs_ = $this->asigna_input_partida(controler: $controler,inputs:  $inputs);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al asignar inputs',data:  $inputs_);
+        }
+
+        return $inputs_;
     }
 
     private function asigna_inputs_otro_pago(controlador_nom_nomina $controler, stdClass $inputs): array|stdClass

@@ -1,11 +1,28 @@
 <?php
 namespace html;
+use base\controller\controler;
 use gamboamartin\errores\errores;
 use gamboamartin\system\html_controler;
 use gamboamartin\system\system;
 use stdClass;
 
 class base_nominas extends html_controler{
+
+    /**
+     * Asigna los inputs de una partida de nomina
+     * @param controler $controler Controlador en ejecucion
+     * @param stdClass $inputs conjunto de inputs a asignar para frontend
+     * @return array|stdClass
+     */
+    protected function asigna_input_partida(controler $controler, stdClass $inputs): array|stdClass
+    {
+        $controler->inputs->select = new stdClass();
+        $controler->inputs->select->nom_nomina_id = $inputs->selects->nom_nomina_id;
+        $controler->inputs->select->nom_deduccion_id = $inputs->selects->nom_deduccion_id;
+        $controler->inputs->importe_gravado = $inputs->texts->importe_gravado;
+        $controler->inputs->importe_exento = $inputs->texts->importe_exento;
+        return $controler->inputs;
+    }
 
     public function input_importe_gravado(int $cols, stdClass $row_upd, bool $value_vacio): array|string
     {
