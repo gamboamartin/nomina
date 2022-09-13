@@ -121,7 +121,7 @@ class controlador_nom_periodo extends system {
             return $this->retorno_error(mensaje: 'Error al maquetar registros',data:  $registros, header: $header,ws:$ws);
         }
         $this->registros = $registros;
-        
+
 
 
         return $r_lista;
@@ -136,9 +136,16 @@ class controlador_nom_periodo extends system {
             }
             $registros[$indice] = $row;
 
+            $row = $this->asigna_link_periodo_nominas_row(row: $row);
+            if(errores::$error){
+                return $this->errores->error(mensaje: 'Error al maquetar row',data:  $row);
+            }
+            $registros[$indice] = $row;
         }
         return $registros;
     }
+
+
 
 
     public function procesa_nomina(bool $header, bool $ws = false, string $breadcrumbs = '', bool $aplica_form = true,
@@ -155,6 +162,26 @@ class controlador_nom_periodo extends system {
         exit;
 
 
+    }
+
+    private function asigna_link_periodo_nominas_row(stdClass $row): array|stdClass
+    {
+        $keys = array('nom_periodo_id');
+        $valida = $this->validacion->valida_ids(keys: $keys,registro:  $row);
+        if(errores::$error){
+            return $this->errores->error(mensaje: 'Error al validar row',data:  $valida);
+        }
+
+        $link_periodo_nominas = $this->obj_link->link_con_id(accion:'nominas',registro_id:  $row->nom_periodo_id,
+            seccion:  $this->tabla);
+        if(errores::$error){
+            return $this->errores->error(mensaje: 'Error al genera link',data:  $link_periodo_nominas);
+        }
+
+        $row->link_periodo_nominas = $link_periodo_nominas;
+        $row->link_periodo_nominas_style = 'info';
+
+        return $row;
     }
 
     private function asigna_link_procesa_nomina_row(stdClass $row): array|stdClass
@@ -178,7 +205,6 @@ class controlador_nom_periodo extends system {
     }
     private function keys_rows_lista(): array
     {
-
         $keys_row_lista = array();
 
         $keys = array('nom_periodo_id','nom_periodo_codigo','nom_periodo_descripcion','nom_periodo_fecha_inicial_pago',
