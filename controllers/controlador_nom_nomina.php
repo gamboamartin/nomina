@@ -25,6 +25,7 @@ use models\nom_par_otro_pago;
 use models\nom_par_percepcion;
 use PDO;
 use stdClass;
+use Throwable;
 
 class controlador_nom_nomina extends system
 {
@@ -309,19 +310,14 @@ class controlador_nom_nomina extends system
                 header: $header, ws: $ws);
         }
 
-        if (isset($_POST['btn_action_next'])) {
-            unset($_POST['btn_action_next']);
+        $limpia = $this->limpia_btn();
+        if (errores::$error) {
+            return $this->retorno_error(mensaje: 'Error al limpiar boton', data: $limpia, header: $header, ws: $ws);
         }
 
-        if ($header) {
-            $this->retorno_base(registro_id:$this->registro_id, result: $r_elimina,
-                siguiente_view: $siguiente_view, ws:  $ws);
-        }
-        if ($ws) {
-            header('Content-Type: application/json');
-            echo json_encode($r_elimina, JSON_THROW_ON_ERROR);
-            exit;
-        }
+        $this->out(header: $header,result:  $r_elimina,siguiente_view:  $siguiente_view,ws:  $ws);
+
+
         $r_elimina->siguiente_view = $siguiente_view;
 
         return $r_elimina;
@@ -341,19 +337,12 @@ class controlador_nom_nomina extends system
                 header: $header, ws: $ws);
         }
 
-        if (isset($_POST['btn_action_next'])) {
-            unset($_POST['btn_action_next']);
+        $limpia = $this->limpia_btn();
+        if (errores::$error) {
+            return $this->retorno_error(mensaje: 'Error al limpiar boton', data: $limpia, header: $header, ws: $ws);
         }
 
-        if ($header) {
-            $this->retorno_base(registro_id:$this->registro_id, result: $r_elimina,
-                siguiente_view: $siguiente_view, ws:  $ws);
-        }
-        if ($ws) {
-            header('Content-Type: application/json');
-            echo json_encode($r_elimina, JSON_THROW_ON_ERROR);
-            exit;
-        }
+        $this->out(header: $header,result:  $r_elimina,siguiente_view:  $siguiente_view,ws:  $ws);
         $r_elimina->siguiente_view = $siguiente_view;
 
         return $r_elimina;
@@ -373,22 +362,24 @@ class controlador_nom_nomina extends system
                 header: $header, ws: $ws);
         }
 
-        if (isset($_POST['btn_action_next'])) {
-            unset($_POST['btn_action_next']);
+
+        $limpia = $this->limpia_btn();
+        if (errores::$error) {
+            return $this->retorno_error(mensaje: 'Error al limpiar boton', data: $limpia, header: $header, ws: $ws);
         }
 
-        if ($header) {
-            $this->retorno_base(registro_id:$this->registro_id, result: $r_elimina,
-                siguiente_view: $siguiente_view, ws:  $ws);
-        }
-        if ($ws) {
-            header('Content-Type: application/json');
-            echo json_encode($r_elimina, JSON_THROW_ON_ERROR);
-            exit;
-        }
+        $this->out(header: $header,result:  $r_elimina,siguiente_view:  $siguiente_view,ws:  $ws);
         $r_elimina->siguiente_view = $siguiente_view;
 
         return $r_elimina;
+    }
+
+    private function limpia_btn(): array
+    {
+        if (isset($_POST['btn_action_next'])) {
+            unset($_POST['btn_action_next']);
+        }
+        return $_POST;
     }
 
     public function modifica(bool $header, bool $ws = false, string $breadcrumbs = '', bool $aplica_form = true,
@@ -840,5 +831,24 @@ class controlador_nom_nomina extends system
         $r_alta_nom_par_otro_paago->siguiente_view = $siguiente_view;
 
         return $r_alta_nom_par_otro_paago;
+    }
+
+    private function out(bool $header, mixed $result, string $siguiente_view, bool $ws){
+        if ($header) {
+            $this->retorno_base(registro_id:$this->registro_id, result: $result,
+                siguiente_view: $siguiente_view, ws:  $ws);
+        }
+        if ($ws) {
+            header('Content-Type: application/json');
+            try {
+                echo json_encode($result, JSON_THROW_ON_ERROR);
+            }
+            catch (Throwable $e){
+                $error = $this->errores->error(mensaje: 'Error en json', data: $e);
+                print_r($error);
+            }
+            exit;
+        }
+        return $result;
     }
 }
