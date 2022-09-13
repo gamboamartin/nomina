@@ -39,7 +39,8 @@ class controlador_nom_tipo_periodo extends system {
             return $this->retorno_error(mensaje: 'Error al generar template',data:  $r_alta, header: $header,ws:$ws);
         }
 
-        $inputs = (new nom_tipo_periodo_html(html: $this->html_base))->genera_inputs_alta(controler: $this, link: $this->link);
+        $keys_selects = array();
+        $inputs = (new nom_tipo_periodo_html(html: $this->html_base))->genera_inputs_alta(controler: $this, keys_selects: $keys_selects, link: $this->link);
         if(errores::$error){
             $error = $this->errores->error(mensaje: 'Error al generar inputs',data:  $inputs);
             print_r($error);

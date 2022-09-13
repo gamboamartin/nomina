@@ -173,7 +173,7 @@ class controlador_nom_nomina extends system
         $keys_selects['im_registro_patronal']->label = 'Registro Patronal';
         $keys_selects['im_registro_patronal']->cols = 6;
 
-        
+
         $inputs = (new nom_nomina_html(html: $this->html_base))->genera_inputs_alta(controler: $this,
             keys_selects: $keys_selects, link: $this->link);
         if (errores::$error) {

@@ -17,9 +17,9 @@ class nom_tipo_periodo_html extends html_controler {
         return $controler->inputs;
     }
 
-    public function genera_inputs_alta(controlador_nom_tipo_periodo $controler, PDO $link): array|stdClass
+    public function genera_inputs_alta(controlador_nom_tipo_periodo $controler, array $keys_selects, PDO $link): array|stdClass
     {
-        $inputs = $this->init_alta(link: $link);
+        $inputs = $this->init_alta(keys_selects: $keys_selects, link: $link);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al generar inputs',data:  $inputs);
         }
@@ -47,9 +47,9 @@ class nom_tipo_periodo_html extends html_controler {
         return $inputs_asignados;
     }
 
-    private function init_alta(PDO $link): array|stdClass
+    private function init_alta(array $keys_selects, PDO $link): array|stdClass
     {
-        $selects = $this->selects_alta(link: $link);
+        $selects = $this->selects_alta(keys_selects: $keys_selects, link: $link);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al generar selects',data:  $selects);
         }
@@ -95,11 +95,22 @@ class nom_tipo_periodo_html extends html_controler {
         return $inputs;
     }
 
-    private function selects_alta(PDO $link): array|stdClass
+    private function selects_alta(array $keys_selects, PDO $link): array|stdClass
     {
+
         $selects = new stdClass();
 
+        foreach ($keys_selects as $name_model=>$params){
+
+            $selects  = $this->select_aut(link: $link,name_model:  $name_model,params:  $params, selects: $selects);
+            if(errores::$error){
+                return $this->error->error(mensaje: 'Error al generar select', data: $selects);
+            }
+
+        }
+
         return $selects;
+
     }
 
     private function selects_modifica(PDO $link, stdClass $row_upd): array|stdClass
