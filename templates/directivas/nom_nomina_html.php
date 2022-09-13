@@ -309,8 +309,17 @@ class nom_nomina_html extends base_nominas
         return $inputs;
     }
 
-    public function input_num_dias_pagados(int $cols, stdClass $row_upd, bool $value_vacio, bool $disabled = false):
-    array|string
+    /**
+     * Genera un input de num dias pagados
+     * @param int $cols no de columnas css
+     * @param stdClass $row_upd registro en proceso
+     * @param bool $value_vacio Si vacio deja vacio el input
+     * @param bool $disabled si disabled el input queda deshabilitado
+     * @return array|string
+     * @version 0.308.12
+     */
+    private function input_num_dias_pagados(int $cols, stdClass $row_upd, bool $value_vacio,
+                                           bool $disabled = false): array|string
     {
         $valida = $this->directivas->valida_cols(cols: $cols);
         if (errores::$error) {
