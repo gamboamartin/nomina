@@ -21,9 +21,9 @@ class nom_par_deduccion_html extends html_controler {
         return $controler->inputs;
     }
 
-    public function genera_inputs_alta(controlador_nom_par_deduccion $controler, PDO $link): array|stdClass
+    public function genera_inputs_alta(controlador_nom_par_deduccion $controler, array $keys_selects, PDO $link): array|stdClass
     {
-        $inputs = $this->init_alta(link: $link);
+        $inputs = $this->init_alta(keys_selects: $keys_selects, link: $link);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al generar inputs',data:  $inputs);
 
@@ -52,9 +52,9 @@ class nom_par_deduccion_html extends html_controler {
         return $inputs_asignados;
     }
 
-    public function init_alta(PDO $link, int $nom_nomina_id = -1, stdClass $params = new stdClass()): array|stdClass
+    public function init_alta(array $keys_selects, PDO $link): array|stdClass
     {
-        $selects = $this->selects_alta(link: $link,nom_nomina_id: $nom_nomina_id, params: $params);
+        $selects = $this->selects_alta(keys_selects: $keys_selects, link: $link);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al generar selects',data:  $selects);
         }
@@ -142,6 +142,7 @@ class nom_par_deduccion_html extends html_controler {
         return $inputs;
     }
 
+    /**
     private function selects_alta(PDO $link, int $nom_nomina_id = -1, stdClass $params = new stdClass()): array|stdClass
     {
         $selects = new stdClass();
@@ -168,6 +169,7 @@ class nom_par_deduccion_html extends html_controler {
 
         return $selects;
     }
+     * */
 
     private function selects_modifica(PDO $link, stdClass $row_upd, stdClass $params = new stdClass()): array|stdClass
     {
@@ -208,7 +210,7 @@ class nom_par_deduccion_html extends html_controler {
         return $select;
     }
 
-    private function texts_alta(stdClass $row_upd, bool $value_vacio, stdClass $params = new stdClass()): array|stdClass
+    protected function texts_alta(stdClass $row_upd, bool $value_vacio, stdClass $params = new stdClass()): array|stdClass
     {
         $texts = new stdClass();
 
