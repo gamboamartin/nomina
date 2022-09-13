@@ -34,9 +34,9 @@ class nom_conf_empleado_html extends html_controler {
         return $controler->inputs;
     }
 
-    public function genera_inputs_alta(controlador_nom_conf_empleado $controler, PDO $link): array|stdClass
+    public function genera_inputs_alta(controlador_nom_conf_empleado $controler, array $keys_selects, PDO $link): array|stdClass
     {
-        $inputs = $this->init_alta(link: $link);
+        $inputs = $this->init_alta(keys_selects: $keys_selects, link: $link);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al generar inputs',data:  $inputs);
 
@@ -65,9 +65,9 @@ class nom_conf_empleado_html extends html_controler {
         return $inputs_asignados;
     }
 
-    private function init_alta(PDO $link): array|stdClass
+    private function init_alta(array $keys_selects, PDO $link): array|stdClass
     {
-        $selects = $this->selects_alta(link: $link);
+        $selects = $this->selects_alta(keys_selects: $keys_selects,link: $link);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al generar selects',data:  $selects);
         }
@@ -113,34 +113,6 @@ class nom_conf_empleado_html extends html_controler {
         return $inputs;
     }
 
-    private function selects_alta(PDO $link): array|stdClass
-    {
-        $selects = new stdClass();
-
-        $select = (new em_empleado_html(html:$this->html_base))->select_em_empleado_id(
-            cols: 6, con_registros:true, id_selected:-1,link: $link);
-        if(errores::$error){
-            return $this->error->error(mensaje: 'Error al generar select',data:  $select);
-        }
-        $selects->em_empleado_id = $select;
-
-        $select = (new em_cuenta_bancaria_html(html:$this->html_base))->select_em_cuenta_bancaria_id(
-            cols: 6, con_registros:false, id_selected:-1,link: $link);
-        if(errores::$error){
-            return $this->error->error(mensaje: 'Error al generar select',data:  $select);
-        }
-        $selects->em_cuenta_bancaria_id = $select;
-
-        $select = (new nom_conf_nomina_html(html:$this->html_base))->select_nom_conf_nomina(
-            cols: 6, con_registros:true, id_selected:-1,link: $link);
-        if(errores::$error){
-            return $this->error->error(mensaje: 'Error al generar select',data:  $select);
-        }
-        $selects->nom_conf_nomina_id = $select;
-
-        return $selects;
-    }
-
     private function selects_modifica(PDO $link, stdClass $row_upd): array|stdClass
     {
         $nom_conf_empleado = (new nom_conf_empleado(link: $link))->registro( registro_id: $row_upd->id,
@@ -168,7 +140,7 @@ class nom_conf_empleado_html extends html_controler {
         }
         $selects->em_cuenta_bancaria_id = $select;
 
-        $select = (new nom_conf_nomina_html(html:$this->html_base))->select_nom_conf_nomina(
+        $select = (new nom_conf_nomina_html(html:$this->html_base))->select_nom_conf_nomina_id(
             cols: 6, con_registros:true, id_selected:$row_upd->nom_conf_nomina_id,link: $link);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al generar select',data:  $select);

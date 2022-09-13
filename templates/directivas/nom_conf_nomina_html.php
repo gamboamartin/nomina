@@ -129,7 +129,7 @@ class nom_conf_nomina_html extends html_controler {
         return $selects;
     }
 
-    public function select_nom_conf_nomina(int $cols, bool $con_registros, int $id_selected, PDO $link,
+    public function select_nom_conf_nomina_id(int $cols, bool $con_registros, int $id_selected, PDO $link,
                                            bool $required = true): array|string
     {
         $modelo = new nom_conf_nomina(link: $link);

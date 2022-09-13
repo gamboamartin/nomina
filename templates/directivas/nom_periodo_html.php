@@ -259,7 +259,7 @@ class nom_periodo_html extends html_controler {
 
         $selects = new stdClass();
 
-        $select = (new nom_conf_nomina_html(html:$this->html_base))->select_nom_conf_nomina(
+        $select = (new nom_conf_nomina_html(html:$this->html_base))->select_nom_conf_nomina_id(
             cols: 6, con_registros:true, id_selected:-1,link: $link,required: false);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al generar select',data:  $select);

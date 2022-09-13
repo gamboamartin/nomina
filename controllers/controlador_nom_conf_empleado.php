@@ -49,7 +49,22 @@ class controlador_nom_conf_empleado extends system {
             return $this->retorno_error(mensaje: 'Error al generar template',data:  $r_alta, header: $header,ws:$ws);
         }
 
-        $inputs = (new nom_conf_empleado_html(html: $this->html_base))->genera_inputs_alta(controler: $this, link: $this->link);
+        $keys_selects = array();
+        $keys_selects['em_empleado'] = new stdClass();
+        $keys_selects['em_empleado']->label = 'Empleado';
+        $keys_selects['em_empleado']->cols = 6;
+
+        $keys_selects['em_cuenta_bancaria'] = new stdClass();
+        $keys_selects['em_cuenta_bancaria']->label = 'Cuenta Bancaria';
+        $keys_selects['em_cuenta_bancaria']->cols = 6;
+
+        $keys_selects['nom_conf_nomina'] = new stdClass();
+        $keys_selects['nom_conf_nomina']->label = 'Conf de Nomina';
+        $keys_selects['nom_conf_nomina']->cols = 6;
+
+
+        $inputs = (new nom_conf_empleado_html(html: $this->html_base))->genera_inputs_alta(
+            controler: $this, keys_selects: $keys_selects, link: $this->link);
         if(errores::$error){
             $error = $this->errores->error(mensaje: 'Error al generar inputs',data:  $inputs);
             print_r($error);
