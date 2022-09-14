@@ -22,24 +22,32 @@
                                     </div>
 
                                     <table class="table table-striped footable-sort" data-sorting="true">
-                                        <th>Id</th>
-                                        <th>Codigo</th>
-                                        <th>Codigo Bis</th>
-                                        <th>Descripcion</th>
-                                        <th>Descripcion Select</th>
-                                        <th>Alias</th>
-                                        <th>Modifica</th>
-                                        <th>Elimina</th>
+                                        <thead>
+                                        <tr>
+                                            <th data-breakpoints="xs sm md" data-type="html">Id</th>
+                                            <th data-breakpoints="xs sm md" data-type="html">Codigo Nomina</th>
+
+                                            <th data-breakpoints="xs sm md"  data-type="html">Codigo Empleado</th>
+                                            <th data-breakpoints="xs sm md"  data-type="html">Empleado</th>
+                                            <th data-breakpoints="xs sm md"  data-type="html">Fecha Inicial</th>
+                                            <th data-breakpoints="xs sm md"  data-type="html">Fecha Final</th>
+                                            <th data-breakpoints="xs sm md"  data-type="html">Rfc</th>
+
+                                            <th data-breakpoints="xs md" class="control"  data-type="html">Modifica</th>
+                                            <th data-breakpoints="xs md" class="control"  data-type="html">Elimina</th>
+                                        </tr>
+                                        </thead>
                                         <tbody>
 
                                         <?php foreach ($controlador->nominas->registros as $nomina){?>
                                             <tr>
                                                 <td><?php echo $nomina['nom_nomina_id']; ?></td>
                                                 <td><?php echo $nomina['nom_nomina_codigo']; ?></td>
-                                                <td><?php echo $nomina['nom_nomina_codigo_bis']; ?></td>
-                                                <td><?php echo $nomina['nom_nomina_descripcion']; ?></td>
-                                                <td><?php echo $nomina['nom_nomina_descripcion_select']; ?></td>
-                                                <td><?php echo $nomina['nom_nomina_alias']; ?></td>
+                                                <td><?php echo $nomina['em_empleado_codigo']; ?></td>
+                                                <td><?php echo $nomina['em_empleado_codigo']. ' '.$nomina['em_empleado_ap'].' '.$nomina['em_empleado_am']; ?></td>
+                                                <td><?php echo $nomina['nom_nomina_fecha_inicial_pago']; ?></td>
+                                                <td><?php echo $nomina['nom_nomina_fecha_final_pago']; ?></td>
+                                                <td><?php echo $nomina['org_empresa_rfc']; ?></td>
                                                 <td><?php echo $nomina['link_modifica']; ?></td>
                                                 <td><?php echo $nomina['link_elimina']; ?></td>
                                             </tr>
