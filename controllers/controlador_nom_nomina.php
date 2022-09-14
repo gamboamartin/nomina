@@ -126,14 +126,9 @@ class controlador_nom_nomina extends system
         $this->link_nom_par_percepcion_modifica_bd = $link_nom_par_percepcion_modifica_bd;
         $this->link_nom_par_deduccion_modifica_bd = $link_nom_par_deduccion_modifica_bd;
         $this->link_nom_par_otro_pago_modifica_bd = $link_nom_par_otro_pago_modifica_bd;
-
-
-
-
         $this->paths_conf = $paths_conf;
         $this->nom_nomina_id = $this->registro_id;
 
-       
 
         $init = $this->init_partidas_ids();
         if (errores::$error) {
@@ -141,6 +136,14 @@ class controlador_nom_nomina extends system
             print_r($error);
             die('Error');
         }
+
+        $keys_rows_lista = $this->keys_rows_lista();
+        if (errores::$error) {
+            $error = $this->errores->error(mensaje: 'Error al generar keys de lista', data: $init);
+            print_r($error);
+            die('Error');
+        }
+        $this->keys_row_lista = $keys_rows_lista;
 
     }
 
@@ -386,6 +389,38 @@ class controlador_nom_nomina extends system
             $this->nom_par_otro_pago_id = $_GET['nom_par_otro_pago_id'];
         }
         return $_GET;
+    }
+
+    private function keys_rows_lista(): array
+    {
+        $keys_rows_lista = array();
+        $keys = array('nom_nomina_id','nom_nomina_codigo','nom_nomina_fecha_inicial_pago','nom_nomina_fecha_final_pago',
+            'em_empleado_codigo','em_empleado_nombre','em_empleado_ap','em_empleado_am','org_empresa_rfc');
+
+        foreach ($keys as $campo) {
+            $keys_rows_lista = $this->key_row_lista_init(campo: $campo,keys_rows_lista: $keys_rows_lista);
+            if (errores::$error){
+                return $this->errores->error(mensaje: "error al inicializar key",data: $keys_rows_lista);
+            }
+        }
+
+        return $keys_rows_lista;
+    }
+
+    private function key_row_lista_init(string $campo, array $keys_rows_lista): array
+    {
+        $data = new stdClass();
+        $data->campo = $campo;
+
+        $campo = str_replace("nom_nomina_",'',$campo);
+        $campo = str_replace("nom_",'',$campo);
+        $campo = str_replace("_",'',$campo);
+        $campo = ucfirst(strtolower($campo));
+
+        $data->name_lista = $campo;
+        $keys_rows_lista[] = $data;
+
+        return $keys_rows_lista;
     }
 
     private function limpia_btn(): array

@@ -16,9 +16,9 @@ class nom_nomina extends modelo
         $columnas = array($tabla => false, 'dp_calle_pertenece' => $tabla, 'dp_calle' => 'dp_calle_pertenece',
             'dp_colonia_postal' => 'dp_calle_pertenece', 'dp_colonia' => 'dp_colonia_postal',
             'dp_cp' => 'dp_colonia_postal', 'dp_municipio' => 'dp_cp', 'dp_estado' => 'dp_municipio',
-            'dp_pais' => 'dp_estado', 'em_empleado' => $tabla, 'fc_factura' => $tabla,'
-            cat_sat_periodicidad_pago_nom'=>$tabla,'im_registro_patronal'=>$tabla,'cat_sat_tipo_contrato_nom'=>$tabla,
-            'nom_periodo'=>$tabla);
+            'dp_pais' => 'dp_estado', 'em_empleado' => $tabla, 'fc_factura' => $tabla,'fc_csd' =>'fc_factura',
+            'org_sucursal' => 'fc_csd','org_empresa'=> 'org_sucursal', 'cat_sat_periodicidad_pago_nom'=>$tabla,
+            'im_registro_patronal'=>$tabla,'cat_sat_tipo_contrato_nom'=>$tabla, 'nom_periodo'=>$tabla);
 
         $campos_obligatorios = array('cat_sat_periodicidad_pago_nom_id', 'cat_sat_tipo_contrato_nom_id',
             'cat_sat_tipo_jornada_nom_id','cat_sat_tipo_nomina_id','dp_calle_pertenece_id', 'em_cuenta_bancaria_id',
