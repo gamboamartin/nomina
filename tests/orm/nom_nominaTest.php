@@ -1,13 +1,11 @@
 <?php
 namespace tests\controllers;
 
-use controllers\controlador_cat_sat_tipo_persona;
+use gamboamartin\empleado\models\em_cuenta_bancaria;
 use gamboamartin\errores\errores;
 use gamboamartin\test\liberator;
 use gamboamartin\test\test;
-use JsonException;
-use models\em_cuenta_bancaria;
-use models\fc_cfd_partida;
+
 use models\fc_factura;
 use models\fc_partida;
 use models\nom_conf_empleado;
@@ -16,7 +14,6 @@ use models\nom_nomina;
 use models\nom_par_deduccion;
 use models\nom_par_otro_pago;
 use models\nom_par_percepcion;
-use models\nom_periodo;
 use stdClass;
 use tests\base_test;
 
@@ -228,7 +225,7 @@ class nom_nominaTest extends test {
             exit;
         }
 
-        $del = (new base_test())->del($this->link, 'nom_par_percepcion');
+        $del = (new base_test())->del($this->link, 'models\\nom_par_percepcion');
         if(errores::$error){
             $error = (new errores())->error('Error al eliminar', $del);
             print_r($error);
@@ -427,63 +424,63 @@ class nom_nominaTest extends test {
         $nomina = new nom_nomina($this->link);
         $nomina = new liberator($nomina);
 
-        $del =  (new base_test())->del($this->link, 'nom_data_subsidio');
+        $del =  (new base_test())->del($this->link, 'models\\nom_data_subsidio');
         if(errores::$error){
             $error = (new errores())->error(mensaje: 'Error al eliminar', data: $del);
             print_r($error);
             exit;
         }
 
-        $del =  (new base_test())->del($this->link, 'nom_par_deduccion');
+        $del =  (new base_test())->del($this->link, 'models\\nom_par_deduccion');
         if(errores::$error){
             $error = (new errores())->error(mensaje: 'Error al eliminar', data: $del);
             print_r($error);
             exit;
         }
 
-        $del =  (new base_test())->del($this->link, 'nom_par_percepcion');
+        $del =  (new base_test())->del($this->link, 'models\\nom_par_percepcion');
         if(errores::$error){
             $error = (new errores())->error(mensaje: 'Error al eliminar', data: $del);
             print_r($error);
             exit;
         }
 
-        $del =  (new base_test())->del($this->link, 'nom_par_otro_pago');
+        $del =  (new base_test())->del($this->link, 'models\\nom_par_otro_pago');
         if(errores::$error){
             $error = (new errores())->error(mensaje: 'Error al eliminar', data: $del);
             print_r($error);
             exit;
         }
 
-        $del =  (new base_test())->del($this->link, 'nom_nomina');
+        $del =  (new base_test())->del($this->link, 'models\\nom_nomina');
         if(errores::$error){
             $error = (new errores())->error(mensaje: 'Error al eliminar', data: $del);
             print_r($error);
             exit;
         }
 
-        $del =  (new base_test())->del($this->link, 'nom_conf_empleado');
+        $del =  (new base_test())->del($this->link, 'models\\nom_conf_empleado');
         if(errores::$error){
             $error = (new errores())->error(mensaje: 'Error al eliminar', data: $del);
             print_r($error);
             exit;
         }
 
-        $del =  (new base_test())->del($this->link, 'em_cuenta_bancaria');
+        $del =  (new base_test())->del($this->link, 'gamboamartin\\empleado\\models\\em_cuenta_bancaria');
         if(errores::$error){
             $error = (new errores())->error(mensaje: 'Error al eliminar', data: $del);
             print_r($error);
             exit;
         }
 
-        $del =  (new base_test())->del($this->link, 'nom_rel_empleado_sucursal');
+        $del =  (new base_test())->del($this->link, 'models\\nom_rel_empleado_sucursal');
         if(errores::$error){
             $error = (new errores())->error(mensaje: 'Error al eliminar', data: $del);
             print_r($error);
             exit;
         }
 
-        $del =  (new base_test())->del($this->link, 'em_empleado');
+        $del =  (new base_test())->del($this->link, 'gamboamartin\\empleado\\models\\em_empleado');
         if(errores::$error){
             $error = (new errores())->error(mensaje: 'Error al eliminar', data: $del);
             print_r($error);

@@ -1,11 +1,10 @@
 <?php
 namespace tests;
 use base\orm\modelo_base;
+use gamboamartin\empleado\models\em_cuenta_bancaria;
+use gamboamartin\empleado\models\em_empleado;
 use gamboamartin\errores\errores;
-use models\cat_sat_tipo_jornada_nom;
 use models\cat_sat_tipo_nomina;
-use models\em_cuenta_bancaria;
-use models\em_empleado;
 use models\nom_conf_empleado;
 use models\nom_conf_nomina;
 use models\nom_nomina;
@@ -233,6 +232,7 @@ class base_test{
 
     public function del(PDO $link, string $name_model): array
     {
+
         $model = (new modelo_base($link))->genera_modelo(modelo: $name_model);
         $del = $model->elimina_todo();
         if(errores::$error){
@@ -248,7 +248,7 @@ class base_test{
             return (new errores())->error('Error al eliminar', $del);
         }
 
-        $del = $this->del($link, 'cat_sat_tipo_nomina');
+        $del = $this->del($link, 'models\\cat_sat_tipo_nomina');
         if(errores::$error){
             return (new errores())->error('Error al eliminar', $del);
         }
@@ -267,7 +267,7 @@ class base_test{
             return (new errores())->error('Error al eliminar', $del);
         }
 
-        $del = $this->del($link, 'em_cuenta_bancaria');
+        $del = $this->del($link, 'gamboamartin\\empleado\\models\\em_cuenta_bancaria');
         if(errores::$error){
             return (new errores())->error('Error al eliminar', $del);
         }
@@ -287,7 +287,7 @@ class base_test{
             return (new errores())->error('Error al eliminar', $del);
         }
 
-        $del = $this->del($link, 'em_empleado');
+        $del = $this->del($link, 'gamboamartin\\empleado\\models\\em_empleado');
         if(errores::$error){
             return (new errores())->error('Error al eliminar', $del);
         }
@@ -300,7 +300,7 @@ class base_test{
         if(errores::$error){
             return (new errores())->error('Error al eliminar', $del);
         }
-        $del = $this->del($link, 'fc_factura');
+        $del = $this->del($link, 'models\\fc_factura');
         if(errores::$error){
             return (new errores())->error('Error al eliminar', $del);
         }
@@ -309,7 +309,7 @@ class base_test{
 
     public function del_fc_partida(PDO $link): array
     {
-        $del = $this->del($link, 'fc_partida');
+        $del = $this->del($link, 'models\\fc_partida');
         if(errores::$error){
             return (new errores())->error('Error al eliminar', $del);
         }
@@ -318,7 +318,7 @@ class base_test{
 
     public function del_nom_conf_empleado(PDO $link): array
     {
-        $del = $this->del($link, 'nom_conf_empleado');
+        $del = $this->del($link, 'models\\nom_conf_empleado');
         if(errores::$error){
             return (new errores())->error('Error al eliminar', $del);
         }
@@ -327,7 +327,7 @@ class base_test{
 
     public function del_nom_conf_nomina(PDO $link): array
     {
-        $del = $this->del($link, 'nom_conf_nomina');
+        $del = $this->del($link, 'models\\nom_conf_nomina');
         if(errores::$error){
             return (new errores())->error('Error al eliminar', $del);
         }
@@ -336,7 +336,7 @@ class base_test{
 
     public function del_nom_data_subsidio(PDO $link): array
     {
-        $del = $this->del($link, 'nom_data_subsidio');
+        $del = $this->del($link, 'models\\nom_data_subsidio');
         if(errores::$error){
             return (new errores())->error('Error al eliminar', $del);
         }
@@ -362,7 +362,7 @@ class base_test{
 
 
 
-        $del = $this->del($link, 'nom_nomina');
+        $del = $this->del($link, 'models\\nom_nomina');
         if(errores::$error){
             return (new errores())->error('Error al eliminar', $del);
         }
@@ -376,7 +376,7 @@ class base_test{
             return (new errores())->error('Error al eliminar', $del);
         }
 
-        $del = $this->del($link, 'nom_par_deduccion');
+        $del = $this->del($link, 'models\\nom_par_deduccion');
         if(errores::$error){
             return (new errores())->error('Error al eliminar', $del);
         }
@@ -385,7 +385,7 @@ class base_test{
 
     public function del_nom_par_otro_pago(PDO $link): array
     {
-        $del = $this->del($link, 'nom_par_otro_pago');
+        $del = $this->del($link, 'models\\nom_par_otro_pago');
         if(errores::$error){
             return (new errores())->error('Error al eliminar', $del);
         }
@@ -394,7 +394,7 @@ class base_test{
 
     public function del_nom_par_percepcion(PDO $link): array
     {
-        $del = $this->del($link, 'nom_par_percepcion');
+        $del = $this->del($link, 'models\\nom_par_percepcion');
         if(errores::$error){
             return (new errores())->error('Error al eliminar', $del);
         }
@@ -403,7 +403,7 @@ class base_test{
 
     public function del_nom_periodo(PDO $link): array
     {
-        $del = $this->del($link, 'nom_periodo');
+        $del = $this->del($link, 'models\\nom_periodo');
         if(errores::$error){
             return (new errores())->error('Error al eliminar', $del);
         }
@@ -412,7 +412,7 @@ class base_test{
 
     public function del_nom_rel_empleado_sucursal(PDO $link): array
     {
-        $del = $this->del($link, 'nom_rel_empleado_sucursal');
+        $del = $this->del($link, 'models\\nom_rel_empleado_sucursal');
         if(errores::$error){
             return (new errores())->error('Error al eliminar', $del);
         }

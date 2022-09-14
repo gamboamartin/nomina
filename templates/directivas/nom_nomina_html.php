@@ -2,10 +2,10 @@
 
 namespace html;
 
+use gamboamartin\empleado\models\em_empleado;
 use gamboamartin\errores\errores;
 use gamboamartin\nomina\controllers\controlador_nom_nomina;
 use gamboamartin\validacion\validacion;
-use models\em_empleado;
 use models\fc_factura;
 use models\nom_nomina;
 use PDO;

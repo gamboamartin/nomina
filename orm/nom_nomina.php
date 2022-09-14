@@ -3,8 +3,8 @@
 namespace models;
 
 use base\orm\modelo;
+use gamboamartin\empleado\models\em_empleado;
 use gamboamartin\errores\errores;
-use JsonException;
 use PDO;
 use stdClass;
 

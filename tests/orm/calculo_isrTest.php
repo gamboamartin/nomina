@@ -116,7 +116,7 @@ class calculo_isrTest extends test {
             print_r($error);
             exit;
         }
-        $del = (new base_test())->del($this->link, 'nom_par_percepcion');
+        $del = (new base_test())->del($this->link, 'models\\nom_par_percepcion');
         if(errores::$error){
             $error = (new errores())->error(mensaje: 'Error al eliminar', data: $del);
             print_r($error);

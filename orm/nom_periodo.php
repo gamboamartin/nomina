@@ -1,8 +1,7 @@
 <?php
 namespace models;
-use base\orm\modelo;
+use gamboamartin\empleado\models\em_empleado;
 use gamboamartin\errores\errores;
-use html\nom_nomina_html;
 use PDO;
 use stdClass;
 
