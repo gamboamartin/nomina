@@ -102,6 +102,16 @@ class nom_par_otro_pago extends nominas
 
     }
 
+    public function otros_pagos_by_nomina(int $nom_nomina_id): array|stdClass
+    {
+        $filtro['nom_nomina.id'] = $nom_nomina_id;
+        $otros_pagos = $this->filtro_and(filtro: $filtro);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al obtener otros pagos', data: $otros_pagos);
+        }
+        return $otros_pagos;
+    }
+
 
 
 

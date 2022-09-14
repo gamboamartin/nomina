@@ -9,31 +9,20 @@
 
 namespace gamboamartin\nomina\controllers;
 
-use gamboamartin\comercial\controllers\controlador_com_sucursal;
 use gamboamartin\errores\errores;
-use gamboamartin\organigrama\controllers\controlador_org_sucursal;
-use gamboamartin\system\actions;
 use gamboamartin\system\links_menu;
-use gamboamartin\system\system;
 use gamboamartin\template\html;
-use html\com_sucursal_html;
-use html\nom_nomina_html;
 use html\nom_otro_pago_html;
-use html\nom_par_percepcion_html;
-use html\org_sucursal_html;
-use html\selects;
-use JsonException;
-use models\nom_nomina;
 use models\nom_otro_pago;
 use models\nom_par_deduccion;
 use models\nom_par_percepcion;
-use models\org_sucursal;
 use PDO;
 use stdClass;
 
-class controlador_nom_otro_pago extends system
+class controlador_nom_otro_pago extends base_nom
 {
     public stdClass $paths_conf;
+
 
     public function __construct(PDO      $link, html $html = new \gamboamartin\template_1\html(),
                                 stdClass $paths_conf = new stdClass())
@@ -100,36 +89,10 @@ class controlador_nom_otro_pago extends system
 
         $this->nom_nomina_id = $this->registro_id;
 
-        $filtro['nom_nomina.id'] = $this->nom_nomina_id;
-        $deducciones = (new nom_par_deduccion($this->link))->filtro_and(filtro: $filtro);
+        $partidas = $this->partidas();
         if (errores::$error) {
-            return $this->retorno_error(mensaje: 'Error al obtener deducciones', data: $deducciones, header: $header, ws: $ws);
+            return $this->retorno_error(mensaje: 'Error al obtener partidas', data: $partidas, header: $header, ws: $ws);
         }
-
-        foreach ($deducciones->registros as $indice => $deduccion) {
-
-            $deduccion = $this->data_deduccion_btn(deduccion: $deduccion);
-            if (errores::$error) {
-                return $this->retorno_error(mensaje: 'Error al asignar botones', data: $deduccion, header: $header, ws: $ws);
-            }
-            $deducciones->registros[$indice] = $deduccion;
-        }
-        $this->deducciones = $deducciones;
-
-        $percepciones = (new nom_par_percepcion($this->link))->filtro_and(filtro: $filtro);
-        if (errores::$error) {
-            return $this->retorno_error(mensaje: 'Error al obtener percepciones', data: $percepciones, header: $header, ws: $ws);
-        }
-
-        foreach ($percepciones->registros as $indice => $percepcion) {
-
-            $percepcion = $this->data_percepcion_btn(percepcion: $percepcion);
-            if (errores::$error) {
-                return $this->retorno_error(mensaje: 'Error al asignar botones', data: $percepcion, header: $header, ws: $ws);
-            }
-            $percepciones->registros[$indice] = $percepcion;
-        }
-        $this->percepciones = $percepciones;
 
         return $base->template;
     }

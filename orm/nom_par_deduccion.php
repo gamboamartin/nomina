@@ -56,6 +56,16 @@ class nom_par_deduccion extends nominas{
         return $r_alta_bd;
     }
 
+    public function deducciones_by_nomina(int $nom_nomina_id): array|stdClass
+    {
+        $filtro['nom_nomina.id'] = $nom_nomina_id;
+        $deducciones = $this->filtro_and(filtro: $filtro);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al obtener deducciones', data: $deducciones);
+        }
+        return $deducciones;
+    }
+
     public function elimina_bd(int $id): array
     {
 

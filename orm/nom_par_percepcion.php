@@ -55,5 +55,15 @@ class nom_par_percepcion extends nominas{
 
     }
 
+    public function percepciones_by_nomina(int $nom_nomina_id): array|stdClass
+    {
+        $filtro['nom_nomina.id'] = $nom_nomina_id;
+        $percepciones = $this->filtro_and(filtro: $filtro);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al obtener percepciones', data: $percepciones);
+        }
+        return $percepciones;
+    }
+
 
 }

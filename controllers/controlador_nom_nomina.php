@@ -12,7 +12,6 @@ namespace gamboamartin\nomina\controllers;
 use gamboamartin\errores\errores;
 use gamboamartin\system\actions;
 use gamboamartin\system\links_menu;
-use gamboamartin\system\system;
 use gamboamartin\template\html;
 use html\nom_nomina_html;
 use html\nom_par_deduccion_html;
@@ -27,7 +26,7 @@ use PDO;
 use stdClass;
 use Throwable;
 
-class controlador_nom_nomina extends system
+class controlador_nom_nomina extends base_nom
 {
     public string $link_crea_nomina = '';
     public string $link_nom_nomina_alta_bd = '';
@@ -38,13 +37,12 @@ class controlador_nom_nomina extends system
     public string $link_nom_par_percepcion_modifica_bd = '';
     public string $link_nom_par_deduccion_modifica_bd = '';
     public string $link_nom_par_otro_pago_modifica_bd = '';
-    public int $nom_nomina_id = -1;
     public int $nom_par_percepcion_id = -1;
     public int $nom_par_deduccion_id = -1;
     public int $nom_par_otro_pago_id = -1;
     public stdClass $paths_conf;
-    public stdClass $deducciones;
-    public stdClass $percepciones;
+
+
     public stdClass $otros_pagos;
 
     protected stdClass $params_actions;
@@ -255,47 +253,7 @@ class controlador_nom_nomina extends system
         return $deduccion;
     }
 
-    private function data_otro_pago_btn(array $otro_pago): array
-    {
-        $params['nom_par_otro_pago_id'] = $otro_pago['nom_par_otro_pago_id'];
 
-        $btn_elimina = $this->html_base->button_href(accion: 'elimina_otro_pago_bd', etiqueta: 'Elimina',
-            registro_id: $this->registro_id, seccion: 'nom_nomina', style: 'danger', params: $params);
-        if (errores::$error) {
-            return $this->errores->error(mensaje: 'Error al generar btn', data: $btn_elimina);
-        }
-        $otro_pago['link_elimina'] = $btn_elimina;
-
-        $btn_modifica = $this->html_base->button_href(accion: 'modifica_otro_pago', etiqueta: 'Modifica',
-            registro_id: $this->registro_id, seccion: 'nom_nomina', style: 'warning', params: $params);
-        if (errores::$error) {
-            return $this->errores->error(mensaje: 'Error al generar btn', data: $btn_modifica);
-        }
-        $otro_pago['link_modifica'] = $btn_modifica;
-
-        return $otro_pago;
-    }
-
-    private function data_percepcion_btn(array $percepcion): array
-    {
-        $params['nom_par_percepcion_id'] = $percepcion['nom_par_percepcion_id'];
-
-        $btn_elimina = $this->html_base->button_href(accion: 'elimina_percepcion_bd', etiqueta: 'Elimina',
-            registro_id: $this->registro_id, seccion: 'nom_nomina', style: 'danger', params: $params);
-        if (errores::$error) {
-            return $this->errores->error(mensaje: 'Error al generar btn', data: $btn_elimina);
-        }
-        $percepcion['link_elimina'] = $btn_elimina;
-
-        $btn_modifica = $this->html_base->button_href(accion: 'modifica_percepcion', etiqueta: 'Modifica',
-            registro_id: $this->registro_id, seccion: 'nom_nomina', style: 'warning', params: $params);
-        if (errores::$error) {
-            return $this->errores->error(mensaje: 'Error al generar btn', data: $btn_modifica);
-        }
-        $percepcion['link_modifica'] = $btn_modifica;
-
-        return $percepcion;
-    }
 
     public function elimina_deduccion_bd(bool $header, bool $ws = false): array|stdClass
     {
@@ -412,9 +370,7 @@ class controlador_nom_nomina extends system
         $data = new stdClass();
         $data->campo = $campo;
 
-        $campo = str_replace("nom_nomina_",'',$campo);
-        $campo = str_replace("nom_",'',$campo);
-        $campo = str_replace("_",'',$campo);
+        $campo = str_replace(array("nom_nomina_", "nom_", "_"), '', $campo);
         $campo = ucfirst(strtolower($campo));
 
         $data->name_lista = $campo;
@@ -441,50 +397,10 @@ class controlador_nom_nomina extends system
                 header: $header, ws: $ws);
         }
 
-        $filtro['nom_nomina.id'] = $this->nom_nomina_id;
-        $deducciones = (new nom_par_deduccion($this->link))->filtro_and(filtro: $filtro);
+        $partidas = $this->partidas();
         if (errores::$error) {
-            return $this->retorno_error(mensaje: 'Error al obtener deducciones', data: $deducciones, header: $header, ws: $ws);
+            return $this->retorno_error(mensaje: 'Error al obtener partidas', data: $partidas, header: $header, ws: $ws);
         }
-
-        foreach ($deducciones->registros as $indice => $deduccion) {
-
-            $deduccion = $this->data_deduccion_btn(deduccion: $deduccion);
-            if (errores::$error) {
-                return $this->retorno_error(mensaje: 'Error al asignar botones', data: $deduccion, header: $header, ws: $ws);
-            }
-            $deducciones->registros[$indice] = $deduccion;
-        }
-        $this->deducciones = $deducciones;
-
-        $percepciones = (new nom_par_percepcion($this->link))->filtro_and(filtro: $filtro);
-        if (errores::$error) {
-            return $this->retorno_error(mensaje: 'Error al obtener percepciones', data: $percepciones, header: $header, ws: $ws);
-        }
-
-        foreach ($percepciones->registros as $indice => $percepcion) {
-
-            $percepcion = $this->data_percepcion_btn(percepcion: $percepcion);
-            if (errores::$error) {
-                return $this->retorno_error(mensaje: 'Error al asignar botones', data: $percepcion, header: $header, ws: $ws);
-            }
-            $percepciones->registros[$indice] = $percepcion;
-        }
-        $this->percepciones = $percepciones;
-
-        $otros_pagos = (new nom_par_otro_pago($this->link))->filtro_and(filtro: $filtro);
-        if (errores::$error) {
-            return $this->retorno_error(mensaje: 'Error al obtener otros pagos', data: $otros_pagos, header: $header, ws: $ws);
-        }
-        foreach ($otros_pagos->registros as $indice => $otro_pago) {
-
-            $otro_pago = $this->data_otro_pago_btn(otro_pago: $otro_pago);
-            if (errores::$error) {
-                return $this->retorno_error(mensaje: 'Error al asignar botones', data: $otro_pago, header: $header, ws: $ws);
-            }
-            $otros_pagos->registros[$indice] = $otro_pago;
-        }
-        $this->otros_pagos = $otros_pagos;
 
         return $base->template;
     }
