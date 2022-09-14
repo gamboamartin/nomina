@@ -83,160 +83,40 @@ class calcula_nominaTest extends test {
 
         $link = $this->link;
 
-
-
-        $del = (new base_test())->del($this->link, 'nom_data_subsidio');
-        if(errores::$error){
-            $error = (new errores())->error('Error al eliminar', $del);
-            print_r($error);
-            exit;
-        }
-        $del = (new base_test())->del($this->link, 'nom_par_deduccion');
-        if(errores::$error){
-            $error = (new errores())->error('Error al eliminar', $del);
-            print_r($error);
-            exit;
-        }
-        $del = (new base_test())->del($this->link, 'nom_par_otro_pago');
+        $del = (new base_test())->del_cat_sat_tipo_nomina($this->link);
         if(errores::$error){
             $error = (new errores())->error('Error al eliminar', $del);
             print_r($error);
             exit;
         }
 
-        $del = (new base_test())->del($this->link, 'nom_par_percepcion');
-        if(errores::$error){
-            $error = (new errores())->error('Error al eliminar', $del);
-            print_r($error);
-            exit;
-        }
-        $del = (new base_test())->del($this->link, 'nom_nomina');
+        $del = (new base_test())->del_em_empleado($this->link);
         if(errores::$error){
             $error = (new errores())->error('Error al eliminar', $del);
             print_r($error);
             exit;
         }
 
-        $del = (new base_test())->del($this->link, 'fc_partida');
+        $del = (new base_test())->del_fc_factura($this->link);
         if(errores::$error){
             $error = (new errores())->error('Error al eliminar', $del);
             print_r($error);
             exit;
         }
 
-        $del = (new base_test())->del($this->link, 'fc_factura');
+        $del = (new base_test())->del_nom_conf_nomina($this->link);
+        if(errores::$error){
+            $error = (new errores())->error('Error al eliminar', $del);
+            print_r($error);
+            exit;
+        }
+        $del = (new base_test())->del_nom_periodo($this->link);
         if(errores::$error){
             $error = (new errores())->error('Error al eliminar', $del);
             print_r($error);
             exit;
         }
 
-        $del = (new base_test())->del($this->link, 'nom_rel_empleado_sucursal');
-        if(errores::$error){
-            $error = (new errores())->error('Error al eliminar', $del);
-            print_r($error);
-            exit;
-        }
-
-        $del = (new base_test())->del($this->link, 'nom_conf_empleado');
-        if(errores::$error){
-            $error = (new errores())->error('Error al eliminar', $del);
-            print_r($error);
-            exit;
-        }
-
-        $del = (new base_test())->del($this->link, 'em_cuenta_bancaria');
-        if(errores::$error){
-            $error = (new errores())->error('Error al eliminar', $del);
-            print_r($error);
-            exit;
-        }
-
-        $del = (new base_test())->del($this->link, 'em_empleado');
-        if(errores::$error){
-            $error = (new errores())->error('Error al eliminar', $del);
-            print_r($error);
-            exit;
-        }
-
-        $del = (new base_test())->del($this->link, 'nom_periodo');
-        if(errores::$error){
-            $error = (new errores())->error('Error al eliminar', $del);
-            print_r($error);
-            exit;
-        }
-
-        $del = (new base_test())->del($this->link, 'em_cuenta_bancaria');
-        if(errores::$error){
-            $error = (new errores())->error('Error al eliminar', $del);
-            print_r($error);
-            exit;
-        }
-
-
-
-        $del = (new base_test())->del($this->link, 'nom_conf_nomina');
-        if(errores::$error){
-            $error = (new errores())->error('Error al eliminar', $del);
-            print_r($error);
-            exit;
-        }
-
-        $del = (new base_test())->del($this->link, 'cat_sat_tipo_nomina');
-        if(errores::$error){
-            $error = (new errores())->error('Error al eliminar', $del);
-            print_r($error);
-            exit;
-        }
-
-
-        $alta = (new base_test())->alta_em_empleado(link: $this->link, salario_diario: 436.2, salario_diario_integrado: 436.2);
-        if(errores::$error){
-            $error = (new errores())->error('Error al dar de alta', $alta);
-            print_r($error);
-            exit;
-        }
-
-        $alta = (new base_test())->alta_em_cuenta_bancaria($this->link);
-        if(errores::$error){
-            $error = (new errores())->error('Error al dar de alta', $alta);
-            print_r($error);
-            exit;
-        }
-
-        $alta = (new base_test())->alta_nom_conf_nomina($this->link);
-        if(errores::$error){
-            $error = (new errores())->error('Error al dar de alta', $alta);
-            print_r($error);
-            exit;
-        }
-
-        $alta = (new base_test())->alta_nom_conf_empleado($this->link);
-        if(errores::$error){
-            $error = (new errores())->error('Error al dar de alta', $alta);
-            print_r($error);
-            exit;
-        }
-        $alta = (new base_test())->alta_nom_rel_empleado_sucursal($this->link);
-        if(errores::$error){
-            $error = (new errores())->error('Error al dar de alta', $alta);
-            print_r($error);
-            exit;
-        }
-
-        $alta = (new base_test())->alta_nom_periodo($this->link);
-        if(errores::$error){
-            $error = (new errores())->error('Error al dar de alta', $alta);
-            print_r($error);
-            exit;
-        }
-
-        $alta = (new base_test())->alta_cat_sat_tipo_nomina($this->link);
-        if(errores::$error){
-            $error = (new errores())->error('Error al dar de alta', $alta);
-            print_r($error);
-            exit;
-        }
 
         $alta = (new base_test())->alta_nom_nomina($this->link);
         if(errores::$error){
@@ -245,13 +125,12 @@ class calcula_nominaTest extends test {
             exit;
         }
 
-
         $nom_nomina_id = 1;
         $resultado = $calculo->calcula_impuestos_netos_por_nomina($link, $nom_nomina_id);
 
         $this->assertIsObject($resultado);
         $this->assertNotTrue(errores::$error);
-        $this->assertEquals(45.9,$resultado->isr_neto);
+        $this->assertEquals(18.19,$resultado->isr_neto);
         $this->assertEquals(0,$resultado->subsidio_neto);
 
         errores::$error = false;
@@ -273,44 +152,36 @@ class calcula_nominaTest extends test {
         $link = $this->link;
 
 
-        $del = (new base_test())->del($link, 'nom_data_subsidio');
-        if(errores::$error){
-            $error = (new errores())->error('Error al eliminar', $del);
-            print_r($error);
-            exit;
-        }
-        $del = (new base_test())->del($link, 'nom_par_percepcion');
-        if(errores::$error){
-            $error = (new errores())->error('Error al eliminar', $del);
-            print_r($error);
-            exit;
-        }
-        $del = (new base_test())->del($link, 'nom_par_otro_pago');
-        if(errores::$error){
-            $error = (new errores())->error('Error al eliminar', $del);
-            print_r($error);
-            exit;
-        }
-        $del = (new base_test())->del($link, 'nom_par_deduccion');
-        if(errores::$error){
-            $error = (new errores())->error('Error al eliminar', $del);
-            print_r($error);
-            exit;
-        }
-        $del = (new base_test())->del($link, 'nom_nomina');
+        $del = (new base_test())->del_cat_sat_tipo_nomina($link);
         if(errores::$error){
             $error = (new errores())->error('Error al eliminar', $del);
             print_r($error);
             exit;
         }
 
-        $del = (new base_test())->del($link, 'fc_partida');
+        $del = (new base_test())->del_em_empleado($link);
         if(errores::$error){
             $error = (new errores())->error('Error al eliminar', $del);
             print_r($error);
             exit;
         }
-        $del = (new base_test())->del($link, 'fc_factura');
+
+        $del = (new base_test())->del_fc_factura($link);
+        if(errores::$error){
+            $error = (new errores())->error('Error al eliminar', $del);
+            print_r($error);
+            exit;
+        }
+
+
+        $del = (new base_test())->del_nom_conf_nomina($link);
+        if(errores::$error){
+            $error = (new errores())->error('Error al eliminar', $del);
+            print_r($error);
+            exit;
+        }
+
+        $del = (new base_test())->del_nom_periodo($link);
         if(errores::$error){
             $error = (new errores())->error('Error al eliminar', $del);
             print_r($error);
@@ -344,7 +215,7 @@ class calcula_nominaTest extends test {
 
         $this->assertIsObject($resultado);
         $this->assertNotTrue(errores::$error);
-        $this->assertEquals(888.9,$resultado->isr);
+        $this->assertEquals(829.31,$resultado->isr);
         $this->assertEquals(0,$resultado->subsidio);
 
         errores::$error = false;

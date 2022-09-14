@@ -76,63 +76,39 @@ class calculo_isrTest extends test {
         $calculo = new calculo_isr();
 
 
-
-        $del = (new base_test())->del($this->link, 'nom_data_subsidio');
-        if(errores::$error){
-            $error = (new errores())->error(mensaje: 'Error al eliminar', data: $del);
-            print_r($error);
-            exit;
-        }
-        $del = (new base_test())->del($this->link, 'nom_par_percepcion');
-        if(errores::$error){
-            $error = (new errores())->error(mensaje: 'Error al eliminar', data: $del);
-            print_r($error);
-            exit;
-        }
-        $del = (new base_test())->del($this->link, 'nom_par_deduccion');
-        if(errores::$error){
-            $error = (new errores())->error(mensaje: 'Error al eliminar', data: $del);
-            print_r($error);
-            exit;
-        }
-        $del = (new base_test())->del($this->link, 'nom_par_otro_pago');
-        if(errores::$error){
-            $error = (new errores())->error(mensaje: 'Error al eliminar', data: $del);
-            print_r($error);
-            exit;
-        }
-        $del = (new base_test())->del($this->link, 'nom_nomina');
-        if(errores::$error){
-            $error = (new errores())->error(mensaje: 'Error al eliminar', data: $del);
-            print_r($error);
-            exit;
-        }
-        $del = (new base_test())->del($this->link, 'fc_partida');
-        if(errores::$error){
-            $error = (new errores())->error(mensaje: 'Error al eliminar', data: $del);
-            print_r($error);
-            exit;
-        }
-        $del = (new base_test())->del($this->link, 'fc_factura');
+        $del = (new base_test())->del_cat_sat_tipo_nomina($this->link);
         if(errores::$error){
             $error = (new errores())->error(mensaje: 'Error al eliminar', data: $del);
             print_r($error);
             exit;
         }
 
-        $del = (new base_test())->del($this->link, 'nom_periodo');
+        $del = (new base_test())->del_em_empleado($this->link);
+        if(errores::$error){
+            $error = (new errores())->error(mensaje: 'Error al eliminar', data: $del);
+            print_r($error);
+            exit;
+        }
+        $del = (new base_test())->del_fc_factura($this->link);
         if(errores::$error){
             $error = (new errores())->error(mensaje: 'Error al eliminar', data: $del);
             print_r($error);
             exit;
         }
 
-        $alta = (new base_test())->alta_nom_periodo($this->link);
+        $del = (new base_test())->del_nom_conf_nomina($this->link);
         if(errores::$error){
-            $error = (new errores())->error(mensaje: 'Error al insertar', data: $alta);
+            $error = (new errores())->error(mensaje: 'Error al eliminar', data: $del);
             print_r($error);
             exit;
         }
+        $del = (new base_test())->del_nom_periodo($this->link);
+        if(errores::$error){
+            $error = (new errores())->error(mensaje: 'Error al eliminar', data: $del);
+            print_r($error);
+            exit;
+        }
+
 
         $alta = (new base_test())->alta_nom_nomina($this->link);
         if(errores::$error){

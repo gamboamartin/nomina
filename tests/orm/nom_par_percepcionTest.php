@@ -44,84 +44,41 @@ class nom_par_percepcionTest extends test {
         $_GET['session_id'] = '1';
         $percepcion = new nom_par_percepcion($this->link);
 
-
-        $del_nom_data_subsidio = (new nom_data_subsidio($this->link))->elimina_todo();
-        if(errores::$error){
-            $error = (new errores())->error(mensaje: 'Error al eliminar $nom_nom_data_subsidio_modelo', data: $del_nom_data_subsidio);
-            print_r($error);
-            exit;
-        }
-
-        $del = (new base_test())->del(link:$this->link,name_model:  'nom_data_subsidio');
-        if(errores::$error){
-            $error = (new errores())->error(mensaje: 'Error al eliminar', data: $del);
-            print_r($error);
-            exit;
-        }
-        $del = (new base_test())->del(link:$this->link,name_model:  'nom_par_percepcion');
-        if(errores::$error){
-            $error = (new errores())->error(mensaje: 'Error al eliminar', data: $del);
-            print_r($error);
-            exit;
-        }
-        $del = (new base_test())->del(link:$this->link,name_model:  'nom_par_deduccion');
-        if(errores::$error){
-            $error = (new errores())->error(mensaje: 'Error al eliminar', data: $del);
-            print_r($error);
-            exit;
-        }
-        $del = (new base_test())->del(link:$this->link,name_model:  'nom_par_otro_pago');
-        if(errores::$error){
-            $error = (new errores())->error(mensaje: 'Error al eliminar', data: $del);
-            print_r($error);
-            exit;
-        }
-        $del = (new base_test())->del(link:$this->link,name_model:  'nom_nomina');
-        if(errores::$error){
-            $error = (new errores())->error(mensaje: 'Error al eliminar', data: $del);
-            print_r($error);
-            exit;
-        }
-        $del = (new base_test())->del(link:$this->link,name_model:  'fc_partida');
-        if(errores::$error){
-            $error = (new errores())->error(mensaje: 'Error al eliminar', data: $del);
-            print_r($error);
-            exit;
-        }
-        $del = (new base_test())->del(link:$this->link,name_model:  'nom_conf_empleado');
-        if(errores::$error){
-            $error = (new errores())->error(mensaje: 'Error al eliminar', data: $del);
-            print_r($error);
-            exit;
-        }
-        $del = (new base_test())->del(link:$this->link,name_model:  'em_cuenta_bancaria');
+        $del = (new base_test())->del_cat_sat_tipo_nomina($this->link);
         if(errores::$error){
             $error = (new errores())->error(mensaje: 'Error al eliminar', data: $del);
             print_r($error);
             exit;
         }
 
-        $del = (new base_test())->del(link:$this->link,name_model:  'fc_factura');
+        $del = (new base_test())->del_em_empleado($this->link);
         if(errores::$error){
             $error = (new errores())->error(mensaje: 'Error al eliminar', data: $del);
             print_r($error);
             exit;
         }
 
-
-        $alta = (new base_test())->alta_em_cuenta_bancaria($this->link);
+        $del = (new base_test())->del_fc_factura($this->link);
         if(errores::$error){
-            $error = (new errores())->error(mensaje: 'Error al insertar', data: $alta);
+            $error = (new errores())->error(mensaje: 'Error al eliminar', data: $del);
             print_r($error);
             exit;
         }
 
-        $alta = (new base_test())->alta_nom_conf_empleado($this->link);
+        $del = (new base_test())->del_nom_conf_nomina($this->link);
         if(errores::$error){
-            $error = (new errores())->error(mensaje: 'Error al insertar', data: $alta);
+            $error = (new errores())->error(mensaje: 'Error al eliminar', data: $del);
             print_r($error);
             exit;
         }
+
+        $del = (new base_test())->del_nom_periodo($this->link);
+        if(errores::$error){
+            $error = (new errores())->error(mensaje: 'Error al eliminar', data: $del);
+            print_r($error);
+            exit;
+        }
+
 
         $alta = (new base_test())->alta_nom_nomina($this->link);
         if(errores::$error){

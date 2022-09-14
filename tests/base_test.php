@@ -12,6 +12,7 @@ use models\nom_nomina;
 use models\nom_periodo;
 use models\nom_rel_empleado_sucursal;
 use PDO;
+use stdClass;
 
 class base_test{
 
@@ -21,6 +22,7 @@ class base_test{
         $nom_periodo['id'] = 1;
         $nom_periodo['codigo'] = 1;
         $nom_periodo['descripcion'] = 1;
+        $nom_periodo['descripcion_select'] = 1;
 
 
 
@@ -82,6 +84,20 @@ class base_test{
     
     public function alta_nom_conf_empleado(PDO $link): array|\stdClass
     {
+        $alta = $this->alta_nom_conf_nomina($link);
+        if(errores::$error){
+            $error = (new errores())->error('Error al dar de alta', $alta);
+            print_r($error);
+            exit;
+        }
+
+        $alta = $this->alta_em_cuenta_bancaria($link);
+        if(errores::$error){
+            $error = (new errores())->error('Error al dar de alta', $alta);
+            print_r($error);
+            exit;
+        }
+
         $nom_conf_empleado = array();
         $nom_conf_empleado['id'] = 1;
         $nom_conf_empleado['codigo'] = 1;
@@ -114,8 +130,45 @@ class base_test{
         return $alta;
     }
 
-    public function alta_nom_nomina(PDO $link): array|\stdClass
+    public function alta_nom_nomina(PDO $link, float $salario_diario = 250, float $salario_diario_integrado = 250): array|stdClass
     {
+
+        $alta = $this->alta_em_empleado(
+            link: $link, salario_diario: $salario_diario, salario_diario_integrado: $salario_diario_integrado);
+        if(errores::$error){
+            $error = (new errores())->error('Error al dar de alta', $alta);
+            print_r($error);
+            exit;
+        }
+
+        $alta = $this->alta_nom_conf_empleado($link);
+        if(errores::$error){
+            $error = (new errores())->error('Error al dar de alta', $alta);
+            print_r($error);
+            exit;
+        }
+        $alta = $this->alta_nom_rel_empleado_sucursal($link);
+        if(errores::$error){
+            $error = (new errores())->error('Error al dar de alta', $alta);
+            print_r($error);
+            exit;
+        }
+
+        $alta = $this->alta_cat_sat_tipo_nomina($link);
+        if(errores::$error){
+            $error = (new errores())->error('Error al dar de alta', $alta);
+            print_r($error);
+            exit;
+        }
+
+        $alta = $this->alta_nom_periodo($link);
+        if(errores::$error){
+            $error = (new errores())->error('Error al dar de alta', $alta);
+            print_r($error);
+            exit;
+        }
+
+
         $nom_nomina = array();
         $nom_nomina['id'] = 1;
         $nom_nomina['im_registro_patronal_id'] = 1;
@@ -184,6 +237,184 @@ class base_test{
         $del = $model->elimina_todo();
         if(errores::$error){
             return (new errores())->error(mensaje: 'Error al eliminar '.$name_model, data: $del);
+        }
+        return $del;
+    }
+
+    public function del_cat_sat_tipo_nomina(PDO $link): array
+    {
+        $del = $this->del_nom_nomina($link);
+        if(errores::$error){
+            return (new errores())->error('Error al eliminar', $del);
+        }
+
+        $del = $this->del($link, 'cat_sat_tipo_nomina');
+        if(errores::$error){
+            return (new errores())->error('Error al eliminar', $del);
+        }
+        return $del;
+    }
+
+    public function del_em_cuenta_bancaria(PDO $link): array
+    {
+        $del = $this->del_nom_conf_empleado($link);
+        if(errores::$error){
+            return (new errores())->error('Error al eliminar', $del);
+        }
+
+        $del = $this->del_nom_nomina($link);
+        if(errores::$error){
+            return (new errores())->error('Error al eliminar', $del);
+        }
+
+        $del = $this->del($link, 'em_cuenta_bancaria');
+        if(errores::$error){
+            return (new errores())->error('Error al eliminar', $del);
+        }
+        return $del;
+    }
+
+    public function del_em_empleado(PDO $link): array
+    {
+
+        $del = $this->del_em_cuenta_bancaria($link);
+        if(errores::$error){
+            return (new errores())->error('Error al eliminar', $del);
+        }
+
+        $del = $this->del_nom_rel_empleado_sucursal($link);
+        if(errores::$error){
+            return (new errores())->error('Error al eliminar', $del);
+        }
+
+        $del = $this->del($link, 'em_empleado');
+        if(errores::$error){
+            return (new errores())->error('Error al eliminar', $del);
+        }
+        return $del;
+    }
+
+    public function del_fc_factura(PDO $link): array
+    {
+        $del = $this->del_fc_partida($link);
+        if(errores::$error){
+            return (new errores())->error('Error al eliminar', $del);
+        }
+        $del = $this->del($link, 'fc_factura');
+        if(errores::$error){
+            return (new errores())->error('Error al eliminar', $del);
+        }
+        return $del;
+    }
+
+    public function del_fc_partida(PDO $link): array
+    {
+        $del = $this->del($link, 'fc_partida');
+        if(errores::$error){
+            return (new errores())->error('Error al eliminar', $del);
+        }
+        return $del;
+    }
+
+    public function del_nom_conf_empleado(PDO $link): array
+    {
+        $del = $this->del($link, 'nom_conf_empleado');
+        if(errores::$error){
+            return (new errores())->error('Error al eliminar', $del);
+        }
+        return $del;
+    }
+
+    public function del_nom_conf_nomina(PDO $link): array
+    {
+        $del = $this->del($link, 'nom_conf_nomina');
+        if(errores::$error){
+            return (new errores())->error('Error al eliminar', $del);
+        }
+        return $del;
+    }
+
+    public function del_nom_data_subsidio(PDO $link): array
+    {
+        $del = $this->del($link, 'nom_data_subsidio');
+        if(errores::$error){
+            return (new errores())->error('Error al eliminar', $del);
+        }
+        return $del;
+    }
+
+    public function del_nom_nomina(PDO $link): array
+    {
+        $del = $this->del_nom_par_deduccion($link);
+        if(errores::$error){
+            return (new errores())->error('Error al eliminar', $del);
+        }
+
+        $del = $this->del_nom_par_otro_pago($link);
+        if(errores::$error){
+            return (new errores())->error('Error al eliminar', $del);
+        }
+
+        $del = $this->del_nom_par_percepcion($link);
+        if(errores::$error){
+            return (new errores())->error('Error al eliminar', $del);
+        }
+
+
+
+        $del = $this->del($link, 'nom_nomina');
+        if(errores::$error){
+            return (new errores())->error('Error al eliminar', $del);
+        }
+        return $del;
+    }
+
+    public function del_nom_par_deduccion(PDO $link): array
+    {
+        $del = $this->del_nom_data_subsidio($link);
+        if(errores::$error){
+            return (new errores())->error('Error al eliminar', $del);
+        }
+
+        $del = $this->del($link, 'nom_par_deduccion');
+        if(errores::$error){
+            return (new errores())->error('Error al eliminar', $del);
+        }
+        return $del;
+    }
+
+    public function del_nom_par_otro_pago(PDO $link): array
+    {
+        $del = $this->del($link, 'nom_par_otro_pago');
+        if(errores::$error){
+            return (new errores())->error('Error al eliminar', $del);
+        }
+        return $del;
+    }
+
+    public function del_nom_par_percepcion(PDO $link): array
+    {
+        $del = $this->del($link, 'nom_par_percepcion');
+        if(errores::$error){
+            return (new errores())->error('Error al eliminar', $del);
+        }
+        return $del;
+    }
+
+    public function del_nom_periodo(PDO $link): array
+    {
+        $del = $this->del($link, 'nom_periodo');
+        if(errores::$error){
+            return (new errores())->error('Error al eliminar', $del);
+        }
+        return $del;
+    }
+
+    public function del_nom_rel_empleado_sucursal(PDO $link): array
+    {
+        $del = $this->del($link, 'nom_rel_empleado_sucursal');
+        if(errores::$error){
+            return (new errores())->error('Error al eliminar', $del);
         }
         return $del;
     }

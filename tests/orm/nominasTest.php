@@ -74,107 +74,38 @@ class nominasTest extends test {
         $nominas = new nom_par_percepcion($this->link);
         //$nominas = new liberator($nominas);
 
-        $del = (new base_test())->del($this->link, 'nom_data_subsidio');
-        if(errores::$error){
-            $error = (new errores())->error('Error al eliminar', $del);
-            print_r($error);
-            exit;
-        }
-        $del = (new base_test())->del($this->link, 'nom_par_deduccion');
-        if(errores::$error){
-            $error = (new errores())->error('Error al eliminar', $del);
-            print_r($error);
-            exit;
-        }
-        $del = (new base_test())->del($this->link, 'nom_par_otro_pago');
-        if(errores::$error){
-            $error = (new errores())->error('Error al eliminar', $del);
-            print_r($error);
-            exit;
-        }
-        $del = (new base_test())->del($this->link, 'nom_par_percepcion');
-        if(errores::$error){
-            $error = (new errores())->error('Error al eliminar', $del);
-            print_r($error);
-            exit;
-        }
-        $del = (new base_test())->del($this->link, 'nom_nomina');
+
+        $del = (new base_test())->del_cat_sat_tipo_nomina($this->link);
         if(errores::$error){
             $error = (new errores())->error('Error al eliminar', $del);
             print_r($error);
             exit;
         }
 
-        $del = (new base_test())->del($this->link, 'nom_conf_empleado');
+        $del = (new base_test())->del_em_empleado($this->link);
         if(errores::$error){
             $error = (new errores())->error('Error al eliminar', $del);
             print_r($error);
             exit;
         }
 
-        $del = (new base_test())->del($this->link, 'em_cuenta_bancaria');
+        $del = (new base_test())->del_fc_factura($this->link);
         if(errores::$error){
             $error = (new errores())->error('Error al eliminar', $del);
             print_r($error);
             exit;
         }
 
-
-
-        $del = (new base_test())->del($this->link, 'nom_rel_empleado_sucursal');
+        $del = (new base_test())->del_nom_conf_nomina($this->link);
         if(errores::$error){
             $error = (new errores())->error('Error al eliminar', $del);
             print_r($error);
             exit;
         }
 
-        $del = (new base_test())->del($this->link, 'em_empleado');
+        $del = (new base_test())->del_nom_periodo($this->link);
         if(errores::$error){
             $error = (new errores())->error('Error al eliminar', $del);
-            print_r($error);
-            exit;
-        }
-
-        $del = (new base_test())->del($this->link, 'fc_partida');
-        if(errores::$error){
-            $error = (new errores())->error('Error al eliminar', $del);
-            print_r($error);
-            exit;
-        }
-
-        $del = (new base_test())->del($this->link, 'fc_factura');
-        if(errores::$error){
-            $error = (new errores())->error('Error al eliminar', $del);
-            print_r($error);
-            exit;
-        }
-
-
-        $alta = (new base_test())->alta_em_empleado($this->link);
-        if(errores::$error){
-            $error = (new errores())->error('Error al dar de alta ', $alta);
-            print_r($error);
-            exit;
-        }
-
-        $alta = (new base_test())->alta_em_cuenta_bancaria($this->link);
-        if(errores::$error){
-            $error = (new errores())->error('Error al dar de alta ', $alta);
-            print_r($error);
-            exit;
-        }
-
-
-        $alta = (new base_test())->alta_nom_conf_empleado($this->link);
-        if(errores::$error){
-            $error = (new errores())->error('Error al dar de alta ', $alta);
-            print_r($error);
-            exit;
-        }
-
-        $alta = (new base_test())->alta_nom_rel_empleado_sucursal($this->link);
-        if(errores::$error){
-            $error = (new errores())->error('Error al dar de alta ', $alta);
             print_r($error);
             exit;
         }
@@ -185,9 +116,6 @@ class nominasTest extends test {
             print_r($error);
             exit;
         }
-
-
-
 
 
         $nom_par_percepcion = array();
