@@ -66,7 +66,7 @@ class nom_par_deduccion extends nominas{
         return $deducciones;
     }
 
-    public function elimina_bd(int $id): array
+    public function elimina_bd(int $id): array|stdClass
     {
 
         $nom_datas_subsidios = (new nom_data_subsidio($this->link))->get_data_by_deduccion(nom_par_deduccion_id: $id);

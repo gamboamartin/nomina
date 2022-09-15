@@ -277,7 +277,7 @@ class nominas extends modelo {
     }
 
 
-    protected function del_data_subsidio(array $nom_datas_subsidios): array
+    protected function del_data_subsidio(array $nom_datas_subsidios): array|stdClass
     {
         $dels = array();
         foreach ($nom_datas_subsidios as $nom_data_subsidio){
