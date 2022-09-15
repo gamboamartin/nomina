@@ -53,7 +53,7 @@ class controlador_nom_par_deduccion extends system {
         $keys_selects['nom_nomina'] = new stdClass();
         $keys_selects['nom_nomina']->cols = 12;
         $keys_selects['nom_nomina']->disabled = false;
-        $keys_selects['nom_nomina']->filtro = array('nom_nomina.id' => $this->registro_id);
+
 
         $keys_selects['nom_deduccion'] = new stdClass();
         $keys_selects['nom_deduccion']->cols = 12;

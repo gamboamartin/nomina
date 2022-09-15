@@ -24,7 +24,7 @@ class nom_conf_empleado_cuenta_html extends html_controler {
 
     public function genera_inputs_alta(controlador_nom_conf_empleado_cuenta $controler, PDO $link): array|stdClass
     {
-        $inputs = $this->init_alta(link: $link);
+        $inputs = $this->init_alta_base(link: $link);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al generar inputs',data:  $inputs);
 
@@ -53,14 +53,14 @@ class nom_conf_empleado_cuenta_html extends html_controler {
         return $inputs_asignados;
     }
 
-    private function init_alta(PDO $link): array|stdClass
+    private function init_alta_base(PDO $link): array|stdClass
     {
-        $selects = $this->selects_alta(link: $link);
+        $selects = $this->selects_alta_base(link: $link);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al generar selects',data:  $selects);
         }
 
-        $texts = $this->texts_alta(row_upd: new stdClass(), value_vacio: true);
+        $texts = $this->texts_alta_base(row_upd: new stdClass(), value_vacio: true);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al generar texts',data:  $texts);
         }
@@ -101,7 +101,7 @@ class nom_conf_empleado_cuenta_html extends html_controler {
         return $inputs;
     }
 
-    private function selects_alta(PDO $link): array|stdClass
+    private function selects_alta_base(PDO $link): array|stdClass
     {
         $selects = new stdClass();
 
@@ -112,7 +112,7 @@ class nom_conf_empleado_cuenta_html extends html_controler {
         }
         $selects->em_cuenta_bancaria_id = $select;
 
-        $select = (new nom_conf_nomina_html(html:$this->html_base))->select_nom_conf_nomina(
+        $select = (new nom_conf_nomina_html(html:$this->html_base))->select_nom_conf_nomina_id(
             cols: 12, con_registros:true, id_selected:-1,link: $link);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al generar select',data:  $select);
@@ -133,7 +133,7 @@ class nom_conf_empleado_cuenta_html extends html_controler {
         }
         $selects->em_cuenta_bancaria_id = $select;
 
-        $select = (new nom_conf_nomina_html(html:$this->html_base))->select_nom_conf_nomina(
+        $select = (new nom_conf_nomina_html(html:$this->html_base))->select_nom_conf_nomina_id(
             cols: 12, con_registros:true, id_selected:$row_upd->nom_conf_nomina_id,link: $link);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al generar select',data:  $select);
@@ -158,7 +158,7 @@ class nom_conf_empleado_cuenta_html extends html_controler {
         return $select;
     }
 
-    private function texts_alta(stdClass $row_upd, bool $value_vacio, stdClass $params = new stdClass()): array|stdClass
+    private function texts_alta_base(stdClass $row_upd, bool $value_vacio, stdClass $params = new stdClass()): array|stdClass
     {
         $texts = new stdClass();
         return $texts;
