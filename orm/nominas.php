@@ -292,7 +292,7 @@ class nominas extends modelo {
     }
 
 
-    public function elimina_bd(int $id): array
+    public function elimina_bd(int $id): array|stdClass
     {
         $nom_partida = $this->registro(registro_id:$id, retorno_obj: true);
         if(errores::$error){

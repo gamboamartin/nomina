@@ -43,7 +43,7 @@ class nom_par_otro_pago extends nominas
         return $r_alta_bd;
     }
 
-    public function elimina_bd(int $id): array
+    public function elimina_bd(int $id): array|stdClass
     {
 
         $nom_datas_subsidios = (new nom_data_subsidio($this->link))->get_data_by_otro_pago(nom_par_otro_pago_id: $id);

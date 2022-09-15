@@ -101,8 +101,7 @@ class nom_par_otro_pagoTest extends test {
 
         $resultado = $percepcion->elimina_bd($resultado->registro_id);
 
-
-        $this->assertIsArray($resultado);
+        $this->assertIsObject($resultado);
         $this->assertNotTrue(errores::$error);
 
         errores::$error = false;
