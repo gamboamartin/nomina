@@ -434,7 +434,7 @@ class nom_nomina extends modelo
         return $descripcion;
     }
 
-    public function elimina_bd(int $id): array
+    public function elimina_bd(int $id): array|stdClass
     {
         $r_mom_momina = $this->registro(registro_id:  $id,columnas: array("nom_nomina_fc_factura_id"));
         if (errores::$error) {

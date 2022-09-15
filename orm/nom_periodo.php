@@ -60,7 +60,7 @@ class nom_periodo extends nominas_confs {
         return $r_alta_bd;
     }
 
-    public function elimina_bd(int $id): array
+    public function elimina_bd(int $id): array|stdClass
     {
         $filtro['nom_nomina.nom_periodo_id'] = $id;
         $registros_nomina_periodo = (new nom_nomina($this->link))->filtro_and( filtro: $filtro);
@@ -76,7 +76,13 @@ class nom_periodo extends nominas_confs {
             }
         }
 
-        return parent::elimina_bd($id);
+        $r_elimina_bd = parent::elimina_bd(id:$id);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al eliminar periodo', data: $r_elimina_bd);
+        }
+
+
+        return $r_elimina_bd;
     }
 
     private function elimina_nomina_periodo(int $nomina_id) : array|stdClass{
