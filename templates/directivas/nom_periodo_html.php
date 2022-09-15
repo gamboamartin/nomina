@@ -34,7 +34,7 @@ class nom_periodo_html extends html_controler {
 
     public function genera_inputs_alta(controlador_nom_periodo $controler, PDO $link): array|stdClass
     {
-        $inputs = $this->init_alta(link: $link);
+        $inputs = $this->init_alta_base(link: $link);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al generar inputs',data:  $inputs);
 
@@ -45,6 +45,25 @@ class nom_periodo_html extends html_controler {
         }
 
         return $inputs_asignados;
+    }
+
+    private function init_alta_base(PDO $link): array|stdClass
+    {
+        $selects = $this->selects_alta_base(link: $link);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al generar selects',data:  $selects);
+        }
+
+        $texts = $this->texts_alta(row_upd: new stdClass(), value_vacio: true);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al generar texts',data:  $texts);
+        }
+
+        $alta_inputs = new stdClass();
+        $alta_inputs->selects = $selects;
+        $alta_inputs->texts = $texts;
+
+        return $alta_inputs;
     }
 
     private function genera_inputs_modifica(controlador_nom_periodo $controler,PDO $link,
@@ -71,7 +90,6 @@ class nom_periodo_html extends html_controler {
 
         return $inputs_asignados;
     }
-
 
 
     public function input_fecha_inicial_pago(int $cols, stdClass $row_upd, bool $value_vacio, bool $disabled = false):
@@ -187,47 +205,47 @@ class nom_periodo_html extends html_controler {
         return $inputs;
     }
 
-    /**private function selects_alta(PDO $link): array|stdClass
+    private function selects_alta_base(PDO $link): array|stdClass
     {
-        $selects = new stdClass();
+    $selects = new stdClass();
 
-        $select = (new nom_conf_nomina_html(html:$this->html_base))->select_nom_conf_nomina(
-            cols: 6, con_registros:true, id_selected:-1,link: $link,required: false);
-        if(errores::$error){
-            return $this->error->error(mensaje: 'Error al generar select',data:  $select);
-        }
-        $selects->nom_conf_nomina_id = $select;
+    $select = (new nom_conf_nomina_html(html:$this->html_base))->select_nom_conf_nomina_id(
+    cols: 6, con_registros:true, id_selected:-1,link: $link,required: false);
+    if(errores::$error){
+    return $this->error->error(mensaje: 'Error al generar select',data:  $select);
+    }
+    $selects->nom_conf_nomina_id = $select;
 
-        $select = (new cat_sat_periodicidad_pago_nom_html(html:$this->html_base))->select_cat_sat_periodicidad_pago_nom_id(
-            cols: 12, con_registros:true, id_selected:-1,link: $link);
-        if(errores::$error){
-            return $this->error->error(mensaje: 'Error al generar select',data:  $select);
-        }
-        $selects->cat_sat_periodicidad_pago_nom_id = $select;
+    $select = (new cat_sat_periodicidad_pago_nom_html(html:$this->html_base))->select_cat_sat_periodicidad_pago_nom_id(
+    cols: 12, con_registros:true, id_selected:-1,link: $link);
+    if(errores::$error){
+    return $this->error->error(mensaje: 'Error al generar select',data:  $select);
+    }
+    $selects->cat_sat_periodicidad_pago_nom_id = $select;
 
-        $select = (new im_registro_patronal_html(html:$this->html_base))->select_im_registro_patronal_id(
-            cols: 12, con_registros:true, id_selected:-1,link: $link,required: true);
-        if(errores::$error){
-            return $this->error->error(mensaje: 'Error al generar select',data:  $select);
-        }
-        $selects->im_registro_patronal_id = $select;
+    $select = (new im_registro_patronal_html(html:$this->html_base))->select_im_registro_patronal_id(
+    cols: 12, con_registros:true, id_selected:-1,link: $link,required: true);
+    if(errores::$error){
+    return $this->error->error(mensaje: 'Error al generar select',data:  $select);
+    }
+    $selects->im_registro_patronal_id = $select;
 
-        $select = (new nom_tipo_periodo_html(html:$this->html_base))->select_nom_tipo_periodo_id(
-            cols: 6, con_registros:true, id_selected:-1,link: $link);
-        if(errores::$error){
-            return $this->error->error(mensaje: 'Error al generar select',data:  $select);
-        }
-        $selects->nom_tipo_periodo_id = $select;
+    $select = (new nom_tipo_periodo_html(html:$this->html_base))->select_nom_tipo_periodo_id(
+    cols: 6, con_registros:true, id_selected:-1,link: $link);
+    if(errores::$error){
+    return $this->error->error(mensaje: 'Error al generar select',data:  $select);
+    }
+    $selects->nom_tipo_periodo_id = $select;
 
-        $select = (new cat_sat_tipo_nomina_html(html:$this->html_base))->select_cat_sat_tipo_nomina_id(
-            cols: 6, con_registros:true, id_selected:-1,link: $link);
-        if(errores::$error){
-            return $this->error->error(mensaje: 'Error al generar select',data:  $select);
-        }
-        $selects->cat_sat_tipo_nomina_id = $select;
+    $select = (new cat_sat_tipo_nomina_html(html:$this->html_base))->select_cat_sat_tipo_nomina_id(
+    cols: 6, con_registros:true, id_selected:-1,link: $link);
+    if(errores::$error){
+    return $this->error->error(mensaje: 'Error al generar select',data:  $select);
+    }
+    $selects->cat_sat_tipo_nomina_id = $select;
 
-        return $selects;
-    }*/
+    return $selects;
+    }
 
     private function selects_modifica(PDO $link, stdClass $row_upd): array|stdClass
     {
