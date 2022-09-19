@@ -75,7 +75,38 @@ class controlador_nom_conf_factura extends system {
             return $this->retorno_error(mensaje: 'Error al generar template',data:  $r_alta, header: $header,ws:$ws);
         }
 
-        $inputs = (new nom_conf_factura_html(html: $this->html_base))->genera_inputs_alta(controler: $this, link: $this->link);
+        $keys_selects = array();
+        $keys_selects = array();
+        $keys_selects['cat_sat_forma_pago'] = new stdClass();
+        $keys_selects['cat_sat_forma_pago']->label = 'Forma pago';
+        $keys_selects['cat_sat_forma_pago']->cols = 6;
+
+        $keys_selects['cat_sat_metodo_pago'] = new stdClass();
+        $keys_selects['cat_sat_metodo_pago']->label = 'Metodo pago';
+        $keys_selects['cat_sat_metodo_pago']->cols = 6;
+
+        $keys_selects['cat_sat_moneda'] = new stdClass();
+        $keys_selects['cat_sat_moneda']->label = 'Moneda';
+        $keys_selects['cat_sat_moneda']->cols = 6;
+
+        $keys_selects['com_tipo_cambio'] = new stdClass();
+        $keys_selects['com_tipo_cambio']->label = 'Tipo cambio';
+        $keys_selects['com_tipo_cambio']->cols = 6;
+
+        $keys_selects['cat_sat_uso_cfdi'] = new stdClass();
+        $keys_selects['cat_sat_uso_cfdi']->label = 'Uso de CFDI';
+        $keys_selects['cat_sat_uso_cfdi']->cols = 6;
+
+        $keys_selects['cat_sat_tipo_de_comprobante'] = new stdClass();
+        $keys_selects['cat_sat_tipo_de_comprobante']->label = 'Tipo de comprobante';
+        $keys_selects['cat_sat_tipo_de_comprobante']->cols = 6;
+
+        $keys_selects['com_producto'] = new stdClass();
+        $keys_selects['com_producto']->label = 'Producto';
+        $keys_selects['com_producto']->cols = 6;
+
+        $inputs = (new nom_conf_factura_html(html: $this->html_base))->genera_inputs_alta(controler: $this,
+                    keys_selects: $keys_selects, link: $this->link);
         if(errores::$error){
             $error = $this->errores->error(mensaje: 'Error al generar inputs',data:  $inputs);
             print_r($error);
