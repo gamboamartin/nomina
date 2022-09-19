@@ -10,6 +10,8 @@
     <td><?php echo $row->nom_nomina_fecha_final_pago; ?></td>
     <td><?php echo $row->org_empresa_rfc; ?></td>
 
+    <td><?php include 'templates/botons/nom_nomina/link_genera_xml.php';?></td>
+
     <!-- End dynamic generated -->
 
     <?php include (new views())->ruta_templates.'listas/action_row.php';?>
