@@ -76,7 +76,6 @@ class controlador_nom_conf_factura extends system {
         }
 
         $keys_selects = array();
-        $keys_selects = array();
         $keys_selects['cat_sat_forma_pago'] = new stdClass();
         $keys_selects['cat_sat_forma_pago']->label = 'Forma pago';
         $keys_selects['cat_sat_forma_pago']->cols = 6;
