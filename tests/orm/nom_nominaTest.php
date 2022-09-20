@@ -412,6 +412,30 @@ class nom_nominaTest extends test {
         errores::$error = false;
     }
 
+    public function test_genera_registro_par_percepcion(): void
+    {
+        errores::$error = false;
+
+        $_GET['seccion'] = 'cat_sat_tipo_persona';
+        $_GET['accion'] = 'lista';
+        $_SESSION['grupo_id'] = 1;
+        $_GET['session_id'] = '1';
+        $nomina = new nom_nomina($this->link);
+        $nomina = new liberator($nomina);
+
+
+        $nom_nomina_id = 1;
+        $percepcion = array();
+        $percepcion['nom_percepcion_id'] = 1;
+        $percepcion['nom_conf_percepcion_importe_gravado'] = 1;
+        $percepcion['nom_conf_percepcion_importe_exento'] = 1;
+        $resultado = $nomina->genera_registro_par_percepcion($nom_nomina_id,$percepcion);
+        $this->assertIsArray($resultado);
+        $this->assertNotTrue(errores::$error);
+        errores::$error = false;
+
+    }
+
     public function test_get_sucursal_by_empleado(): void
     {
         errores::$error = false;

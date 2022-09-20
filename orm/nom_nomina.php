@@ -857,8 +857,25 @@ class nom_nomina extends modelo
         return $this->registro;
     }
 
-    private function genera_registro_par_percepcion(int $nom_nomina_id, mixed $percepcion): array|stdClass
+    /**
+     * Genera un registro para partida percepcion default
+     * @param int $nom_nomina_id Nomina a identificar
+     * @param array $percepcion Percepcion de configuracion
+     * @return array|stdClass
+     * @version 0.339.17
+     */
+    private function genera_registro_par_percepcion(int $nom_nomina_id, array $percepcion): array|stdClass
     {
+        $keys = array('nom_percepcion_id');
+        $valida = $this->validacion->valida_ids(keys: $keys,registro: $percepcion);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al valida percepcion', data: $valida);
+        }
+        $keys = array('nom_conf_percepcion_importe_gravado','nom_conf_percepcion_importe_exento');
+        $valida = $this->validacion->valida_double_mayores_igual_0(keys: $keys,registro: $percepcion);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al valida percepcion', data: $valida);
+        }
         $nom_par_percepcion = array();
         $nom_par_percepcion['nom_nomina_id'] = $nom_nomina_id;
         $nom_par_percepcion['nom_percepcion_id'] = $percepcion['nom_percepcion_id'];
