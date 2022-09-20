@@ -200,14 +200,14 @@ class transaccion_fc{
     private function ejecuta_isr(float $isr, nominas $mod_nominas, int $nom_nomina_id): array|stdClass
     {
         $transaccion = array();
-        if($isr>0.0){
+        //if($isr>0.0){
             $transaccion = $this->aplica_deduccion(mod_nominas: $mod_nominas, monto: $isr, nom_deduccion_id: 1,
                 nom_nomina_id:  $nom_nomina_id);
             if(errores::$error){
                 return $this->error->error(mensaje: 'Error al generar transaccion', data: $transaccion);
             }
-        }
-        elseif($isr<=0.0){
+        //}
+        if($isr<=0.0){
             $transaccion = $this->del_nodo_0(mod_nominas: $mod_nominas, nom_nomina_id: $nom_nomina_id);
             if(errores::$error){
                 return $this->error->error(mensaje: 'Error al eliminar deducciones', data: $transaccion);

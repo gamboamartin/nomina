@@ -22,9 +22,7 @@ class nom_par_percepcion extends nominas{
         $this->tabla_nom_conf = 'nom_percepcion';
     }
 
-    /**
-     * @throws JsonException
-     */
+
     public function alta_bd(): array|stdClass
     {
 
