@@ -81,6 +81,33 @@ class controlador_nom_conf_nomina extends system {
         return $row;
     }
 
+    public function asigna_percepcion(bool $header, bool $ws = false): array|stdClass
+    {
+        $r_alta = parent::alta(header: false, ws: false);
+        if (errores::$error) {
+            return $this->retorno_error(mensaje: 'Error al generar template', data: $r_alta, header: $header, ws: $ws);
+        }
+
+        $keys_selects = array();
+        $keys_selects['nom_conf_nomina'] = new stdClass();
+        $keys_selects['nom_conf_nomina']->cols = 6;
+        $keys_selects['nom_conf_nomina']->disabled = true;
+        $keys_selects['nom_conf_nomina']->filtro = array('nom_conf_nomina.id' => $this->registro_id);
+
+        $keys_selects['nom_percepcion'] = new stdClass();
+        $keys_selects['nom_percepcion']->cols = 6;
+
+        $inputs = (new nom_conf_nomina_html(html: $this->html_base))->genera_inputs_asigna_percepcion(controler: $this, keys_selects: $keys_selects,
+            link: $this->link);
+        if (errores::$error) {
+            $error = $this->errores->error(mensaje: 'Error al generar inputs', data: $inputs);
+            print_r($error);
+            die('Error');
+        }
+
+        return $inputs;
+    }
+
     public function lista(bool $header, bool $ws = false): array
     {
         $lista = parent::lista($header, $ws);
