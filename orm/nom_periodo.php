@@ -138,8 +138,14 @@ class nom_periodo extends nominas_confs {
                 return $this->error->error(mensaje: 'Error al obtener nom_conf_empleado', data: $nom_conf_empleado);
             }
 
+            $nom_conf_empleado_reg['nom_conf_empleado_id'] = 1;
+            $nom_conf_empleado_reg['em_cuenta_bancaria_id'] = 1;
+            if($nom_conf_empleado->n_registros > 0){
+                $nom_conf_empleado_reg = $nom_conf_empleado->registros[0];
+            }
+
             $nomina_empleado = $this->genera_registro_nomina_empleado(em_empleado:$empleado, nom_periodo: $nom_periodo,
-                nom_conf_empleado:$nom_conf_empleado->registros);
+                nom_conf_empleado: $nom_conf_empleado_reg);
             if (errores::$error) {
                 return $this->error->error(mensaje: 'Error al maquetar nomina del empleado', data: $nomina_empleado);
             }
