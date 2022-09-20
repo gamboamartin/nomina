@@ -80,29 +80,34 @@ class calcula_nomina{
             return $this->error->error(mensaje: 'Error al obtener impuestos', data: $impuestos);
         }
 
-        $monto_isr_bruto = round($impuestos->isr,2);
-        $monto_subsidio_bruto = round($impuestos->subsidio,2);
+        $data = $this->calcula_montos_isr_sub(monto_isr: round($impuestos->isr,2),
+            monto_subsidio: round($impuestos->isr,2));
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al calcular isr y subsidio', data: $data);
+        }
 
-        $monto_isr_neto = $monto_isr_bruto;
-        $monto_subsidio_neto = $monto_subsidio_bruto;
+        return $data;
+    }
 
-        if($monto_isr_bruto >= $monto_subsidio_bruto){
-            $monto_isr_neto = round($monto_isr_bruto-$monto_subsidio_bruto,2);
+    private function calcula_montos_isr_sub(float $monto_isr, float $monto_subsidio){
+
+        $monto_isr_neto = $monto_isr;
+        $monto_subsidio_neto = $monto_subsidio;
+
+        if($monto_isr >= $monto_subsidio){
+            $monto_isr_neto = round($monto_isr-$monto_subsidio,2);
             $monto_subsidio_neto = 0;
 
         }
-        if($monto_isr_bruto < $monto_subsidio_bruto){
+        if($monto_isr < $monto_subsidio){
             $monto_isr_neto = 0;
-            $monto_subsidio_neto = round($monto_subsidio_bruto-$monto_isr_bruto,2);
+            $monto_subsidio_neto = round($monto_subsidio-$monto_isr,2);
         }
-
         $data = new stdClass();
         $data->isr_neto = $monto_isr_neto;
         $data->subsidio_neto = $monto_subsidio_neto;
 
         return $data;
-
-
     }
 
     /**
