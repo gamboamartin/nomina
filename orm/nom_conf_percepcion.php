@@ -7,7 +7,7 @@ class nom_conf_percepcion extends modelo{
 
     public function __construct(PDO $link){
         $tabla = __CLASS__;
-        $columnas = array($tabla=>false );
+        $columnas = array($tabla=>false , "nom_percepcion" => $tabla);
         $campos_obligatorios = array();
         $campos_view = array("nom_conf_nomina_id" => array("type" => "selects", "model" => new nom_conf_nomina(link: $link)),
             "nom_percepcion_id" => array("type" => "selects", "model" => new nom_percepcion(link: $link)));

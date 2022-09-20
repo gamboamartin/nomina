@@ -119,6 +119,12 @@ class nom_nomina extends modelo
             return $this->error->error(mensaje: 'Error al insertar percepcion default', data: $r_alta_nom_par_percepcion);
         }
 
+        $percepciones = $this->insertar_percepciones_configuracion(
+            nom_conf_nomina_id: $registros['nom_conf_empleado']->nom_conf_nomina_id,nom_nomina_id: $r_alta_bd->registro_id);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al insertar percepciones de configuracion', data: $percepciones);
+        }
+
         return $r_alta_bd;
     }
 
@@ -851,6 +857,17 @@ class nom_nomina extends modelo
         return $this->registro;
     }
 
+    private function genera_registro_par_percepcion(int $nom_nomina_id, mixed $percepcion): array|stdClass
+    {
+        $nom_par_percepcion = array();
+        $nom_par_percepcion['nom_nomina_id'] = $nom_nomina_id;
+        $nom_par_percepcion['nom_percepcion_id'] = $percepcion['nom_percepcion_id'];
+        $nom_par_percepcion['importe_gravado'] = $percepcion['nom_conf_percepcion_importe_gravado'];
+        $nom_par_percepcion['importe_exento'] = $percepcion['nom_conf_percepcion_importe_exento'];
+
+        return $nom_par_percepcion;
+    }
+
     private function genera_valor_campo(array $campos_asignar): string
     {
         return implode($campos_asignar);
@@ -877,6 +894,30 @@ class nom_nomina extends modelo
             return $this->error->error(mensaje: 'Error al dar de alta cfd partida', data: $r_alta_partida);
         }
         return $r_alta_partida;
+    }
+
+    private function insertar_percepciones_configuracion(int $nom_conf_nomina_id, int $nom_nomina_id) : array|stdClass
+    {
+        $percepciones = $this->obtener_percepciones_por_configuracion(nom_conf_nomina_id: $nom_conf_nomina_id);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al obtener percepciones por configuracion de nomina', data: $percepciones);
+        }
+
+        if ($percepciones->n_registros > 0) {
+            foreach ($percepciones->registros as $percepcion) {
+                $registros_par_percepcion = $this->genera_registro_par_percepcion(nom_nomina_id: $nom_nomina_id,percepcion: $percepcion);
+                if (errores::$error) {
+                    return $this->error->error(mensaje: 'Error al generar registros de percepcion', data: $registros_par_percepcion);
+                }
+
+                $r_alta_nom_par_percepcion = (new nom_par_percepcion($this->link))->alta_registro(registro: $registros_par_percepcion);
+                if (errores::$error) {
+                    return $this->error->error(mensaje: 'Error al insertar percepcion', data: $r_alta_nom_par_percepcion);
+                }
+
+            }
+        }
+        return $percepciones;
     }
 
     private function inserta_factura(array $registro): array|stdClass
@@ -937,6 +978,17 @@ class nom_nomina extends modelo
         $nom_par_otro_pago_ins['importe_exento'] = 0;
 
         return $nom_par_otro_pago_ins;
+    }
+
+    private function obtener_percepciones_por_configuracion(int $nom_conf_nomina_id): array |stdClass
+    {
+        $filtro['nom_conf_percepcion.nom_conf_nomina_id']  = $nom_conf_nomina_id;
+        $nom_conf_percepcion = (new nom_conf_percepcion($this->link))->filtro_and(filtro: $filtro);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al obtener nom_conf_percepcion',data:  $nom_conf_percepcion);
+        }
+
+        return $nom_conf_percepcion;
     }
 
     private function otro_pago_subsidio(int $nom_nomina_id){
@@ -1076,5 +1128,8 @@ class nom_nomina extends modelo
         return round($total_gravado, 2);
 
     }
+
+
+
 
 }

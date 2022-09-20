@@ -61,6 +61,10 @@ sl_nom_empleado.change(function(){
     let url = "index.php?seccion=em_cuenta_bancaria&ws=1&accion=get_cuentas_bancarias&em_empleado_id="+em_empleado_id+"&session_id="+session_id;
 
     getData(url,(data) => {
+
+        console.log(data)
+
+
         sl_em_cuenta_bancaria_id.empty();
         integra_new_option("#em_cuenta_bancaria_id",'Seleccione una cuenta bancaria','');
 
