@@ -23,6 +23,7 @@ use stdClass;
 class controlador_nom_conf_nomina extends system {
 
     public string $link_nom_conf_percepcion_alta_bd = '';
+    public stdClass $percepciones;
 
     public function __construct(PDO $link, html $html = new \gamboamartin\template_1\html(),
                                 stdClass $paths_conf = new stdClass()){
@@ -120,7 +121,42 @@ class controlador_nom_conf_nomina extends system {
             die('Error');
         }
 
+        $filtro['nom_conf_percepcion.nom_conf_nomina_id'] = $this->registro_id;
+        $percepciones = (new nom_conf_percepcion($this->link))->filtro_and(filtro: $filtro);
+        if(errores::$error){
+            return $this->retorno_error(mensaje: 'Error al obtener percepciones de configuracion',data:  $percepciones,
+                header: $header,ws:$ws);
+        }
+
+        foreach ($percepciones->registros as $indice => $percepcion) {
+            $percepcion = $this->data_percepcion_btn(percepcion: $percepcion);
+            if (errores::$error) {
+                return $this->retorno_error(mensaje: 'Error al asignar botones', data: $percepcion, header: $header, ws: $ws);
+            }
+            $percepciones->registros[$indice] = $percepcion;
+        }
+        $this->percepciones = $percepciones;
+
         return $inputs;
+    }
+
+    private function data_percepcion_btn(array $percepcion): array
+    {
+        $btn_elimina = $this->html_base->button_href(accion: 'elimina_bd', etiqueta: 'Elimina',
+            registro_id: $percepcion['nom_conf_percepcion_id'], seccion: 'nom_nomina', style: 'danger');
+        if (errores::$error) {
+            return $this->errores->error(mensaje: 'Error al generar btn', data: $btn_elimina);
+        }
+        $percepcion['link_elimina'] = $btn_elimina;
+
+        $btn_modifica = $this->html_base->button_href(accion: 'modifica', etiqueta: 'Modifica',
+            registro_id: $percepcion['nom_conf_percepcion_id'], seccion: 'nom_nomina', style: 'warning');
+        if (errores::$error) {
+            return $this->errores->error(mensaje: 'Error al generar btn', data: $btn_modifica);
+        }
+        $percepcion['link_modifica'] = $btn_modifica;
+
+        return $percepcion;
     }
 
     public function lista(bool $header, bool $ws = false): array
