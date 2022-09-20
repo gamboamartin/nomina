@@ -9,7 +9,7 @@ class nom_periodo extends nominas_confs {
 
     public function __construct(PDO $link){
         $tabla = __CLASS__;
-        $columnas = array($tabla=>false);
+        $columnas = array($tabla=>false, 'cat_sat_periodicidad_pago_nom'=>$tabla);
         $campos_obligatorios = array('cat_sat_periodicidad_pago_nom_id','im_registro_patronal_id','nom_tipo_periodo_id',
             'descripcion','descripcion_select');
 
@@ -132,7 +132,14 @@ class nom_periodo extends nominas_confs {
 
 
         foreach ($registros_empleados as $empleado) {
-            $nomina_empleado = $this->genera_registro_nomina_empleado($empleado, $nom_periodo);
+            $filtro['em_empledo.id'] = $empleado['em_empleado_id'];
+            $nom_conf_empleado = (new nom_conf_empleado($this->link))->filtro_and(filtro: $filtro);
+            if (errores::$error) {
+                return $this->error->error(mensaje: 'Error al obtener nom_conf_empleado', data: $nom_conf_empleado);
+            }
+
+            $nomina_empleado = $this->genera_registro_nomina_empleado(em_empleado:$empleado, nom_periodo: $nom_periodo,
+                nom_conf_empleado:$nom_conf_empleado->registros);
             if (errores::$error) {
                 return $this->error->error(mensaje: 'Error al maquetar nomina del empleado', data: $nomina_empleado);
             }
@@ -147,12 +154,12 @@ class nom_periodo extends nominas_confs {
         return array();
     }
 
-    private function genera_registro_nomina_empleado(mixed $em_empleado, mixed $nom_periodo) : array{
+    private function genera_registro_nomina_empleado(mixed $em_empleado, mixed $nom_periodo, mixed $nom_conf_empleado) : array{
 
         $registros['im_registro_patronal_id'] = $em_empleado['im_registro_patronal_id'];
         $registros['em_empleado_id'] = $em_empleado['em_empleado_id'];
-        $registros['nom_conf_empleado_id'] = 1;
-        $registros['em_cuenta_bancaria_id'] = 1;
+        $registros['nom_conf_empleado_id'] = $nom_conf_empleado['nom_conf_empleado_id'];
+        $registros['em_cuenta_bancaria_id'] = $nom_conf_empleado['em_cuenta_bancaria_id'];
         $registros['folio'] = rand();
         $registros['fecha'] = $nom_periodo['nom_periodo_fecha_pago'];
         $registros['cat_sat_tipo_nomina_id'] = 1;
@@ -160,7 +167,7 @@ class nom_periodo extends nominas_confs {
         $registros['fecha_pago'] =$nom_periodo['nom_periodo_fecha_pago'];
         $registros['fecha_inicial_pago'] = $nom_periodo['nom_periodo_fecha_inicial_pago'];
         $registros['fecha_final_pago'] = $nom_periodo['nom_periodo_fecha_final_pago'];
-        $registros['num_dias_pagados'] = 15;
+        $registros['num_dias_pagados'] = $nom_periodo['cat_sat_periodicidad_pago_nom_n_dias'];
         $registros['nom_periodo_id'] = $nom_periodo['nom_periodo_id'];
         $registros['descuento'] = 0;
 
