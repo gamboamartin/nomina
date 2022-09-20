@@ -9,16 +9,20 @@
 namespace gamboamartin\nomina\controllers;
 
 use gamboamartin\errores\errores;
+use gamboamartin\system\actions;
 use gamboamartin\system\links_menu;
 use gamboamartin\system\system;
 use gamboamartin\template\html;
 use html\nom_conf_nomina_html;
 use html\nom_deduccion_html;
 use models\nom_conf_nomina;
+use models\nom_conf_percepcion;
 use PDO;
 use stdClass;
 
 class controlador_nom_conf_nomina extends system {
+
+    public string $link_nom_conf_percepcion_alta_bd = '';
 
     public function __construct(PDO $link, html $html = new \gamboamartin\template_1\html(),
                                 stdClass $paths_conf = new stdClass()){
@@ -28,6 +32,16 @@ class controlador_nom_conf_nomina extends system {
         parent::__construct(html:$html_, link: $link,modelo:  $modelo, obj_link: $obj_link, paths_conf: $paths_conf);
 
         $this->titulo_lista = 'Configuracion Nomina';
+
+        $link_nom_conf_percepcion_alta_bd = $obj_link->link_con_id(accion: 'asigna_percepcion_alta_bd',
+            registro_id: $this->registro_id, seccion: $this->seccion);
+        if (errores::$error) {
+            $error = $this->errores->error(mensaje: 'Error al generar link', data: $link_nom_conf_percepcion_alta_bd);
+            print_r($error);
+            die('Error');
+        }
+
+        $this->link_nom_conf_percepcion_alta_bd = $link_nom_conf_percepcion_alta_bd;
     }
 
     public function alta(bool $header, bool $ws = false): array|string
@@ -93,6 +107,7 @@ class controlador_nom_conf_nomina extends system {
         $keys_selects['nom_conf_nomina']->cols = 6;
         $keys_selects['nom_conf_nomina']->disabled = true;
         $keys_selects['nom_conf_nomina']->filtro = array('nom_conf_nomina.id' => $this->registro_id);
+        $keys_selects['nom_conf_nomina']->id_selected = $this->registro_id;
 
         $keys_selects['nom_percepcion'] = new stdClass();
         $keys_selects['nom_percepcion']->cols = 6;
@@ -147,6 +162,43 @@ class controlador_nom_conf_nomina extends system {
         }
 
         return $base->template;
+    }
+
+    public function asigna_percepcion_alta_bd(bool $header, bool $ws = false): array|stdClass
+    {
+        $this->link->beginTransaction();
+        if (isset($_POST['btn_action_next'])) {
+            unset($_POST['btn_action_next']);
+        }
+        $_POST['nom_conf_nomina_id'] = $this->registro_id;
+
+        $alta = (new nom_conf_percepcion($this->link))->alta_registro(registro: $_POST);
+        if (errores::$error) {
+            $this->link->rollBack();
+            return $this->retorno_error(mensaje: 'Error al dar de alta percepcion', data: $alta,
+                header: $header, ws: $ws);
+        }
+
+        $siguiente_view = (new actions())->init_alta_bd();
+        if (errores::$error) {
+            $this->link->rollBack();
+            return $this->retorno_error(mensaje: 'Error al obtener siguiente view', data: $siguiente_view,
+                header: $header, ws: $ws);
+        }
+        $this->link->commit();
+
+        if ($header) {
+            $this->retorno_base(registro_id:$this->registro_id, result: $alta,
+                siguiente_view: $siguiente_view, ws:  $ws);
+        }
+        if ($ws) {
+            header('Content-Type: application/json');
+            echo json_encode($alta, JSON_THROW_ON_ERROR);
+            exit;
+        }
+        $alta->siguiente_view = $siguiente_view;
+
+        return $alta;
     }
 
     private function base(stdClass $params = new stdClass()): array|stdClass
