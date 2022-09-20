@@ -6,6 +6,7 @@ use gamboamartin\nomina\controllers\controlador_nom_conf_nomina;
 
 use gamboamartin\system\html_controler;
 use models\nom_conf_nomina;
+use models\nom_conf_percepcion;
 use PDO;
 use stdClass;
 
@@ -18,6 +19,18 @@ class nom_conf_nomina_html extends html_controler {
         $controler->inputs->select->cat_sat_periodicidad_pago_nom_id = $inputs->selects->cat_sat_periodicidad_pago_nom_id;
         $controler->inputs->select->cat_sat_tipo_nomina_id = $inputs->selects->cat_sat_tipo_nomina_id;
 
+        return $controler->inputs;
+    }
+
+    private function asigna_inputs_asigna_percepcion(controlador_nom_conf_nomina $controler, stdClass $inputs): array|stdClass
+    {
+        $controler->inputs->select = new stdClass();
+        $controler->inputs->select->nom_conf_nomina_id = $inputs->selects->nom_conf_nomina_id;
+        $controler->inputs->select->nom_percepcion_id = $inputs->selects->nom_percepcion_id;
+        $controler->inputs->importe_gravado = $inputs->texts->importe_gravado;
+        $controler->inputs->importe_exento = $inputs->texts->importe_exento;
+        $controler->inputs->fecha_inicio = $inputs->texts->fecha_inicio;
+        $controler->inputs->fecha_fin = $inputs->texts->fecha_fin;
         return $controler->inputs;
     }
 
@@ -52,6 +65,20 @@ class nom_conf_nomina_html extends html_controler {
         return $inputs_asignados;
     }
 
+    public function genera_inputs_asigna_percepcion(controlador_nom_conf_nomina $controler, array $keys_selects, PDO $link): array|stdClass
+    {
+        $inputs = (new nom_conf_percepcion_html(html: $this->html_base))->init_alta(keys_selects: $keys_selects, link: $link);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al generar inputs', data: $inputs);
+
+        }
+        $inputs_asignados = $this->asigna_inputs_asigna_percepcion(controler: $controler, inputs: $inputs);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al asignar inputs', data: $inputs_asignados);
+        }
+
+        return $inputs;
+    }
 
     private function init_modifica(PDO $link, stdClass $row_upd, stdClass $params = new stdClass()): array|stdClass
     {
@@ -127,6 +154,8 @@ class nom_conf_nomina_html extends html_controler {
         }
         return $select;
     }
+
+
 
 
 }
