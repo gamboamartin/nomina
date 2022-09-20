@@ -132,7 +132,7 @@ class nom_periodo extends nominas_confs {
 
 
         foreach ($registros_empleados as $empleado) {
-            $filtro['em_empledo.id'] = $empleado['em_empleado_id'];
+            $filtro['em_empleado.id'] = $empleado['em_empleado_id'];
             $nom_conf_empleado = (new nom_conf_empleado($this->link))->filtro_and(filtro: $filtro);
             if (errores::$error) {
                 return $this->error->error(mensaje: 'Error al obtener nom_conf_empleado', data: $nom_conf_empleado);
