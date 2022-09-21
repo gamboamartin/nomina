@@ -80,11 +80,13 @@ class calcula_nomina{
             return $this->error->error(mensaje: 'Error al obtener impuestos', data: $impuestos);
         }
 
+
         $data = $this->calcula_montos_isr_sub(monto_isr: round($impuestos->isr,2),
-            monto_subsidio: round($impuestos->isr,2));
+            monto_subsidio: round($impuestos->subsidio,2));
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al calcular isr y subsidio', data: $data);
         }
+
 
         return $data;
     }
@@ -93,6 +95,7 @@ class calcula_nomina{
 
         $monto_isr_neto = $monto_isr;
         $monto_subsidio_neto = $monto_subsidio;
+
 
         if($monto_isr >= $monto_subsidio){
             $monto_isr_neto = round($monto_isr-$monto_subsidio,2);

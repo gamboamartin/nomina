@@ -21,7 +21,7 @@
                         <?php echo $controlador->inputs->fecha_fin; ?>
                         <div class="control-group btn-alta">
                             <div class="controls">
-                                <button type="submit" class="btn btn-success" value="modifica" name="btn_action_next">Alta</button><br>
+                                <button type="submit" class="btn btn-success" value="asigna_percepcion" name="btn_action_next">Alta</button><br>
                             </div>
                         </div>
                     </form>

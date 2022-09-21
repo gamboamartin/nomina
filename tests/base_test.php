@@ -114,11 +114,22 @@ class base_test{
 
     public function alta_nom_conf_nomina(PDO $link): array|\stdClass
     {
+
+        $alta = $this->alta_cat_sat_tipo_nomina($link);
+        if(errores::$error){
+            $error = (new errores())->error('Error al dar de alta', $alta);
+            print_r($error);
+            exit;
+        }
+
         $nom_conf_empleado = array();
         $nom_conf_empleado['id'] = 1;
         $nom_conf_empleado['codigo'] = 1;
         $nom_conf_empleado['descripcion'] = 1;
         $nom_conf_empleado['nom_conf_factura_id'] = 1;
+        $nom_conf_empleado['descripcion_select'] = 1;
+        $nom_conf_empleado['cat_sat_periodicidad_pago_nom_id'] = 1;
+        $nom_conf_empleado['cat_sat_tipo_nomina_id'] = 1;
 
 
         $alta = (new nom_conf_nomina($link))->alta_registro($nom_conf_empleado);
@@ -153,12 +164,7 @@ class base_test{
             exit;
         }
 
-        $alta = $this->alta_cat_sat_tipo_nomina($link);
-        if(errores::$error){
-            $error = (new errores())->error('Error al dar de alta', $alta);
-            print_r($error);
-            exit;
-        }
+
 
         $alta = $this->alta_nom_periodo($link);
         if(errores::$error){
@@ -248,6 +254,11 @@ class base_test{
             return (new errores())->error('Error al eliminar', $del);
         }
 
+        $del = $this->del_nom_conf_nomina($link);
+        if(errores::$error){
+            return (new errores())->error('Error al eliminar', $del);
+        }
+
         $del = $this->del($link, 'models\\cat_sat_tipo_nomina');
         if(errores::$error){
             return (new errores())->error('Error al eliminar', $del);
@@ -327,7 +338,31 @@ class base_test{
 
     public function del_nom_conf_nomina(PDO $link): array
     {
+
+        $del = (new base_test())->del_nom_conf_percepcion($link);
+        if(errores::$error){
+            $error = (new errores())->error('Error al eliminar', $del);
+            print_r($error);
+            exit;
+        }
+
+        $del = (new base_test())->del_nom_conf_empleado($link);
+        if(errores::$error){
+            $error = (new errores())->error('Error al eliminar', $del);
+            print_r($error);
+            exit;
+        }
+
         $del = $this->del($link, 'models\\nom_conf_nomina');
+        if(errores::$error){
+            return (new errores())->error('Error al eliminar', $del);
+        }
+        return $del;
+    }
+
+    public function del_nom_conf_percepcion(PDO $link): array
+    {
+        $del = $this->del($link, 'models\\nom_conf_percepcion');
         if(errores::$error){
             return (new errores())->error('Error al eliminar', $del);
         }

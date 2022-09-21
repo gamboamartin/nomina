@@ -44,8 +44,9 @@ class nom_periodoTest extends test {
         $modelo = new nom_periodo($this->link);
 
         $im_registro_patronal_id = 1;
+        $cat_sat_periodicidad_pago_nom_id = 1;
 
-        $resultado = $modelo->get_empleados($im_registro_patronal_id);
+        $resultado = $modelo->get_empleados($cat_sat_periodicidad_pago_nom_id, $im_registro_patronal_id);
         $this->assertIsArray($resultado);
         $this->assertNotTrue(errores::$error);
 

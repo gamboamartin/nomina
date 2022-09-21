@@ -13,11 +13,16 @@ use gamboamartin\errores\errores;
 use gamboamartin\system\actions;
 use gamboamartin\system\links_menu;
 use gamboamartin\template\html;
+use gamboamartin\xml_cfdi_4\cfdis;
+use html\fc_factura_html;
 use html\nom_nomina_html;
 use html\nom_par_deduccion_html;
 use html\nom_par_otro_pago_html;
 use html\nom_par_percepcion_html;
 use JsonException;
+use models\com_sucursal;
+use models\fc_factura;
+use models\im_registro_patronal;
 use models\nom_nomina;
 use models\nom_par_deduccion;
 use models\nom_par_otro_pago;
@@ -353,8 +358,49 @@ class controlador_nom_nomina extends base_nom
 
     public function genera_xml(bool $header, bool $ws = false): array|stdClass
     {
+        $nom_nomina = $this->modelo->registro(registro_id: $this->registro_id, retorno_obj: true);
+        if (errores::$error) {
+            return $this->retorno_error(mensaje: 'Error al obtener nomina', data: $nom_nomina, header: $header, ws: $ws);
+        }
 
-        return array();
+        $im_registro_patronal = (new im_registro_patronal($this->link))->registro(
+            registro_id:$nom_nomina->im_registro_patronal_id, retorno_obj: true );
+        if (errores::$error) {
+            return $this->retorno_error(mensaje: 'Error al obtener registro patronal', data: $im_registro_patronal, header: $header, ws: $ws);
+        }
+
+        $fc_factura = (new fc_factura($this->link))->registro(
+            registro_id:$nom_nomina->fc_factura_id, retorno_obj: true );
+
+        $com_sucursal = (new com_sucursal($this->link))->registro(
+            registro_id:$fc_factura->com_sucursal_id, retorno_obj: true );
+
+        //print_r($im_registro_patronal);exit;
+        //print_r($nom_nomina);exit;
+        $comprobante = new stdClass();
+        $comprobante->lugar_expedicion = $fc_factura->dp_cp_descripcion;
+        $comprobante->folio = $fc_factura->fc_factura_folio;
+
+        $emisor = new stdClass();
+        $emisor->rfc = $fc_factura->org_empresa_rfc;
+        $emisor->nombre = $fc_factura->org_empresa_razon_social;
+        $emisor->regimen_fiscal = $fc_factura->cat_sat_regimen_fiscal_codigo;
+
+        $receptor = new stdClass();
+        $receptor->rfc = $fc_factura->com_cliente_rfc;
+        $receptor->nombre = $fc_factura->com_cliente_razon_social;
+        $receptor->domicilio_fiscal_receptor = $com_sucursal->dp_cp_descripcion;
+
+
+        $nomina = new stdClass();
+
+        $xml = (new cfdis())->complemento_nomina(
+            comprobante: $comprobante,emisor:  $emisor, nomina: $nomina,receptor:  $receptor);
+        if (errores::$error) {
+            return $this->retorno_error(mensaje: 'Error al generar xml', data: $xml, header: $header, ws: $ws);
+        }
+
+        return $nom_nomina;
     }
 
     private function init_partidas_ids(): array

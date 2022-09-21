@@ -91,6 +91,8 @@ class calcula_nominaTest extends test {
             exit;
         }
 
+
+
         $del = (new base_test())->del_nom_conf_nomina($this->link);
         if(errores::$error){
             $error = (new errores())->error('Error al eliminar', $del);
