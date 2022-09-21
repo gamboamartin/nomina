@@ -136,6 +136,7 @@ class calcula_nominaTest extends test {
         }
 
 
+
         $alta = (new base_test())->alta_nom_nomina($this->link);
         if(errores::$error){
             $error = (new errores())->error('Error al dar de alta', $alta);

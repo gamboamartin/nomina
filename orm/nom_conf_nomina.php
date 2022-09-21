@@ -3,6 +3,7 @@ namespace models;
 use base\orm\modelo;
 use gamboamartin\errores\errores;
 use PDO;
+use stdClass;
 
 class nom_conf_nomina extends modelo{
 
