@@ -431,6 +431,14 @@ class controlador_nom_nomina extends base_nom
                 data: $nomina->total_percepciones, header: $header, ws: $ws);
         }
 
+        $nomina->total_deducciones = (new nom_nomina(link: $this->link))->total_deducciones_monto(
+            nom_nomina_id: $this->registro_id);
+
+        if (errores::$error) {
+            return $this->retorno_error(mensaje: 'Error al obtener total deducciones xml',
+                data: $nomina->total_deducciones, header: $header, ws: $ws);
+        }
+
         $xml = (new cfdis())->complemento_nomina(
             comprobante: $comprobante,emisor:  $emisor, nomina: $nomina,receptor:  $receptor);
         if (errores::$error) {

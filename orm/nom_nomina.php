@@ -1114,6 +1114,50 @@ class nom_nomina extends modelo
         return $r_nom_par_percepcion->registros;
     }
 
+    private function total_deducciones_exento(int $nom_nomina_id): float|array
+    {
+        $campos = array();
+        $campos['total_importe_exento'] = 'nom_par_deduccion.importe_exento';
+        $filtro['nom_nomina.id'] = $nom_nomina_id;
+        $r_nom_par_deduccion = (new nom_par_deduccion($this->link))->suma(campos: $campos,filtro: $filtro);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al obtener deducciones', data: $r_nom_par_deduccion);
+        }
+
+        return round($r_nom_par_deduccion['total_importe_exento'],2);
+
+    }
+
+    private function total_deducciones_gravado(int $nom_nomina_id): float|array
+    {
+        $campos = array();
+        $campos['total_importe_gravado'] = 'nom_par_deduccion.importe_gravado';
+        $filtro['nom_nomina.id'] = $nom_nomina_id;
+        $r_nom_par_deduccion = (new nom_par_deduccion($this->link))->suma(campos: $campos,filtro: $filtro);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al obtener deducciones', data: $r_nom_par_deduccion);
+        }
+
+        return round($r_nom_par_deduccion['total_importe_gravado'],2);
+
+    }
+
+    public function total_deducciones_monto(int $nom_nomina_id): float|array
+    {
+
+        $total_deducciones_gravado = $this->total_deducciones_gravado(nom_nomina_id: $nom_nomina_id);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al obtener total gravado ded', data: $total_deducciones_gravado);
+        }
+        $total_deducciones_exento = $this->total_deducciones_exento(nom_nomina_id: $nom_nomina_id);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al obtener total exento ded', data: $total_deducciones_exento);
+        }
+
+        $total_deducciones = $total_deducciones_gravado + $total_deducciones_gravado;
+        return round($total_deducciones,2);
+    }
+
     /**
      * Obtiene el total gravado de una nomina
      * @param int $nom_nomina_id Nomina a verificar
