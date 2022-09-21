@@ -14,16 +14,19 @@ use gamboamartin\system\links_menu;
 use gamboamartin\system\system;
 use gamboamartin\template\html;
 use html\nom_conf_nomina_html;
+use html\nom_conf_percepcion_html;
 use html\nom_deduccion_html;
 use models\nom_conf_nomina;
 use models\nom_conf_percepcion;
 use PDO;
 use stdClass;
+use Throwable;
 
 class controlador_nom_conf_nomina extends system {
 
     public string $link_nom_conf_percepcion_alta_bd = '';
     public stdClass $percepciones;
+    public int $nom_conf_percepcion_id = -1;
 
     public function __construct(PDO $link, html $html = new \gamboamartin\template_1\html(),
                                 stdClass $paths_conf = new stdClass()){
@@ -38,6 +41,13 @@ class controlador_nom_conf_nomina extends system {
             registro_id: $this->registro_id, seccion: $this->seccion);
         if (errores::$error) {
             $error = $this->errores->error(mensaje: 'Error al generar link', data: $link_nom_conf_percepcion_alta_bd);
+            print_r($error);
+            die('Error');
+        }
+
+        $init = $this->init_partidas_ids();
+        if (errores::$error) {
+            $error = $this->errores->error(mensaje: 'Error al inicializar ids', data: $init);
             print_r($error);
             die('Error');
         }
@@ -140,66 +150,6 @@ class controlador_nom_conf_nomina extends system {
         return $inputs;
     }
 
-    private function data_percepcion_btn(array $percepcion): array
-    {
-        $btn_elimina = $this->html_base->button_href(accion: 'elimina_bd', etiqueta: 'Elimina',
-            registro_id: $percepcion['nom_conf_percepcion_id'], seccion: 'nom_nomina', style: 'danger');
-        if (errores::$error) {
-            return $this->errores->error(mensaje: 'Error al generar btn', data: $btn_elimina);
-        }
-        $percepcion['link_elimina'] = $btn_elimina;
-
-        $btn_modifica = $this->html_base->button_href(accion: 'modifica', etiqueta: 'Modifica',
-            registro_id: $percepcion['nom_conf_percepcion_id'], seccion: 'nom_nomina', style: 'warning');
-        if (errores::$error) {
-            return $this->errores->error(mensaje: 'Error al generar btn', data: $btn_modifica);
-        }
-        $percepcion['link_modifica'] = $btn_modifica;
-
-        return $percepcion;
-    }
-
-    public function lista(bool $header, bool $ws = false): array
-    {
-        $lista = parent::lista($header, $ws);
-        if(errores::$error){
-            return $this->retorno_error(mensaje: 'Error al maquetar datos',data:  $lista, header: $header,ws:$ws);
-        }
-
-        $registros = $this->maqueta_registros_lista(registros: $this->registros);
-        if(errores::$error){
-            return $this->retorno_error(mensaje: 'Error al maquetar registros',data:  $registros, header: $header,ws:$ws);
-        }
-        $this->registros = $registros;
-
-        return $lista;
-    }
-
-    private function maqueta_registros_lista(array $registros): array
-    {
-        foreach ($registros as $indice=> $row){
-            $row = $this->asigna_link_asigna_percepcion_row(row: $row);
-            if(errores::$error){
-                return $this->errores->error(mensaje: 'Error al maquetar row',data:  $row);
-            }
-            $registros[$indice] = $row;
-
-        }
-        return $registros;
-    }
-
-    public function modifica(bool $header, bool $ws = false, string $breadcrumbs = '', bool $aplica_form = true,
-                             bool $muestra_btn = true): array|string
-    {
-        $base = $this->base();
-        if(errores::$error){
-            return $this->retorno_error(mensaje: 'Error al maquetar datos',data:  $base,
-                header: $header,ws:$ws);
-        }
-
-        return $base->template;
-    }
-
     public function asigna_percepcion_alta_bd(bool $header, bool $ws = false): array|stdClass
     {
         $this->link->beginTransaction();
@@ -237,6 +187,51 @@ class controlador_nom_conf_nomina extends system {
         return $alta;
     }
 
+    public function asigna_percepcion_modifica(bool $header, bool $ws = false): array|stdClass|string
+    {
+        $controlador = new controlador_nom_conf_percepcion($this->link);
+        $controlador->registro_id = $this->nom_conf_percepcion_id;
+
+        $r_modifica = $controlador->modifica(header: false, aplica_form: false);
+        if (errores::$error) {
+            return $this->errores->error(mensaje: 'Error al generar template', data: $r_modifica);
+        }
+
+        $inputs = (new nom_conf_percepcion_html(html: $this->html_base))->inputs_nom_conf_percepcion(
+            controlador: $controlador);
+        if(errores::$error){
+            return $this->errores->error(mensaje: 'Error al inicializar inputs',data:  $inputs);
+        }
+        $this->inputs = $inputs;
+
+        return $r_modifica;
+    }
+
+    public function asigna_percepcion_elimina_bd(bool $header, bool $ws = false): array|stdClass
+    {
+        $r_elimina = (new nom_conf_percepcion($this->link))->elimina_bd(id: $this->nom_conf_percepcion_id);
+        if (errores::$error) {
+            return $this->retorno_error(mensaje: 'Error al eliminar otro pago', data: $r_elimina, header: $header,
+                ws: $ws);
+        }
+
+        $siguiente_view = (new actions())->init_alta_bd();
+        if (errores::$error) {
+            return $this->retorno_error(mensaje: 'Error al obtener siguiente view', data: $siguiente_view,
+                header: $header, ws: $ws);
+        }
+
+        $limpia = $this->limpia_btn();
+        if (errores::$error) {
+            return $this->retorno_error(mensaje: 'Error al limpiar boton', data: $limpia, header: $header, ws: $ws);
+        }
+
+        $this->out(header: $header,result:  $r_elimina,siguiente_view:  $siguiente_view,ws:  $ws);
+        $r_elimina->siguiente_view = $siguiente_view;
+
+        return $r_elimina;
+    }
+
     private function base(stdClass $params = new stdClass()): array|stdClass
     {
         $r_modifica =  parent::modifica(header: false,aplica_form:  false); // TODO: Change the autogenerated stub
@@ -257,4 +252,101 @@ class controlador_nom_conf_nomina extends system {
         return $data;
     }
 
+    private function data_percepcion_btn(array $percepcion): array
+    {
+        $params['nom_conf_percepcion_id'] = $percepcion['nom_conf_percepcion_id'];
+
+        $btn_elimina = $this->html_base->button_href(accion: 'asigna_percepcion_elimina_bd', etiqueta: 'Elimina',
+            registro_id: $this->registro_id, seccion: 'nom_conf_nomina', style: 'danger', params: $params);
+        if (errores::$error) {
+            return $this->errores->error(mensaje: 'Error al generar btn', data: $btn_elimina);
+        }
+        $percepcion['link_elimina'] = $btn_elimina;
+
+        $btn_modifica = $this->html_base->button_href(accion: 'asigna_percepcion_modifica', etiqueta: 'Modifica',
+            registro_id: $this->registro_id, seccion: 'nom_conf_nomina', style: 'warning', params: $params);
+        if (errores::$error) {
+            return $this->errores->error(mensaje: 'Error al generar btn', data: $btn_modifica);
+        }
+        $percepcion['link_modifica'] = $btn_modifica;
+
+        return $percepcion;
+    }
+
+    private function init_partidas_ids(): array
+    {
+        if (isset($_GET['nom_conf_percepcion_id'])){
+            $this->nom_conf_percepcion_id = $_GET['nom_conf_percepcion_id'];
+        }
+
+        return $_GET;
+    }
+
+    public function lista(bool $header, bool $ws = false): array
+    {
+        $lista = parent::lista($header, $ws);
+        if(errores::$error){
+            return $this->retorno_error(mensaje: 'Error al maquetar datos',data:  $lista, header: $header,ws:$ws);
+        }
+
+        $registros = $this->maqueta_registros_lista(registros: $this->registros);
+        if(errores::$error){
+            return $this->retorno_error(mensaje: 'Error al maquetar registros',data:  $registros, header: $header,ws:$ws);
+        }
+        $this->registros = $registros;
+
+        return $lista;
+    }
+
+    private function limpia_btn(): array
+    {
+        if (isset($_POST['btn_action_next'])) {
+            unset($_POST['btn_action_next']);
+        }
+        return $_POST;
+    }
+
+    private function maqueta_registros_lista(array $registros): array
+    {
+        foreach ($registros as $indice=> $row){
+            $row = $this->asigna_link_asigna_percepcion_row(row: $row);
+            if(errores::$error){
+                return $this->errores->error(mensaje: 'Error al maquetar row',data:  $row);
+            }
+            $registros[$indice] = $row;
+
+        }
+        return $registros;
+    }
+
+    public function modifica(bool $header, bool $ws = false, string $breadcrumbs = '', bool $aplica_form = true,
+                             bool $muestra_btn = true): array|string
+    {
+        $base = $this->base();
+        if(errores::$error){
+            return $this->retorno_error(mensaje: 'Error al maquetar datos',data:  $base,
+                header: $header,ws:$ws);
+        }
+
+        return $base->template;
+    }
+
+    private function out(bool $header, mixed $result, string $siguiente_view, bool $ws){
+        if ($header) {
+            $this->retorno_base(registro_id:$this->registro_id, result: $result,
+                siguiente_view: $siguiente_view, ws:  $ws);
+        }
+        if ($ws) {
+            header('Content-Type: application/json');
+            try {
+                echo json_encode($result, JSON_THROW_ON_ERROR);
+            }
+            catch (Throwable $e){
+                $error = $this->errores->error(mensaje: 'Error en json', data: $e);
+                print_r($error);
+            }
+            exit;
+        }
+        return $result;
+    }
 }
