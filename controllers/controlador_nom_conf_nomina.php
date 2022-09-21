@@ -190,6 +190,23 @@ class controlador_nom_conf_nomina extends system {
         return $alta;
     }
 
+    public function asigna_percepcion_elimina_bd(bool $header, bool $ws = false): array|stdClass
+    {
+        $this->link->beginTransaction();
+        $r_elimina = (new nom_conf_percepcion($this->link))->elimina_bd(id: $this->nom_conf_percepcion_id);
+        if (errores::$error) {
+            $this->link->rollBack();
+            return $this->retorno_error(mensaje: 'Error al eliminar otro pago', data: $r_elimina, header: $header,
+                ws: $ws);
+        }
+        $this->link->commit();
+
+        $this->out(header: $header,result:  $r_elimina,siguiente_view:  'asigna_percepcion',ws:  $ws);
+        $r_elimina->siguiente_view = 'asigna_percepcion';
+
+        return $r_elimina;
+    }
+
     public function asigna_percepcion_modifica(bool $header, bool $ws = false): array|stdClass|string
     {
         $controlador = new controlador_nom_conf_percepcion($this->link);
@@ -210,30 +227,7 @@ class controlador_nom_conf_nomina extends system {
         return $r_modifica;
     }
 
-    public function asigna_percepcion_elimina_bd(bool $header, bool $ws = false): array|stdClass
-    {
-        $r_elimina = (new nom_conf_percepcion($this->link))->elimina_bd(id: $this->nom_conf_percepcion_id);
-        if (errores::$error) {
-            return $this->retorno_error(mensaje: 'Error al eliminar otro pago', data: $r_elimina, header: $header,
-                ws: $ws);
-        }
 
-        $siguiente_view = (new actions())->init_alta_bd();
-        if (errores::$error) {
-            return $this->retorno_error(mensaje: 'Error al obtener siguiente view', data: $siguiente_view,
-                header: $header, ws: $ws);
-        }
-
-        $limpia = $this->limpia_btn();
-        if (errores::$error) {
-            return $this->retorno_error(mensaje: 'Error al limpiar boton', data: $limpia, header: $header, ws: $ws);
-        }
-
-        $this->out(header: $header,result:  $r_elimina,siguiente_view:  $siguiente_view,ws:  $ws);
-        $r_elimina->siguiente_view = $siguiente_view;
-
-        return $r_elimina;
-    }
 
     private function base(stdClass $params = new stdClass()): array|stdClass
     {
