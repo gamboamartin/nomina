@@ -439,6 +439,16 @@ class controlador_nom_nomina extends base_nom
                 data: $nomina->total_deducciones, header: $header, ws: $ws);
         }
 
+        $nomina->emisor = new stdClass();
+        $nomina->emisor->registro_patronal = $im_registro_patronal->im_registro_patronal_descripcion;
+        $nomina->emisor->rfc_patron_origen =  $emisor->rfc;
+
+        $nomina->receptor = new stdClass();
+        $nomina->receptor->curp = $nom_nomina->em_empleado_curp;
+        $nomina->receptor->num_seguridad_social = $nom_nomina->em_empleado_nss;
+        $nomina->receptor->fecha_inicio_rel_laboral = $nom_nomina->em_empleado_fecha_inicio_rel_laboral;
+
+
         $xml = (new cfdis())->complemento_nomina(
             comprobante: $comprobante,emisor:  $emisor, nomina: $nomina,receptor:  $receptor);
         if (errores::$error) {
