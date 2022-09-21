@@ -371,15 +371,38 @@ class controlador_nom_nomina extends base_nom
 
         $fc_factura = (new fc_factura($this->link))->registro(
             registro_id:$nom_nomina->fc_factura_id, retorno_obj: true );
+        if(errores::$error){
+            return $this->retorno_error(mensaje: 'Error al obtener factura',
+                data: $fc_factura, header: $header, ws: $ws);
+        }
 
         $com_sucursal = (new com_sucursal($this->link))->registro(
             registro_id:$fc_factura->com_sucursal_id, retorno_obj: true );
+        if(errores::$error){
+            return $this->retorno_error(mensaje: 'Error al obtener sucursal',
+                data: $com_sucursal, header: $header, ws: $ws);
+        }
 
         //print_r($im_registro_patronal);exit;
         //print_r($nom_nomina);exit;
         $comprobante = new stdClass();
         $comprobante->lugar_expedicion = $fc_factura->dp_cp_descripcion;
         $comprobante->folio = $fc_factura->fc_factura_folio;
+        $comprobante->total = (new fc_factura($this->link))->total(fc_factura_id:$fc_factura->fc_factura_id );
+        if(errores::$error){
+            return $this->retorno_error(mensaje: 'Error al obtener total',
+                data: $comprobante->total, header: $header, ws: $ws);
+        }
+        $comprobante->sub_total = (new fc_factura($this->link))->sub_total(fc_factura_id:$fc_factura->fc_factura_id );
+        if(errores::$error){
+            return $this->retorno_error(mensaje: 'Error al obtener sub_total',
+                data: $comprobante->sub_total, header: $header, ws: $ws);
+        }
+        $comprobante->descuento = (new fc_factura($this->link))->get_factura_descuento(fc_factura_id:$fc_factura->fc_factura_id );
+        if(errores::$error){
+            return $this->retorno_error(mensaje: 'Error al obtener sub_total',
+                data: $comprobante->sub_total, header: $header, ws: $ws);
+        }
 
         $emisor = new stdClass();
         $emisor->rfc = $fc_factura->org_empresa_rfc;
@@ -394,6 +417,8 @@ class controlador_nom_nomina extends base_nom
 
 
         $nomina = new stdClass();
+
+        $nomina->tipo_nomina = $nom_nomina->cat_sat_tipo_nomina_codigo;
 
         $xml = (new cfdis())->complemento_nomina(
             comprobante: $comprobante,emisor:  $emisor, nomina: $nomina,receptor:  $receptor);
