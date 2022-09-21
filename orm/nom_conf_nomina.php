@@ -39,4 +39,6 @@ class nom_conf_nomina extends modelo{
         }
         return $r_alta_bd;
     }
+
+
 }
