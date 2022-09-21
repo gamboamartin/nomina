@@ -41,8 +41,16 @@ class controlador_nom_conf_percepcion extends system {
             return $this->retorno_error(mensaje: 'Error al generar template',data:  $r_alta, header: $header,ws:$ws);
         }
 
+        $keys_selects = array();
+        $keys_selects['nom_conf_nomina_id'] = new stdClass();
+        $keys_selects['nom_conf_nomina_id']->label = 'Configuracion Nomina';
+
+        $keys_selects['nom_percepcion_id'] = new stdClass();
+        $keys_selects['nom_percepcion_id']->label = 'Percepcion';
+
+
         $inputs = (new nom_conf_percepcion_html(html: $this->html_base))->genera_inputs_alta(controler: $this,
-            modelo: $this->modelo, link: $this->link);
+            modelo: $this->modelo, link: $this->link,keys_selects: $keys_selects);
         if(errores::$error){
             $error = $this->errores->error(mensaje: 'Error al generar inputs',data:  $inputs);
             print_r($error);

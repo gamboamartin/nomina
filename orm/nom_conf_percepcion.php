@@ -10,7 +10,7 @@ class nom_conf_percepcion extends modelo{
     public function __construct(PDO $link){
         $tabla = __CLASS__;
         $columnas = array($tabla=>false , "nom_percepcion" => $tabla);
-        $campos_obligatorios = array('descripcion_select','alias');
+        $campos_obligatorios = array('codigo_bis','descripcion_select','alias');
         $campos_view = array("nom_conf_nomina_id" => array("type" => "selects", "model" => new nom_conf_nomina(link: $link)),
             "nom_percepcion_id" => array("type" => "selects", "model" => new nom_percepcion(link: $link)));
 
@@ -20,6 +20,9 @@ class nom_conf_percepcion extends modelo{
 
     public function alta_bd(): array|stdClass
     {
+        if(!isset($this->registro['codigo_bis'])){
+            $this->registro['codigo_bis'] = strtoupper($this->registro['codigo']);
+        }
 
         if(!isset($this->registro['descripcion_select'])){
             $this->registro['descripcion_select'] = $this->registro['descripcion'];

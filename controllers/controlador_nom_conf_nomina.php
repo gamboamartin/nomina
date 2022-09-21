@@ -114,14 +114,16 @@ class controlador_nom_conf_nomina extends system {
         }
 
         $keys_selects = array();
-        $keys_selects['nom_conf_nomina'] = new stdClass();
-        $keys_selects['nom_conf_nomina']->cols = 6;
-        $keys_selects['nom_conf_nomina']->disabled = true;
-        $keys_selects['nom_conf_nomina']->filtro = array('nom_conf_nomina.id' => $this->registro_id);
-        $keys_selects['nom_conf_nomina']->id_selected = $this->registro_id;
+        $keys_selects['nom_conf_nomina_id'] = new stdClass();
+        $keys_selects['nom_conf_nomina_id']->cols = 6;
+        $keys_selects['nom_conf_nomina_id']->disabled = true;
+        $keys_selects['nom_conf_nomina_id']->filtro = array('nom_conf_nomina.id' => $this->registro_id);
+        $keys_selects['nom_conf_nomina_id']->id_selected = $this->registro_id;
+        $keys_selects['nom_conf_nomina_id']->label = 'Configuracion Nomina';
 
-        $keys_selects['nom_percepcion'] = new stdClass();
-        $keys_selects['nom_percepcion']->cols = 6;
+        $keys_selects['nom_percepcion_id'] = new stdClass();
+        $keys_selects['nom_percepcion_id']->cols = 6;
+        $keys_selects['nom_percepcion_id']->label = 'Percepcion';
 
         $inputs = (new nom_conf_nomina_html(html: $this->html_base))->genera_inputs_asigna_percepcion(controler: $this, keys_selects: $keys_selects,
             link: $this->link);
