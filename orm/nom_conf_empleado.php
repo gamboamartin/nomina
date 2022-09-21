@@ -11,7 +11,7 @@ class nom_conf_empleado extends modelo{
         $tabla = __CLASS__;
         $columnas = array($tabla=>false,'em_cuenta_bancaria' => $tabla,'em_empleado'=>'em_cuenta_bancaria',
             'nom_conf_nomina' => $tabla,'nom_conf_factura' => 'nom_conf_nomina',
-            'cat_sat_periodicidad_pago_nom'=>'nom_conf_nomina');
+            'cat_sat_periodicidad_pago_nom'=>'nom_conf_nomina', 'im_registro_patronal'=>'em_empleado');
         $campos_obligatorios = array('em_cuenta_bancaria_id','nom_conf_nomina_id','codigo','descripcion');
 
         parent::__construct(link: $link,tabla:  $tabla, campos_obligatorios: $campos_obligatorios,

@@ -96,11 +96,17 @@ class nom_periodo extends nominas_confs {
     /**
      * Obtiene un conjunto de empleados de un registro patronal
      * @param int $im_registro_patronal_id Registro patronal integrado
+     * @param int $cat_sat_periodicidad_pago_nom_id
      * @return array
      * @version 0.242.7
      */
-    public function get_empleados(int $im_registro_patronal_id): array
+    public function get_empleados(int $im_registro_patronal_id, int $cat_sat_periodicidad_pago_nom_id): array
     {
+
+        if($cat_sat_periodicidad_pago_nom_id<=0){
+            return $this->error->error(mensaje: 'Error $im_registro_patronal_id debe ser mayor a 0',
+                data: $im_registro_patronal_id);
+        }
 
         if($im_registro_patronal_id<=0){
             return $this->error->error(mensaje: 'Error $im_registro_patronal_id debe ser mayor a 0',
@@ -108,13 +114,25 @@ class nom_periodo extends nominas_confs {
         }
 
         $filtro['im_registro_patronal.id'] = $im_registro_patronal_id;
-
         $r_empleados = (new em_empleado($this->link))->filtro_and(filtro: $filtro);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al obtener registros', data: $r_empleados);
         }
 
-        return $r_empleados->registros;
+        $empleados = array();
+        foreach ($r_empleados->registros as $empleado){
+            $filtro_em['em_empleado.id'] = $empleado['em_empleado_id'];
+            $filtro_em['cat_sat_periodicidad_pago_nom.id'] = $cat_sat_periodicidad_pago_nom_id;
+            $conf_empleado = (new nom_conf_empleado($this->link))->filtro_and(filtro: $filtro_em);
+            if (errores::$error) {
+                return $this->error->error(mensaje: 'Error al obtener configuracion de empleado', data: $conf_empleado);
+            }
+            if(isset($conf_empleado->registros[0])){
+                $empleados[] = $conf_empleado->registros[0];
+            }
+        }
+
+        return $empleados;
     }
 
     public function genera_registro_nomina(int $nom_periodo_id) : array|stdClass{
@@ -124,8 +142,9 @@ class nom_periodo extends nominas_confs {
             return $this->error->error(mensaje: 'Error al al obtener periodo', data: $nom_periodo);
         }
 
-
-        $registros_empleados = $this->get_empleados(im_registro_patronal_id: $nom_periodo['nom_periodo_im_registro_patronal_id']);
+        $registros_empleados = $this->get_empleados(im_registro_patronal_id:
+            $nom_periodo['nom_periodo_im_registro_patronal_id'], cat_sat_periodicidad_pago_nom_id:
+            $nom_periodo['cat_sat_periodicidad_pago_nom_id']);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al generar registros de factura', data: $registros_empleados);
         }
