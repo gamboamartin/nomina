@@ -3,6 +3,7 @@ namespace models;
 use base\orm\modelo;
 use gamboamartin\errores\errores;
 use PDO;
+use stdClass;
 
 class nom_conf_nomina extends modelo{
 
@@ -38,4 +39,6 @@ class nom_conf_nomina extends modelo{
         }
         return $r_alta_bd;
     }
+
+
 }
