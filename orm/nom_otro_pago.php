@@ -19,6 +19,10 @@ class nom_otro_pago extends nominas_confs
             columnas: $columnas);
     }
 
+    /**
+     *
+     * @return array|int
+     */
     public function nom_otro_pago_subsidio_id(): array|int
     {
         $filtro['nom_otro_pago.es_subsidio'] = 'activo';

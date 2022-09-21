@@ -419,6 +419,17 @@ class controlador_nom_nomina extends base_nom
         $nomina = new stdClass();
 
         $nomina->tipo_nomina = $nom_nomina->cat_sat_tipo_nomina_codigo;
+        $nomina->fecha_pago = $nom_nomina->nom_nomina_fecha_pago;
+        $nomina->fecha_inicial_pago = $nom_nomina->nom_nomina_fecha_inicial_pago;
+        $nomina->fecha_final_pago = $nom_nomina->nom_nomina_fecha_final_pago;
+        $nomina->num_dias_pagados = $nom_nomina->nom_nomina_num_dias_pagados;
+        $nomina->total_percepciones = (new nom_nomina(link: $this->link))->total_percepciones_monto(
+            nom_nomina_id: $this->registro_id);
+
+        if (errores::$error) {
+            return $this->retorno_error(mensaje: 'Error al obtener total percepciones xml',
+                data: $nomina->total_percepciones, header: $header, ws: $ws);
+        }
 
         $xml = (new cfdis())->complemento_nomina(
             comprobante: $comprobante,emisor:  $emisor, nomina: $nomina,receptor:  $receptor);

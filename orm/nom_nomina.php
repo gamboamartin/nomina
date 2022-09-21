@@ -1122,13 +1122,14 @@ class nom_nomina extends modelo
      */
     public function total_gravado(int $nom_nomina_id): float|array
     {
-        $campos = array();
-        $campos['total_importe_gravado'] = 'nom_par_percepcion.importe_gravado';
-        $filtro['nom_nomina.id'] = $nom_nomina_id;
-        $r_nom_par_percepcion = (new nom_par_percepcion($this->link))->suma(campos: $campos,filtro: $filtro);
+
+
+        $total_percepciones_gravado = $this->total_percepciones_gravado(nom_nomina_id: $nom_nomina_id);
         if (errores::$error) {
-            return $this->error->error(mensaje: 'Error al obtener percepciones', data: $r_nom_par_percepcion);
+            return $this->error->error(mensaje: 'Error al obtener total gravado', data: $total_percepciones_gravado);
         }
+
+        $filtro['nom_nomina.id'] = $nom_nomina_id;
 
         $campos = array();
         $campos['total_importe_gravado'] = 'nom_par_otro_pago.importe_gravado';
@@ -1137,7 +1138,7 @@ class nom_nomina extends modelo
             return $this->error->error(mensaje: 'Error al obtener otros pagos', data: $r_nom_par_otro_pago);
         }
 
-        $total_percepciones = round($r_nom_par_percepcion['total_importe_gravado'],2);
+        $total_percepciones = round($total_percepciones_gravado,2);
         $total_otros_pagos = round($r_nom_par_otro_pago['total_importe_gravado'],2);
 
 
@@ -1145,6 +1146,50 @@ class nom_nomina extends modelo
 
         return round($total_gravado, 2);
 
+    }
+
+    private function total_percepciones_exento(int $nom_nomina_id): float|array
+    {
+        $campos = array();
+        $campos['total_importe_exento'] = 'nom_par_percepcion.importe_exento';
+        $filtro['nom_nomina.id'] = $nom_nomina_id;
+        $r_nom_par_percepcion = (new nom_par_percepcion($this->link))->suma(campos: $campos,filtro: $filtro);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al obtener percepciones', data: $r_nom_par_percepcion);
+        }
+
+        return round($r_nom_par_percepcion['total_importe_exento'],2);
+
+    }
+
+    private function total_percepciones_gravado(int $nom_nomina_id): float|array
+    {
+        $campos = array();
+        $campos['total_importe_gravado'] = 'nom_par_percepcion.importe_gravado';
+        $filtro['nom_nomina.id'] = $nom_nomina_id;
+        $r_nom_par_percepcion = (new nom_par_percepcion($this->link))->suma(campos: $campos,filtro: $filtro);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al obtener percepciones', data: $r_nom_par_percepcion);
+        }
+
+        return round($r_nom_par_percepcion['total_importe_gravado'],2);
+
+    }
+
+    public function total_percepciones_monto(int $nom_nomina_id): float|array
+    {
+
+        $total_percepciones_gravado = $this->total_percepciones_gravado(nom_nomina_id: $nom_nomina_id);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al obtener total gravado', data: $total_percepciones_gravado);
+        }
+        $total_percepciones_exento = $this->total_percepciones_exento(nom_nomina_id: $nom_nomina_id);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al obtener total gravado', data: $total_percepciones_exento);
+        }
+
+        $total_percepciones = $total_percepciones_gravado + $total_percepciones_gravado;
+        return round($total_percepciones,2);
     }
 
 
