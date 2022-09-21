@@ -73,6 +73,7 @@ class base_test{
         $em_empleado['org_puesto_id'] =1;
         $em_empleado['salario_diario'] =$salario_diario;
         $em_empleado['salario_diario_integrado'] =$salario_diario_integrado;
+        $em_empleado['cat_sat_tipo_regimen_nom_id'] =1;
         $alta = (new em_empleado($link))->alta_registro($em_empleado);
         if(errores::$error){
            return (new errores())->error('Error al dar de alta ', $alta);
