@@ -390,6 +390,7 @@ class controlador_nom_nomina extends base_nom
         $receptor->rfc = $fc_factura->com_cliente_rfc;
         $receptor->nombre = $fc_factura->com_cliente_razon_social;
         $receptor->domicilio_fiscal_receptor = $com_sucursal->dp_cp_descripcion;
+        $receptor->regimen_fiscal_receptor = $com_sucursal->cat_sat_regimen_fiscal_codigo;
 
 
         $nomina = new stdClass();
