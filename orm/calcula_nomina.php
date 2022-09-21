@@ -49,7 +49,8 @@ class calcula_nomina{
         }
 
         if($fecha_inicio_rel_laboral>$fecha_final_pago){
-            return $this->error->error(mensaje: 'Error $fecha_inicio_rel_laboral es mayor a $fecha_final_pago',data: $valida);
+            return $this->error->error(
+                mensaje: 'Error $fecha_inicio_rel_laboral es mayor a $fecha_final_pago',data: $valida);
         }
 
         try {

@@ -20,6 +20,7 @@ use html\nom_par_deduccion_html;
 use html\nom_par_otro_pago_html;
 use html\nom_par_percepcion_html;
 use JsonException;
+use models\calcula_nomina;
 use models\com_sucursal;
 use models\fc_factura;
 use models\im_registro_patronal;
@@ -448,6 +449,16 @@ class controlador_nom_nomina extends base_nom
         $nomina->receptor->num_seguridad_social = $nom_nomina->em_empleado_nss;
         $nomina->receptor->fecha_inicio_rel_laboral = $nom_nomina->em_empleado_fecha_inicio_rel_laboral;
 
+        $nomina->receptor->antiguedad = (new calcula_nomina())->antiguedad_empleado(
+            fecha_final_pago: $nom_nomina->nom_nomina_fecha_final_pago,
+            fecha_inicio_rel_laboral:  $nom_nomina->em_empleado_fecha_inicio_rel_laboral);
+        if (errores::$error) {
+            return $this->retorno_error(mensaje: 'Error al obtener antiguedad',
+                data: $nomina->receptor->antiguedad , header: $header, ws: $ws);
+        }
+
+        $nomina->receptor->tipo_contrato = $nom_nomina->cat_sat_tipo_contrato_nom_codigo;
+        $nomina->receptor->tipo_jornada = $nom_nomina->cat_sat_tipo_jornada_nom_codigo;
 
         $xml = (new cfdis())->complemento_nomina(
             comprobante: $comprobante,emisor:  $emisor, nomina: $nomina,receptor:  $receptor);
