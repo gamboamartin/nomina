@@ -1,26 +1,10 @@
 <?php
 namespace tests\controllers;
 
-use controllers\controlador_cat_sat_tipo_persona;
 use gamboamartin\errores\errores;
-use gamboamartin\test\liberator;
 use gamboamartin\test\test;
-use JsonException;
-use models\calcula_imss;
 use models\calcula_nomina;
-use models\em_cuenta_bancaria;
-use models\em_empleado;
-use models\fc_cfd_partida;
-use models\fc_factura;
-use models\fc_partida;
-use models\nom_conf_empleado;
-use models\nom_data_subsidio;
-use models\nom_nomina;
-use models\nom_par_deduccion;
-use models\nom_par_otro_pago;
 use models\nom_par_percepcion;
-use models\nom_periodo;
-use models\nom_rel_empleado_sucursal;
 use stdClass;
 use tests\base_test;
 
@@ -128,7 +112,23 @@ class calcula_nominaTest extends test {
             exit;
         }
 
+
+
         $del = (new base_test())->del_fc_factura($this->link);
+        if(errores::$error){
+            $error = (new errores())->error('Error al eliminar', $del);
+            print_r($error);
+            exit;
+        }
+
+        $del = (new base_test())->del_org_puesto($this->link);
+        if(errores::$error){
+            $error = (new errores())->error('Error al eliminar', $del);
+            print_r($error);
+            exit;
+        }
+
+        $del = (new base_test())->del_org_empresa($this->link);
         if(errores::$error){
             $error = (new errores())->error('Error al eliminar', $del);
             print_r($error);
@@ -207,13 +207,19 @@ class calcula_nominaTest extends test {
             exit;
         }
 
-        $alta = (new base_test())->alta_nom_nomina($link);
+        $del = (new base_test())->del_org_empresa($link);
         if(errores::$error){
-            $error = (new errores())->error('Error al insertar', $alta);
+            $error = (new errores())->error('Error al eliminar', $del);
             print_r($error);
             exit;
         }
 
+        $alta = (new base_test())->alta_nom_nomina($link);
+        if(errores::$error){
+            $error = (new errores())->error('Error al insertar nomina', $alta);
+            print_r($error);
+            exit;
+        }
 
 
         $nom_par_percepcion['id'] = 1;

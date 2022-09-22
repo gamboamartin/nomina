@@ -4,7 +4,13 @@ use base\orm\modelo_base;
 use gamboamartin\empleado\models\em_cuenta_bancaria;
 use gamboamartin\empleado\models\em_empleado;
 use gamboamartin\errores\errores;
+use gamboamartin\facturacion\models\fc_csd;
+use gamboamartin\organigrama\models\org_departamento;
+use gamboamartin\organigrama\models\org_empresa;
+use gamboamartin\organigrama\models\org_puesto;
+use gamboamartin\organigrama\models\org_sucursal;
 use models\cat_sat_tipo_nomina;
+use models\im_registro_patronal;
 use models\nom_conf_empleado;
 use models\nom_conf_nomina;
 use models\nom_nomina;
@@ -27,7 +33,7 @@ class base_test{
 
         $alta = (new cat_sat_tipo_nomina($link))->alta_registro($nom_periodo);
         if(errores::$error){
-            return (new errores())->error(mensaje: 'Error al insertar periodo', data: $alta);
+            return (new errores())->error(mensaje: 'Error al insertar', data: $alta);
 
         }
         return $alta;
@@ -54,29 +60,63 @@ class base_test{
     public function alta_em_empleado(PDO $link, float $salario_diario = 250,
                                      float $salario_diario_integrado = 250): array|\stdClass
     {
-        $em_empleado = array();
-        $em_empleado['id'] = 1;
-        $em_empleado['nombre'] = 1;
-        $em_empleado['ap'] = 1;
-        $em_empleado['rfc'] = 1;
-        $em_empleado['codigo'] = 1;
-        $em_empleado['descripcion_select'] = 1;
-        $em_empleado['alias'] = 1;
-        $em_empleado['codigo_bis'] = 1;
-        $em_empleado['telefono'] = 1;
-        $em_empleado['dp_calle_pertenece_id'] = 1;
-        $em_empleado['cat_sat_regimen_fiscal_id'] = 1;
-        $em_empleado['im_registro_patronal_id'] = 1;
-        $em_empleado['curp'] = 1;
-        $em_empleado['nss'] = 1;
-        $em_empleado['fecha_inicio_rel_laboral'] = '2022-01-01';
-        $em_empleado['org_puesto_id'] =1;
-        $em_empleado['salario_diario'] =$salario_diario;
-        $em_empleado['salario_diario_integrado'] =$salario_diario_integrado;
-        $em_empleado['cat_sat_tipo_regimen_nom_id'] =1;
-        $alta = (new em_empleado($link))->alta_registro($em_empleado);
+
+        $alta = $this->alta_org_puesto($link);
+        if(errores::$error){
+            return (new errores())->error('Error al dar de alta', $alta);
+
+        }
+
+        $alta = $this->alta_im_registro_patronal($link);
+        if(errores::$error){
+            return (new errores())->error('Error al dar de alta', $alta);
+
+        }
+
+        $registro = array();
+        $registro['id'] = 1;
+        $registro['nombre'] = 1;
+        $registro['ap'] = 1;
+        $registro['rfc'] = 1;
+        $registro['codigo'] = 1;
+        $registro['descripcion_select'] = 1;
+        $registro['alias'] = 1;
+        $registro['codigo_bis'] = 1;
+        $registro['telefono'] = 1;
+        $registro['dp_calle_pertenece_id'] = 1;
+        $registro['cat_sat_regimen_fiscal_id'] = 1;
+        $registro['im_registro_patronal_id'] = 1;
+        $registro['curp'] = 1;
+        $registro['nss'] = 1;
+        $registro['fecha_inicio_rel_laboral'] = '2022-01-01';
+        $registro['org_puesto_id'] =1;
+        $registro['salario_diario'] =$salario_diario;
+        $registro['salario_diario_integrado'] =$salario_diario_integrado;
+        $registro['cat_sat_tipo_regimen_nom_id'] =1;
+        $alta = (new em_empleado($link))->alta_registro($registro);
         if(errores::$error){
            return (new errores())->error('Error al dar de alta ', $alta);
+
+        }
+        return $alta;
+    }
+
+    public function alta_fc_csd(PDO $link): array|\stdClass
+    {
+        $registro = array();
+        $registro['id'] = 1;
+        $registro['codigo'] = 1;
+        $registro['descripcion'] = 1;
+        $registro['serie'] = 1;
+        $registro['org_sucursal_id'] = 1;
+        $registro['descripcion_select'] = 1;
+        $registro['alias'] = 1;
+        $registro['codigo_bis'] = 1;
+
+
+        $alta = (new fc_csd($link))->alta_registro($registro);
+        if(errores::$error){
+            return (new errores())->error(mensaje: 'Error al insertar', data: $alta);
 
         }
         return $alta;
@@ -86,16 +126,14 @@ class base_test{
     {
         $alta = $this->alta_nom_conf_nomina($link);
         if(errores::$error){
-            $error = (new errores())->error('Error al dar de alta', $alta);
-            print_r($error);
-            exit;
+            return (new errores())->error('Error al dar de alta', $alta);
+
         }
 
         $alta = $this->alta_em_cuenta_bancaria($link);
         if(errores::$error){
-            $error = (new errores())->error('Error al dar de alta', $alta);
-            print_r($error);
-            exit;
+            return (new errores())->error('Error al dar de alta', $alta);
+
         }
 
         $nom_conf_empleado = array();
@@ -113,14 +151,37 @@ class base_test{
         return $alta;
     }
 
+    public function alta_im_registro_patronal(PDO $link): array|\stdClass
+    {
+
+        $alta = $this->alta_fc_csd($link);
+        if(errores::$error){
+            return (new errores())->error('Error al dar de alta', $alta);
+
+        }
+
+        $registro = array();
+        $registro['id'] = 1;
+        $registro['codigo'] = 1;
+        $registro['descripcion'] = 1;
+        $registro['im_clase_riesgo_id'] = 1;
+        $registro['fc_csd_id'] = 1;
+        $registro['descripcion_select'] = 1;
+
+
+        $alta = (new im_registro_patronal($link))->alta_registro($registro);
+        if(errores::$error){
+            return (new errores())->error(mensaje: 'Error al insertar', data: $alta);
+        }
+        return $alta;
+    }
+
     public function alta_nom_conf_nomina(PDO $link): array|\stdClass
     {
 
         $alta = $this->alta_cat_sat_tipo_nomina($link);
         if(errores::$error){
-            $error = (new errores())->error('Error al dar de alta', $alta);
-            print_r($error);
-            exit;
+            return (new errores())->error('Error al dar de alta', $alta);
         }
 
         $nom_conf_empleado = array();
@@ -144,56 +205,58 @@ class base_test{
     public function alta_nom_nomina(PDO $link, float $salario_diario = 250, float $salario_diario_integrado = 250): array|stdClass
     {
 
+        $alta = $this->alta_org_sucursal(link: $link);
+        if(errores::$error){
+            return (new errores())->error('Error al dar de alta', $alta);
+
+        }
+
         $alta = $this->alta_em_empleado(
             link: $link, salario_diario: $salario_diario, salario_diario_integrado: $salario_diario_integrado);
         if(errores::$error){
-            $error = (new errores())->error('Error al dar de alta', $alta);
-            print_r($error);
-            exit;
+            return (new errores())->error('Error al dar de alta', $alta);
+
         }
 
         $alta = $this->alta_nom_conf_empleado($link);
         if(errores::$error){
-            $error = (new errores())->error('Error al dar de alta', $alta);
-            print_r($error);
-            exit;
+            return (new errores())->error('Error al dar de alta', $alta);
+
         }
         $alta = $this->alta_nom_rel_empleado_sucursal($link);
         if(errores::$error){
-            $error = (new errores())->error('Error al dar de alta', $alta);
-            print_r($error);
-            exit;
+            return (new errores())->error('Error al dar de alta', $alta);
+
         }
 
 
 
         $alta = $this->alta_nom_periodo($link);
         if(errores::$error){
-            $error = (new errores())->error('Error al dar de alta', $alta);
-            print_r($error);
-            exit;
+            return (new errores())->error('Error al dar de alta', $alta);
+
         }
 
 
-        $nom_nomina = array();
-        $nom_nomina['id'] = 1;
-        $nom_nomina['im_registro_patronal_id'] = 1;
-        $nom_nomina['em_empleado_id'] = 1;
-        $nom_nomina['folio'] = 1;
-        $nom_nomina['fecha'] = 1;
-        $nom_nomina['cat_sat_periodicidad_pago_nom_id'] = 1;
-        $nom_nomina['em_cuenta_bancaria_id'] = 1;
-        $nom_nomina['fecha_inicial_pago'] = '2022-01-01';
-        $nom_nomina['fecha_final_pago'] = '2022-01-01';
-        $nom_nomina['num_dias_pagados'] = '1';
-        $nom_nomina['descuento'] = '0';
-        $nom_nomina['nom_periodo_id'] = 1;
-        $nom_nomina['nom_conf_empleado_id'] = 1;
-        $nom_nomina['cat_sat_tipo_jornada_nom_id'] = 1;
-        $nom_nomina['dp_calle_pertenece_id'] = 1;
-        $nom_nomina['cat_sat_tipo_nomina_id'] = 1;
+        $registro = array();
+        $registro['id'] = 1;
+        $registro['im_registro_patronal_id'] = 1;
+        $registro['em_empleado_id'] = 1;
+        $registro['folio'] = 1;
+        $registro['fecha'] = 1;
+        $registro['cat_sat_periodicidad_pago_nom_id'] = 1;
+        $registro['em_cuenta_bancaria_id'] = 1;
+        $registro['fecha_inicial_pago'] = '2022-01-01';
+        $registro['fecha_final_pago'] = '2022-01-01';
+        $registro['num_dias_pagados'] = '1';
+        $registro['descuento'] = '0';
+        $registro['nom_periodo_id'] = 1;
+        $registro['nom_conf_empleado_id'] = 1;
+        $registro['cat_sat_tipo_jornada_nom_id'] = 1;
+        $registro['dp_calle_pertenece_id'] = 1;
+        $registro['cat_sat_tipo_nomina_id'] = 1;
 
-        $alta = (new nom_nomina($link))->alta_registro($nom_nomina);
+        $alta = (new nom_nomina($link))->alta_registro($registro);
         if(errores::$error){
             return (new errores())->error(mensaje: 'Error al insertar', data: $alta);
         }
@@ -232,6 +295,101 @@ class base_test{
         $alta = (new nom_rel_empleado_sucursal($link))->alta_registro($nom_rel_empleado_sucursal);
         if(errores::$error){
             return (new errores())->error('Error al dar de alta ', $alta);
+
+        }
+        return $alta;
+    }
+
+    public function alta_org_departamento(PDO $link): array|\stdClass
+    {
+
+
+        $registro = array();
+        $registro['id'] = 1;
+        $registro['codigo'] = 1;
+        $registro['descripcion'] = 1;
+        $registro['org_clasificacion_dep_id'] = 1;
+
+
+
+        $alta = (new org_departamento($link))->alta_registro($registro);
+        if(errores::$error){
+            return (new errores())->error(mensaje: 'Error al insertar', data: $alta);
+        }
+        return $alta;
+    }
+
+    public function alta_org_empresa(PDO $link): array|\stdClass
+    {
+        $registro = array();
+        $registro['id'] = 1;
+        $registro['codigo'] = 1;
+        $registro['descripcion'] = 1;
+        $registro['razon_social'] = 1;
+        $registro['rfc'] = 1;
+        $registro['nombre_comercial'] = 1;
+        $registro['org_tipo_empresa_id'] = 1;
+
+        $alta = (new org_empresa($link))->alta_registro($registro);
+        if(errores::$error){
+            return (new errores())->error(mensaje: 'Error al insertar empresa', data: $alta);
+        }
+        return $alta;
+    }
+
+    public function alta_org_puesto(PDO $link): array|\stdClass
+    {
+
+        $alta = $this->alta_org_departamento($link);
+        if(errores::$error){
+            return (new errores())->error('Error al dar de alta', $alta);
+
+        }
+
+        $registro = array();
+        $registro['id'] = 1;
+        $registro['codigo'] = 1;
+        $registro['descripcion'] = 1;
+        $registro['org_tipo_puesto_id'] = 1;
+        $registro['org_departamento_id'] = 1;
+
+
+
+        $alta = (new org_puesto($link))->alta_registro($registro);
+        if(errores::$error){
+            return (new errores())->error(mensaje: 'Error al insertar', data: $alta);
+        }
+        return $alta;
+    }
+
+    public function alta_org_sucursal(PDO $link): array|\stdClass
+    {
+
+        $alta = $this->alta_org_empresa($link);
+        if(errores::$error){
+            return (new errores())->error('Error al dar de alta', $alta);
+
+        }
+
+        $del = $this->del_org_sucursal($link);
+        if(errores::$error){
+            return (new errores())->error('Error al eliminar', $del);
+
+        }
+
+
+        $registro = array();
+        $registro['id'] = 1;
+        $registro['codigo'] = 1;
+        $registro['descripcion'] = 1;
+        $registro['org_empresa_id'] = 1;
+        $registro['codigo_bis'] = 1;
+        $registro['org_tipo_sucursal_id'] = 1;
+
+
+        $alta = (new org_sucursal($link))->alta_registro($registro);
+        if(errores::$error){
+            return (new errores())->error(mensaje: 'Error al insertar sucursal', data: $alta);
 
         }
         return $alta;
@@ -306,13 +464,34 @@ class base_test{
         return $del;
     }
 
+    public function del_fc_csd(PDO $link): array
+    {
+        $del = (new base_test())->del_im_registro_patronal($link);
+        if(errores::$error){
+            return (new errores())->error('Error al eliminar', $del);
+
+        }
+
+        $del = (new base_test())->del_fc_factura($link);
+        if(errores::$error){
+            return (new errores())->error('Error al eliminar', $del);
+
+        }
+
+        $del = $this->del($link, 'gamboamartin\\facturacion\\models\\fc_csd');
+        if(errores::$error){
+            return (new errores())->error('Error al eliminar', $del);
+        }
+        return $del;
+    }
+
     public function del_fc_factura(PDO $link): array
     {
         $del = $this->del_fc_partida($link);
         if(errores::$error){
             return (new errores())->error('Error al eliminar', $del);
         }
-        $del = $this->del($link, 'models\\fc_factura');
+        $del = $this->del($link, 'gamboamartin\\facturacion\\models\\fc_factura');
         if(errores::$error){
             return (new errores())->error('Error al eliminar', $del);
         }
@@ -321,7 +500,24 @@ class base_test{
 
     public function del_fc_partida(PDO $link): array
     {
-        $del = $this->del($link, 'models\\fc_partida');
+        $del = $this->del($link, 'gamboamartin\\facturacion\\models\\fc_partida');
+        if(errores::$error){
+            return (new errores())->error('Error al eliminar', $del);
+        }
+        return $del;
+    }
+
+    public function del_im_registro_patronal(PDO $link): array
+    {
+
+        $del = (new base_test())->del_nom_periodo($link);
+        if(errores::$error){
+            $error = (new errores())->error('Error al eliminar', $del);
+            print_r($error);
+            exit;
+        }
+
+        $del = $this->del($link, 'models\\im_registro_patronal');
         if(errores::$error){
             return (new errores())->error('Error al eliminar', $del);
         }
@@ -449,6 +645,98 @@ class base_test{
     public function del_nom_rel_empleado_sucursal(PDO $link): array
     {
         $del = $this->del($link, 'models\\nom_rel_empleado_sucursal');
+        if(errores::$error){
+            return (new errores())->error('Error al eliminar', $del);
+        }
+        return $del;
+    }
+
+    public function del_org_departamento(PDO $link): array
+    {
+        $del = (new base_test())->del_org_puesto($link);
+        if(errores::$error){
+            return (new errores())->error('Error al eliminar', $del);
+
+        }
+
+        $del = $this->del($link, 'gamboamartin\\organigrama\\models\\org_departamento');
+        if(errores::$error){
+            return (new errores())->error('Error al eliminar', $del);
+        }
+        return $del;
+    }
+
+    public function del_org_empresa(PDO $link): array
+    {
+
+        $del = (new base_test())->del_org_departamento($link);
+        if(errores::$error){
+            $error = (new errores())->error('Error al eliminar', $del);
+            print_r($error);
+            exit;
+        }
+
+        $del = (new base_test())->del_org_porcentaje_act_economica($link);
+        if(errores::$error){
+            $error = (new errores())->error('Error al eliminar', $del);
+            print_r($error);
+            exit;
+        }
+
+        $del = (new base_test())->del_org_sucursal($link);
+        if(errores::$error){
+            $error = (new errores())->error('Error al eliminar', $del);
+            print_r($error);
+            exit;
+        }
+
+        $del = $this->del($link, 'gamboamartin\\organigrama\\models\\org_empresa');
+        if(errores::$error){
+            return (new errores())->error('Error al eliminar', $del);
+        }
+        return $del;
+    }
+
+    public function del_org_porcentaje_act_economica(PDO $link): array
+    {
+
+
+
+        $del = $this->del($link, 'gamboamartin\\organigrama\\models\\org_porcentaje_act_economica');
+        if(errores::$error){
+            return (new errores())->error('Error al eliminar', $del);
+        }
+        return $del;
+    }
+
+    public function del_org_puesto(PDO $link): array
+    {
+
+        $del = (new base_test())->del_em_empleado($link);
+        if(errores::$error){
+            $error = (new errores())->error('Error al eliminar', $del);
+            print_r($error);
+            exit;
+        }
+
+        $del = $this->del($link, 'gamboamartin\\organigrama\\models\\org_puesto');
+        if(errores::$error){
+            return (new errores())->error('Error al eliminar', $del);
+        }
+        return $del;
+    }
+
+    public function del_org_sucursal(PDO $link): array
+    {
+
+        $del = (new base_test())->del_fc_csd($link);
+        if(errores::$error){
+            $error = (new errores())->error('Error al eliminar', $del);
+            print_r($error);
+            exit;
+        }
+
+        $del = $this->del($link, 'gamboamartin\\organigrama\\models\\org_sucursal');
         if(errores::$error){
             return (new errores())->error('Error al eliminar', $del);
         }

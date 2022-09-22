@@ -5,6 +5,10 @@ namespace models;
 use base\orm\modelo;
 use gamboamartin\empleado\models\em_empleado;
 use gamboamartin\errores\errores;
+use gamboamartin\facturacion\models\fc_csd;
+use gamboamartin\facturacion\models\fc_factura;
+use gamboamartin\facturacion\models\fc_partida;
+use gamboamartin\organigrama\models\org_sucursal;
 use PDO;
 use stdClass;
 
@@ -61,11 +65,15 @@ class nom_nomina extends modelo
             return $this->error->error(mensaje: 'Error al generar registros', data: $registros);
         }
 
+
         $registros_factura = $this->genera_registro_factura(registros: $registros['fc_csd'],
-            empleado_sucursal: $registros['nom_rel_empleado_sucursal'],cat_sat: $registros['nom_conf_empleado']);
+            empleado_sucursal: $registros['nom_rel_empleado_sucursal'],cat_sat: $registros['nom_conf_empleado'],
+            im_registro_patronal: $registros['im_registro_patronal']);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al generar registros de factura', data: $registros_factura);
         }
+
+
 
         $r_alta_factura = $this->inserta_factura(registro: $registros_factura);
         if (errores::$error) {
@@ -712,6 +720,7 @@ class nom_nomina extends modelo
                 data: $im_registro_patronal);
         }
 
+
         $fc_csd_id = $this->registro_por_id(entidad: new fc_csd($this->link),
             id: $im_registro_patronal->im_registro_patronal_fc_csd_id);
         if (errores::$error) {
@@ -742,7 +751,8 @@ class nom_nomina extends modelo
             'nom_conf_empleado' => $nom_conf_empleado);
     }
 
-    private function genera_registro_factura(mixed $registros, mixed $empleado_sucursal, mixed $cat_sat): array
+    private function genera_registro_factura(mixed $registros, mixed $empleado_sucursal, mixed $cat_sat,
+                                             stdClass $im_registro_patronal): array
     {
         $keys = array('folio','fecha');
         $valida = $this->validacion->valida_existencia_keys(keys: $keys,registro:  $this->registro);
@@ -767,11 +777,13 @@ class nom_nomina extends modelo
         $com_tipo_cambio_id = $cat_sat->nom_conf_factura_com_tipo_cambio_id;
         $cat_sat_uso_cfdi_id = $cat_sat->nom_conf_factura_cat_sat_uso_cfdi_id;
         $cat_sat_tipo_de_comprobante_id = $cat_sat->nom_conf_factura_cat_sat_tipo_de_comprobante_id;
+        $dp_calle_pertenece_id = $im_registro_patronal->dp_calle_pertenece_id;
 
         $regisro_factura = array('folio' => $folio, 'serie' => $serie, 'fecha' => $fecha,
             'fc_csd_id' => $fc_csd_id, 'com_sucursal_id' => $com_sucursal_id,
             'cat_sat_forma_pago_id' => $cat_sat_forma_pago_id, 'cat_sat_metodo_pago_id' => $cat_sat_metodo_pago_id,
             'cat_sat_moneda_id' => $cat_sat_moneda_id, 'com_tipo_cambio_id' => $com_tipo_cambio_id,
+            'dp_calle_pertenece_id'=>$dp_calle_pertenece_id,
             'cat_sat_uso_cfdi_id' => $cat_sat_uso_cfdi_id, 'cat_sat_tipo_de_comprobante_id' => $cat_sat_tipo_de_comprobante_id);
 
         return $regisro_factura;

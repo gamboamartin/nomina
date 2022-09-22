@@ -2,6 +2,8 @@
 
 namespace models;
 use gamboamartin\errores\errores;
+use gamboamartin\facturacion\models\fc_factura;
+use gamboamartin\facturacion\models\fc_partida;
 use gamboamartin\validacion\validacion;
 use JsonException;
 use PDO;

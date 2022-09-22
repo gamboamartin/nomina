@@ -82,28 +82,9 @@ class nominasTest extends test {
             exit;
         }
 
-        $del = (new base_test())->del_em_empleado($this->link);
-        if(errores::$error){
-            $error = (new errores())->error('Error al eliminar', $del);
-            print_r($error);
-            exit;
-        }
 
-        $del = (new base_test())->del_fc_factura($this->link);
-        if(errores::$error){
-            $error = (new errores())->error('Error al eliminar', $del);
-            print_r($error);
-            exit;
-        }
 
-        $del = (new base_test())->del_nom_conf_nomina($this->link);
-        if(errores::$error){
-            $error = (new errores())->error('Error al eliminar', $del);
-            print_r($error);
-            exit;
-        }
-
-        $del = (new base_test())->del_nom_periodo($this->link);
+        $del = (new base_test())->del_org_empresa($this->link);
         if(errores::$error){
             $error = (new errores())->error('Error al eliminar', $del);
             print_r($error);

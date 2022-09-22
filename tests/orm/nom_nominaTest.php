@@ -1,13 +1,13 @@
 <?php
-namespace tests\controllers;
+namespace tests\orm;
 
 use gamboamartin\empleado\models\em_cuenta_bancaria;
 use gamboamartin\errores\errores;
+use gamboamartin\facturacion\models\fc_factura;
+use gamboamartin\facturacion\models\fc_partida;
 use gamboamartin\test\liberator;
 use gamboamartin\test\test;
 
-use models\fc_factura;
-use models\fc_partida;
 use models\nom_conf_empleado;
 use models\nom_data_subsidio;
 use models\nom_nomina;
@@ -41,101 +41,53 @@ class nom_nominaTest extends test {
         $_SESSION['usuario_id'] = 2;
         $_GET['session_id'] = '1';
         $nomina = new nom_nomina($this->link);
-        $nom_par_deduccion = new nom_par_deduccion($this->link);
-        $nom_par_percepcion = new nom_par_percepcion($this->link);
-        $nom_par_otro_pago = new nom_par_otro_pago($this->link);
-        $fc_factura = new fc_factura($this->link);
-        $fc_cfd_partida = new fc_partida($this->link);
 
-        $del_nom_data_subsidio = (new nom_data_subsidio($this->link))->elimina_todo();
+        $del = (new base_test())->del_org_departamento(link: $this->link);
         if(errores::$error){
-            $error = (new errores())->error(mensaje: 'Error al eliminar $del_nom_data_subsidio', data: $del_nom_data_subsidio);
+            $error = (new errores())->error('Error al eliminar', $del);
             print_r($error);
             exit;
         }
 
-        $del_nom_par_otro_pago = $nom_par_otro_pago->elimina_todo();
+        $del = (new base_test())->del_fc_csd(link: $this->link);
         if(errores::$error){
-            $error = (new errores())->error(mensaje: 'Error al eliminar $nom_par_otro_pago', data: $del_nom_par_otro_pago);
+            $error = (new errores())->error('Error al eliminar', $del);
             print_r($error);
             exit;
         }
 
-        $del_nom_par_percepcion = $nom_par_percepcion->elimina_todo();
+        $del = (new base_test())->del_cat_sat_tipo_nomina(link: $this->link);
         if(errores::$error){
-            $error = (new errores())->error(mensaje: 'Error al eliminar $nom_par_percepcion', data: $del_nom_par_percepcion);
-            print_r($error);
-            exit;
-        }
-
-        $del_nom_par_deduccion = $nom_par_deduccion->elimina_todo();
-        if(errores::$error){
-            $error = (new errores())->error(mensaje: 'Error al eliminar $nom_par_deduccion', data: $del_nom_par_deduccion);
-            print_r($error);
-            exit;
-        }
-
-        $del_fc_cfd_partida = $fc_cfd_partida->elimina_todo();
-        if(errores::$error){
-            $error = (new errores())->error(mensaje: 'Error al eliminar $del_fc_cfd_partida', data: $del_fc_cfd_partida);
-            print_r($error);
-            exit;
-        }
-
-        $del_nom_nomina = $nomina->elimina_todo();
-        if(errores::$error){
-            $error = (new errores())->error(mensaje: 'Error al eliminar nom_nomina', data: $del_nom_nomina);
-            print_r($error);
-            exit;
-        }
-
-        $del_fc_factura = $fc_factura->elimina_todo();
-        if(errores::$error){
-            $error = (new errores())->error(mensaje: 'Error al eliminar fc_factura', data: $del_fc_factura);
-            print_r($error);
-            exit;
-        }
-
-        $del_nom_conf_empleado = (new nom_conf_empleado($this->link))->elimina_todo();
-        if(errores::$error){
-            $error = (new errores())->error(mensaje: 'Error al eliminar', data: $del_nom_conf_empleado);
+            $error = (new errores())->error('Error al eliminar', $del);
             print_r($error);
             exit;
         }
 
 
-        $del_em_cuenta_bancaria = (new em_cuenta_bancaria($this->link))->elimina_todo();
+        $alta = (new base_test())->alta_em_empleado(link: $this->link);
         if(errores::$error){
-            $error = (new errores())->error(mensaje: 'Error al eliminar em_cuenta_bancaria', data: $del_em_cuenta_bancaria);
+            $error = (new errores())->error('Error al insertar', $alta);
             print_r($error);
             exit;
         }
 
-
-        $em_cuenta_bancaria = array();
-        $em_cuenta_bancaria['id'] = 1;
-        $em_cuenta_bancaria['codigo'] = 1;
-        $em_cuenta_bancaria['descripcion'] = 1;
-        $em_cuenta_bancaria['bn_sucursal_id'] = 1;
-        $em_cuenta_bancaria['em_empleado_id'] = 1;
-        $em_cuenta_bancaria['descripcion_select'] = 1;
-        $alta_em_cuenta_bancaria = (new em_cuenta_bancaria($this->link))->alta_registro($em_cuenta_bancaria);
+        $alta = (new base_test())->alta_nom_conf_empleado(link: $this->link);
         if(errores::$error){
-            $error = (new errores())->error(mensaje: 'Error al dar de alta cuenta', data: $alta_em_cuenta_bancaria);
+            $error = (new errores())->error('Error al insertar', $alta);
             print_r($error);
             exit;
         }
 
-        $nom_conf_empleado = array();
-        $nom_conf_empleado['id'] = 1;
-        $nom_conf_empleado['codigo'] = 1;
-        $nom_conf_empleado['descripcion'] = 1;
-        $nom_conf_empleado['em_cuenta_bancaria_id'] = 1;
-        $nom_conf_empleado['nom_conf_nomina_id'] = 1;
-
-        $alta = (new nom_conf_empleado($this->link))->alta_registro($nom_conf_empleado);
+        $alta = (new base_test())->alta_nom_rel_empleado_sucursal(link: $this->link);
         if(errores::$error){
-            $error = (new errores())->error(mensaje: 'Error al dar de alta', data: $alta);
+            $error = (new errores())->error('Error al insertar', $alta);
+            print_r($error);
+            exit;
+        }
+
+        $alta = (new base_test())->alta_nom_periodo(link: $this->link);
+        if(errores::$error){
+            $error = (new errores())->error('Error al insertar', $alta);
             print_r($error);
             exit;
         }
@@ -189,28 +141,8 @@ class nom_nominaTest extends test {
             exit;
         }
 
-        $del = (new base_test())->del_em_empleado($this->link);
-        if(errores::$error){
-            $error = (new errores())->error('Error al eliminar', $del);
-            print_r($error);
-            exit;
-        }
 
-        $del = (new base_test())->del_fc_factura($this->link);
-        if(errores::$error){
-            $error = (new errores())->error('Error al eliminar', $del);
-            print_r($error);
-            exit;
-        }
-
-        $del = (new base_test())->del_nom_conf_nomina($this->link);
-        if(errores::$error){
-            $error = (new errores())->error('Error al eliminar', $del);
-            print_r($error);
-            exit;
-        }
-
-        $del = (new base_test())->del_nom_periodo($this->link);
+        $del = (new base_test())->del_org_empresa($this->link);
         if(errores::$error){
             $error = (new errores())->error('Error al eliminar', $del);
             print_r($error);
@@ -448,68 +380,22 @@ class nom_nominaTest extends test {
         $nomina = new nom_nomina($this->link);
         $nomina = new liberator($nomina);
 
-        $del =  (new base_test())->del($this->link, 'models\\nom_data_subsidio');
+
+        $del = (new base_test())->del_org_departamento($this->link);
         if(errores::$error){
             $error = (new errores())->error(mensaje: 'Error al eliminar', data: $del);
             print_r($error);
             exit;
         }
 
-        $del =  (new base_test())->del($this->link, 'models\\nom_par_deduccion');
+        $del = (new base_test())->del_fc_csd($this->link);
         if(errores::$error){
             $error = (new errores())->error(mensaje: 'Error al eliminar', data: $del);
             print_r($error);
             exit;
         }
 
-        $del =  (new base_test())->del($this->link, 'models\\nom_par_percepcion');
-        if(errores::$error){
-            $error = (new errores())->error(mensaje: 'Error al eliminar', data: $del);
-            print_r($error);
-            exit;
-        }
 
-        $del =  (new base_test())->del($this->link, 'models\\nom_par_otro_pago');
-        if(errores::$error){
-            $error = (new errores())->error(mensaje: 'Error al eliminar', data: $del);
-            print_r($error);
-            exit;
-        }
-
-        $del =  (new base_test())->del($this->link, 'models\\nom_nomina');
-        if(errores::$error){
-            $error = (new errores())->error(mensaje: 'Error al eliminar', data: $del);
-            print_r($error);
-            exit;
-        }
-
-        $del =  (new base_test())->del($this->link, 'models\\nom_conf_empleado');
-        if(errores::$error){
-            $error = (new errores())->error(mensaje: 'Error al eliminar', data: $del);
-            print_r($error);
-            exit;
-        }
-
-        $del =  (new base_test())->del($this->link, 'gamboamartin\\empleado\\models\\em_cuenta_bancaria');
-        if(errores::$error){
-            $error = (new errores())->error(mensaje: 'Error al eliminar', data: $del);
-            print_r($error);
-            exit;
-        }
-
-        $del =  (new base_test())->del($this->link, 'models\\nom_rel_empleado_sucursal');
-        if(errores::$error){
-            $error = (new errores())->error(mensaje: 'Error al eliminar', data: $del);
-            print_r($error);
-            exit;
-        }
-
-        $del =  (new base_test())->del($this->link, 'gamboamartin\\empleado\\models\\em_empleado');
-        if(errores::$error){
-            $error = (new errores())->error(mensaje: 'Error al eliminar', data: $del);
-            print_r($error);
-            exit;
-        }
 
         $em_empleado_id = 1;
         $resultado = $nomina->get_sucursal_by_empleado($em_empleado_id);
@@ -622,28 +508,9 @@ class nom_nominaTest extends test {
             exit;
         }
 
-        $del = (new base_test())->del_em_empleado($this->link);
-        if(errores::$error){
-            $error = (new errores())->error(mensaje: 'Error al eliminar', data: $del);
-            print_r($error);
-            exit;
-        }
 
-        $del = (new base_test())->del_fc_factura($this->link);
-        if(errores::$error){
-            $error = (new errores())->error(mensaje: 'Error al eliminar', data: $del);
-            print_r($error);
-            exit;
-        }
 
-        $del = (new base_test())->del_nom_conf_nomina($this->link);
-        if(errores::$error){
-            $error = (new errores())->error(mensaje: 'Error al eliminar', data: $del);
-            print_r($error);
-            exit;
-        }
-
-        $del = (new base_test())->del_nom_periodo($this->link);
+        $del = (new base_test())->del_org_empresa($this->link);
         if(errores::$error){
             $error = (new errores())->error(mensaje: 'Error al eliminar', data: $del);
             print_r($error);
