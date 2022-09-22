@@ -10,11 +10,11 @@
 namespace gamboamartin\nomina\controllers;
 
 use gamboamartin\errores\errores;
+use gamboamartin\facturacion\models\fc_factura;
 use gamboamartin\system\actions;
 use gamboamartin\system\links_menu;
 use gamboamartin\template\html;
 use gamboamartin\xml_cfdi_4\cfdis;
-use html\fc_factura_html;
 use html\nom_nomina_html;
 use html\nom_par_deduccion_html;
 use html\nom_par_otro_pago_html;
@@ -22,7 +22,6 @@ use html\nom_par_percepcion_html;
 use JsonException;
 use models\calcula_nomina;
 use models\com_sucursal;
-use models\fc_factura;
 use models\im_registro_patronal;
 use models\nom_nomina;
 use models\nom_par_deduccion;
@@ -462,6 +461,7 @@ class controlador_nom_nomina extends base_nom
         $nomina->receptor->tipo_jornada = $nom_nomina->cat_sat_tipo_jornada_nom_codigo;
         $nomina->receptor->tipo_regimen = $nom_nomina->cat_sat_tipo_regimen_nom_codigo;
         $nomina->receptor->num_empleado = $nom_nomina->em_empleado_codigo;
+        $nomina->receptor->departamento = $nom_nomina->org_departamento_descripcion;
 
         $xml = (new cfdis())->complemento_nomina(
             comprobante: $comprobante,emisor:  $emisor, nomina: $nomina,receptor:  $receptor);
