@@ -9,7 +9,7 @@ class nom_conf_nomina extends modelo{
 
     public function __construct(PDO $link){
         $tabla = __CLASS__;
-        $columnas = array($tabla=>false, 'nom_conf_factura' => $tabla);
+        $columnas = array($tabla=>false, 'nom_conf_factura' => $tabla, 'cat_sat_periodicidad_pago_nom' => $tabla);
         $campos_obligatorios = array('cat_sat_periodicidad_pago_nom_id','cat_sat_tipo_nomina_id',
             'nom_conf_factura_id','descripcion_select');
         $campos_view = array("nom_conf_nomina_id" => array("type" => "selects", "model" => $this),

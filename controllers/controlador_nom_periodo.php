@@ -265,7 +265,7 @@ class controlador_nom_periodo extends system {
         if(errores::$error){
             return $this->retorno_error(mensaje: 'Error al generar mensaje', data: $resultado,header:  $header,ws:  $ws);
         }
-        $link = "./index.php?seccion=nom_nomina&accion=lista";
+        $link = "./index.php?seccion=nom_periodo&accion=nominas&registro_id=".$this->registro_id;
         $link.="&session_id=$this->session_id";
         header('Location:' . $link);
         exit;
