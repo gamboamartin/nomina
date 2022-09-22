@@ -904,6 +904,32 @@ class nom_nomina extends modelo
         return implode($campos_asignar);
     }
 
+    public function get_salario_minimo(int $dp_cp_id, string $fecha ): float|array|stdClass
+    {
+        $filtro['dp_colonia_postal.dp_cp_id'] = $dp_cp_id;
+        $filtro_especial[0][$fecha]['operador'] = '>=';
+        $filtro_especial[0][$fecha]['valor'] = 'nom_nomina.fecha_inicial_pago';
+        $filtro_especial[0][$fecha]['comparacion'] = 'AND';
+        $filtro_especial[0][$fecha]['valor_es_campo'] = true;
+
+        $filtro_especial[1][$fecha]['operador'] = '<=';
+        $filtro_especial[1][$fecha]['valor'] = 'nom_nomina.fecha_final_pago';
+        $filtro_especial[1][$fecha]['comparacion'] = 'AND';
+        $filtro_especial[1][$fecha]['valor_es_campo'] = true;
+
+        $order = array('em_empleado.salario_diario'=>'DESC');
+
+        $salario_minimo = (new nom_nomina($this->link))->filtro_and(filtro: $filtro, filtro_especial: $filtro_especial, limit: 1, order: $order);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al obtener el salario minimo', data: $salario_minimo);
+        }
+
+        if ($salario_minimo->n_registros === 0){
+            return 0.0;
+        }
+        return $salario_minimo->registros[0]['em_empleado_salario_diario'];
+    }
+
     private function inserta_otro_pago_sub_base(int $nom_nomina_id): array|stdClass
     {
         $nom_par_otro_pago_ins = $this->genera_nom_par_otro_pago_ins(nom_nomina_id: $nom_nomina_id);
