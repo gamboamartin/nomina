@@ -150,6 +150,8 @@ class nom_periodo extends nominas_confs {
         }
 
 
+
+
         foreach ($registros_empleados as $empleado) {
             $filtro['em_empleado.id'] = $empleado['em_empleado_id'];
             $nom_conf_empleado = (new nom_conf_empleado($this->link))->filtro_and(filtro: $filtro);
