@@ -25,7 +25,8 @@ class nom_nomina extends modelo
             'im_registro_patronal'=>$tabla,'cat_sat_tipo_contrato_nom'=>$tabla, 'nom_periodo'=>$tabla,
             'cat_sat_tipo_nomina'=>$tabla,'cat_sat_tipo_jornada_nom'=>$tabla,
             'cat_sat_tipo_regimen_nom'=>'em_empleado','org_departamento'=>$tabla,'org_puesto'=>$tabla,
-            'im_clase_riesgo'=>'im_registro_patronal','em_cuenta_bancaria'=>$tabla);
+            'im_clase_riesgo'=>'im_registro_patronal','em_cuenta_bancaria'=>$tabla,
+            'bn_sucursal'=>'em_cuenta_bancaria','bn_banco'=>'bn_sucursal');
 
         $campos_obligatorios = array('cat_sat_periodicidad_pago_nom_id', 'cat_sat_tipo_contrato_nom_id',
             'cat_sat_tipo_jornada_nom_id','cat_sat_tipo_nomina_id','dp_calle_pertenece_id', 'em_cuenta_bancaria_id',
