@@ -54,6 +54,9 @@ class nom_nomina extends modelo
         return $r_nom_par_otro_pago;
     }
 
+    /**
+     * @return array|stdClass
+     */
     public function alta_bd(): array|stdClass
     {
         if(!isset($this->registro['cat_sat_tipo_contrato_nom_id'])){
@@ -284,6 +287,12 @@ class nom_nomina extends modelo
         return $existe;
     }
 
+    /**
+     * @param array $registro
+     * @param string $campo
+     * @param array $campos_asignar
+     * @return array
+     */
     private function asigna_campo(array $registro, string $campo, array $campos_asignar): array
     {
         if (!isset($registro[$campo])) {
@@ -822,6 +831,11 @@ class nom_nomina extends modelo
             'fc_factura_id' => $fc_factura_id);
     }
 
+    /**
+     * @param mixed $registros
+     * @param mixed $fc_factura
+     * @return array
+     */
     private function genera_registro_nomina(mixed $registros, mixed $fc_factura) : array{
 
         $asignar = array($registros['fc_csd']->org_sucursal_id,
@@ -900,6 +914,12 @@ class nom_nomina extends modelo
         return $nom_par_percepcion;
     }
 
+    /**
+     * Integra el valor de un campo
+     * @param array $campos_asignar conjunto de campos a integrar
+     * @return string
+     * @version 0.364.20
+     */
     private function genera_valor_campo(array $campos_asignar): string
     {
         return implode($campos_asignar);
