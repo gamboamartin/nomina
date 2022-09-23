@@ -659,6 +659,62 @@ class nom_nominaTest extends test {
         errores::$error = false;
     }
 
+    public function test_total_percepciones_gravado(): void
+    {
+        errores::$error = false;
+
+        $_GET['seccion'] = 'cat_sat_tipo_persona';
+        $_GET['accion'] = 'lista';
+        $_SESSION['grupo_id'] = 1;
+        $_SESSION['usuario_id'] = 2;
+        $_GET['session_id'] = '1';
+        $nomina = new nom_nomina($this->link);
+        $nomina = new liberator($nomina);
+
+
+        $del = (new base_test())->del_cat_sat_tipo_nomina($this->link);
+        if(errores::$error){
+            $error = (new errores())->error(mensaje: 'Error al eliminar', data: $del);
+            print_r($error);
+            exit;
+        }
+
+        $del = (new base_test())->del_org_empresa($this->link);
+        if(errores::$error){
+            $error = (new errores())->error(mensaje: 'Error al eliminar', data: $del);
+            print_r($error);
+            exit;
+        }
+
+        $alta = (new base_test())->alta_nom_nomina($this->link);
+        if(errores::$error){
+            $error = (new errores())->error(mensaje: 'Error al insertar', data: $alta);
+            print_r($error);
+            exit;
+        }
+
+
+        $nom_nomina_id = 1;
+
+        $resultado = $nomina->total_percepciones_gravado($nom_nomina_id);
+        $this->assertIsFloat($resultado);
+        $this->assertNotTrue(errores::$error);
+        $this->assertEquals(250, $resultado);
+
+        $del = (new base_test())->del_nom_par_percepcion($this->link);
+        if(errores::$error){
+            $error = (new errores())->error(mensaje: 'Error al eliminar', data: $del);
+            print_r($error);
+            exit;
+        }
+
+        $resultado = $nomina->total_percepciones_gravado($nom_nomina_id);
+        $this->assertIsFloat($resultado);
+        $this->assertNotTrue(errores::$error);
+        $this->assertEquals(0, $resultado);
+        errores::$error = false;
+    }
+
 
 
 }

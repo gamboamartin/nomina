@@ -476,7 +476,7 @@ class controlador_nom_nomina extends base_nom
         if (errores::$error) {
             return $this->retorno_error(mensaje: 'Error al obtener sueldos', data: $nomina->total_sueldos, header: $header, ws: $ws);
         }
-        
+
 
         $xml = (new cfdis())->complemento_nomina(
             comprobante: $comprobante,emisor:  $emisor, nomina: $nomina,receptor:  $receptor);

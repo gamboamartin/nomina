@@ -1275,8 +1275,18 @@ class nom_nomina extends modelo
 
     }
 
+    /**
+     * Obtiene el total de percepciones gravado
+     * @param int $nom_nomina_id Nomina en ejecucion
+     * @return float|array
+     * @version 0.372.20
+     */
     private function total_percepciones_gravado(int $nom_nomina_id): float|array
     {
+        if($nom_nomina_id <=0 ){
+            return $this->error->error(mensaje: 'Error nom_nomina_id debe ser mayor a 0', data: $nom_nomina_id);
+        }
+
         $campos = array();
         $campos['total_importe_gravado'] = 'nom_par_percepcion.importe_gravado';
         $filtro['nom_nomina.id'] = $nom_nomina_id;
