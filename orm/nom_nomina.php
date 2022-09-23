@@ -289,13 +289,19 @@ class nom_nomina extends modelo
     }
 
     /**
-     * @param array $registro
-     * @param string $campo
-     * @param array $campos_asignar
+     * Asigna el valor de un campo al row
+     * @param array $registro Registro en proceso
+     * @param string $campo Campo nuevo a integrar
+     * @param array $campos_asignar Campos previos cargados
      * @return array
+     * @version 0.366.20
      */
     private function asigna_campo(array $registro, string $campo, array $campos_asignar): array
     {
+        $campo = trim($campo);
+        if($campo === ''){
+            return $this->error->error(mensaje: 'Error campo vacio', data: $campo);
+        }
         if (!isset($registro[$campo])) {
             $valor_generado = $this->genera_valor_campo(campos_asignar: $campos_asignar);
             if (errores::$error) {

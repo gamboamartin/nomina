@@ -195,6 +195,28 @@ class nom_nominaTest extends test {
         errores::$error = false;
     }
 
+    public function test_asigna_campo(): void
+    {
+        errores::$error = false;
+
+        $_GET['seccion'] = 'cat_sat_tipo_persona';
+        $_GET['accion'] = 'lista';
+        $_SESSION['grupo_id'] = 1;
+        $_SESSION['usuario_id'] = 2;
+        $_GET['session_id'] = '1';
+        $nomina = new nom_nomina($this->link);
+        $nomina = new liberator($nomina);
+
+        $registro = array();
+        $campos_asignar = array('x');
+        $campo = 'a';
+
+        $resultado = $nomina->asigna_campo($registro, $campo, $campos_asignar);
+        $this->assertIsArray($resultado);
+        $this->assertNotTrue(errores::$error);
+        errores::$error = false;
+    }
+
     public function test_deducciones(): void
     {
         errores::$error = false;
