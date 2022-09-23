@@ -24,12 +24,12 @@ class nom_nomina extends modelo
             'org_sucursal' => 'fc_csd','org_empresa'=> 'org_sucursal', 'cat_sat_periodicidad_pago_nom'=>$tabla,
             'im_registro_patronal'=>$tabla,'cat_sat_tipo_contrato_nom'=>$tabla, 'nom_periodo'=>$tabla,
             'cat_sat_tipo_nomina'=>$tabla,'cat_sat_tipo_jornada_nom'=>$tabla,
-            'cat_sat_tipo_regimen_nom'=>'em_empleado','org_departamento'=>$tabla);
+            'cat_sat_tipo_regimen_nom'=>'em_empleado','org_departamento'=>$tabla,'org_puesto'=>$tabla);
 
         $campos_obligatorios = array('cat_sat_periodicidad_pago_nom_id', 'cat_sat_tipo_contrato_nom_id',
             'cat_sat_tipo_jornada_nom_id','cat_sat_tipo_nomina_id','dp_calle_pertenece_id', 'em_cuenta_bancaria_id',
             'fecha_inicial_pago', 'fecha_final_pago', 'im_registro_patronal_id', 'em_empleado_id','nom_periodo_id',
-            'num_dias_pagados','org_departamento_id');
+            'num_dias_pagados','org_departamento_id','org_puesto_id');
 
         parent::__construct(link: $link, tabla: $tabla, campos_obligatorios: $campos_obligatorios,
             columnas: $columnas);
@@ -867,6 +867,7 @@ class nom_nomina extends modelo
         $this->registro['cat_sat_tipo_jornada_nom_id'] = $registros['em_empleado']->cat_sat_tipo_jornada_nom_id;
         $this->registro['dp_calle_pertenece_id'] = $registros['fc_csd']->dp_calle_pertenece_id;
         $this->registro['org_departamento_id'] = $registros['em_empleado']->org_departamento_id;
+        $this->registro['org_puesto_id'] = $registros['em_empleado']->org_puesto_id;
 
         return $this->registro;
     }
