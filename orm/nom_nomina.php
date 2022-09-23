@@ -22,14 +22,15 @@ class nom_nomina extends modelo
             'dp_cp' => 'dp_colonia_postal', 'dp_municipio' => 'dp_cp', 'dp_estado' => 'dp_municipio',
             'dp_pais' => 'dp_estado', 'em_empleado' => $tabla, 'fc_factura' => $tabla,'fc_csd' =>'fc_factura',
             'org_sucursal' => 'fc_csd','org_empresa'=> 'org_sucursal', 'cat_sat_periodicidad_pago_nom'=>$tabla,
-            'im_registro_patronal'=>$tabla,'im_clase_riesgo'=>'im_registro_patronal',
-            'cat_sat_tipo_contrato_nom'=>$tabla, 'nom_periodo'=>$tabla, 'cat_sat_tipo_nomina'=>$tabla,
-            'cat_sat_tipo_jornada_nom'=>$tabla, 'cat_sat_tipo_regimen_nom'=>'em_empleado','org_departamento'=>$tabla);
+            'im_registro_patronal'=>$tabla,'cat_sat_tipo_contrato_nom'=>$tabla, 'nom_periodo'=>$tabla,
+            'cat_sat_tipo_nomina'=>$tabla,'cat_sat_tipo_jornada_nom'=>$tabla,
+            'cat_sat_tipo_regimen_nom'=>'em_empleado','org_departamento'=>$tabla,'org_puesto'=>$tabla,
+            'im_clase_riesgo'=>'im_registro_patronal');
 
         $campos_obligatorios = array('cat_sat_periodicidad_pago_nom_id', 'cat_sat_tipo_contrato_nom_id',
             'cat_sat_tipo_jornada_nom_id','cat_sat_tipo_nomina_id','dp_calle_pertenece_id', 'em_cuenta_bancaria_id',
             'fecha_inicial_pago', 'fecha_final_pago', 'im_registro_patronal_id', 'em_empleado_id','nom_periodo_id',
-            'num_dias_pagados','org_departamento_id');
+            'num_dias_pagados','org_departamento_id','org_puesto_id','im_clase_riesgo_id');
 
         parent::__construct(link: $link, tabla: $tabla, campos_obligatorios: $campos_obligatorios,
             columnas: $columnas);
@@ -54,6 +55,9 @@ class nom_nomina extends modelo
         return $r_nom_par_otro_pago;
     }
 
+    /**
+     * @return array|stdClass
+     */
     public function alta_bd(): array|stdClass
     {
         if(!isset($this->registro['cat_sat_tipo_contrato_nom_id'])){
@@ -284,8 +288,20 @@ class nom_nomina extends modelo
         return $existe;
     }
 
+    /**
+     * Asigna el valor de un campo al row
+     * @param array $registro Registro en proceso
+     * @param string $campo Campo nuevo a integrar
+     * @param array $campos_asignar Campos previos cargados
+     * @return array
+     * @version 0.366.20
+     */
     private function asigna_campo(array $registro, string $campo, array $campos_asignar): array
     {
+        $campo = trim($campo);
+        if($campo === ''){
+            return $this->error->error(mensaje: 'Error campo vacio', data: $campo);
+        }
         if (!isset($registro[$campo])) {
             $valor_generado = $this->genera_valor_campo(campos_asignar: $campos_asignar);
             if (errores::$error) {
@@ -822,6 +838,11 @@ class nom_nomina extends modelo
             'fc_factura_id' => $fc_factura_id);
     }
 
+    /**
+     * @param mixed $registros
+     * @param mixed $fc_factura
+     * @return array
+     */
     private function genera_registro_nomina(mixed $registros, mixed $fc_factura) : array{
 
         $asignar = array($registros['fc_csd']->org_sucursal_id,
@@ -867,6 +888,8 @@ class nom_nomina extends modelo
         $this->registro['cat_sat_tipo_jornada_nom_id'] = $registros['em_empleado']->cat_sat_tipo_jornada_nom_id;
         $this->registro['dp_calle_pertenece_id'] = $registros['fc_csd']->dp_calle_pertenece_id;
         $this->registro['org_departamento_id'] = $registros['em_empleado']->org_departamento_id;
+        $this->registro['org_puesto_id'] = $registros['em_empleado']->org_puesto_id;
+        $this->registro['im_clase_riesgo_id'] = $registros['im_registro_patronal']->im_clase_riesgo_id;
 
         return $this->registro;
     }
@@ -899,6 +922,12 @@ class nom_nomina extends modelo
         return $nom_par_percepcion;
     }
 
+    /**
+     * Integra el valor de un campo
+     * @param array $campos_asignar conjunto de campos a integrar
+     * @return string
+     * @version 0.364.20
+     */
     private function genera_valor_campo(array $campos_asignar): string
     {
         return implode($campos_asignar);
