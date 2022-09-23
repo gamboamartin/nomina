@@ -465,6 +465,7 @@ class controlador_nom_nomina extends base_nom
         $nomina->receptor->puesto = $nom_nomina->org_puesto_descripcion;
         $nomina->receptor->riesgo_puesto = $nom_nomina->im_clase_riesgo_codigo;
         $nomina->receptor->periodicidad_pago = $nom_nomina->cat_sat_periodicidad_pago_nom_codigo;
+        $nomina->receptor->cuenta_bancaria = $nom_nomina->em_cuenta_bancaria_clabe;
 
         $xml = (new cfdis())->complemento_nomina(
             comprobante: $comprobante,emisor:  $emisor, nomina: $nomina,receptor:  $receptor);

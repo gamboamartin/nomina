@@ -48,6 +48,10 @@ class base_test{
         $em_cuenta_bancaria['bn_sucursal_id'] = 1;
         $em_cuenta_bancaria['em_empleado_id'] = 1;
         $em_cuenta_bancaria['descripcion_select'] = 1;
+        $em_cuenta_bancaria['clabe'] = 1;
+        $em_cuenta_bancaria['num_cuenta'] = 1;
+        $em_cuenta_bancaria['alias'] = 1;
+        $em_cuenta_bancaria['codigo_bis'] = 1;
 
 
         $alta = (new em_cuenta_bancaria($link))->alta_registro($em_cuenta_bancaria);
