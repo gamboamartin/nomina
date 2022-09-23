@@ -1305,6 +1305,51 @@ class nom_nomina extends modelo
         return round($total_percepciones,2);
     }
 
+    private function total_sueldos_exento(int $nom_nomina_id): float|array
+    {
+        $campos = array();
+        $campos['total_sueldos_exento'] = 'nom_par_percepcion.importe_exento';
+        $filtro['nom_nomina.id'] = $nom_nomina_id;
+        $filtro['nom_percepcion.aplica_sueldos'] = 'activo';
+        $r_nom_par_percepcion = (new nom_par_percepcion($this->link))->suma(campos: $campos,filtro: $filtro);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al obtener percepciones', data: $r_nom_par_percepcion);
+        }
+
+        return round($r_nom_par_percepcion['total_sueldos_exento'],2);
+
+    }
+
+    private function total_sueldos_gravado(int $nom_nomina_id): float|array
+    {
+        $campos = array();
+        $campos['total_sueldos_gravado'] = 'nom_par_percepcion.importe_gravado';
+        $filtro['nom_nomina.id'] = $nom_nomina_id;
+        $filtro['nom_percepcion.aplica_sueldos'] = 'activo';
+        $r_nom_par_percepcion = (new nom_par_percepcion($this->link))->suma(campos: $campos,filtro: $filtro);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al obtener percepciones', data: $r_nom_par_percepcion);
+        }
+
+        return round($r_nom_par_percepcion['total_sueldos_gravado'],2);
+
+    }
+
+    public function total_sueldos_monto(int $nom_nomina_id): float|array
+    {
+        $total_sueldos_gravado = $this->total_sueldos_gravado(nom_nomina_id: $nom_nomina_id);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al obtener total gravado', data: $total_sueldos_gravado);
+        }
+        $total_sueldos_exento = $this->total_sueldos_exento(nom_nomina_id: $nom_nomina_id);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al obtener total gravado', data: $total_sueldos_exento);
+        }
+
+        $total_sueldos = $total_sueldos_gravado + $total_sueldos_gravado;
+        return round($total_sueldos,2);
+    }
+
 
 
 

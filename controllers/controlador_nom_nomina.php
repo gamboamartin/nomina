@@ -471,6 +471,13 @@ class controlador_nom_nomina extends base_nom
         $nomina->receptor->salario_diario_integrado = $nom_nomina->em_empleado_salario_diario_integrado;
         $nomina->receptor->clave_ent_fed = $nom_nomina->dp_estado_codigo;
 
+
+        $nomina->total_sueldos = (new nom_nomina($this->link))->total_sueldos_monto(nom_nomina_id: $this->registro_id);
+        if (errores::$error) {
+            return $this->retorno_error(mensaje: 'Error al obtener sueldos', data: $nomina->total_sueldos, header: $header, ws: $ws);
+        }
+        
+
         $xml = (new cfdis())->complemento_nomina(
             comprobante: $comprobante,emisor:  $emisor, nomina: $nomina,receptor:  $receptor);
         if (errores::$error) {
