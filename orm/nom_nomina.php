@@ -864,7 +864,7 @@ class nom_nomina extends modelo
         $this->registro = $registro;
 
         $this->registro['fc_factura_id'] = $fc_factura->registro_id;
-        $this->registro['cat_sat_tipo_jornada_nom_id'] = 1;
+        $this->registro['cat_sat_tipo_jornada_nom_id'] = $registros['em_empleado']->cat_sat_tipo_jornada_nom_id;
         $this->registro['dp_calle_pertenece_id'] = 1;
         $this->registro['org_departamento_id'] = 1;
 
