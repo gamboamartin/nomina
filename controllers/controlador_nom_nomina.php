@@ -363,11 +363,6 @@ class controlador_nom_nomina extends base_nom
             return $this->retorno_error(mensaje: 'Error al obtener nomina', data: $nom_nomina, header: $header, ws: $ws);
         }
 
-        $im_registro_patronal = (new im_registro_patronal($this->link))->registro(
-            registro_id:$nom_nomina->im_registro_patronal_id, retorno_obj: true );
-        if (errores::$error) {
-            return $this->retorno_error(mensaje: 'Error al obtener registro patronal', data: $im_registro_patronal, header: $header, ws: $ws);
-        }
 
         $fc_factura = (new fc_factura($this->link))->registro(
             registro_id:$nom_nomina->fc_factura_id, retorno_obj: true );
@@ -383,8 +378,6 @@ class controlador_nom_nomina extends base_nom
                 data: $com_sucursal, header: $header, ws: $ws);
         }
 
-        //print_r($im_registro_patronal);exit;
-        //print_r($nom_nomina);exit;
         $comprobante = new stdClass();
         $comprobante->lugar_expedicion = $fc_factura->dp_cp_descripcion;
         $comprobante->folio = $fc_factura->fc_factura_folio;
@@ -440,7 +433,7 @@ class controlador_nom_nomina extends base_nom
         }
 
         $nomina->emisor = new stdClass();
-        $nomina->emisor->registro_patronal = $im_registro_patronal->im_registro_patronal_descripcion;
+        $nomina->emisor->registro_patronal = $nom_nomina->im_registro_patronal_descripcion;
         $nomina->emisor->rfc_patron_origen =  $emisor->rfc;
 
         $nomina->receptor = new stdClass();
@@ -472,10 +465,32 @@ class controlador_nom_nomina extends base_nom
         $nomina->receptor->clave_ent_fed = $nom_nomina->dp_estado_codigo;
 
 
-        $nomina->total_sueldos = (new nom_nomina($this->link))->total_sueldos_monto(nom_nomina_id: $this->registro_id);
+        $nomina->percepciones = new stdClass();
+        $nomina->percepciones->total_sueldos = (new nom_nomina($this->link))->total_sueldos_monto(
+            nom_nomina_id: $this->registro_id);
         if (errores::$error) {
-            return $this->retorno_error(mensaje: 'Error al obtener sueldos', data: $nomina->total_sueldos, header: $header, ws: $ws);
+            return $this->retorno_error(mensaje: 'Error al obtener sueldos',
+                data: $nomina->percepciones->total_sueldos, header: $header, ws: $ws);
         }
+
+        $nomina->percepciones->total_gravado = (new nom_nomina($this->link))->total_percepciones_gravado(nom_nomina_id: $this->registro_id);
+        if (errores::$error) {
+            return $this->retorno_error(
+                mensaje: 'Error al obtener sueldos', data: $nomina->percepciones->total_gravado, header: $header, ws: $ws);
+        }
+
+        $nomina->percepciones->total_exento = (new nom_nomina($this->link))->total_percepciones_exento(nom_nomina_id: $this->registro_id);
+        if (errores::$error) {
+            return $this->retorno_error(
+                mensaje: 'Error al obtener sueldos', data: $nomina->percepciones->total_exento, header: $header, ws: $ws);
+        }
+
+        $nomina->percepciones->percepcion = array();
+        $nomina->deducciones = new stdClass();
+        $nomina->deducciones->total_otras_deducciones = 0;
+        $nomina->deducciones->total_impuestos_retenidos = 0;
+
+        $nomina->deducciones->deduccion = array();
 
 
         $xml = (new cfdis())->complemento_nomina(
@@ -483,6 +498,7 @@ class controlador_nom_nomina extends base_nom
         if (errores::$error) {
             return $this->retorno_error(mensaje: 'Error al generar xml', data: $xml, header: $header, ws: $ws);
         }
+        echo htmlentities($xml);exit;
 
         return $nom_nomina;
     }

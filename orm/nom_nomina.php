@@ -1227,6 +1227,10 @@ class nom_nomina extends modelo
         return round($total_deducciones,2);
     }
 
+
+
+
+
     /**
      * Obtiene el total gravado de una nomina
      * @param int $nom_nomina_id Nomina a verificar
@@ -1261,7 +1265,7 @@ class nom_nomina extends modelo
 
     }
 
-    private function total_percepciones_exento(int $nom_nomina_id): float|array
+    public function total_percepciones_exento(int $nom_nomina_id): float|array
     {
         $campos = array();
         $campos['total_importe_exento'] = 'nom_par_percepcion.importe_exento';
@@ -1281,7 +1285,7 @@ class nom_nomina extends modelo
      * @return float|array
      * @version 0.372.20
      */
-    private function total_percepciones_gravado(int $nom_nomina_id): float|array
+    public function total_percepciones_gravado(int $nom_nomina_id): float|array
     {
         if($nom_nomina_id <=0 ){
             return $this->error->error(mensaje: 'Error nom_nomina_id debe ser mayor a 0', data: $nom_nomina_id);
