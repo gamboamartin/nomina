@@ -202,6 +202,7 @@
 
                     <table class="table table-striped footable-sort" data-sorting="true">
                         <th>Concepto</th>
+                        <th>Prestaciones</th>
                         <th>Monto</th>
 
                         <tbody>

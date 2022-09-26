@@ -621,6 +621,42 @@ class controlador_nom_nomina extends base_nom
 
         $this->cuotas_obrero_patronales->registros[] = $cuota;
 
+        $factor_cuota_fija = 20.4;
+        $n_dias_trabajados = $this->registro['nom_nomina_num_dias_pagados'];
+        $uma = 96.22;
+
+        $cuota_riesgo_trabajo = (new im_movimiento($this->link))->calcula_enf_mat_cuota_fija(
+            factor_cuota_fija: $factor_cuota_fija, n_dias_trabajados: $n_dias_trabajados, uma: $uma);
+        if (errores::$error) {
+            return $this->retorno_error(mensaje: 'Error al obtener partidas', data: $partidas, header: $header, ws: $ws);
+        }
+
+        $cuota = array();
+        $cuota['concepto'] = 'Enfermedades y Maternidad';
+        $cuota['prestaciones'] = 'En especie';
+        $cuota['monto'] = $cuota_riesgo_trabajo;
+
+        $this->cuotas_obrero_patronales->registros[] = $cuota;
+
+        $factor_cuota_adicional = 1.1;
+        $n_dias_trabajados = $this->registro['nom_nomina_num_dias_pagados'];
+        $salario_base_cotizacion = $this->registro['em_empleado_salario_diario_integrado'];
+        $uma = 96.22;
+
+        $cuota_riesgo_trabajo = (new im_movimiento($this->link))->calcula_enf_mat_cuota_adicional(
+            factor_cuota_adicional: $factor_cuota_adicional, n_dias_trabajados: $n_dias_trabajados,
+            salario_base_cotizacion: $salario_base_cotizacion, uma: $uma);
+        if (errores::$error) {
+            return $this->retorno_error(mensaje: 'Error al obtener partidas', data: $partidas, header: $header, ws: $ws);
+        }
+
+        $cuota = array();
+        $cuota['concepto'] = 'Enfermedades y Maternidad';
+        $cuota['prestaciones'] = 'Exedente';
+        $cuota['monto'] = $cuota_riesgo_trabajo;
+
+        $this->cuotas_obrero_patronales->registros[] = $cuota;
+
         return $base->template;
     }
 
