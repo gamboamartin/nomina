@@ -675,6 +675,24 @@ class controlador_nom_nomina extends base_nom
 
         $this->cuotas_obrero_patronales->registros[] = $cuota;
 
+        $factor_pres_dineros = 0.7;
+        $n_dias_trabajados = $this->registro['nom_nomina_num_dias_pagados'];
+        $salario_base_cotizacion = $this->registro['em_empleado_salario_diario_integrado'];
+
+        $cuota_riesgo_trabajo = (new im_movimiento($this->link))->calcula_enf_mat_pres_dinero(
+            factor_pres_dineros: $factor_pres_dineros, n_dias_trabajados: $n_dias_trabajados,
+            salario_base_cotizacion: $salario_base_cotizacion);
+        if (errores::$error) {
+            return $this->retorno_error(mensaje: 'Error al obtener partidas', data: $partidas, header: $header, ws: $ws);
+        }
+
+        $cuota = array();
+        $cuota['concepto'] = 'Enfermedades y Maternidad';
+        $cuota['prestaciones'] = 'En Dinero';
+        $cuota['monto'] = $cuota_riesgo_trabajo;
+
+        $this->cuotas_obrero_patronales->registros[] = $cuota;
+
         return $base->template;
     }
 
