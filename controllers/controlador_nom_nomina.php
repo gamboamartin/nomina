@@ -22,6 +22,7 @@ use html\nom_par_percepcion_html;
 use JsonException;
 use models\calcula_nomina;
 use models\com_sucursal;
+use models\im_movimiento;
 use models\im_registro_patronal;
 use models\nom_nomina;
 use models\nom_par_deduccion;
@@ -599,6 +600,26 @@ class controlador_nom_nomina extends base_nom
         if (errores::$error) {
             return $this->retorno_error(mensaje: 'Error al obtener partidas', data: $partidas, header: $header, ws: $ws);
         }
+
+        $im_clase_riesgo_id = $this->registro['im_clase_riesgo_factor'];
+        $n_dias_trabajados = $this->registro['nom_nomina_num_dias_pagados'];
+        $salario_base_cotizacion = $this->registro['em_empleado_salario_diario_integrado'];
+
+        $this->cuotas_obrero_patronales =  new stdClass();
+        $this->cuotas_obrero_patronales->registros =  array();
+        $cuota_riesgo_trabajo = (new im_movimiento($this->link))->calcula_riesgo_de_trabajo(
+            im_clase_riesgo_factor: $im_clase_riesgo_id, n_dias_trabajados: $n_dias_trabajados,
+            salario_base_cotizacion: $salario_base_cotizacion);
+        if (errores::$error) {
+            return $this->retorno_error(mensaje: 'Error al obtener partidas', data: $partidas, header: $header, ws: $ws);
+        }
+
+        $cuota = array();
+        $cuota['concepto'] = 'Riesgo de Trabajo';
+        $cuota['prestaciones'] = 'En especie y dinero';
+        $cuota['monto'] = $cuota_riesgo_trabajo;
+
+        $this->cuotas_obrero_patronales->registros[] = $cuota;
 
         return $base->template;
     }

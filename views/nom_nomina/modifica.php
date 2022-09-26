@@ -188,3 +188,33 @@
         </div><!-- /.center-content -->
     </div>
 </div>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+
+            <div class="widget widget-box box-container widget-mylistings">
+
+                <div class="">
+                    <div class="widget-header">
+                        <h2>Cuotas - Obrero Patronales</h2>
+                    </div>
+
+                    <table class="table table-striped footable-sort" data-sorting="true">
+                        <th>Concepto</th>
+                        <th>Monto</th>
+
+                        <tbody>
+                        <?php foreach ($controlador->cuotas_obrero_patronales->registros as $cuota_obrero_patronal){?>
+                            <tr>
+                                <td><?php echo $cuota_obrero_patronal['concepto']; ?></td>
+                                <td><?php echo $cuota_obrero_patronal['prestaciones']; ?></td>
+                                <td><?php echo $cuota_obrero_patronal['monto']; ?></td>
+                        <?php } ?>
+                        </tbody>
+                    </table>
+                </div>
+            </div> <!-- /. widget-table-->
+        </div><!-- /.center-content -->
+    </div>
+</div>
