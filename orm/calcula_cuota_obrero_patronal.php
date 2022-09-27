@@ -5,7 +5,7 @@ use gamboamartin\errores\errores;
 use gamboamartin\validacion\validacion;
 use stdClass;
 
-class calcula_imss{
+class calcula_cuota_obrero_patronal{
 
     private errores $error;
     private validacion $validacion;
