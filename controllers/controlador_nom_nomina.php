@@ -711,6 +711,24 @@ class controlador_nom_nomina extends base_nom
 
         $this->cuotas_obrero_patronales->registros[] = $cuota;
 
+        $factor_pres_sociales = 1;
+        $n_dias_trabajados = $this->registro['nom_nomina_num_dias_pagados'];
+        $salario_base_cotizacion = $this->registro['em_empleado_salario_diario_integrado'];
+
+        $cuota_riesgo_trabajo = (new im_movimiento($this->link))->calcula_guarderia_prestaciones_sociales(
+            factor_pres_sociales: $factor_pres_sociales, n_dias_trabajados: $n_dias_trabajados,
+            salario_base_cotizacion: $salario_base_cotizacion);
+        if (errores::$error) {
+            return $this->retorno_error(mensaje: 'Error al obtener partidas', data: $partidas, header: $header, ws: $ws);
+        }
+
+        $cuota = array();
+        $cuota['concepto'] = 'Guarderías y Prestaciones Sociales';
+        $cuota['prestaciones'] = 'Guarderías y Prestaciones Sociales';
+        $cuota['monto'] = $cuota_riesgo_trabajo;
+
+        $this->cuotas_obrero_patronales->registros[] = $cuota;
+
         return $base->template;
     }
 
