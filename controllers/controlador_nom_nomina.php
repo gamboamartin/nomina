@@ -763,6 +763,24 @@ class controlador_nom_nomina extends base_nom
 
         $this->cuotas_obrero_patronales->registros[] = $cuota;
 
+        $factor_credito_vivienda = 5;
+        $n_dias_trabajados = $this->registro['nom_nomina_num_dias_pagados'];
+        $salario_base_aportacion= $this->registro['em_empleado_salario_diario_integrado'];
+
+        $cuota_riesgo_trabajo = (new im_movimiento($this->link))->calcula_credito_vivienda(
+            factor_credito_vivienda: $factor_credito_vivienda, n_dias_trabajados: $n_dias_trabajados,
+            salario_base_aportacion: $salario_base_aportacion);
+        if (errores::$error) {
+            return $this->retorno_error(mensaje: 'Error al obtener partidas', data: $partidas, header: $header, ws: $ws);
+        }
+
+        $cuota = array();
+        $cuota['concepto'] = 'Infonavit';
+        $cuota['prestaciones'] = 'Crédito de vivienda';
+        $cuota['monto'] = $cuota_riesgo_trabajo;
+
+        $this->cuotas_obrero_patronales->registros[] = $cuota;
+
         return $base->template;
     }
 
