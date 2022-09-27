@@ -727,6 +727,8 @@ class controlador_nom_nomina extends base_nom
         $cuota['prestaciones'] = 'Guarderías y Prestaciones Sociales';
         $cuota['monto'] = $cuota_riesgo_trabajo;
 
+        $this->cuotas_obrero_patronales->registros[] = $cuota;
+
         $factor_retiro = 2;
         $n_dias_trabajados = $this->registro['nom_nomina_num_dias_pagados'];
         $salario_base_cotizacion = $this->registro['em_empleado_salario_diario_integrado'];
