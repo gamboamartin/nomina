@@ -65,7 +65,7 @@ class nom_nomina extends modelo
             $this->registro['cat_sat_tipo_contrato_nom_id'] = 1;
         }
 
-        $registros = $this->genera_registros();
+        $registros = $this->genera_registros_alta_bd();
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al generar registros', data: $registros);
         }
@@ -721,7 +721,12 @@ class nom_nomina extends modelo
         return $nom_rel_empleado_sucursal->registros[0];
     }
 
-    private function genera_registros(): array
+    /**
+     * Obtiene los elementos basicos necesarios para la insersion de una nomina
+     * @return array
+     * @version 0.386.21
+     */
+    private function genera_registros_alta_bd(): array
     {
         $keys = array('im_registro_patronal_id','em_empleado_id','nom_conf_empleado_id');
         $valida = $this->validacion->valida_ids(keys: $keys,registro:  $this->registro);
