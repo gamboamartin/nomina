@@ -1,6 +1,6 @@
 <?php
 namespace models;
-use base\orm\modelo;
+use gamboamartin\cat_sat\models\cat_sat_isr;
 use gamboamartin\errores\errores;
 use gamboamartin\validacion\validacion;
 use PDO;
