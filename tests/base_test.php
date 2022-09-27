@@ -9,7 +9,6 @@ use gamboamartin\organigrama\models\org_departamento;
 use gamboamartin\organigrama\models\org_empresa;
 use gamboamartin\organigrama\models\org_puesto;
 use gamboamartin\organigrama\models\org_sucursal;
-use models\cat_sat_tipo_nomina;
 use models\im_registro_patronal;
 use models\nom_conf_empleado;
 use models\nom_conf_nomina;
@@ -21,23 +20,7 @@ use stdClass;
 
 class base_test{
 
-    public function alta_cat_sat_tipo_nomina(PDO $link): array|\stdClass
-    {
-        $nom_periodo = array();
-        $nom_periodo['id'] = 1;
-        $nom_periodo['codigo'] = 1;
-        $nom_periodo['descripcion'] = 1;
-        $nom_periodo['descripcion_select'] = 1;
 
-
-
-        $alta = (new cat_sat_tipo_nomina($link))->alta_registro($nom_periodo);
-        if(errores::$error){
-            return (new errores())->error(mensaje: 'Error al insertar', data: $alta);
-
-        }
-        return $alta;
-    }
 
     public function alta_em_cuenta_bancaria(PDO $link): array|\stdClass
     {
@@ -183,7 +166,7 @@ class base_test{
     public function alta_nom_conf_nomina(PDO $link): array|\stdClass
     {
 
-        $alta = $this->alta_cat_sat_tipo_nomina($link);
+        $alta = (new \gamboamartin\cat_sat\tests\base_test())->alta_cat_sat_tipo_nomina($link);
         if(errores::$error){
             return (new errores())->error('Error al dar de alta', $alta);
         }
@@ -412,22 +395,25 @@ class base_test{
 
     public function del_cat_sat_tipo_nomina(PDO $link): array
     {
-        $del = $this->del_nom_nomina($link);
-        if(errores::$error){
-            return (new errores())->error('Error al eliminar', $del);
-        }
 
         $del = $this->del_nom_conf_nomina($link);
         if(errores::$error){
             return (new errores())->error('Error al eliminar', $del);
         }
+        $del = $this->del_nom_nomina($link);
+        if(errores::$error){
+            return (new errores())->error('Error al eliminar', $del);
+        }
 
-        $del = $this->del($link, 'models\\cat_sat_tipo_nomina');
+        $del = (new \gamboamartin\cat_sat\tests\base_test())->del_cat_sat_tipo_nomina($link);
         if(errores::$error){
             return (new errores())->error('Error al eliminar', $del);
         }
         return $del;
     }
+
+
+
 
     public function del_em_cuenta_bancaria(PDO $link): array
     {

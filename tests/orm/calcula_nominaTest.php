@@ -98,7 +98,7 @@ class calcula_nominaTest extends test {
             exit;
         }
 
-        $del = (new base_test())->del_cat_sat_tipo_nomina($this->link);
+        $del = (new \gamboamartin\cat_sat\tests\base_test())->del_cat_sat_tipo_nomina($this->link);
         if(errores::$error){
             $error = (new errores())->error('Error al eliminar', $del);
             print_r($error);
