@@ -51,6 +51,7 @@ class controlador_nom_nomina extends base_nom
 
     public stdClass $otros_pagos;
     public stdClass $cuotas_obrero_patronales;
+    public float $cuota_total = 0.0;
 
     protected stdClass $params_actions;
 
@@ -605,6 +606,8 @@ class controlador_nom_nomina extends base_nom
         }
 
         if($this->registro['em_empleado_salario_diario'] > 172.87) {
+            $cueota_total = 0;
+
             $im_clase_riesgo_id = $this->registro['im_clase_riesgo_factor'];
             $n_dias_trabajados = $this->registro['nom_nomina_num_dias_pagados'];
             $salario_base_cotizacion = $this->registro['em_empleado_salario_diario_integrado'];
@@ -620,6 +623,7 @@ class controlador_nom_nomina extends base_nom
             $cuota['concepto'] = 'Riesgo de Trabajo';
             $cuota['prestaciones'] = 'En especie y dinero';
             $cuota['monto'] = $cuota_riesgo_trabajo;
+            $cueota_total += $cuota_riesgo_trabajo;
 
             $this->cuotas_obrero_patronales->registros[] = $cuota;
 
@@ -637,6 +641,7 @@ class controlador_nom_nomina extends base_nom
             $cuota['concepto'] = 'Enfermedades y Maternidad';
             $cuota['prestaciones'] = 'En especie';
             $cuota['monto'] = $cuota_riesgo_trabajo;
+            $cueota_total += $cuota_riesgo_trabajo;
 
             $this->cuotas_obrero_patronales->registros[] = $cuota;
 
@@ -656,6 +661,7 @@ class controlador_nom_nomina extends base_nom
             $cuota['concepto'] = 'Enfermedades y Maternidad';
             $cuota['prestaciones'] = 'Exedente';
             $cuota['monto'] = $cuota_riesgo_trabajo;
+            $cueota_total += $cuota_riesgo_trabajo;
 
             $this->cuotas_obrero_patronales->registros[] = $cuota;
 
@@ -674,6 +680,7 @@ class controlador_nom_nomina extends base_nom
             $cuota['concepto'] = 'Enfermedades y Maternidad';
             $cuota['prestaciones'] = 'Gastos Medicos';
             $cuota['monto'] = $cuota_riesgo_trabajo;
+            $cueota_total += $cuota_riesgo_trabajo;
 
             $this->cuotas_obrero_patronales->registros[] = $cuota;
 
@@ -692,6 +699,7 @@ class controlador_nom_nomina extends base_nom
             $cuota['concepto'] = 'Enfermedades y Maternidad';
             $cuota['prestaciones'] = 'En Dinero';
             $cuota['monto'] = $cuota_riesgo_trabajo;
+            $cueota_total += $cuota_riesgo_trabajo;
 
             $this->cuotas_obrero_patronales->registros[] = $cuota;
 
@@ -710,6 +718,7 @@ class controlador_nom_nomina extends base_nom
             $cuota['concepto'] = 'Invalidez y Vida';
             $cuota['prestaciones'] = 'Invalidez y Vida';
             $cuota['monto'] = $cuota_riesgo_trabajo;
+            $cueota_total += $cuota_riesgo_trabajo;
 
             $this->cuotas_obrero_patronales->registros[] = $cuota;
 
@@ -728,6 +737,7 @@ class controlador_nom_nomina extends base_nom
             $cuota['concepto'] = 'Guarderías y Prestaciones Sociales';
             $cuota['prestaciones'] = 'Guarderías y Prestaciones Sociales';
             $cuota['monto'] = $cuota_riesgo_trabajo;
+            $cueota_total += $cuota_riesgo_trabajo;
 
             $this->cuotas_obrero_patronales->registros[] = $cuota;
 
@@ -746,6 +756,7 @@ class controlador_nom_nomina extends base_nom
             $cuota['concepto'] = 'Retiro, Cesantía en Edad Avanzada y Vejez (CEAV)';
             $cuota['prestaciones'] = 'Retiro';
             $cuota['monto'] = $cuota_riesgo_trabajo;
+            $cueota_total += $cuota_riesgo_trabajo;
 
             $this->cuotas_obrero_patronales->registros[] = $cuota;
 
@@ -764,6 +775,7 @@ class controlador_nom_nomina extends base_nom
             $cuota['concepto'] = 'Retiro, Cesantía en Edad Avanzada y Vejez (CEAV)';
             $cuota['prestaciones'] = 'CEAV';
             $cuota['monto'] = $cuota_riesgo_trabajo;
+            $cueota_total += $cuota_riesgo_trabajo;
 
             $this->cuotas_obrero_patronales->registros[] = $cuota;
 
@@ -782,8 +794,10 @@ class controlador_nom_nomina extends base_nom
             $cuota['concepto'] = 'Infonavit';
             $cuota['prestaciones'] = 'Crédito de vivienda';
             $cuota['monto'] = $cuota_riesgo_trabajo;
+            $cueota_total += $cuota_riesgo_trabajo;
 
             $this->cuotas_obrero_patronales->registros[] = $cuota;
+            $this->cuota_total = $cueota_total;
         }
         return $base->template;
     }
