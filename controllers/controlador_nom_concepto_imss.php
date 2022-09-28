@@ -41,9 +41,11 @@ class controlador_nom_concepto_imss extends system {
         $keys_selects['nom_nomina']->cols = 4;
         $keys_selects['nom_nomina']->disabled = false;
         $keys_selects['nom_nomina']->filtro = array();
+        $keys_selects['nom_nomina']->label = 'Nomina';
 
         $keys_selects['nom_tipo_concepto_imss'] = new stdClass();
         $keys_selects['nom_tipo_concepto_imss']->cols = 4;
+        $keys_selects['nom_tipo_concepto_imss']->label = 'Tipo Concepto';
 
         $inputs = (new nom_concepto_imss_html(html: $this->html_base))->genera_inputs_alta(controler: $this, keys_selects: $keys_selects, link: $this->link);
         if(errores::$error){
