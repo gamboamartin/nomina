@@ -849,14 +849,12 @@ class nom_nomina extends modelo
         $cat_sat_tipo_de_comprobante_id = $cat_sat->nom_conf_factura_cat_sat_tipo_de_comprobante_id;
         $dp_calle_pertenece_id = $im_registro_patronal->dp_calle_pertenece_id;
 
-        $regisro_factura = array('folio' => $folio, 'serie' => $serie, 'fecha' => $fecha,
-            'fc_csd_id' => $fc_csd_id, 'com_sucursal_id' => $com_sucursal_id,
-            'cat_sat_forma_pago_id' => $cat_sat_forma_pago_id, 'cat_sat_metodo_pago_id' => $cat_sat_metodo_pago_id,
-            'cat_sat_moneda_id' => $cat_sat_moneda_id, 'com_tipo_cambio_id' => $com_tipo_cambio_id,
-            'dp_calle_pertenece_id'=>$dp_calle_pertenece_id,
-            'cat_sat_uso_cfdi_id' => $cat_sat_uso_cfdi_id, 'cat_sat_tipo_de_comprobante_id' => $cat_sat_tipo_de_comprobante_id);
-
-        return $regisro_factura;
+        return array('folio' => $folio, 'serie' => $serie, 'fecha' => $fecha, 'fc_csd_id' => $fc_csd_id,
+            'com_sucursal_id' => $com_sucursal_id, 'cat_sat_forma_pago_id' => $cat_sat_forma_pago_id,
+            'cat_sat_metodo_pago_id' => $cat_sat_metodo_pago_id, 'cat_sat_moneda_id' => $cat_sat_moneda_id,
+            'com_tipo_cambio_id' => $com_tipo_cambio_id, 'dp_calle_pertenece_id'=>$dp_calle_pertenece_id,
+            'cat_sat_uso_cfdi_id' => $cat_sat_uso_cfdi_id,
+            'cat_sat_tipo_de_comprobante_id' => $cat_sat_tipo_de_comprobante_id);
     }
 
     private function genera_registro_partida(mixed $fc_factura, mixed $em_empleado, mixed $conf_empleado) : array{
