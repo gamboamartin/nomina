@@ -605,7 +605,6 @@ class controlador_nom_nomina extends base_nom
             return $this->retorno_error(mensaje: 'Error al obtener partidas', data: $partidas, header: $header, ws: $ws);
         }
 
-        if($this->registro['em_empleado_salario_diario'] > 172.87) {
             $cueota_total = 0;
 
             $im_clase_riesgo_id = $this->registro['im_clase_riesgo_factor'];
@@ -798,7 +797,6 @@ class controlador_nom_nomina extends base_nom
 
             $this->cuotas_obrero_patronales->registros[] = $cuota;
             $this->cuota_total = $cueota_total;
-        }
         return $base->template;
     }
 

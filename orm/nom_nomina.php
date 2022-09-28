@@ -139,7 +139,56 @@ class nom_nomina extends modelo
             return $this->error->error(mensaje: 'Error al insertar percepciones de configuracion', data: $percepciones);
         }
 
+        $conceptos = (new nom_tipo_concepto_imss($this->link))->registros_activos();
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al obtener registros de tipos de conceptos', data: $conceptos);
+        }
+
+        $calcula_cuota_obrero_patronal = new calcula_cuota_obrero_patronal();
+        $calculos = $calcula_cuota_obrero_patronal->cuota_obrero_patronal(
+            porc_riesgo_trabajo: $registros['im_registro_patronal']->im_clase_riesgo_factor,
+            fecha: $registros['em_empleado']->em_empleado_fecha_inicio_rel_laboral,
+            n_dias: $this->registro['num_dias_pagados'],
+            sbc: $registros['em_empleado']->em_empleado_salario_diario_integrado);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al generar calculos', data: $calculos);
+        }
+
+        foreach($conceptos as $concepto){
+            foreach ($calcula_cuota_obrero_patronal->cuotas as $campo => $cuota){
+                if($concepto['nom_tipo_concepto_imss_alias'] === $campo){
+                    $registro_concepto_imss = $this->maqueta_nom_comcepto(nom_nomina_id: $r_alta_bd->registro_id,
+                        concepto: $concepto,monto: $cuota);
+                    if (errores::$error) {
+                        return $this->error->error(mensaje: 'Error al generar calculos', data: $calculos);
+                    }
+
+                    $r_alta_nom_concepto_imss = (new nom_concepto_imss($this->link))->alta_registro(
+                        registro: $registro_concepto_imss);
+                    if (errores::$error) {
+                        return $this->error->error(mensaje: 'Error al generar insertar concepto',
+                            data: $r_alta_nom_concepto_imss);
+                    }
+                }
+            }
+        }
+
         return $r_alta_bd;
+    }
+
+    public function maqueta_nom_comcepto(int $nom_nomina_id, array $concepto, float $monto){
+        $registro_concepto_imss['nom_nomina_id'] = $nom_nomina_id;
+        $registro_concepto_imss['nom_tipo_concepto_imss_id'] = $concepto['nom_tipo_concepto_imss_id'];
+        $registro_concepto_imss['monto'] = $monto;
+        $registro_concepto_imss['descripcion'] = $nom_nomina_id."-".
+            $concepto['nom_tipo_concepto_imss_alias'];
+        $registro_concepto_imss['descripcion_select'] = $registro_concepto_imss['descripcion'];
+        $registro_concepto_imss['alias'] = $registro_concepto_imss['descripcion'];
+        $registro_concepto_imss['codigo'] = $nom_nomina_id."-".
+            $concepto['nom_tipo_concepto_imss_alias']."-".rand();
+        $registro_concepto_imss['codigo_bis'] = $registro_concepto_imss['codigo'];
+
+        return $registro_concepto_imss;
     }
 
     /**
