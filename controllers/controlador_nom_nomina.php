@@ -383,6 +383,12 @@ class controlador_nom_nomina extends base_nom
                 data: $com_sucursal, header: $header, ws: $ws);
         }
 
+        $percepciones = (new nom_nomina($this->link))->percepciones(nom_nomina_id: $this->registro_id);
+        if(errores::$error){
+            return $this->retorno_error(mensaje: 'Error al obtener percepciones', data: $percepciones, header: $header, ws: $ws);
+        }
+
+
         $comprobante = new stdClass();
         $comprobante->lugar_expedicion = $fc_factura->dp_cp_descripcion;
         $comprobante->folio = $fc_factura->fc_factura_folio;
@@ -478,19 +484,36 @@ class controlador_nom_nomina extends base_nom
                 data: $nomina->percepciones->total_sueldos, header: $header, ws: $ws);
         }
 
-        $nomina->percepciones->total_gravado = (new nom_nomina($this->link))->total_percepciones_gravado(nom_nomina_id: $this->registro_id);
+        $nomina->percepciones->total_gravado = (new nom_nomina($this->link))->total_percepciones_gravado(
+            nom_nomina_id: $this->registro_id);
         if (errores::$error) {
             return $this->retorno_error(
                 mensaje: 'Error al obtener sueldos', data: $nomina->percepciones->total_gravado, header: $header, ws: $ws);
         }
 
-        $nomina->percepciones->total_exento = (new nom_nomina($this->link))->total_percepciones_exento(nom_nomina_id: $this->registro_id);
+        $nomina->percepciones->total_exento = (new nom_nomina($this->link))->total_percepciones_exento(
+            nom_nomina_id: $this->registro_id);
         if (errores::$error) {
             return $this->retorno_error(
                 mensaje: 'Error al obtener sueldos', data: $nomina->percepciones->total_exento, header: $header, ws: $ws);
         }
 
-        $nomina->percepciones->percepcion = array();
+
+        foreach ($percepciones as $percepcion){
+            $data_percepcion = new stdClass();
+            $data_percepcion->tipo_percepcion = $percepcion['cat_sat_tipo_percepcion_nom_codigo'];
+            $data_percepcion->clave = $percepcion['nom_percepcion_codigo'];
+            $data_percepcion->concepto = $percepcion['nom_par_percepcion_descripcion'];
+            $data_percepcion->importe_gravado = $percepcion['nom_par_percepcion_importe_gravado'];
+            $data_percepcion->importe_exento = $percepcion['nom_par_percepcion_importe_exento'];
+            $nomina->percepciones->percepcion[] = $data_percepcion;
+        }
+
+
+
+
+
+
         $nomina->deducciones = new stdClass();
         $nomina->deducciones->total_otras_deducciones = 0;
         $nomina->deducciones->total_impuestos_retenidos = 0;
