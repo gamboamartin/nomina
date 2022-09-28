@@ -154,23 +154,10 @@ class nom_nomina extends modelo
             return $this->error->error(mensaje: 'Error al generar calculos', data: $calculos);
         }
 
-        foreach($conceptos as $concepto){
-            foreach ($calcula_cuota_obrero_patronal->cuotas as $campo => $cuota){
-                if($concepto['nom_tipo_concepto_imss_alias'] === $campo){
-                    $registro_concepto_imss = $this->maqueta_nom_comcepto(nom_nomina_id: $r_alta_bd->registro_id,
-                        concepto: $concepto,monto: $cuota);
-                    if (errores::$error) {
-                        return $this->error->error(mensaje: 'Error al generar calculos', data: $calculos);
-                    }
-
-                    $r_alta_nom_concepto_imss = (new nom_concepto_imss($this->link))->alta_registro(
-                        registro: $registro_concepto_imss);
-                    if (errores::$error) {
-                        return $this->error->error(mensaje: 'Error al generar insertar concepto',
-                            data: $r_alta_nom_concepto_imss);
-                    }
-                }
-            }
+        $r_conceptos = $this->inserta_conceptos(conceptos: $conceptos,cuotas: $calcula_cuota_obrero_patronal->cuotas,
+            nom_nomina_id: $r_alta_bd->registro_id);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error insertar conceptos', data: $r_conceptos);
         }
 
         return $r_alta_bd;
@@ -189,6 +176,32 @@ class nom_nomina extends modelo
         $registro_concepto_imss['codigo_bis'] = $registro_concepto_imss['codigo'];
 
         return $registro_concepto_imss;
+    }
+
+    public function inserta_conceptos(array $conceptos, stdClass $cuotas, int $nom_nomina_id){
+        $r_conceptos = array();
+        foreach($conceptos as $concepto){
+            foreach ($cuotas as $campo => $cuota){
+                if($concepto['nom_tipo_concepto_imss_alias'] === $campo){
+                    $registro_concepto_imss = $this->maqueta_nom_comcepto(nom_nomina_id: $nom_nomina_id,
+                        concepto: $concepto,monto: $cuota);
+                    if (errores::$error) {
+                        return $this->error->error(mensaje: 'Error al maquetar registro',
+                            data: $registro_concepto_imss);
+                    }
+
+                    $r_alta_nom_concepto_imss = (new nom_concepto_imss($this->link))->alta_registro(
+                        registro: $registro_concepto_imss);
+                    if (errores::$error) {
+                        return $this->error->error(mensaje: 'Error al generar insertar concepto',
+                            data: $r_alta_nom_concepto_imss);
+                    }
+                    $r_conceptos[] = $r_alta_nom_concepto_imss;
+                }
+            }
+        }
+
+        return $r_conceptos;
     }
 
     /**

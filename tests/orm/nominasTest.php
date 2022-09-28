@@ -74,6 +74,12 @@ class nominasTest extends test {
         $nominas = new nom_par_percepcion($this->link);
         //$nominas = new liberator($nominas);
 
+        $del = (new base_test())->del_nom_concepto_imss($this->link);
+        if(errores::$error){
+            $error = (new errores())->error('Error al eliminar', $del);
+            print_r($error);
+            exit;
+        }
 
         $del = (new base_test())->del_cat_sat_tipo_nomina($this->link);
         if(errores::$error){

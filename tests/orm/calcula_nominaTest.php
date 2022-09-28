@@ -84,6 +84,13 @@ class calcula_nominaTest extends test {
             exit;
         }
 
+        $del = (new base_test())->del_nom_concepto_imss($this->link);
+        if(errores::$error){
+            $error = (new errores())->error('Error al eliminar', $del);
+            print_r($error);
+            exit;
+        }
+
         $del = (new base_test())->del_nom_nomina($this->link);
         if(errores::$error){
             $error = (new errores())->error('Error al eliminar', $del);
@@ -170,6 +177,12 @@ class calcula_nominaTest extends test {
 
         $link = $this->link;
 
+        $del = (new base_test())->del_nom_concepto_imss($this->link);
+        if(errores::$error){
+            $error = (new errores())->error('Error al eliminar', $del);
+            print_r($error);
+            exit;
+        }
 
         $del = (new base_test())->del_cat_sat_tipo_nomina($link);
         if(errores::$error){

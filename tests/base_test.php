@@ -514,6 +514,15 @@ class base_test{
         return $del;
     }
 
+    public function del_nom_concepto_imss(PDO $link): array
+    {
+        $del = $this->del($link, 'models\\nom_concepto_imss');
+        if(errores::$error){
+            return (new errores())->error('Error al eliminar', $del);
+        }
+        return $del;
+    }
+
     public function del_nom_conf_empleado(PDO $link): array
     {
         $del = $this->del($link, 'models\\nom_conf_empleado');

@@ -42,6 +42,13 @@ class nom_nominaTest extends test {
         $_GET['session_id'] = '1';
         $nomina = new nom_nomina($this->link);
 
+        $del = (new base_test())->del_nom_concepto_imss($this->link);
+        if(errores::$error){
+            $error = (new errores())->error('Error al eliminar', $del);
+            print_r($error);
+            exit;
+        }
+
         $del = (new base_test())->del_org_departamento(link: $this->link);
         if(errores::$error){
             $error = (new errores())->error('Error al eliminar', $del);
@@ -133,6 +140,13 @@ class nom_nominaTest extends test {
         $_SESSION['usuario_id'] = 2;
         $_GET['session_id'] = '1';
         $nomina = new nom_nomina($this->link);
+
+        $del = (new base_test())->del_nom_concepto_imss($this->link);
+        if(errores::$error){
+            $error = (new errores())->error('Error al eliminar', $del);
+            print_r($error);
+            exit;
+        }
 
         $del = (new base_test())->del_cat_sat_tipo_nomina($this->link);
         if(errores::$error){
@@ -445,6 +459,12 @@ class nom_nominaTest extends test {
         $nomina = new nom_nomina($this->link);
         $nomina = new liberator($nomina);
 
+        $del = (new base_test())->del_nom_concepto_imss($this->link);
+        if(errores::$error){
+            $error = (new errores())->error('Error al eliminar', $del);
+            print_r($error);
+            exit;
+        }
 
         $del = (new base_test())->del_org_departamento($this->link);
         if(errores::$error){
@@ -694,6 +714,12 @@ class nom_nominaTest extends test {
         $nomina = new nom_nomina($this->link);
         $nomina = new liberator($nomina);
 
+        $del = (new base_test())->del_nom_concepto_imss($this->link);
+        if(errores::$error){
+            $error = (new errores())->error('Error al eliminar', $del);
+            print_r($error);
+            exit;
+        }
 
         $del = (new base_test())->del_cat_sat_tipo_nomina($this->link);
         if(errores::$error){

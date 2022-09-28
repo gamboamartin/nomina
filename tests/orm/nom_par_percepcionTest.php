@@ -44,6 +44,13 @@ class nom_par_percepcionTest extends test {
         $_GET['session_id'] = '1';
         $percepcion = new nom_par_percepcion($this->link);
 
+        $del = (new base_test())->del_nom_concepto_imss($this->link);
+        if(errores::$error){
+            $error = (new errores())->error('Error al eliminar', $del);
+            print_r($error);
+            exit;
+        }
+
         $del = (new base_test())->del_cat_sat_tipo_nomina($this->link);
         if(errores::$error){
             $error = (new errores())->error(mensaje: 'Error al eliminar', data: $del);
