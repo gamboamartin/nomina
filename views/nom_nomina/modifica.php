@@ -202,19 +202,16 @@
 
                     <table class="table table-striped footable-sort" data-sorting="true">
                         <th>Concepto</th>
-                        <th>Prestaciones</th>
                         <th>Monto</th>
 
                         <tbody>
                         <?php foreach ($controlador->cuotas_obrero_patronales->registros as $cuota_obrero_patronal){?>
                             <tr>
-                                <td><?php echo $cuota_obrero_patronal['concepto']; ?></td>
-                                <td><?php echo $cuota_obrero_patronal['prestaciones']; ?></td>
-                                <td><?php echo $cuota_obrero_patronal['monto']; ?></td>
+                                <td><?php echo $cuota_obrero_patronal['nom_tipo_concepto_imss_descripcion']; ?></td>
+                                <td><?php echo $cuota_obrero_patronal['nom_concepto_imss_monto']; ?></td>
                             </tr>
                         <?php } ?>
                             <tr>
-                                <td></td>
                                 <td style="text-align: right">Total:</td>
                                 <td><?php echo $controlador->cuota_total; ?></td>
                             </tr>
