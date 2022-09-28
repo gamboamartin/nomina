@@ -617,8 +617,27 @@ class controlador_nom_nomina extends base_nom
                 return $this->errores->error(mensaje: 'Error al maquetar row',data:  $row);
             }
             $registros[$indice] = $row;
+
+            $row = $this->calcula_cuota_obrero_patronal(row: $row);
+            if(errores::$error){
+                return $this->errores->error(mensaje: 'Error al maquetar row',data:  $row);
+            }
+            $registros[$indice] = $row;
+
         }
         return $registros;
+    }
+
+    public function calcula_cuota_obrero_patronal(stdClass $row){
+        $campos['cuotas'] = 'nom_concepto_imss.monto';
+        $filtro_sum['nom_nomina.id'] = $row->nom_nomina_id;
+        $total_cuota = (new nom_concepto_imss($this->link))->suma(campos: $campos,filtro: $filtro_sum);
+        if (errores::$error) {
+            return $this->errores->error(mensaje: 'Error al obtener suma', data: $total_cuota);
+        }
+        $row->total_cuota_patronal = $total_cuota['cuotas'];
+
+        return $row;
     }
 
     public function modifica(bool $header, bool $ws = false, string $breadcrumbs = '', bool $aplica_form = true,

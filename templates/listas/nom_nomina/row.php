@@ -9,6 +9,7 @@
     <td><?php echo $row->nom_nomina_fecha_inicial_pago; ?></td>
     <td><?php echo $row->nom_nomina_fecha_final_pago; ?></td>
     <td><?php echo $row->org_empresa_rfc; ?></td>
+    <td><?php echo $row->total_cuota_patronal; ?></td>
 
     <td><?php include 'templates/botons/nom_nomina/link_genera_xml.php';?></td>
 
