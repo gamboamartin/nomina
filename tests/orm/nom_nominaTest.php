@@ -390,6 +390,29 @@ class nom_nominaTest extends test {
 
     }
 
+    public function test_genera_registros_alta_bd(): void
+    {
+        errores::$error = false;
+
+        $_GET['seccion'] = 'cat_sat_tipo_persona';
+        $_GET['accion'] = 'lista';
+        $_SESSION['grupo_id'] = 1;
+        $_SESSION['usuario_id'] = 2;
+        $_GET['session_id'] = '1';
+        $nomina = new nom_nomina($this->link);
+        $nomina->registro['im_registro_patronal_id'] = 1;
+        $nomina->registro['em_empleado_id'] = 1;
+        $nomina->registro['nom_conf_empleado_id'] = 1;
+        $nomina = new liberator($nomina);
+
+
+        $resultado = $nomina->genera_registros_alta_bd();
+        $this->assertIsArray($resultado);
+        $this->assertNotTrue(errores::$error);
+        errores::$error = false;
+
+    }
+
     public function test_genera_valor_campo(): void
     {
         errores::$error = false;
