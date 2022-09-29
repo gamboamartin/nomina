@@ -4,11 +4,6 @@ use base\orm\modelo_base;
 use gamboamartin\empleado\models\em_cuenta_bancaria;
 use gamboamartin\empleado\models\em_empleado;
 use gamboamartin\errores\errores;
-use gamboamartin\facturacion\models\fc_csd;
-use gamboamartin\organigrama\models\org_departamento;
-use gamboamartin\organigrama\models\org_empresa;
-use gamboamartin\organigrama\models\org_puesto;
-use gamboamartin\organigrama\models\org_sucursal;
 use models\im_registro_patronal;
 use models\nom_conf_empleado;
 use models\nom_conf_nomina;
@@ -48,7 +43,7 @@ class base_test{
                                      float $salario_diario_integrado = 250): array|\stdClass
     {
 
-        $alta = $this->alta_org_puesto($link);
+        $alta = (new \gamboamartin\organigrama\tests\base_test())->alta_org_puesto($link);
         if(errores::$error){
             return (new errores())->error('Error al dar de alta', $alta);
 
@@ -88,26 +83,7 @@ class base_test{
         return $alta;
     }
 
-    public function alta_fc_csd(PDO $link): array|\stdClass
-    {
-        $registro = array();
-        $registro['id'] = 1;
-        $registro['codigo'] = 1;
-        $registro['descripcion'] = 1;
-        $registro['serie'] = 1;
-        $registro['org_sucursal_id'] = 1;
-        $registro['descripcion_select'] = 1;
-        $registro['alias'] = 1;
-        $registro['codigo_bis'] = 1;
 
-
-        $alta = (new fc_csd($link))->alta_registro($registro);
-        if(errores::$error){
-            return (new errores())->error(mensaje: 'Error al insertar', data: $alta);
-
-        }
-        return $alta;
-    }
     
     public function alta_nom_conf_empleado(PDO $link): array|\stdClass
     {
@@ -141,7 +117,7 @@ class base_test{
     public function alta_im_registro_patronal(PDO $link): array|\stdClass
     {
 
-        $alta = $this->alta_fc_csd($link);
+        $alta = (new \gamboamartin\facturacion\tests\base_test())->alta_fc_csd($link);
         if(errores::$error){
             return (new errores())->error('Error al dar de alta', $alta);
 
@@ -192,7 +168,7 @@ class base_test{
     public function alta_nom_nomina(PDO $link, float $salario_diario = 250, float $salario_diario_integrado = 250): array|stdClass
     {
 
-        $alta = $this->alta_org_sucursal(link: $link);
+        $alta = (new \gamboamartin\organigrama\tests\base_test())->alta_org_sucursal(link: $link);
         if(errores::$error){
             return (new errores())->error('Error al dar de alta', $alta);
 
@@ -287,100 +263,6 @@ class base_test{
         return $alta;
     }
 
-    public function alta_org_departamento(PDO $link): array|\stdClass
-    {
-
-
-        $registro = array();
-        $registro['id'] = 1;
-        $registro['codigo'] = 1;
-        $registro['descripcion'] = 1;
-        $registro['org_clasificacion_dep_id'] = 1;
-
-
-
-        $alta = (new org_departamento($link))->alta_registro($registro);
-        if(errores::$error){
-            return (new errores())->error(mensaje: 'Error al insertar', data: $alta);
-        }
-        return $alta;
-    }
-
-    public function alta_org_empresa(PDO $link): array|\stdClass
-    {
-        $registro = array();
-        $registro['id'] = 1;
-        $registro['codigo'] = 1;
-        $registro['descripcion'] = 1;
-        $registro['razon_social'] = 1;
-        $registro['rfc'] = 1;
-        $registro['nombre_comercial'] = 1;
-        $registro['org_tipo_empresa_id'] = 1;
-
-        $alta = (new org_empresa($link))->alta_registro($registro);
-        if(errores::$error){
-            return (new errores())->error(mensaje: 'Error al insertar empresa', data: $alta);
-        }
-        return $alta;
-    }
-
-    public function alta_org_puesto(PDO $link): array|\stdClass
-    {
-
-        $alta = $this->alta_org_departamento($link);
-        if(errores::$error){
-            return (new errores())->error('Error al dar de alta', $alta);
-
-        }
-
-        $registro = array();
-        $registro['id'] = 1;
-        $registro['codigo'] = 1;
-        $registro['descripcion'] = 1;
-        $registro['org_tipo_puesto_id'] = 1;
-        $registro['org_departamento_id'] = 1;
-
-
-
-        $alta = (new org_puesto($link))->alta_registro($registro);
-        if(errores::$error){
-            return (new errores())->error(mensaje: 'Error al insertar', data: $alta);
-        }
-        return $alta;
-    }
-
-    public function alta_org_sucursal(PDO $link): array|\stdClass
-    {
-
-        $alta = $this->alta_org_empresa($link);
-        if(errores::$error){
-            return (new errores())->error('Error al dar de alta', $alta);
-
-        }
-
-        $del = $this->del_org_sucursal($link);
-        if(errores::$error){
-            return (new errores())->error('Error al eliminar', $del);
-
-        }
-
-
-        $registro = array();
-        $registro['id'] = 1;
-        $registro['codigo'] = 1;
-        $registro['descripcion'] = 1;
-        $registro['org_empresa_id'] = 1;
-        $registro['codigo_bis'] = 1;
-        $registro['org_tipo_sucursal_id'] = 1;
-
-
-        $alta = (new org_sucursal($link))->alta_registro($registro);
-        if(errores::$error){
-            return (new errores())->error(mensaje: 'Error al insertar sucursal', data: $alta);
-
-        }
-        return $alta;
-    }
 
     public function del(PDO $link, string $name_model): array
     {
@@ -454,48 +336,7 @@ class base_test{
         return $del;
     }
 
-    public function del_fc_csd(PDO $link): array
-    {
-        $del = (new base_test())->del_im_registro_patronal($link);
-        if(errores::$error){
-            return (new errores())->error('Error al eliminar', $del);
 
-        }
-
-        $del = (new base_test())->del_fc_factura($link);
-        if(errores::$error){
-            return (new errores())->error('Error al eliminar', $del);
-
-        }
-
-        $del = $this->del($link, 'gamboamartin\\facturacion\\models\\fc_csd');
-        if(errores::$error){
-            return (new errores())->error('Error al eliminar', $del);
-        }
-        return $del;
-    }
-
-    public function del_fc_factura(PDO $link): array
-    {
-        $del = $this->del_fc_partida($link);
-        if(errores::$error){
-            return (new errores())->error('Error al eliminar', $del);
-        }
-        $del = $this->del($link, 'gamboamartin\\facturacion\\models\\fc_factura');
-        if(errores::$error){
-            return (new errores())->error('Error al eliminar', $del);
-        }
-        return $del;
-    }
-
-    public function del_fc_partida(PDO $link): array
-    {
-        $del = $this->del($link, 'gamboamartin\\facturacion\\models\\fc_partida');
-        if(errores::$error){
-            return (new errores())->error('Error al eliminar', $del);
-        }
-        return $del;
-    }
 
     public function del_im_registro_patronal(PDO $link): array
     {
@@ -641,96 +482,5 @@ class base_test{
         return $del;
     }
 
-    public function del_org_departamento(PDO $link): array
-    {
-        $del = (new base_test())->del_org_puesto($link);
-        if(errores::$error){
-            return (new errores())->error('Error al eliminar', $del);
-
-        }
-
-        $del = $this->del($link, 'gamboamartin\\organigrama\\models\\org_departamento');
-        if(errores::$error){
-            return (new errores())->error('Error al eliminar', $del);
-        }
-        return $del;
-    }
-
-    public function del_org_empresa(PDO $link): array
-    {
-
-        $del = (new base_test())->del_org_departamento($link);
-        if(errores::$error){
-            $error = (new errores())->error('Error al eliminar', $del);
-            print_r($error);
-            exit;
-        }
-
-        $del = (new base_test())->del_org_porcentaje_act_economica($link);
-        if(errores::$error){
-            $error = (new errores())->error('Error al eliminar', $del);
-            print_r($error);
-            exit;
-        }
-
-        $del = (new base_test())->del_org_sucursal($link);
-        if(errores::$error){
-            $error = (new errores())->error('Error al eliminar', $del);
-            print_r($error);
-            exit;
-        }
-
-        $del = $this->del($link, 'gamboamartin\\organigrama\\models\\org_empresa');
-        if(errores::$error){
-            return (new errores())->error('Error al eliminar', $del);
-        }
-        return $del;
-    }
-
-    public function del_org_porcentaje_act_economica(PDO $link): array
-    {
-
-
-
-        $del = $this->del($link, 'gamboamartin\\organigrama\\models\\org_porcentaje_act_economica');
-        if(errores::$error){
-            return (new errores())->error('Error al eliminar', $del);
-        }
-        return $del;
-    }
-
-    public function del_org_puesto(PDO $link): array
-    {
-
-        $del = (new base_test())->del_em_empleado($link);
-        if(errores::$error){
-            $error = (new errores())->error('Error al eliminar', $del);
-            print_r($error);
-            exit;
-        }
-
-        $del = $this->del($link, 'gamboamartin\\organigrama\\models\\org_puesto');
-        if(errores::$error){
-            return (new errores())->error('Error al eliminar', $del);
-        }
-        return $del;
-    }
-
-    public function del_org_sucursal(PDO $link): array
-    {
-
-        $del = (new base_test())->del_fc_csd($link);
-        if(errores::$error){
-            $error = (new errores())->error('Error al eliminar', $del);
-            print_r($error);
-            exit;
-        }
-
-        $del = $this->del($link, 'gamboamartin\\organigrama\\models\\org_sucursal');
-        if(errores::$error){
-            return (new errores())->error('Error al eliminar', $del);
-        }
-        return $del;
-    }
 
 }

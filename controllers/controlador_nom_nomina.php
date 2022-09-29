@@ -243,8 +243,27 @@ class controlador_nom_nomina extends base_nom
         return $data;
     }
 
-    private function comprobante(stdClass $fc_factura): array|stdClass
+    /**
+     * Maqueta el objeto de un comprobante para cfdi
+     * @param stdClass $fc_factura Factura
+     * @return array|stdClass
+     * @version 0.394.21
+     */
+    PUBLIC function comprobante(stdClass $fc_factura): array|stdClass
     {
+
+        $keys = array('dp_cp_descripcion','fc_factura_folio','fc_factura_id');
+        $valida = $this->validacion->valida_existencia_keys(keys:$keys ,registro:  $fc_factura);
+        if(errores::$error){
+            return $this->errores->error(mensaje: 'Error al validar fc_factura', data: $valida);
+        }
+
+        $keys = array('fc_factura_id');
+        $valida = $this->validacion->valida_ids(keys:$keys ,registro:  $fc_factura);
+        if(errores::$error){
+            return $this->errores->error(mensaje: 'Error al validar fc_factura', data: $valida);
+        }
+
         $comprobante = new stdClass();
         $comprobante->lugar_expedicion = $fc_factura->dp_cp_descripcion;
         $comprobante->folio = $fc_factura->fc_factura_folio;
@@ -408,7 +427,7 @@ class controlador_nom_nomina extends base_nom
             return $this->retorno_error(mensaje: 'Error al obtener percepciones', data: $percepciones, header: $header, ws: $ws);
         }
 
-        
+
 
         $comprobante = $this->comprobante(fc_factura: $fc_factura);
         if(errores::$error){
