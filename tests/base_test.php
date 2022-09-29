@@ -432,6 +432,11 @@ class base_test{
             return (new errores())->error('Error al eliminar', $del);
         }
 
+        $del = $this->del_nom_concepto_imss($link);
+        if(errores::$error){
+            return (new errores())->error('Error al eliminar', $del);
+        }
+
 
 
         $del = $this->del($link, 'models\\nom_nomina');

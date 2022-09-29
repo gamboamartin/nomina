@@ -37,10 +37,7 @@ class controlador_nom_nominaTest extends test {
         $_GET['session_id'] = '1';
         $controler = new controlador_nom_nomina(link: $this->link,paths_conf: $this->paths_conf);
 
-        $fc_factura = new stdClass();
-        $fc_factura->dp_cp_descripcion = 'a';
-        $fc_factura->fc_factura_folio = 'a';
-        $fc_factura->fc_factura_id = '1';
+
 
         $del = (new base_test())->del_em_empleado($this->link);
         if(errores::$error){
@@ -70,6 +67,20 @@ class controlador_nom_nominaTest extends test {
             exit;
         }
 
+        $del = (new base_test())->del_nom_conf_nomina($this->link);
+        if(errores::$error){
+            $error = (new errores())->error('Error al eliminar', $del);
+            print_r($error);
+            exit;
+        }
+
+        $del = (new \gamboamartin\cat_sat\tests\base_test())->del_cat_sat_tipo_nomina($this->link);
+        if(errores::$error){
+            $error = (new errores())->error('Error al eliminar', $del);
+            print_r($error);
+            exit;
+        }
+
         $alta = (new base_test())->alta_nom_nomina($this->link);
         if(errores::$error){
             $error = (new errores())->error('Error al dar de alta', $alta);
@@ -77,59 +88,20 @@ class controlador_nom_nominaTest extends test {
             exit;
         }
 
+
+        $fc_factura = new stdClass();
+        $fc_factura->dp_cp_descripcion = 'a';
+        $fc_factura->fc_factura_folio = 'a';
+        $fc_factura->fc_factura_id = $alta->registro['fc_factura_id'];
+
         $resultado = $controler->comprobante($fc_factura);
-        print_r($resultado);exit;
-        $this->assertIsArray($resultado);
-        $this->assertTrue(errores::$error);
-        $this->assertStringContainsStringIgnoringCase('Error al validar fecha', $resultado['mensaje']);
 
-        errores::$error = false;
-
-        $_GET['seccion'] = 'cat_sat_tipo_persona';
-        $_GET['accion'] = 'lista';
-        $_SESSION['grupo_id'] = 1;
-        $_GET['session_id'] = '1';
-
-
-        $fecha = '2022-08-15';
-
-
-        $resultado = $calculo->dias_quincena($fecha);
-        $this->assertIsFloat($resultado);
+        $this->assertIsObject($resultado);
         $this->assertNotTrue(errores::$error);
-        $this->assertEquals(15.5,$resultado);
-
-        errores::$error = false;
-
-        $_GET['seccion'] = 'cat_sat_tipo_persona';
-        $_GET['accion'] = 'lista';
-        $_SESSION['grupo_id'] = 1;
-        $_GET['session_id'] = '1';
+        $this->assertEquals(250, $resultado->sub_total);
 
 
-        $fecha = '2022-02-15';
 
-
-        $resultado = $calculo->dias_quincena($fecha);
-        $this->assertIsFloat($resultado);
-        $this->assertNotTrue(errores::$error);
-        $this->assertEquals(14,$resultado);
-
-        errores::$error = false;
-
-        $_GET['seccion'] = 'cat_sat_tipo_persona';
-        $_GET['accion'] = 'lista';
-        $_SESSION['grupo_id'] = 1;
-        $_GET['session_id'] = '1';
-
-
-        $fecha = '2022-06-15';
-
-
-        $resultado = $calculo->dias_quincena($fecha);
-        $this->assertIsFloat($resultado);
-        $this->assertNotTrue(errores::$error);
-        $this->assertEquals(15,$resultado);
 
         errores::$error = false;
     }

@@ -59,9 +59,29 @@ class nom_par_otro_pagoTest extends test {
             exit;
         }
 
+        $del = (new base_test())->del_em_empleado($this->link);
+        if(errores::$error){
+            $error = (new errores())->error(mensaje: 'Error al eliminar', data: $del);
+            print_r($error);
+            exit;
+        }
+
+        $del = (new base_test())->del_im_registro_patronal($this->link);
+        if(errores::$error){
+            $error = (new errores())->error(mensaje: 'Error al eliminar', data: $del);
+            print_r($error);
+            exit;
+        }
+
+        $del = (new \gamboamartin\facturacion\tests\base_test())->del_fc_csd($this->link);
+        if(errores::$error){
+            $error = (new errores())->error(mensaje: 'Error al eliminar', data: $del);
+            print_r($error);
+            exit;
+        }
 
 
-        $del = (new base_test())->del_org_empresa($this->link);
+        $del = (new \gamboamartin\organigrama\tests\base_test())->del_org_empresa($this->link);
         if(errores::$error){
             $error = (new errores())->error(mensaje: 'Error al eliminar', data: $del);
             print_r($error);

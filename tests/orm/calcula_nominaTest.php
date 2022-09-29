@@ -121,21 +121,35 @@ class calcula_nominaTest extends test {
 
 
 
-        $del = (new base_test())->del_fc_factura($this->link);
+        $del = (new \gamboamartin\facturacion\tests\base_test())->del_fc_factura($this->link);
         if(errores::$error){
             $error = (new errores())->error('Error al eliminar', $del);
             print_r($error);
             exit;
         }
 
-        $del = (new base_test())->del_org_puesto($this->link);
+        $del = (new base_test())->del_im_registro_patronal($this->link);
         if(errores::$error){
             $error = (new errores())->error('Error al eliminar', $del);
             print_r($error);
             exit;
         }
 
-        $del = (new base_test())->del_org_empresa($this->link);
+        $del = (new \gamboamartin\organigrama\tests\base_test())->del_org_puesto($this->link);
+        if(errores::$error){
+            $error = (new errores())->error('Error al eliminar', $del);
+            print_r($error);
+            exit;
+        }
+
+        $del = (new \gamboamartin\facturacion\tests\base_test())->del_fc_csd($this->link);
+        if(errores::$error){
+            $error = (new errores())->error('Error al eliminar', $del);
+            print_r($error);
+            exit;
+        }
+
+        $del = (new \gamboamartin\organigrama\tests\base_test())->del_org_empresa($this->link);
         if(errores::$error){
             $error = (new errores())->error('Error al eliminar', $del);
             print_r($error);
@@ -198,7 +212,7 @@ class calcula_nominaTest extends test {
             exit;
         }
 
-        $del = (new base_test())->del_fc_factura($link);
+        $del = (new \gamboamartin\facturacion\tests\base_test())->del_fc_factura($link);
         if(errores::$error){
             $error = (new errores())->error('Error al eliminar', $del);
             print_r($error);
@@ -220,7 +234,21 @@ class calcula_nominaTest extends test {
             exit;
         }
 
-        $del = (new base_test())->del_org_empresa($link);
+        $del = (new base_test())->del_im_registro_patronal($link);
+        if(errores::$error){
+            $error = (new errores())->error('Error al eliminar', $del);
+            print_r($error);
+            exit;
+        }
+
+        $del = (new \gamboamartin\facturacion\tests\base_test())->del_fc_csd($link);
+        if(errores::$error){
+            $error = (new errores())->error('Error al eliminar', $del);
+            print_r($error);
+            exit;
+        }
+
+        $del = (new \gamboamartin\organigrama\tests\base_test())->del_org_empresa($link);
         if(errores::$error){
             $error = (new errores())->error('Error al eliminar', $del);
             print_r($error);
