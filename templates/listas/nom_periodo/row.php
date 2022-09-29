@@ -9,6 +9,7 @@
     <td><?php echo $row->nom_periodo_fecha_pago; ?></td>
     <td><?php echo $row->total_cuota_patronal; ?></td>
 
+    <td><?php include 'templates/botons/nom_periodo/link_sube_archivo.php';?></td>
     <td><?php include 'templates/botons/nom_periodo/link_periodo_nominas.php';?></td>
 
     <!-- End dynamic generated -->
