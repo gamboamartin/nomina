@@ -89,6 +89,35 @@ class xml_nom{
         return $comprobante;
     }
 
+    private function data_deduccion(stdClass $nomina, array $deduccion): stdClass
+    {
+
+        $data_deduccion = new stdClass();
+        /*
+        $data_deduccion->tipo_percepcion = $deduccion['cat_sat_tipo_percepcion_nom_codigo'];
+        $data_deduccion->clave = $deduccion['nom_percepcion_codigo'];
+        $data_deduccion->concepto = $deduccion['nom_par_percepcion_descripcion'];
+        $data_deduccion->importe_gravado = $deduccion['nom_par_percepcion_importe_gravado'];
+        $data_deduccion->importe_exento = $deduccion['nom_par_percepcion_importe_exento'];
+        */
+        $nomina->deducciones->deduccion[] = $data_deduccion;
+
+
+        return $nomina;
+
+    }
+
+    private function data_deducciones(stdClass $nomina, array $deducciones): array|stdClass
+    {
+        foreach ($deducciones as $deduccion){
+            $nomina = $this->data_deduccion(nomina: $nomina, deduccion: $deduccion);
+            if (errores::$error) {
+                return $this->error->error(mensaje: 'Error al asignar deduccion', data: $nomina);
+            }
+        }
+        return $nomina;
+    }
+
     /**
      * Genera los datos de emision de nomina
      * @param stdClass $fc_factura Factura
@@ -140,7 +169,54 @@ class xml_nom{
 
         return $receptor;
     }
-    
+
+    public function deducciones(PDO $link, stdClass $nomina, int $nom_nomina_id): array|stdClass
+    {
+
+        $deducciones = (new nom_nomina($link))->deducciones(nom_nomina_id: $nom_nomina_id);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al obtener percepciones', data: $deducciones);
+        }
+
+
+        $nomina = $this->deducciones_header(link:$link, nomina: $nomina,nom_nomina_id:  $nom_nomina_id);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al obtener percepciones', data: $nomina);
+        }
+
+
+        $nomina = $this->data_deducciones(nomina: $nomina, deducciones: $deducciones);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al asignar deducciones', data: $nomina);
+        }
+        return $nomina;
+    }
+
+    private function deducciones_header(PDO $link, stdClass $nomina, int $nom_nomina_id): array|stdClass
+    {
+
+        $nomina->deducciones = new stdClass();
+        /**
+        $nomina->deducciones->total_sueldos = (new nom_nomina($link))->total_sueldos_monto(nom_nomina_id: $nom_nomina_id);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al obtener sueldos', data: $nomina->percepciones->total_sueldos);
+        }
+
+        $nomina->deducciones->total_gravado = (new nom_nomina($link))->total_percepciones_gravado(nom_nomina_id: $nom_nomina_id);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al obtener sueldos', data: $nomina->percepciones->total_gravado);
+        }
+
+        $nomina->deducciones->total_exento = (new nom_nomina($link))->total_percepciones_exento(nom_nomina_id: $nom_nomina_id);
+        if (errores::$error) {
+            return $this->error->error(
+                mensaje: 'Error al obtener sueldos', data: $nomina->percepciones->total_exento);
+        }
+         * */
+        return $nomina;
+    }
+
+
     private function nomina_base(PDO $link, stdClass $nom_nomina): array|stdClass
     {
         $nomina = new stdClass();

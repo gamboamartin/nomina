@@ -419,6 +419,12 @@ class controlador_nom_nomina extends base_nom
                 mensaje: 'Error al asignar percepciones', data: $nomina, header: $header, ws: $ws);
         }
 
+        $nomina = (new xml_nom())->deducciones(link: $this->link,nomina:  $nomina,nom_nomina_id:  $this->registro_id);
+        if (errores::$error) {
+            return $this->retorno_error(
+                mensaje: 'Error al asignar percepciones', data: $nomina, header: $header, ws: $ws);
+        }
+
 
 
 
