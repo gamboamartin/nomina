@@ -400,6 +400,16 @@ class controlador_nom_nomina extends base_nom
         return $r_elimina;
     }
 
+    private function emisor(stdClass $fc_factura): stdClass
+    {
+        $emisor = new stdClass();
+        $emisor->rfc = $fc_factura->org_empresa_rfc;
+        $emisor->nombre = $fc_factura->org_empresa_razon_social;
+        $emisor->regimen_fiscal = $fc_factura->cat_sat_regimen_fiscal_codigo;
+
+        return $emisor;
+    }
+
     public function genera_xml(bool $header, bool $ws = false): array|stdClass
     {
         $nom_nomina = $this->modelo->registro(registro_id: $this->registro_id, retorno_obj: true);
@@ -427,6 +437,10 @@ class controlador_nom_nomina extends base_nom
             return $this->retorno_error(mensaje: 'Error al obtener percepciones', data: $percepciones, header: $header, ws: $ws);
         }
 
+        $deducciones = (new nom_nomina($this->link))->deducciones(nom_nomina_id: $this->registro_id);
+        if(errores::$error){
+            return $this->retorno_error(mensaje: 'Error al obtener deducciones', data: $deducciones, header: $header, ws: $ws);
+        }
 
 
         $comprobante = $this->comprobante(fc_factura: $fc_factura);
@@ -435,16 +449,17 @@ class controlador_nom_nomina extends base_nom
         }
 
 
-        $emisor = new stdClass();
-        $emisor->rfc = $fc_factura->org_empresa_rfc;
-        $emisor->nombre = $fc_factura->org_empresa_razon_social;
-        $emisor->regimen_fiscal = $fc_factura->cat_sat_regimen_fiscal_codigo;
+        $emisor = $this->emisor(fc_factura: $fc_factura);
+        if(errores::$error){
+            return $this->retorno_error(mensaje: 'Error al crear emisor', data: $emisor, header: $header, ws: $ws);
+        }
 
-        $receptor = new stdClass();
-        $receptor->rfc = $fc_factura->com_cliente_rfc;
-        $receptor->nombre = $fc_factura->com_cliente_razon_social;
-        $receptor->domicilio_fiscal_receptor = $com_sucursal->dp_cp_descripcion;
-        $receptor->regimen_fiscal_receptor = $com_sucursal->cat_sat_regimen_fiscal_codigo;
+        $receptor = $this->receptor(com_sucursal: $com_sucursal, fc_factura: $fc_factura);
+        if(errores::$error){
+            return $this->retorno_error(mensaje: 'Error al crear receptor', data: $receptor, header: $header, ws: $ws);
+        }
+
+
 
 
         $nomina = new stdClass();
@@ -535,9 +550,6 @@ class controlador_nom_nomina extends base_nom
             $data_percepcion->importe_exento = $percepcion['nom_par_percepcion_importe_exento'];
             $nomina->percepciones->percepcion[] = $data_percepcion;
         }
-
-
-
 
 
 
@@ -1141,5 +1153,16 @@ class controlador_nom_nomina extends base_nom
             exit;
         }
         return $result;
+    }
+
+    private function receptor(stdClass $com_sucursal, stdClass $fc_factura): stdClass
+    {
+        $receptor = new stdClass();
+        $receptor->rfc = $fc_factura->com_cliente_rfc;
+        $receptor->nombre = $fc_factura->com_cliente_razon_social;
+        $receptor->domicilio_fiscal_receptor = $com_sucursal->dp_cp_descripcion;
+        $receptor->regimen_fiscal_receptor = $com_sucursal->cat_sat_regimen_fiscal_codigo;
+
+        return $receptor;
     }
 }
