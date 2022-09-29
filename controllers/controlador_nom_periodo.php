@@ -24,6 +24,7 @@ use models\com_cliente;
 use models\com_producto;
 use models\com_sucursal;
 use models\em_empleado;
+use models\nom_concepto_imss;
 use models\nom_deduccion;
 use models\nom_nomina;
 use models\nom_percepcion;
@@ -220,10 +221,39 @@ class controlador_nom_periodo extends system {
                 return $this->errores->error(mensaje: 'Error al maquetar row',data:  $row);
             }
             $registros[$indice] = $row;
+
+            $row = $this->calcula_cuota_obrero_patronal(row: $row);
+            if(errores::$error){
+                return $this->errores->error(mensaje: 'Error al maquetar row',data:  $row);
+            }
+            $registros[$indice] = $row;
         }
         return $registros;
     }
 
+    public function calcula_cuota_obrero_patronal(stdClass $row){
+
+        $filtro['nom_periodo.id'] = $row->nom_periodo_id;
+        $nominas = (new nom_nomina($this->link))->filtro_and(filtro: $filtro);
+        if(errores::$error){
+            return $this->errores->error(mensaje: 'Error al obtener nominas del periodo',data:  $nominas);
+        }
+
+        $cuotas = 0;
+        foreach ($nominas->registros as $nomina){
+            $campos['cuotas'] = 'nom_concepto_imss.monto';
+            $filtro_sum['nom_nomina.id'] = $nomina['nom_nomina_id'];
+            $total_cuota = (new nom_concepto_imss($this->link))->suma(campos: $campos,filtro: $filtro_sum);
+            if (errores::$error) {
+                return $this->errores->error(mensaje: 'Error al obtener suma', data: $total_cuota);
+            }
+            $cuotas += (float)$total_cuota['cuotas'];
+        }
+
+        $row->total_cuota_patronal = $cuotas;
+
+        return $row;
+    }
     public function modifica(bool $header, bool $ws = false, string $breadcrumbs = '', bool $aplica_form = true,
                              bool $muestra_btn = true): array|string
     {
