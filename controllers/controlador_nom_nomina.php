@@ -363,21 +363,7 @@ class controlador_nom_nomina extends base_nom
         return $r_elimina;
     }
 
-    /**
-     * Genera los datos de emision de nomina
-     * @param stdClass $fc_factura Factura
-     * @return stdClass
-     *
-     */
-    private function emisor(stdClass $fc_factura): stdClass
-    {
-        $emisor = new stdClass();
-        $emisor->rfc = $fc_factura->org_empresa_rfc;
-        $emisor->nombre = $fc_factura->org_empresa_razon_social;
-        $emisor->regimen_fiscal = $fc_factura->cat_sat_regimen_fiscal_codigo;
 
-        return $emisor;
-    }
 
     public function genera_xml(bool $header, bool $ws = false): array|stdClass
     {
@@ -418,19 +404,17 @@ class controlador_nom_nomina extends base_nom
         }
 
 
-        $emisor = $this->emisor(fc_factura: $fc_factura);
+        $emisor = (new xml_nom())->data_emisor(fc_factura: $fc_factura);
         if(errores::$error){
             return $this->retorno_error(mensaje: 'Error al crear emisor', data: $emisor, header: $header, ws: $ws);
         }
 
-        $receptor = $this->receptor(com_sucursal: $com_sucursal, fc_factura: $fc_factura);
+        $receptor = (new xml_nom())->data_receptor(com_sucursal: $com_sucursal, fc_factura: $fc_factura);
         if(errores::$error){
             return $this->retorno_error(mensaje: 'Error al crear receptor', data: $receptor, header: $header, ws: $ws);
         }
 
-
-
-
+        
         $nomina = new stdClass();
 
         $nomina->tipo_nomina = $nom_nomina->cat_sat_tipo_nomina_codigo;
@@ -1124,14 +1108,5 @@ class controlador_nom_nomina extends base_nom
         return $result;
     }
 
-    private function receptor(stdClass $com_sucursal, stdClass $fc_factura): stdClass
-    {
-        $receptor = new stdClass();
-        $receptor->rfc = $fc_factura->com_cliente_rfc;
-        $receptor->nombre = $fc_factura->com_cliente_razon_social;
-        $receptor->domicilio_fiscal_receptor = $com_sucursal->dp_cp_descripcion;
-        $receptor->regimen_fiscal_receptor = $com_sucursal->cat_sat_regimen_fiscal_codigo;
 
-        return $receptor;
-    }
 }
