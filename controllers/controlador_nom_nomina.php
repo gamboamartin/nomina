@@ -243,44 +243,7 @@ class controlador_nom_nomina extends base_nom
         return $data;
     }
 
-    /**
-     * Maqueta el objeto de un comprobante para cfdi
-     * @param stdClass $fc_factura Factura
-     * @return array|stdClass
-     * @version 0.394.21
-     */
-    PUBLIC function comprobante(stdClass $fc_factura): array|stdClass
-    {
 
-        $keys = array('dp_cp_descripcion','fc_factura_folio','fc_factura_id');
-        $valida = $this->validacion->valida_existencia_keys(keys:$keys ,registro:  $fc_factura);
-        if(errores::$error){
-            return $this->errores->error(mensaje: 'Error al validar fc_factura', data: $valida);
-        }
-
-        $keys = array('fc_factura_id');
-        $valida = $this->validacion->valida_ids(keys:$keys ,registro:  $fc_factura);
-        if(errores::$error){
-            return $this->errores->error(mensaje: 'Error al validar fc_factura', data: $valida);
-        }
-
-        $comprobante = new stdClass();
-        $comprobante->lugar_expedicion = $fc_factura->dp_cp_descripcion;
-        $comprobante->folio = $fc_factura->fc_factura_folio;
-        $comprobante->total = (new fc_factura($this->link))->total(fc_factura_id:$fc_factura->fc_factura_id );
-        if(errores::$error){
-            return $this->errores->error(mensaje: 'Error al obtener total', data: $comprobante->total);
-        }
-        $comprobante->sub_total = (new fc_factura($this->link))->sub_total(fc_factura_id:$fc_factura->fc_factura_id );
-        if(errores::$error){
-            return $this->errores->error(mensaje: 'Error al obtener sub_total', data: $comprobante->sub_total);
-        }
-        $comprobante->descuento = (new fc_factura($this->link))->get_factura_descuento(fc_factura_id:$fc_factura->fc_factura_id );
-        if(errores::$error){
-            return $this->errores->error(mensaje: 'Error al obtener sub_total', data: $comprobante->sub_total);
-        }
-        return $comprobante;
-    }
 
     public function crea_nomina(bool $header, bool $ws = false): array|string
     {
@@ -400,6 +363,12 @@ class controlador_nom_nomina extends base_nom
         return $r_elimina;
     }
 
+    /**
+     * Genera los datos de emision de nomina
+     * @param stdClass $fc_factura Factura
+     * @return stdClass
+     *
+     */
     private function emisor(stdClass $fc_factura): stdClass
     {
         $emisor = new stdClass();
@@ -443,7 +412,7 @@ class controlador_nom_nomina extends base_nom
         }
 
 
-        $comprobante = $this->comprobante(fc_factura: $fc_factura);
+        $comprobante = (new xml_nom())->data_comprobante(fc_factura: $fc_factura, link: $this->link);
         if(errores::$error){
             return $this->retorno_error(mensaje: 'Error al crear comprobante', data: $comprobante, header: $header, ws: $ws);
         }

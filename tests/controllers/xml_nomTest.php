@@ -4,16 +4,15 @@ namespace tests\controllers;
 
 use gamboamartin\errores\errores;
 use gamboamartin\nomina\controllers\controlador_nom_nomina;
-use gamboamartin\test\liberator;
+use gamboamartin\nomina\controllers\xml_nom;
 use gamboamartin\test\test;
 
-use models\calcula_imss;
 
 use stdClass;
 use tests\base_test;
 
 
-class controlador_nom_nominaTest extends test {
+class xml_nomTest extends test {
     public errores $errores;
     private stdClass $paths_conf;
     public function __construct(?string $name = null, array $data = [], $dataName = '')
@@ -26,7 +25,7 @@ class controlador_nom_nominaTest extends test {
         $this->paths_conf->views = '/var/www/html/cat_sat/config/views.php';
     }
 
-    public function test_comprobante(): void
+    public function test_data_comprobante(): void
     {
         errores::$error = false;
 
@@ -35,7 +34,7 @@ class controlador_nom_nominaTest extends test {
         $_SESSION['grupo_id'] = 1;
         $_SESSION['usuario_id'] = 2;
         $_GET['session_id'] = '1';
-        $controler = new controlador_nom_nomina(link: $this->link,paths_conf: $this->paths_conf);
+        $xml_nom = new xml_nom();
 
 
 
@@ -94,7 +93,7 @@ class controlador_nom_nominaTest extends test {
         $fc_factura->fc_factura_folio = 'a';
         $fc_factura->fc_factura_id = $alta->registro['fc_factura_id'];
 
-        $resultado = $controler->comprobante($fc_factura);
+        $resultado = $xml_nom->data_comprobante($fc_factura, $this->link);
 
         $this->assertIsObject($resultado);
         $this->assertNotTrue(errores::$error);
