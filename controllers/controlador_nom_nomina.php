@@ -381,10 +381,7 @@ class controlador_nom_nomina extends base_nom
         }
 
 
-        $percepciones = (new nom_nomina($this->link))->percepciones(nom_nomina_id: $this->registro_id);
-        if(errores::$error){
-            return $this->retorno_error(mensaje: 'Error al obtener percepciones', data: $percepciones, header: $header, ws: $ws);
-        }
+
 
         $deducciones = (new nom_nomina($this->link))->deducciones(nom_nomina_id: $this->registro_id);
         if(errores::$error){
@@ -415,41 +412,13 @@ class controlador_nom_nomina extends base_nom
             return $this->retorno_error(mensaje: 'Error al obtener nomina base',
                 data: $nomina, header: $header, ws: $ws);
         }
-        
 
-
-        $nomina->percepciones = new stdClass();
-        $nomina->percepciones->total_sueldos = (new nom_nomina($this->link))->total_sueldos_monto(
-            nom_nomina_id: $this->registro_id);
-        if (errores::$error) {
-            return $this->retorno_error(mensaje: 'Error al obtener sueldos',
-                data: $nomina->percepciones->total_sueldos, header: $header, ws: $ws);
-        }
-
-        $nomina->percepciones->total_gravado = (new nom_nomina($this->link))->total_percepciones_gravado(
-            nom_nomina_id: $this->registro_id);
+        $nomina = (new xml_nom())->percepciones(link: $this->link,nomina:  $nomina,nom_nomina_id:  $this->registro_id);
         if (errores::$error) {
             return $this->retorno_error(
-                mensaje: 'Error al obtener sueldos', data: $nomina->percepciones->total_gravado, header: $header, ws: $ws);
+                mensaje: 'Error al asignar percepciones', data: $nomina, header: $header, ws: $ws);
         }
 
-        $nomina->percepciones->total_exento = (new nom_nomina($this->link))->total_percepciones_exento(
-            nom_nomina_id: $this->registro_id);
-        if (errores::$error) {
-            return $this->retorno_error(
-                mensaje: 'Error al obtener sueldos', data: $nomina->percepciones->total_exento, header: $header, ws: $ws);
-        }
-
-
-        foreach ($percepciones as $percepcion){
-            $data_percepcion = new stdClass();
-            $data_percepcion->tipo_percepcion = $percepcion['cat_sat_tipo_percepcion_nom_codigo'];
-            $data_percepcion->clave = $percepcion['nom_percepcion_codigo'];
-            $data_percepcion->concepto = $percepcion['nom_par_percepcion_descripcion'];
-            $data_percepcion->importe_gravado = $percepcion['nom_par_percepcion_importe_gravado'];
-            $data_percepcion->importe_exento = $percepcion['nom_par_percepcion_importe_exento'];
-            $nomina->percepciones->percepcion[] = $data_percepcion;
-        }
 
 
 

@@ -105,6 +105,31 @@ class xml_nom{
         return $emisor;
     }
 
+    private function data_percepcion(stdClass $nomina, array $percepcion): stdClass
+    {
+        $data_percepcion = new stdClass();
+        $data_percepcion->tipo_percepcion = $percepcion['cat_sat_tipo_percepcion_nom_codigo'];
+        $data_percepcion->clave = $percepcion['nom_percepcion_codigo'];
+        $data_percepcion->concepto = $percepcion['nom_par_percepcion_descripcion'];
+        $data_percepcion->importe_gravado = $percepcion['nom_par_percepcion_importe_gravado'];
+        $data_percepcion->importe_exento = $percepcion['nom_par_percepcion_importe_exento'];
+        $nomina->percepciones->percepcion[] = $data_percepcion;
+
+        return $nomina;
+
+    }
+
+    private function data_percepciones(stdClass $nomina, array $percepciones): array|stdClass
+    {
+        foreach ($percepciones as $percepcion){
+            $nomina = $this->data_percepcion(nomina: $nomina, percepcion: $percepcion);
+            if (errores::$error) {
+                return $this->error->error(mensaje: 'Error al asignar percepcion', data: $nomina);
+            }
+        }
+        return $nomina;
+    }
+
     private function data_receptor(stdClass $com_sucursal, stdClass $fc_factura): stdClass
     {
         $receptor = new stdClass();
@@ -202,6 +227,50 @@ class xml_nom{
 
         return $nomina;
     }
+
+    public function percepciones(PDO $link, stdClass $nomina, int $nom_nomina_id): array|stdClass
+    {
+
+        $percepciones = (new nom_nomina($link))->percepciones(nom_nomina_id: $nom_nomina_id);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al obtener percepciones', data: $percepciones);
+        }
+
+
+        $nomina = $this->percepciones_header(link:$link, nomina: $nomina,nom_nomina_id:  $nom_nomina_id);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al obtener percepciones', data: $nomina);
+        }
+
+
+        $nomina = $this->data_percepciones(nomina: $nomina, percepciones: $percepciones);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al asignar percepciones', data: $nomina);
+        }
+        return $nomina;
+    }
+
+    private function percepciones_header(PDO $link, stdClass $nomina, int $nom_nomina_id): array|stdClass
+    {
+        $nomina->percepciones = new stdClass();
+        $nomina->percepciones->total_sueldos = (new nom_nomina($link))->total_sueldos_monto(nom_nomina_id: $nom_nomina_id);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al obtener sueldos', data: $nomina->percepciones->total_sueldos);
+        }
+
+        $nomina->percepciones->total_gravado = (new nom_nomina($link))->total_percepciones_gravado(nom_nomina_id: $nom_nomina_id);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al obtener sueldos', data: $nomina->percepciones->total_gravado);
+        }
+
+        $nomina->percepciones->total_exento = (new nom_nomina($link))->total_percepciones_exento(nom_nomina_id: $nom_nomina_id);
+        if (errores::$error) {
+            return $this->error->error(
+                mensaje: 'Error al obtener sueldos', data: $nomina->percepciones->total_exento);
+        }
+        return $nomina;
+    }
+
 
     public function receptor(int $com_sucursal_id, int $fc_factura_id, PDO $link): array|stdClass
     {
