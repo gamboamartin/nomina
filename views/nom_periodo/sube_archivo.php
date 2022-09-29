@@ -6,7 +6,7 @@
         <div class="row">
             <div class="col-lg-12">
                 <div class="widget  widget-box box-container form-main widget-form-cart" id="form">
-                    <form method="post" action="<?php echo $controlador->link_lee_archivo; ?>" class="form-additional">
+                    <form method="post" action="<?php echo $controlador->link_lee_archivo; ?>" class="form-additional" enctype="multipart/form-data">
 
                         <?php include (new views())->ruta_templates."head/title.php"; ?>
                         <?php include (new views())->ruta_templates."head/subtitulo.php"; ?>
