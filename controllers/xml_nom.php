@@ -3,6 +3,7 @@ namespace gamboamartin\nomina\controllers;
 use gamboamartin\errores\errores;
 use gamboamartin\facturacion\models\fc_factura;
 use gamboamartin\validacion\validacion;
+use models\calcula_nomina;
 use models\com_sucursal;
 use models\nom_nomina;
 use PDO;
@@ -115,7 +116,7 @@ class xml_nom{
         return $receptor;
     }
     
-    public function nomina_base(PDO $link, stdClass $nom_nomina): array|stdClass
+    private function nomina_base(PDO $link, stdClass $nom_nomina): array|stdClass
     {
         $nomina = new stdClass();
 
@@ -139,6 +140,65 @@ class xml_nom{
             return $this->error->error(mensaje: 'Error al obtener total deducciones xml',
                 data: $nomina->total_deducciones);
         }
+
+        return $nomina;
+    }
+
+    private function nomina_emisor(stdClass $emisor, stdClass $nom_nomina, stdClass $nomina): stdClass
+    {
+        $nomina->emisor = new stdClass();
+        $nomina->emisor->registro_patronal = $nom_nomina->im_registro_patronal_descripcion;
+        $nomina->emisor->rfc_patron_origen =  $emisor->rfc;
+        return $nomina;
+    }
+
+    public function nomina_header(stdClass $emisor, PDO $link, stdClass $nom_nomina): array|stdClass
+    {
+        $nomina = $this->nomina_base(link: $link, nom_nomina: $nom_nomina);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al obtener nomina base', data: $nomina);
+        }
+
+        $nomina = $this->nomina_emisor(emisor: $emisor,nom_nomina: $nom_nomina, nomina: $nomina);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al obtener nomina emisor', data: $nomina);
+        }
+
+        $nomina = $this->nomina_receptor(nom_nomina: $nom_nomina, nomina: $nomina);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al obtener nomina receptor', data: $nomina);
+        }
+        return $nomina;
+    }
+    
+    private function nomina_receptor(stdClass $nom_nomina, stdClass $nomina): array|stdClass
+    {
+        $nomina->receptor = new stdClass();
+        $nomina->receptor->curp = $nom_nomina->em_empleado_curp;
+        $nomina->receptor->num_seguridad_social = $nom_nomina->em_empleado_nss;
+        $nomina->receptor->fecha_inicio_rel_laboral = $nom_nomina->em_empleado_fecha_inicio_rel_laboral;
+
+        $nomina->receptor->antiguedad = (new calcula_nomina())->antiguedad_empleado(
+            fecha_final_pago: $nom_nomina->nom_nomina_fecha_final_pago,
+            fecha_inicio_rel_laboral:  $nom_nomina->em_empleado_fecha_inicio_rel_laboral);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al obtener antiguedad', data: $nomina->receptor->antiguedad);
+        }
+
+
+        $nomina->receptor->tipo_contrato = $nom_nomina->cat_sat_tipo_contrato_nom_codigo;
+        $nomina->receptor->tipo_jornada = $nom_nomina->cat_sat_tipo_jornada_nom_codigo;
+        $nomina->receptor->tipo_regimen = $nom_nomina->cat_sat_tipo_regimen_nom_codigo;
+        $nomina->receptor->num_empleado = $nom_nomina->em_empleado_codigo;
+        $nomina->receptor->departamento = $nom_nomina->org_departamento_descripcion;
+        $nomina->receptor->puesto = $nom_nomina->org_puesto_descripcion;
+        $nomina->receptor->riesgo_puesto = $nom_nomina->im_clase_riesgo_codigo;
+        $nomina->receptor->periodicidad_pago = $nom_nomina->cat_sat_periodicidad_pago_nom_codigo;
+        $nomina->receptor->cuenta_bancaria = $nom_nomina->em_cuenta_bancaria_clabe;
+        $nomina->receptor->banco = $nom_nomina->bn_banco_codigo;
+        $nomina->receptor->salario_base_cot_apor = $nom_nomina->em_empleado_salario_diario_integrado;
+        $nomina->receptor->salario_diario_integrado = $nom_nomina->em_empleado_salario_diario_integrado;
+        $nomina->receptor->clave_ent_fed = $nom_nomina->dp_estado_codigo;
 
         return $nomina;
     }

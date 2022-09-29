@@ -409,44 +409,13 @@ class controlador_nom_nomina extends base_nom
             return $this->retorno_error(mensaje: 'Error al crear receptor', data: $receptor, header: $header, ws: $ws);
         }
 
-        
-        $nomina = (new xml_nom())->nomina_base(link: $this->link, nom_nomina: $nom_nomina);
+
+        $nomina = (new xml_nom())->nomina_header(emisor: $emisor, link: $this->link,nom_nomina:  $nom_nomina);
         if (errores::$error) {
             return $this->retorno_error(mensaje: 'Error al obtener nomina base',
-                data: $nomina->total_deducciones, header: $header, ws: $ws);
+                data: $nomina, header: $header, ws: $ws);
         }
-
-        $nomina->emisor = new stdClass();
-        $nomina->emisor->registro_patronal = $nom_nomina->im_registro_patronal_descripcion;
-        $nomina->emisor->rfc_patron_origen =  $emisor->rfc;
-
-        $nomina->receptor = new stdClass();
-        $nomina->receptor->curp = $nom_nomina->em_empleado_curp;
-        $nomina->receptor->num_seguridad_social = $nom_nomina->em_empleado_nss;
-        $nomina->receptor->fecha_inicio_rel_laboral = $nom_nomina->em_empleado_fecha_inicio_rel_laboral;
-
-        $nomina->receptor->antiguedad = (new calcula_nomina())->antiguedad_empleado(
-            fecha_final_pago: $nom_nomina->nom_nomina_fecha_final_pago,
-            fecha_inicio_rel_laboral:  $nom_nomina->em_empleado_fecha_inicio_rel_laboral);
-        if (errores::$error) {
-            return $this->retorno_error(mensaje: 'Error al obtener antiguedad',
-                data: $nomina->receptor->antiguedad , header: $header, ws: $ws);
-        }
-
-
-        $nomina->receptor->tipo_contrato = $nom_nomina->cat_sat_tipo_contrato_nom_codigo;
-        $nomina->receptor->tipo_jornada = $nom_nomina->cat_sat_tipo_jornada_nom_codigo;
-        $nomina->receptor->tipo_regimen = $nom_nomina->cat_sat_tipo_regimen_nom_codigo;
-        $nomina->receptor->num_empleado = $nom_nomina->em_empleado_codigo;
-        $nomina->receptor->departamento = $nom_nomina->org_departamento_descripcion;
-        $nomina->receptor->puesto = $nom_nomina->org_puesto_descripcion;
-        $nomina->receptor->riesgo_puesto = $nom_nomina->im_clase_riesgo_codigo;
-        $nomina->receptor->periodicidad_pago = $nom_nomina->cat_sat_periodicidad_pago_nom_codigo;
-        $nomina->receptor->cuenta_bancaria = $nom_nomina->em_cuenta_bancaria_clabe;
-        $nomina->receptor->banco = $nom_nomina->bn_banco_codigo;
-        $nomina->receptor->salario_base_cot_apor = $nom_nomina->em_empleado_salario_diario_integrado;
-        $nomina->receptor->salario_diario_integrado = $nom_nomina->em_empleado_salario_diario_integrado;
-        $nomina->receptor->clave_ent_fed = $nom_nomina->dp_estado_codigo;
+        
 
 
         $nomina->percepciones = new stdClass();
