@@ -36,6 +36,7 @@ class controlador_nom_periodo extends system {
 
     public stdClass $nominas;
     public int $nom_periodo_id = -1;
+    public string $link_lee_archivo = '';
 
     public function __construct(PDO $link, html $html = new \gamboamartin\template_1\html(),
                                 stdClass $paths_conf = new stdClass()){
@@ -45,6 +46,17 @@ class controlador_nom_periodo extends system {
         parent::__construct(html:$html_, link: $link,modelo:  $modelo, obj_link: $obj_link, paths_conf: $paths_conf);
 
         $this->titulo_lista = 'Periodos';
+
+        $link_lee_archivo = $obj_link->link_con_id(accion: 'lee_archivo',
+            registro_id: $this->registro_id, seccion: $this->seccion);
+        if (errores::$error) {
+            $error = $this->errores->error(mensaje: 'Error al generar link', data: $link_lee_archivo);
+            print_r($error);
+            die('Error');
+        }
+
+        $this->link_lee_archivo = $link_lee_archivo;
+
         $keys_row_lista = $this->keys_rows_lista();
         if(errores::$error){
             $error = $this->errores->error(mensaje: 'Error al generar keys de lista',data:  $keys_row_lista);
@@ -297,7 +309,6 @@ class controlador_nom_periodo extends system {
         if(errores::$error){
             return $this->errores->error(mensaje: 'Error al generar template',data:  $r_modifica);
         }
-
 
         return $r_modifica;
     }
