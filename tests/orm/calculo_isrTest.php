@@ -75,6 +75,12 @@ class calculo_isrTest extends test {
 
         $calculo = new calculo_isr();
 
+        $del = (new base_test())->del_nom_concepto_imss($this->link);
+        if(errores::$error){
+            $error = (new errores())->error('Error al eliminar', $del);
+            print_r($error);
+            exit;
+        }
 
         $del = (new base_test())->del_cat_sat_tipo_nomina($this->link);
         if(errores::$error){

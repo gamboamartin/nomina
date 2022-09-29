@@ -7,6 +7,7 @@
     <td><?php echo $row->nom_periodo_fecha_inicial_pago; ?></td>
     <td><?php echo $row->nom_periodo_fecha_final_pago; ?></td>
     <td><?php echo $row->nom_periodo_fecha_pago; ?></td>
+    <td><?php echo $row->total_cuota_patronal; ?></td>
 
     <td><?php include 'templates/botons/nom_periodo/link_periodo_nominas.php';?></td>
 

@@ -24,6 +24,7 @@ use models\calcula_nomina;
 use models\com_sucursal;
 use models\im_movimiento;
 use models\im_registro_patronal;
+use models\nom_concepto_imss;
 use models\nom_nomina;
 use models\nom_par_deduccion;
 use models\nom_par_otro_pago;
@@ -152,7 +153,6 @@ class controlador_nom_nomina extends base_nom
         $this->keys_row_lista = $keys_rows_lista;
 
         $this->cuotas_obrero_patronales = new stdClass();
-        $this->cuotas_obrero_patronales->registros = array();
     }
 
     public function alta(bool $header, bool $ws = false): array|string
@@ -636,8 +636,27 @@ class controlador_nom_nomina extends base_nom
                 return $this->errores->error(mensaje: 'Error al maquetar row',data:  $row);
             }
             $registros[$indice] = $row;
+
+            $row = $this->calcula_cuota_obrero_patronal(row: $row);
+            if(errores::$error){
+                return $this->errores->error(mensaje: 'Error al maquetar row',data:  $row);
+            }
+            $registros[$indice] = $row;
+
         }
         return $registros;
+    }
+
+    public function calcula_cuota_obrero_patronal(stdClass $row){
+        $campos['cuotas'] = 'nom_concepto_imss.monto';
+        $filtro_sum['nom_nomina.id'] = $row->nom_nomina_id;
+        $total_cuota = (new nom_concepto_imss($this->link))->suma(campos: $campos,filtro: $filtro_sum);
+        if (errores::$error) {
+            return $this->errores->error(mensaje: 'Error al obtener suma', data: $total_cuota);
+        }
+        $row->total_cuota_patronal = $total_cuota['cuotas'];
+
+        return $row;
     }
 
     public function modifica(bool $header, bool $ws = false, string $breadcrumbs = '', bool $aplica_form = true,
@@ -655,201 +674,34 @@ class controlador_nom_nomina extends base_nom
             return $this->retorno_error(mensaje: 'Error al obtener partidas', data: $partidas, header: $header, ws: $ws);
         }
 
-        if($this->registro['em_empleado_salario_diario'] > 172.87) {
-            $cueota_total = 0;
-
-            $im_clase_riesgo_id = $this->registro['im_clase_riesgo_factor'];
-            $n_dias_trabajados = $this->registro['nom_nomina_num_dias_pagados'];
-            $salario_base_cotizacion = $this->registro['em_empleado_salario_diario_integrado'];
-
-            $cuota_riesgo_trabajo = (new im_movimiento($this->link))->calcula_riesgo_de_trabajo(
-                im_clase_riesgo_factor: $im_clase_riesgo_id, n_dias_trabajados: $n_dias_trabajados,
-                salario_base_cotizacion: $salario_base_cotizacion);
-            if (errores::$error) {
-                return $this->retorno_error(mensaje: 'Error al obtener partidas', data: $partidas, header: $header, ws: $ws);
-            }
-
-            $cuota = array();
-            $cuota['concepto'] = 'Riesgo de Trabajo';
-            $cuota['prestaciones'] = 'En especie y dinero';
-            $cuota['monto'] = $cuota_riesgo_trabajo;
-            $cueota_total += $cuota_riesgo_trabajo;
-
-            $this->cuotas_obrero_patronales->registros[] = $cuota;
-
-            $factor_cuota_fija = 20.4;
-            $n_dias_trabajados = $this->registro['nom_nomina_num_dias_pagados'];
-            $uma = 96.22;
-
-            $cuota_riesgo_trabajo = (new im_movimiento($this->link))->calcula_enf_mat_cuota_fija(
-                factor_cuota_fija: $factor_cuota_fija, n_dias_trabajados: $n_dias_trabajados, uma: $uma);
-            if (errores::$error) {
-                return $this->retorno_error(mensaje: 'Error al obtener partidas', data: $partidas, header: $header, ws: $ws);
-            }
-
-            $cuota = array();
-            $cuota['concepto'] = 'Enfermedades y Maternidad';
-            $cuota['prestaciones'] = 'En especie';
-            $cuota['monto'] = $cuota_riesgo_trabajo;
-            $cueota_total += $cuota_riesgo_trabajo;
-
-            $this->cuotas_obrero_patronales->registros[] = $cuota;
-
-            $factor_cuota_adicional = 1.1;
-            $n_dias_trabajados = $this->registro['nom_nomina_num_dias_pagados'];
-            $salario_base_cotizacion = $this->registro['em_empleado_salario_diario_integrado'];
-            $uma = 96.22;
-
-            $cuota_riesgo_trabajo = (new im_movimiento($this->link))->calcula_enf_mat_cuota_adicional(
-                factor_cuota_adicional: $factor_cuota_adicional, n_dias_trabajados: $n_dias_trabajados,
-                salario_base_cotizacion: $salario_base_cotizacion, uma: $uma);
-            if (errores::$error) {
-                return $this->retorno_error(mensaje: 'Error al obtener partidas', data: $partidas, header: $header, ws: $ws);
-            }
-
-            $cuota = array();
-            $cuota['concepto'] = 'Enfermedades y Maternidad';
-            $cuota['prestaciones'] = 'Exedente';
-            $cuota['monto'] = $cuota_riesgo_trabajo;
-            $cueota_total += $cuota_riesgo_trabajo;
-
-            $this->cuotas_obrero_patronales->registros[] = $cuota;
-
-            $factor_gastos_medicos = 1.05;
-            $n_dias_trabajados = $this->registro['nom_nomina_num_dias_pagados'];
-            $salario_base_cotizacion = $this->registro['em_empleado_salario_diario_integrado'];
-
-            $cuota_riesgo_trabajo = (new im_movimiento($this->link))->calcula_enf_mat_gastos_medicos(
-                factor_gastos_medicos: $factor_gastos_medicos, n_dias_trabajados: $n_dias_trabajados,
-                salario_base_cotizacion: $salario_base_cotizacion);
-            if (errores::$error) {
-                return $this->retorno_error(mensaje: 'Error al obtener partidas', data: $partidas, header: $header, ws: $ws);
-            }
-
-            $cuota = array();
-            $cuota['concepto'] = 'Enfermedades y Maternidad';
-            $cuota['prestaciones'] = 'Gastos Medicos';
-            $cuota['monto'] = $cuota_riesgo_trabajo;
-            $cueota_total += $cuota_riesgo_trabajo;
-
-            $this->cuotas_obrero_patronales->registros[] = $cuota;
-
-            $factor_pres_dineros = 0.7;
-            $n_dias_trabajados = $this->registro['nom_nomina_num_dias_pagados'];
-            $salario_base_cotizacion = $this->registro['em_empleado_salario_diario_integrado'];
-
-            $cuota_riesgo_trabajo = (new im_movimiento($this->link))->calcula_enf_mat_pres_dinero(
-                factor_pres_dineros: $factor_pres_dineros, n_dias_trabajados: $n_dias_trabajados,
-                salario_base_cotizacion: $salario_base_cotizacion);
-            if (errores::$error) {
-                return $this->retorno_error(mensaje: 'Error al obtener partidas', data: $partidas, header: $header, ws: $ws);
-            }
-
-            $cuota = array();
-            $cuota['concepto'] = 'Enfermedades y Maternidad';
-            $cuota['prestaciones'] = 'En Dinero';
-            $cuota['monto'] = $cuota_riesgo_trabajo;
-            $cueota_total += $cuota_riesgo_trabajo;
-
-            $this->cuotas_obrero_patronales->registros[] = $cuota;
-
-            $factor_invalidez_vida = 1.75;
-            $n_dias_trabajados = $this->registro['nom_nomina_num_dias_pagados'];
-            $salario_base_cotizacion = $this->registro['em_empleado_salario_diario_integrado'];
-
-            $cuota_riesgo_trabajo = (new im_movimiento($this->link))->calcula_invalidez_vida(
-                factor_invalidez_vida: $factor_invalidez_vida, n_dias_trabajados: $n_dias_trabajados,
-                salario_base_cotizacion: $salario_base_cotizacion);
-            if (errores::$error) {
-                return $this->retorno_error(mensaje: 'Error al obtener partidas', data: $partidas, header: $header, ws: $ws);
-            }
-
-            $cuota = array();
-            $cuota['concepto'] = 'Invalidez y Vida';
-            $cuota['prestaciones'] = 'Invalidez y Vida';
-            $cuota['monto'] = $cuota_riesgo_trabajo;
-            $cueota_total += $cuota_riesgo_trabajo;
-
-            $this->cuotas_obrero_patronales->registros[] = $cuota;
-
-            $factor_pres_sociales = 1;
-            $n_dias_trabajados = $this->registro['nom_nomina_num_dias_pagados'];
-            $salario_base_cotizacion = $this->registro['em_empleado_salario_diario_integrado'];
-
-            $cuota_riesgo_trabajo = (new im_movimiento($this->link))->calcula_guarderia_prestaciones_sociales(
-                factor_pres_sociales: $factor_pres_sociales, n_dias_trabajados: $n_dias_trabajados,
-                salario_base_cotizacion: $salario_base_cotizacion);
-            if (errores::$error) {
-                return $this->retorno_error(mensaje: 'Error al obtener partidas', data: $partidas, header: $header, ws: $ws);
-            }
-
-            $cuota = array();
-            $cuota['concepto'] = 'Guarderías y Prestaciones Sociales';
-            $cuota['prestaciones'] = 'Guarderías y Prestaciones Sociales';
-            $cuota['monto'] = $cuota_riesgo_trabajo;
-            $cueota_total += $cuota_riesgo_trabajo;
-
-            $this->cuotas_obrero_patronales->registros[] = $cuota;
-
-            $factor_retiro = 2;
-            $n_dias_trabajados = $this->registro['nom_nomina_num_dias_pagados'];
-            $salario_base_cotizacion = $this->registro['em_empleado_salario_diario_integrado'];
-
-            $cuota_riesgo_trabajo = (new im_movimiento($this->link))->calcula_retiro(
-                factor_retiro: $factor_retiro, n_dias_trabajados: $n_dias_trabajados,
-                salario_base_cotizacion: $salario_base_cotizacion);
-            if (errores::$error) {
-                return $this->retorno_error(mensaje: 'Error al obtener partidas', data: $partidas, header: $header, ws: $ws);
-            }
-
-            $cuota = array();
-            $cuota['concepto'] = 'Retiro, Cesantía en Edad Avanzada y Vejez (CEAV)';
-            $cuota['prestaciones'] = 'Retiro';
-            $cuota['monto'] = $cuota_riesgo_trabajo;
-            $cueota_total += $cuota_riesgo_trabajo;
-
-            $this->cuotas_obrero_patronales->registros[] = $cuota;
-
-            $factor_ceav = 3.15;
-            $n_dias_trabajados = $this->registro['nom_nomina_num_dias_pagados'];
-            $salario_base_cotizacion = $this->registro['em_empleado_salario_diario_integrado'];
-
-            $cuota_riesgo_trabajo = (new im_movimiento($this->link))->calcula_ceav(
-                factor_ceav: $factor_ceav, n_dias_trabajados: $n_dias_trabajados,
-                salario_base_cotizacion: $salario_base_cotizacion);
-            if (errores::$error) {
-                return $this->retorno_error(mensaje: 'Error al obtener partidas', data: $partidas, header: $header, ws: $ws);
-            }
-
-            $cuota = array();
-            $cuota['concepto'] = 'Retiro, Cesantía en Edad Avanzada y Vejez (CEAV)';
-            $cuota['prestaciones'] = 'CEAV';
-            $cuota['monto'] = $cuota_riesgo_trabajo;
-            $cueota_total += $cuota_riesgo_trabajo;
-
-            $this->cuotas_obrero_patronales->registros[] = $cuota;
-
-            $factor_credito_vivienda = 5;
-            $n_dias_trabajados = $this->registro['nom_nomina_num_dias_pagados'];
-            $salario_base_aportacion = $this->registro['em_empleado_salario_diario_integrado'];
-
-            $cuota_riesgo_trabajo = (new im_movimiento($this->link))->calcula_credito_vivienda(
-                factor_credito_vivienda: $factor_credito_vivienda, n_dias_trabajados: $n_dias_trabajados,
-                salario_base_aportacion: $salario_base_aportacion);
-            if (errores::$error) {
-                return $this->retorno_error(mensaje: 'Error al obtener partidas', data: $partidas, header: $header, ws: $ws);
-            }
-
-            $cuota = array();
-            $cuota['concepto'] = 'Infonavit';
-            $cuota['prestaciones'] = 'Crédito de vivienda';
-            $cuota['monto'] = $cuota_riesgo_trabajo;
-            $cueota_total += $cuota_riesgo_trabajo;
-
-            $this->cuotas_obrero_patronales->registros[] = $cuota;
-            $this->cuota_total = $cueota_total;
+        $partidas = $this->cuotas_obrero_patronales();
+        if (errores::$error) {
+            return $this->retorno_error(mensaje: 'Error al obtener partidas', data: $partidas, header: $header, ws: $ws);
         }
+
         return $base->template;
+    }
+
+    private function cuotas_obrero_patronales(): array|stdClass
+    {
+        $filtro['nom_nomina.id'] = $this->registro_id;
+        $cuotas = (new nom_concepto_imss($this->link))->filtro_and(filtro: $filtro);
+        if (errores::$error) {
+            return $this->errores->error(mensaje: 'Error al obtener cuotas', data: $cuotas);
+        }
+
+        $this->cuotas_obrero_patronales = $cuotas;
+
+        $campos['cuotas'] = 'nom_concepto_imss.monto';
+        $filtro_sum['nom_nomina.id'] = $this->registro_id;
+        $total_cuota = (new nom_concepto_imss($this->link))->suma(campos: $campos,filtro: $filtro_sum);
+        if (errores::$error) {
+            return $this->errores->error(mensaje: 'Error al obtener suma', data: $total_cuota);
+        }
+
+        $this->cuota_total = $total_cuota['cuotas'];
+
+        return  $this->cuotas_obrero_patronales;
     }
 
     public function modifica_deduccion(bool $header, bool $ws = false): array|stdClass|string
