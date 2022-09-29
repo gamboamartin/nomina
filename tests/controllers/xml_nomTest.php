@@ -5,6 +5,7 @@ namespace tests\controllers;
 use gamboamartin\errores\errores;
 use gamboamartin\nomina\controllers\controlador_nom_nomina;
 use gamboamartin\nomina\controllers\xml_nom;
+use gamboamartin\test\liberator;
 use gamboamartin\test\test;
 
 
@@ -35,6 +36,7 @@ class xml_nomTest extends test {
         $_SESSION['usuario_id'] = 2;
         $_GET['session_id'] = '1';
         $xml_nom = new xml_nom();
+        $xml_nom = new liberator($xml_nom);
 
 
 

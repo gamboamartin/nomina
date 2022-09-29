@@ -380,12 +380,6 @@ class controlador_nom_nomina extends base_nom
                 data: $fc_factura, header: $header, ws: $ws);
         }
 
-        $com_sucursal = (new com_sucursal($this->link))->registro(
-            registro_id:$fc_factura->com_sucursal_id, retorno_obj: true );
-        if(errores::$error){
-            return $this->retorno_error(mensaje: 'Error al obtener sucursal',
-                data: $com_sucursal, header: $header, ws: $ws);
-        }
 
         $percepciones = (new nom_nomina($this->link))->percepciones(nom_nomina_id: $this->registro_id);
         if(errores::$error){
@@ -398,43 +392,27 @@ class controlador_nom_nomina extends base_nom
         }
 
 
-        $comprobante = (new xml_nom())->data_comprobante(fc_factura: $fc_factura, link: $this->link);
+        $comprobante = (new xml_nom())->comprobante(fc_factura_id: $nom_nomina->fc_factura_id, link: $this->link);
         if(errores::$error){
             return $this->retorno_error(mensaje: 'Error al crear comprobante', data: $comprobante, header: $header, ws: $ws);
         }
 
 
-        $emisor = (new xml_nom())->data_emisor(fc_factura: $fc_factura);
+        $emisor = (new xml_nom())->emisor(fc_factura_id: $nom_nomina->fc_factura_id, link: $this->link);
         if(errores::$error){
             return $this->retorno_error(mensaje: 'Error al crear emisor', data: $emisor, header: $header, ws: $ws);
         }
 
-        $receptor = (new xml_nom())->data_receptor(com_sucursal: $com_sucursal, fc_factura: $fc_factura);
+        $receptor = (new xml_nom())->receptor(com_sucursal_id:$fc_factura->com_sucursal_id ,
+            fc_factura_id: $fc_factura->fc_factura_id, link: $this->link);
         if(errores::$error){
             return $this->retorno_error(mensaje: 'Error al crear receptor', data: $receptor, header: $header, ws: $ws);
         }
 
         
-        $nomina = new stdClass();
-
-        $nomina->tipo_nomina = $nom_nomina->cat_sat_tipo_nomina_codigo;
-        $nomina->fecha_pago = $nom_nomina->nom_nomina_fecha_pago;
-        $nomina->fecha_inicial_pago = $nom_nomina->nom_nomina_fecha_inicial_pago;
-        $nomina->fecha_final_pago = $nom_nomina->nom_nomina_fecha_final_pago;
-        $nomina->num_dias_pagados = $nom_nomina->nom_nomina_num_dias_pagados;
-        $nomina->total_percepciones = (new nom_nomina(link: $this->link))->total_percepciones_monto(
-            nom_nomina_id: $this->registro_id);
-
+        $nomina = (new xml_nom())->nomina_base(link: $this->link, nom_nomina: $nom_nomina);
         if (errores::$error) {
-            return $this->retorno_error(mensaje: 'Error al obtener total percepciones xml',
-                data: $nomina->total_percepciones, header: $header, ws: $ws);
-        }
-
-        $nomina->total_deducciones = (new nom_nomina(link: $this->link))->total_deducciones_monto(
-            nom_nomina_id: $this->registro_id);
-
-        if (errores::$error) {
-            return $this->retorno_error(mensaje: 'Error al obtener total deducciones xml',
+            return $this->retorno_error(mensaje: 'Error al obtener nomina base',
                 data: $nomina->total_deducciones, header: $header, ws: $ws);
         }
 
