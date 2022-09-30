@@ -324,7 +324,6 @@ class controlador_nom_periodo extends system {
         }
 
         $documento = IOFactory::load($ruta_absoluta);
-
         $totalDeHojas = $documento->getSheetCount();
         $codigos = array();
         for ($indiceHoja = 0; $indiceHoja < $totalDeHojas; $indiceHoja++) {
@@ -343,7 +342,10 @@ class controlador_nom_periodo extends system {
             }
         }
 
-        return $codigos;
+        $link = "./index.php?seccion=nom_periodo&accion=sube_archivo&registro_id=".$this->registro_id;
+        $link.="&session_id=$this->session_id";
+        header('Location:' . $link);
+        exit;
     }
 
     public function guarda_archivo(array $file){
