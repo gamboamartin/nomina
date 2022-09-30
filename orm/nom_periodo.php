@@ -136,6 +136,27 @@ class nom_periodo extends nominas_confs {
         return $empleados;
     }
 
+    public function genera_registro_nomina_excel(int $nom_periodo_id, array $empleados_excel){
+        $nom_periodo = $this->registro(registro_id: $nom_periodo_id);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al al obtener periodo', data: $nom_periodo);
+        }
+
+        $empleados = array();
+        foreach ($empleados_excel as $empleado_excel){
+            $filtro['em_empleado.codigo'] = $empleado_excel->codigo;
+            $registro = (new em_empleado($this->link))->filtro_and(filtro: $filtro);
+            if (errores::$error) {
+                return $this->error->error(mensaje: 'Error al al obtener registro de empleado', data: $registro);
+            }
+            if($registro->n_registros > 0){
+                $empleados[] = $registro->registros[0];
+            }
+        }
+
+        return array();
+    }
+
     public function genera_registro_nomina(int $nom_periodo_id) : array|stdClass{
 
         $nom_periodo = $this->registro(registro_id: $nom_periodo_id);
