@@ -317,6 +317,27 @@ class controlador_nom_periodo extends system {
     }
 
     public function lee_archivo(bool $header, bool $ws = false){
+
+        $ruta_absoluta = $this->guarda_archivo(file: $_FILES);
+        if(errores::$error){
+            return $this->errores->error(mensaje: 'Error guardar archivio',data:  $ruta_absoluta);
+        }
+
+        $documento = IOFactory::load($ruta_absoluta);
+
+        $totalDeHojas = $documento->getSheetCount();
+        for ($indiceHoja = 0; $indiceHoja < $totalDeHojas; $indiceHoja++) {
+            $hojaActual = $documento->getSheet($indiceHoja);
+            echo "<h3>Vamos en la hoja con índice $indiceHoja</h3>";
+            $coordenadas = "A7";
+            $celda = $hojaActual->getCell($coordenadas);
+            $valorRaw = $celda->getValue();
+        }
+
+        return $totalDeHojas;
+    }
+
+    public function guarda_archivo(array $file){
         $ruta_archivos = (new generales())->path_base.'/archivos/';
         $ruta_relativa = 'archivos/'.$this->tabla.'/';
         if(!is_dir($ruta_archivos) && !mkdir($ruta_archivos) && !is_dir($ruta_archivos)) {
@@ -329,35 +350,18 @@ class controlador_nom_periodo extends system {
             return $this->errores->error(mensaje: 'Error crear directorio', data: $ruta_absoluta_directorio);
         }
 
-        $nombre_doc = $_FILES['archivo']['name'];
+        $nombre_doc = $file['archivo']['name'];
 
         $ruta_absoluta = strtolower($ruta_absoluta_directorio.$nombre_doc);
         if(!file_exists($ruta_absoluta)){
-            $guarda = (new files())->guarda_archivo_fisico(contenido_file:  file_get_contents($_FILES['archivo']['tmp_name']),
+            $guarda = (new files())->guarda_archivo_fisico(contenido_file:  file_get_contents($file['archivo']['tmp_name']),
                 ruta_file: $ruta_absoluta);
             if(errores::$error){
                 return $this->errores->error('Error al guardar archivo', $guarda);
             }
         }
-        $documento = IOFactory::load($ruta_absoluta);
 
-        $totalDeHojas = $documento->getSheetCount();
-        for ($indiceHoja = 0; $indiceHoja < $totalDeHojas; $indiceHoja++) {
-            $hojaActual = $documento->getSheet($indiceHoja);
-            echo "<h3>Vamos en la hoja con índice $indiceHoja</h3>";
-            $coordenadas = "B2";
-            $celda = $hojaActual->getCell($coordenadas);
-            $valorRaw = $celda->getValue();
-            $valorFormateado = $celda->getFormattedValue();
-            $valorCalculado = $celda->getCalculatedValue();
-
-            # Imprimir
-            echo "En <strong>$coordenadas</strong> tenemos el valor <strong>$valorRaw</strong>. ";
-            echo "Formateado es: <strong>$valorFormateado</strong>. ";
-            echo "Calculado es: <strong>$valorCalculado</strong><br><br>";
-
-        }
-        print_r($totalDeHojas);exit;
+        return $ruta_absoluta;
     }
 
     public function nominas(bool $header, bool $ws = false): array|stdClass
