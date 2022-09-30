@@ -92,14 +92,13 @@ class xml_nom{
     private function data_deduccion(stdClass $nomina, array $deduccion): stdClass
     {
 
-        //print_r($deduccion);exit;
         $data_deduccion = new stdClass();
 
         $data_deduccion->tipo_deduccion = $deduccion['cat_sat_tipo_deduccion_nom_codigo'];
         $data_deduccion->clave = $deduccion['nom_deduccion_codigo'];
         $data_deduccion->concepto = $deduccion['nom_par_deduccion_descripcion'];
         $data_deduccion->importe = round(round($deduccion['nom_par_deduccion_importe_gravado'],2) + round($deduccion['nom_par_deduccion_importe_exento'],2),2);
-        
+
         $nomina->deducciones->deduccion[] = $data_deduccion;
 
 
@@ -295,6 +294,36 @@ class xml_nom{
         $nomina->receptor->salario_base_cot_apor = $nom_nomina->em_empleado_salario_diario_integrado;
         $nomina->receptor->salario_diario_integrado = $nom_nomina->em_empleado_salario_diario_integrado;
         $nomina->receptor->clave_ent_fed = $nom_nomina->dp_estado_codigo;
+
+        return $nomina;
+    }
+
+    public function otros_pagos(PDO $link, stdClass $nomina, int $nom_nomina_id): array|stdClass
+    {
+
+        $otros_pagos = (new nom_nomina($link))->otros_pagos(nom_nomina_id: $nom_nomina_id);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al obtener otros_pagos', data: $otros_pagos);
+        }
+
+
+        $nomina = $this->otros_pagos_header(link:$link, nomina: $nomina,nom_nomina_id:  $nom_nomina_id);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al obtener otros_pagos', data: $nomina);
+        }
+
+        /*
+        $nomina = $this->data_otros_pagos(nomina: $nomina, otros_pagos: $otros_pagos);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al asignar percepciones', data: $nomina);
+        }
+        */
+        return $nomina;
+    }
+
+    private function otros_pagos_header(PDO $link, stdClass $nomina, int $nom_nomina_id): array|stdClass
+    {
+        $nomina->otros_pagos = new stdClass();
 
         return $nomina;
     }
