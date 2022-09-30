@@ -79,4 +79,16 @@ class nom_par_percepcion extends nominas{
 
         return true;
     }
+
+    public function get_percepciones_aplica_septimo_dia(int $nom_nomina_id): array|stdClass
+    {
+        $filtro['nom_nomina.id'] = $nom_nomina_id;
+        $filtro['nom_percepcion.aplica_septimo_dia'] = "activo";
+        $percepciones = $this->filtro_and(filtro: $filtro);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al obtener percepciones', data: $percepciones);
+        }
+
+        return $percepciones;
+    }
 }
