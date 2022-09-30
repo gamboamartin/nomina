@@ -68,16 +68,12 @@ class nom_par_percepcion extends nominas{
         $filtro['nom_nomina.id'] = $nom_nomina_id;
         $filtro['nom_percepcion.aplica_septimo_dia'] = "activo";
 
-        $percepciones = $this->filtro_and(columnas: ['nom_percepcion_aplica_septimo_dia'], filtro: $filtro);
+        $existe = $this->existe(filtro: $filtro);
         if (errores::$error) {
-            return $this->error->error(mensaje: 'Error al obtener percepciones', data: $percepciones);
+            return $this->error->error(mensaje: 'Error al determinar si aplica septimo dia', data: $existe);
         }
 
-        if ($percepciones->n_registros == 0){
-            return false;
-        }
-
-        return true;
+        return $existe;
     }
 
     public function get_percepciones_aplica_septimo_dia(int $nom_nomina_id): array|stdClass

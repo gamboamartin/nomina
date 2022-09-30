@@ -9,7 +9,7 @@ class nom_conf_percepcion extends modelo{
 
     public function __construct(PDO $link){
         $tabla = __CLASS__;
-        $columnas = array($tabla=>false , "nom_percepcion" => $tabla);
+        $columnas = array($tabla=>false , "nom_percepcion" => $tabla,"nom_conf_nomina" => $tabla);
         $campos_obligatorios = array('codigo_bis','descripcion_select','alias');
         $campos_view = array("nom_conf_nomina_id" => array("type" => "selects", "model" => new nom_conf_nomina(link: $link)),
             "nom_percepcion_id" => array("type" => "selects", "model" => new nom_percepcion(link: $link)));
@@ -37,5 +37,18 @@ class nom_conf_percepcion extends modelo{
             return $this->error->error(mensaje: 'Error al dar de alta configuracion',data: $r_alta_bd);
         }
         return $r_alta_bd;
+    }
+
+    public function aplica_septimo_dia(int $nom_conf_nomina_id): array|bool
+    {
+        $filtro['nom_conf_nomina.id'] = $nom_conf_nomina_id;
+        $filtro['nom_percepcion.aplica_septimo_dia'] = "activo";
+
+        $existe = $this->existe(filtro: $filtro);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al determinar si aplica septimo dia', data: $existe);
+        }
+
+        return $existe;
     }
 }
