@@ -326,15 +326,24 @@ class controlador_nom_periodo extends system {
         $documento = IOFactory::load($ruta_absoluta);
 
         $totalDeHojas = $documento->getSheetCount();
+        $codigos = array();
         for ($indiceHoja = 0; $indiceHoja < $totalDeHojas; $indiceHoja++) {
             $hojaActual = $documento->getSheet($indiceHoja);
-            echo "<h3>Vamos en la hoja con índice $indiceHoja</h3>";
-            $coordenadas = "A7";
-            $celda = $hojaActual->getCell($coordenadas);
-            $valorRaw = $celda->getValue();
+            foreach ($hojaActual->getRowIterator() as $fila) {
+                foreach ($fila->getCellIterator() as $celda) {
+                    $fila = $celda->getRow();
+                    $valorRaw = $celda->getValue();
+                    $columna = $celda->getColumn();
+                    if($fila >= 7){
+                        if($columna === "A" && is_numeric($valorRaw)){
+                            $codigos[] = $valorRaw;
+                        }
+                    }
+                }
+            }
         }
 
-        return $totalDeHojas;
+        return $codigos;
     }
 
     public function guarda_archivo(array $file){
