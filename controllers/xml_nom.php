@@ -184,11 +184,12 @@ class xml_nom{
             return $this->error->error(mensaje: 'Error al obtener percepciones', data: $nomina);
         }
 
+        /**
 
         $nomina = $this->data_deducciones(nomina: $nomina, deducciones: $deducciones);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al asignar deducciones', data: $nomina);
-        }
+        }*/
         return $nomina;
     }
 
@@ -199,16 +200,16 @@ class xml_nom{
 
         $nomina->deducciones->total_otras_deducciones = (new nom_nomina($link))->total_otras_deducciones_monto(nom_nomina_id: $nom_nomina_id);
         if (errores::$error) {
-            return $this->error->error(mensaje: 'Error al obtener sueldos', data: $nomina->percepciones->total_sueldos);
+            return $this->error->error(mensaje: 'Error al obtener sueldos', data: $nomina->deducciones->total_otras_deducciones);
         }
 
+
+        $nomina->deducciones->total_impuestos_retenidos = (new nom_nomina($link))->total_impuestos_retenidos_monto(nom_nomina_id: $nom_nomina_id);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al obtener sueldos', data: $nomina->deducciones->total_impuestos_retenidos);
+        }
 
         /**
-        $nomina->deducciones->total_gravado = (new nom_nomina($link))->total_percepciones_gravado(nom_nomina_id: $nom_nomina_id);
-        if (errores::$error) {
-            return $this->error->error(mensaje: 'Error al obtener sueldos', data: $nomina->percepciones->total_gravado);
-        }
-
         $nomina->deducciones->total_exento = (new nom_nomina($link))->total_percepciones_exento(nom_nomina_id: $nom_nomina_id);
         if (errores::$error) {
             return $this->error->error(
