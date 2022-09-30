@@ -317,12 +317,23 @@ class controlador_nom_periodo extends system {
     }
 
     public function lee_archivo(bool $header, bool $ws = false){
-
         $ruta_absoluta = $this->guarda_archivo(file: $_FILES);
         if(errores::$error){
             return $this->errores->error(mensaje: 'Error guardar archivio',data:  $ruta_absoluta);
         }
 
+        $empleado_excel = $this->obten_empleados_excel(ruta_absoluta: $ruta_absoluta);
+        if(errores::$error){
+            return $this->errores->error(mensaje: 'Error obtener empleados',data:  $empleado_excel);
+        }
+
+        $link = "./index.php?seccion=nom_periodo&accion=sube_archivo&registro_id=".$this->registro_id;
+        $link.="&session_id=$this->session_id";
+        header('Location:' . $link);
+        exit;
+    }
+
+    public function obten_empleados_excel(string $ruta_absoluta){
         $documento = IOFactory::load($ruta_absoluta);
         $totalDeHojas = $documento->getSheetCount();
 
@@ -355,11 +366,8 @@ class controlador_nom_periodo extends system {
                 $empleados[] = $reg;
             }
         }
-        
-        $link = "./index.php?seccion=nom_periodo&accion=sube_archivo&registro_id=".$this->registro_id;
-        $link.="&session_id=$this->session_id";
-        header('Location:' . $link);
-        exit;
+
+        return $empleados;
     }
 
     public function guarda_archivo(array $file){
