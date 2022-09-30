@@ -428,12 +428,6 @@ class controlador_nom_nomina extends base_nom
 
 
 
-        $nomina->deducciones = new stdClass();
-        $nomina->deducciones->total_otras_deducciones = 0;
-        $nomina->deducciones->total_impuestos_retenidos = 0;
-
-        $nomina->deducciones->deduccion = array();
-
 
         $xml = (new cfdis())->complemento_nomina(
             comprobante: $comprobante,emisor:  $emisor, nomina: $nomina,receptor:  $receptor);

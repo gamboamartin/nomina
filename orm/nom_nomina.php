@@ -107,7 +107,7 @@ class nom_nomina extends modelo
         $existe = (new nom_conf_percepcion($this->link))->aplica_septimo_dia(
             $registros['nom_conf_empleado']->nom_conf_nomina_id);
         if (errores::$error) {
-            return $this->error->error(mensaje: 'Error al determinar si aplica septimo dia', data: $this->registro);
+            return $this->error->error(mensaje: 'Error al determinar si aplica septimo dia', data: $existe);
         }
 
         if ($existe){
@@ -1348,6 +1348,50 @@ class nom_nomina extends modelo
 
         return round($total_gravado, 2);
 
+    }
+
+    public function total_otras_deducciones_exento(int $nom_nomina_id): float|array
+    {
+        $campos = array();
+        $campos['total_importe_exento'] = 'nom_par_deduccion.importe_exento';
+        $filtro['nom_nomina.id'] = $nom_nomina_id;
+        $filtro['nom_deduccion.es_otra_deduccion'] = 'activo';
+        $r_nom_par_deduccion = (new nom_par_deduccion($this->link))->suma(campos: $campos,filtro: $filtro);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al obtener percepciones', data: $r_nom_par_deduccion);
+        }
+
+        return round($r_nom_par_deduccion['total_importe_exento'],2);
+    }
+
+    public function total_otras_deducciones_gravado(int $nom_nomina_id): float|array
+    {
+        $campos = array();
+        $campos['total_importe_gravado'] = 'nom_par_deduccion.importe_gravado';
+        $filtro['nom_nomina.id'] = $nom_nomina_id;
+        $filtro['nom_deduccion.es_otra_deduccion'] = 'activo';
+        $r_nom_par_deduccion = (new nom_par_deduccion($this->link))->suma(campos: $campos,filtro: $filtro);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al obtener percepciones', data: $r_nom_par_deduccion);
+        }
+
+        return round($r_nom_par_deduccion['total_importe_gravado'],2);
+    }
+
+    public function total_otras_deducciones_monto(int $nom_nomina_id): float|array
+    {
+
+        $total_deducciones_gravado = $this->total_otras_deducciones_gravado(nom_nomina_id: $nom_nomina_id);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al obtener total gravado', data: $total_deducciones_gravado);
+        }
+        $total_deducciones_gravado = $this->total_otras_deducciones_exento(nom_nomina_id: $nom_nomina_id);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al obtener total gravado', data: $total_deducciones_gravado);
+        }
+
+        $total_deducciones = $total_deducciones_gravado + $total_deducciones_gravado;
+        return round($total_deducciones,2);
     }
 
     public function total_percepciones_exento(int $nom_nomina_id): float|array

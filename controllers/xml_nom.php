@@ -196,12 +196,14 @@ class xml_nom{
     {
 
         $nomina->deducciones = new stdClass();
-        /**
-        $nomina->deducciones->total_sueldos = (new nom_nomina($link))->total_sueldos_monto(nom_nomina_id: $nom_nomina_id);
+
+        $nomina->deducciones->total_otras_deducciones = (new nom_nomina($link))->total_otras_deducciones_monto(nom_nomina_id: $nom_nomina_id);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al obtener sueldos', data: $nomina->percepciones->total_sueldos);
         }
 
+
+        /**
         $nomina->deducciones->total_gravado = (new nom_nomina($link))->total_percepciones_gravado(nom_nomina_id: $nom_nomina_id);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al obtener sueldos', data: $nomina->percepciones->total_gravado);
