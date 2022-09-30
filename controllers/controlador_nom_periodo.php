@@ -327,13 +327,15 @@ class controlador_nom_periodo extends system {
             return $this->errores->error(mensaje: 'Error obtener empleados',data:  $empleados_excel);
         }
 
+        unlink($ruta_absoluta);
+        
         $resultado = (new nom_periodo($this->link))->genera_registro_nomina_excel(nom_periodo_id: $this->registro_id,
         empleados_excel: $empleados_excel);
         if(errores::$error){
             return $this->retorno_error(mensaje: 'Error al generar mensaje', data: $resultado,header:  $header,ws:  $ws);
         }
 
-        $link = "./index.php?seccion=nom_periodo&accion=sube_archivo&registro_id=".$this->registro_id;
+        $link = "./index.php?seccion=nom_periodo&accion=nominas&registro_id=".$this->registro_id;
         $link.="&session_id=$this->session_id";
         header('Location:' . $link);
         exit;
