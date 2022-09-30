@@ -92,14 +92,14 @@ class xml_nom{
     private function data_deduccion(stdClass $nomina, array $deduccion): stdClass
     {
 
+        //print_r($deduccion);exit;
         $data_deduccion = new stdClass();
-        /*
-        $data_deduccion->tipo_percepcion = $deduccion['cat_sat_tipo_percepcion_nom_codigo'];
-        $data_deduccion->clave = $deduccion['nom_percepcion_codigo'];
-        $data_deduccion->concepto = $deduccion['nom_par_percepcion_descripcion'];
-        $data_deduccion->importe_gravado = $deduccion['nom_par_percepcion_importe_gravado'];
-        $data_deduccion->importe_exento = $deduccion['nom_par_percepcion_importe_exento'];
-        */
+
+        $data_deduccion->tipo_deduccion = $deduccion['cat_sat_tipo_deduccion_nom_codigo'];
+        $data_deduccion->clave = $deduccion['nom_deduccion_codigo'];
+        $data_deduccion->concepto = $deduccion['nom_par_deduccion_descripcion'];
+        $data_deduccion->importe = round(round($deduccion['nom_par_deduccion_importe_gravado'],2) + round($deduccion['nom_par_deduccion_importe_exento'],2),2);
+        
         $nomina->deducciones->deduccion[] = $data_deduccion;
 
 
@@ -184,12 +184,11 @@ class xml_nom{
             return $this->error->error(mensaje: 'Error al obtener percepciones', data: $nomina);
         }
 
-        /**
 
         $nomina = $this->data_deducciones(nomina: $nomina, deducciones: $deducciones);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al asignar deducciones', data: $nomina);
-        }*/
+        }
         return $nomina;
     }
 
@@ -209,13 +208,6 @@ class xml_nom{
             return $this->error->error(mensaje: 'Error al obtener sueldos', data: $nomina->deducciones->total_impuestos_retenidos);
         }
 
-        /**
-        $nomina->deducciones->total_exento = (new nom_nomina($link))->total_percepciones_exento(nom_nomina_id: $nom_nomina_id);
-        if (errores::$error) {
-            return $this->error->error(
-                mensaje: 'Error al obtener sueldos', data: $nomina->percepciones->total_exento);
-        }
-         * */
         return $nomina;
     }
 
