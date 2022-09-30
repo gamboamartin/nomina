@@ -432,9 +432,6 @@ class controlador_nom_nomina extends base_nom
         }
 
 
-
-
-
         $xml = (new cfdis())->complemento_nomina(
             comprobante: $comprobante,emisor:  $emisor, nomina: $nomina,receptor:  $receptor);
         if (errores::$error) {
