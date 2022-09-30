@@ -325,23 +325,37 @@ class controlador_nom_periodo extends system {
 
         $documento = IOFactory::load($ruta_absoluta);
         $totalDeHojas = $documento->getSheetCount();
-        $codigos = array();
+
+        $empleados = array();
         for ($indiceHoja = 0; $indiceHoja < $totalDeHojas; $indiceHoja++) {
             $hojaActual = $documento->getSheet($indiceHoja);
+            $registros = array();
             foreach ($hojaActual->getRowIterator() as $fila) {
                 foreach ($fila->getCellIterator() as $celda) {
                     $fila = $celda->getRow();
                     $valorRaw = $celda->getValue();
                     $columna = $celda->getColumn();
+
                     if($fila >= 7){
                         if($columna === "A" && is_numeric($valorRaw)){
-                            $codigos[] = $valorRaw;
+                            $reg = new stdClass();
+                            $reg->fila = $fila;
+                            $registros[] = $reg;
                         }
                     }
                 }
             }
-        }
 
+            foreach ($registros as $registro){
+                $reg = new stdClass();
+                $reg->codigo = $hojaActual->getCell('A'.$registro->fila)->getValue();
+                $reg->nombre = $hojaActual->getCell('B'.$registro->fila)->getValue();
+                $reg->ap = $hojaActual->getCell('C'.$registro->fila)->getValue();
+                $reg->am = $hojaActual->getCell('D'.$registro->fila)->getValue();
+                $empleados[] = $reg;
+            }
+        }
+        
         $link = "./index.php?seccion=nom_periodo&accion=sube_archivo&registro_id=".$this->registro_id;
         $link.="&session_id=$this->session_id";
         header('Location:' . $link);
