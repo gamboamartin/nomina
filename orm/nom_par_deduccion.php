@@ -11,7 +11,8 @@ class nom_par_deduccion extends nominas{
 
     public function __construct(PDO $link){
         $tabla = __CLASS__;
-        $columnas = array($tabla=>false, 'nom_nomina'=>$tabla, 'nom_deduccion'=>$tabla,'fc_factura'=>'nom_nomina');
+        $columnas = array($tabla=>false, 'nom_nomina'=>$tabla, 'nom_deduccion'=>$tabla,'fc_factura'=>'nom_nomina',
+            'cat_sat_tipo_deduccion_nom'=>'nom_deduccion');
         $campos_obligatorios = array('nom_deduccion_id','importe_gravado','importe_exento');
 
         parent::__construct(link: $link,tabla:  $tabla, campos_obligatorios: $campos_obligatorios,

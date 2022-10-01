@@ -93,13 +93,12 @@ class xml_nom{
     {
 
         $data_deduccion = new stdClass();
-        /*
-        $data_deduccion->tipo_percepcion = $deduccion['cat_sat_tipo_percepcion_nom_codigo'];
-        $data_deduccion->clave = $deduccion['nom_percepcion_codigo'];
-        $data_deduccion->concepto = $deduccion['nom_par_percepcion_descripcion'];
-        $data_deduccion->importe_gravado = $deduccion['nom_par_percepcion_importe_gravado'];
-        $data_deduccion->importe_exento = $deduccion['nom_par_percepcion_importe_exento'];
-        */
+
+        $data_deduccion->tipo_deduccion = $deduccion['cat_sat_tipo_deduccion_nom_codigo'];
+        $data_deduccion->clave = $deduccion['nom_deduccion_codigo'];
+        $data_deduccion->concepto = $deduccion['nom_par_deduccion_descripcion'];
+        $data_deduccion->importe = round(round($deduccion['nom_par_deduccion_importe_gravado'],2) + round($deduccion['nom_par_deduccion_importe_exento'],2),2);
+
         $nomina->deducciones->deduccion[] = $data_deduccion;
 
 
@@ -132,6 +131,45 @@ class xml_nom{
         $emisor->regimen_fiscal = $fc_factura->cat_sat_regimen_fiscal_codigo;
 
         return $emisor;
+    }
+
+    private function data_otro_pago(stdClass $nomina, array $otro_pago): stdClass|array
+    {
+        $keys = array('cat_sat_tipo_otro_pago_nom_codigo','nom_otro_pago_codigo','nom_par_otro_pago_descripcion',
+            'nom_par_otro_pago_importe_gravado','nom_par_otro_pago_importe_exento');
+
+        $valida = $this->validacion->valida_existencia_keys(keys:$keys, registro: $otro_pago);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al validar otro pago',data:  $valida);
+        }
+
+        $keys = array('nom_par_otro_pago_importe_gravado','nom_par_otro_pago_importe_exento');
+
+        $valida = $this->validacion->valida_double_mayores_igual_0(keys:$keys, registro: $otro_pago);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al validar otro pago',data:  $valida);
+        }
+
+        $data_otro_pago = new stdClass();
+        $data_otro_pago->tipo_otro_pago = $otro_pago['cat_sat_tipo_otro_pago_nom_codigo'];
+        $data_otro_pago->clave = $otro_pago['nom_otro_pago_codigo'];
+        $data_otro_pago->concepto = $otro_pago['nom_par_otro_pago_descripcion'];
+        $data_otro_pago->importe = round(round($otro_pago['nom_par_otro_pago_importe_gravado'],2) + round($otro_pago['nom_par_otro_pago_importe_exento'],2),2);
+        $nomina->otros_pagos->otro_pago[] = $data_otro_pago;
+
+        return $nomina;
+
+    }
+
+    private function data_otros_pagos(stdClass $nomina, array $otros_pagos): array|stdClass
+    {
+        foreach ($otros_pagos as $otro_pago){
+            $nomina = $this->data_otro_pago(nomina: $nomina, otro_pago: $otro_pago);
+            if (errores::$error) {
+                return $this->error->error(mensaje: 'Error al asignar percepcion', data: $nomina);
+            }
+        }
+        return $nomina;
     }
 
     private function data_percepcion(stdClass $nomina, array $percepcion): stdClass
@@ -199,22 +237,15 @@ class xml_nom{
 
         $nomina->deducciones->total_otras_deducciones = (new nom_nomina($link))->total_otras_deducciones_monto(nom_nomina_id: $nom_nomina_id);
         if (errores::$error) {
-            return $this->error->error(mensaje: 'Error al obtener sueldos', data: $nomina->percepciones->total_sueldos);
+            return $this->error->error(mensaje: 'Error al obtener sueldos', data: $nomina->deducciones->total_otras_deducciones);
         }
 
 
-        /**
-        $nomina->deducciones->total_gravado = (new nom_nomina($link))->total_percepciones_gravado(nom_nomina_id: $nom_nomina_id);
+        $nomina->deducciones->total_impuestos_retenidos = (new nom_nomina($link))->total_impuestos_retenidos_monto(nom_nomina_id: $nom_nomina_id);
         if (errores::$error) {
-            return $this->error->error(mensaje: 'Error al obtener sueldos', data: $nomina->percepciones->total_gravado);
+            return $this->error->error(mensaje: 'Error al obtener sueldos', data: $nomina->deducciones->total_impuestos_retenidos);
         }
 
-        $nomina->deducciones->total_exento = (new nom_nomina($link))->total_percepciones_exento(nom_nomina_id: $nom_nomina_id);
-        if (errores::$error) {
-            return $this->error->error(
-                mensaje: 'Error al obtener sueldos', data: $nomina->percepciones->total_exento);
-        }
-         * */
         return $nomina;
     }
 
@@ -302,6 +333,43 @@ class xml_nom{
         $nomina->receptor->salario_base_cot_apor = $nom_nomina->em_empleado_salario_diario_integrado;
         $nomina->receptor->salario_diario_integrado = $nom_nomina->em_empleado_salario_diario_integrado;
         $nomina->receptor->clave_ent_fed = $nom_nomina->dp_estado_codigo;
+
+        return $nomina;
+    }
+
+    public function otros_pagos(PDO $link, stdClass $nomina, int $nom_nomina_id): array|stdClass
+    {
+
+        $otros_pagos = (new nom_nomina($link))->otros_pagos(nom_nomina_id: $nom_nomina_id);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al obtener otros_pagos', data: $otros_pagos);
+        }
+
+        if(count($otros_pagos) === 0){
+            $otros_pagos[0] = array();
+            $otros_pagos[0]['cat_sat_tipo_otro_pago_nom_codigo'] ='002';
+            $otros_pagos[0]['nom_otro_pago_codigo'] ='002';
+            $otros_pagos[0]['nom_par_otro_pago_descripcion'] ='SUB EFP';
+            $otros_pagos[0]['nom_par_otro_pago_importe_gravado'] ='0';
+            $otros_pagos[0]['nom_par_otro_pago_importe_exento'] ='0';
+        }
+
+        $nomina = $this->otros_pagos_header(link:$link, nomina: $nomina,nom_nomina_id:  $nom_nomina_id);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al obtener otros_pagos', data: $nomina);
+        }
+
+        $nomina = $this->data_otros_pagos(nomina: $nomina, otros_pagos: $otros_pagos);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al asignar percepciones', data: $nomina);
+        }
+
+        return $nomina;
+    }
+
+    private function otros_pagos_header(PDO $link, stdClass $nomina, int $nom_nomina_id): array|stdClass
+    {
+        $nomina->otros_pagos = new stdClass();
 
         return $nomina;
     }

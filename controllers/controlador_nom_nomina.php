@@ -425,8 +425,11 @@ class controlador_nom_nomina extends base_nom
                 mensaje: 'Error al asignar percepciones', data: $nomina, header: $header, ws: $ws);
         }
 
-
-
+        $nomina = (new xml_nom())->otros_pagos(link: $this->link,nomina:  $nomina,nom_nomina_id:  $this->registro_id);
+        if (errores::$error) {
+            return $this->retorno_error(
+                mensaje: 'Error al asignar otros_pagos', data: $nomina, header: $header, ws: $ws);
+        }
 
 
         $xml = (new cfdis())->complemento_nomina(
