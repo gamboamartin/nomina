@@ -144,6 +144,7 @@ class nom_periodo extends nominas_confs {
 
         $empleados = array();
         foreach ($empleados_excel as $empleado_excel){
+            $filtro['im_registro_patronal.id'] = $nom_periodo['nom_periodo_im_registro_patronal_id'];
             $filtro['em_empleado.codigo'] = $empleado_excel->codigo;
             $registro = (new em_empleado($this->link))->filtro_and(filtro: $filtro);
             if (errores::$error) {
@@ -154,7 +155,21 @@ class nom_periodo extends nominas_confs {
             }
         }
 
-        foreach ($empleados as $empleado) {
+        $empleados_res = array();
+        foreach ($empleados as $empleado){
+            $filtro_em['em_empleado.id'] = $empleado['em_empleado_id'];
+            $filtro_em['cat_sat_periodicidad_pago_nom.id'] = $nom_periodo['cat_sat_periodicidad_pago_nom_id'];
+            $conf_empleado = (new nom_conf_empleado($this->link))->filtro_and(filtro: $filtro_em);
+            if (errores::$error) {
+                return $this->error->error(mensaje: 'Error al obtener configuracion de empleado', data: $conf_empleado);
+            }
+
+            if(isset($conf_empleado->registros[0])){
+                $empleados_res[] = $conf_empleado->registros[0];
+            }
+        }
+
+        foreach ($empleados_res as $empleado) {
             $alta_empleado = $this->alta_empleado_periodo(empleado: $empleado, nom_periodo: $nom_periodo);
             if (errores::$error) {
                 return $this->error->error(mensaje: 'Error al dar de alta la nomina del empleado', data: $alta_empleado);
