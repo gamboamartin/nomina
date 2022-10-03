@@ -57,8 +57,15 @@ class nom_nomina extends modelo
         return $r_nom_par_otro_pago;
     }
 
-    private function acciones_anticipo(int $em_empleado_id, int $nom_nomina_id){
+    /**
+     * @param int $em_empleado_id
+     * @param int $nom_nomina_id
+     * @return array
+     */
+    private function acciones_anticipo(int $em_empleado_id, int $nom_nomina_id): array
+    {
 
+        $abonos_aplicados = array();
         $anticipos = (new em_anticipo($this->link))->get_anticipos_empleado(em_empleado_id: $em_empleado_id);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al obtener los anticipos', data: $anticipos);
@@ -70,7 +77,7 @@ class nom_nomina extends modelo
                 return $this->error->error(mensaje: 'Error al obtener el saldo del anticipo', data: $saldo);
             }
 
-            if ($saldo > 0) {
+            if ($saldo > 0.0) {
                 $nom_par_deduccion = $this->maquetar_nom_par_deduccion(registro: $anticipo,nom_nomina_id: $nom_nomina_id);
                 if (errores::$error) {
                     return $this->error->error(mensaje: 'Error al maquetar deduccion', data: $nom_par_deduccion);
@@ -80,9 +87,10 @@ class nom_nomina extends modelo
                 if (errores::$error) {
                     return $this->error->error(mensaje: 'Error al dat de alta deduccion', data: $alta);
                 }
+                $abonos_aplicados[] = $alta;
             }
-
         }
+        return $abonos_aplicados;
     }
 
     private function maquetar_nom_par_deduccion(mixed $registro, int $nom_nomina_id):array{
@@ -212,9 +220,9 @@ class nom_nomina extends modelo
             return $this->error->error(mensaje: 'Error insertar conceptos', data: $r_conceptos);
         }
 
-        $this->acciones_anticipo(em_empleado_id: $this->registro['em_empleado_id'],nom_nomina_id: $r_alta_bd->registro_id);
+        $abonos_aplicados = $this->acciones_anticipo(em_empleado_id: $this->registro['em_empleado_id'],nom_nomina_id: $r_alta_bd->registro_id);
         if (errores::$error) {
-            return $this->error->error(mensaje: 'Error al ejecutar acciones de anticipo', data: $this);
+            return $this->error->error(mensaje: 'Error al ejecutar acciones de anticipo', data: $abonos_aplicados);
         }
 
         return $r_alta_bd;
