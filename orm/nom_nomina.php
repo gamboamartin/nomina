@@ -3,6 +3,7 @@
 namespace models;
 
 use base\orm\modelo;
+use gamboamartin\empleado\models\em_anticipo;
 use gamboamartin\empleado\models\em_empleado;
 use gamboamartin\errores\errores;
 use gamboamartin\facturacion\models\fc_csd;
@@ -54,6 +55,49 @@ class nom_nomina extends modelo
         }
 
         return $r_nom_par_otro_pago;
+    }
+
+    private function acciones_anticipo(int $em_empleado_id, int $nom_nomina_id){
+
+        $anticipos = (new em_anticipo($this->link))->get_anticipos_empleado(em_empleado_id: $em_empleado_id);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al obtener los anticipos', data: $anticipos);
+        }
+
+        foreach ($anticipos->registros as $anticipo){
+            $saldo = (new em_anticipo($this->link))->get_saldo_anticipo(em_anticipo_id: $anticipo['em_anticipo_id']);
+            if (errores::$error) {
+                return $this->error->error(mensaje: 'Error al obtener el saldo del anticipo', data: $saldo);
+            }
+
+            if ($saldo > 0) {
+                $nom_par_deduccion = $this->maquetar_nom_par_deduccion(registro: $anticipo,nom_nomina_id: $nom_nomina_id);
+                if (errores::$error) {
+                    return $this->error->error(mensaje: 'Error al maquetar deduccion', data: $nom_par_deduccion);
+                }
+
+                $alta = (new nom_par_deduccion($this->link))->alta_registro($nom_par_deduccion);
+                if (errores::$error) {
+                    return $this->error->error(mensaje: 'Error al dat de alta deduccion', data: $alta);
+                }
+            }
+
+        }
+    }
+
+    private function maquetar_nom_par_deduccion(mixed $registro, int $nom_nomina_id):array{
+
+        $datos['descripcion'] = $registro['em_metodo_calculo_descripcion'];
+        $datos['codigo'] = $registro['em_anticipo_id'].$registro['em_empleado_codigo'];
+        $datos['descripcion_select'] = $registro['em_metodo_calculo_descripcion'].$registro['em_tipo_descuento_monto'];
+        $datos['codigo_bis'] = $datos['codigo'];
+        $datos['alias'] = $datos['codigo'].$datos['descripcion'];
+        $datos['nom_nomina_id'] = $nom_nomina_id;
+        $datos['nom_deduccion_id'] = 1;
+        $datos['importe_gravado'] = $datos['em_tipo_descuento_monto'];;
+        $datos['importe_exento'] = $datos['em_tipo_descuento_monto'];;
+
+        return $datos;
     }
 
     /**
@@ -166,6 +210,11 @@ class nom_nomina extends modelo
             nom_nomina_id: $r_alta_bd->registro_id);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error insertar conceptos', data: $r_conceptos);
+        }
+
+        $this->acciones_anticipo(em_empleado_id: $this->registro['em_empleado_id'],nom_nomina_id: $r_alta_bd->registro_id);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al ejecutar acciones de anticipo', data: $this);
         }
 
         return $r_alta_bd;
