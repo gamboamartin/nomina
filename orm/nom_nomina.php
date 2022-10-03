@@ -65,48 +65,22 @@ class nom_nomina extends modelo
     private function acciones_anticipo(int $em_empleado_id, int $nom_nomina_id): array
     {
 
-        $abonos_aplicados = array();
+
         $anticipos = (new em_anticipo($this->link))->get_anticipos_empleado(em_empleado_id: $em_empleado_id);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al obtener los anticipos', data: $anticipos);
         }
 
-        foreach ($anticipos->registros as $anticipo){
-            $saldo = (new em_anticipo($this->link))->get_saldo_anticipo(em_anticipo_id: $anticipo['em_anticipo_id']);
-            if (errores::$error) {
-                return $this->error->error(mensaje: 'Error al obtener el saldo del anticipo', data: $saldo);
-            }
 
-            if ($saldo > 0.0) {
-                $nom_par_deduccion = $this->maquetar_nom_par_deduccion(registro: $anticipo,nom_nomina_id: $nom_nomina_id);
-                if (errores::$error) {
-                    return $this->error->error(mensaje: 'Error al maquetar deduccion', data: $nom_par_deduccion);
-                }
-
-                $alta = (new nom_par_deduccion($this->link))->alta_registro($nom_par_deduccion);
-                if (errores::$error) {
-                    return $this->error->error(mensaje: 'Error al dat de alta deduccion', data: $alta);
-                }
-                $abonos_aplicados[] = $alta;
-            }
+        $abonos_aplicados = $this->inserta_deducciones_abonos_con_saldo(anticipos: $anticipos , nom_nomina_id: $nom_nomina_id);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al dat de alta deduccion', data: $abonos_aplicados);
         }
+
+
         return $abonos_aplicados;
     }
 
-    private function maquetar_nom_par_deduccion(mixed $registro, int $nom_nomina_id):array{
-
-        $datos['descripcion'] = $registro['em_metodo_calculo_descripcion'];
-        $datos['codigo'] = $registro['em_anticipo_id'].$registro['em_empleado_codigo'];
-        $datos['descripcion_select'] = $registro['em_metodo_calculo_descripcion'].$registro['em_tipo_descuento_monto'];
-        $datos['codigo_bis'] = $datos['codigo'];
-        $datos['alias'] = $datos['codigo'].$datos['descripcion'];
-        $datos['nom_nomina_id'] = $nom_nomina_id;
-        $datos['nom_deduccion_id'] = 1;
-        $datos['importe_gravado'] = $datos['em_tipo_descuento_monto'];;
-        $datos['importe_exento'] = $datos['em_tipo_descuento_monto'];;
-
-        return $datos;
-    }
 
     /**
      * @return array|stdClass
@@ -228,19 +202,47 @@ class nom_nomina extends modelo
         return $r_alta_bd;
     }
 
-    public function maqueta_nom_comcepto(int $nom_nomina_id, array $concepto, float $monto){
-        $registro_concepto_imss['nom_nomina_id'] = $nom_nomina_id;
-        $registro_concepto_imss['nom_tipo_concepto_imss_id'] = $concepto['nom_tipo_concepto_imss_id'];
-        $registro_concepto_imss['monto'] = $monto;
-        $registro_concepto_imss['descripcion'] = $nom_nomina_id."-".
-            $concepto['nom_tipo_concepto_imss_alias'];
-        $registro_concepto_imss['descripcion_select'] = $registro_concepto_imss['descripcion'];
-        $registro_concepto_imss['alias'] = $registro_concepto_imss['descripcion'];
-        $registro_concepto_imss['codigo'] = $nom_nomina_id."-".
-            $concepto['nom_tipo_concepto_imss_alias']."-".rand();
-        $registro_concepto_imss['codigo_bis'] = $registro_concepto_imss['codigo'];
 
-        return $registro_concepto_imss;
+
+
+    private function inserta_deduccion_abono_con_saldo(array $anticipo, int $nom_nomina_id): array|stdClass
+    {
+        $alta = new stdClass();
+        $saldo = (new em_anticipo($this->link))->get_saldo_anticipo(em_anticipo_id: $anticipo['em_anticipo_id']);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al obtener el saldo del anticipo', data: $saldo);
+        }
+
+        if ($saldo > 0.0) {
+            /**
+             * OBTENER NOM COMF ABONO MEDIANTE em_tipo_anticipo
+             * OBTENER MNONTO A DESCONTAR
+             * INSERTAR NOM OPAR DE DEUCCION //LISTO
+             * INSRTAR EM ABONO ANTICIPO
+             * INSERTAR RELACION ENTRE EM ABONO Y NOM PAR DEDUCCION /CRUD FALTANTE KEVIN BAUTIZA /M A N
+             */
+            $alta = (new nom_par_deduccion($this->link))->inserta_deduccion_anticipo(
+                anticipo: $anticipo,nom_nomina_id:  $nom_nomina_id);
+            if (errores::$error) {
+                return $this->error->error(mensaje: 'Error al dat de alta deduccion', data: $alta);
+            }
+        }
+        return $alta;
+    }
+
+    private function inserta_deducciones_abonos_con_saldo(stdClass $anticipos, int $nom_nomina_id): array
+    {
+        $abonos_aplicados = array();
+        foreach ($anticipos->registros as $anticipo){
+
+            $alta = $this->inserta_deduccion_abono_con_saldo(anticipo: $anticipo , nom_nomina_id: $nom_nomina_id);
+            if (errores::$error) {
+                return $this->error->error(mensaje: 'Error al dat de alta deduccion', data: $alta);
+            }
+            $abonos_aplicados[] = $alta;
+
+        }
+        return $abonos_aplicados;
     }
 
     public function inserta_conceptos(array $conceptos, stdClass $cuotas, int $nom_nomina_id): array
@@ -1167,6 +1169,21 @@ class nom_nomina extends modelo
             }
         }
         return $registro;
+    }
+
+    public function maqueta_nom_comcepto(int $nom_nomina_id, array $concepto, float $monto){
+        $registro_concepto_imss['nom_nomina_id'] = $nom_nomina_id;
+        $registro_concepto_imss['nom_tipo_concepto_imss_id'] = $concepto['nom_tipo_concepto_imss_id'];
+        $registro_concepto_imss['monto'] = $monto;
+        $registro_concepto_imss['descripcion'] = $nom_nomina_id."-".
+            $concepto['nom_tipo_concepto_imss_alias'];
+        $registro_concepto_imss['descripcion_select'] = $registro_concepto_imss['descripcion'];
+        $registro_concepto_imss['alias'] = $registro_concepto_imss['descripcion'];
+        $registro_concepto_imss['codigo'] = $nom_nomina_id."-".
+            $concepto['nom_tipo_concepto_imss_alias']."-".rand();
+        $registro_concepto_imss['codigo_bis'] = $registro_concepto_imss['codigo'];
+
+        return $registro_concepto_imss;
     }
 
     public function modifica_bd(array $registro, int $id, bool $reactiva = false): array|stdClass
