@@ -156,6 +156,13 @@ class calcula_nominaTest extends test {
             exit;
         }
 
+        $del = (new \gamboamartin\organigrama\tests\base_test())->del_org_clasificacion_dep($this->link);
+        if(errores::$error){
+            $error = (new errores())->error('Error al eliminar', $del);
+            print_r($error);
+            exit;
+        }
+
 
 
         $alta = (new base_test())->alta_nom_nomina($this->link);
@@ -249,6 +256,13 @@ class calcula_nominaTest extends test {
         }
 
         $del = (new \gamboamartin\organigrama\tests\base_test())->del_org_empresa($link);
+        if(errores::$error){
+            $error = (new errores())->error('Error al eliminar', $del);
+            print_r($error);
+            exit;
+        }
+
+        $del = (new \gamboamartin\organigrama\tests\base_test())->del_org_clasificacion_dep($link);
         if(errores::$error){
             $error = (new errores())->error('Error al eliminar', $del);
             print_r($error);

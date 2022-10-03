@@ -88,6 +88,13 @@ class nom_par_otro_pagoTest extends test {
             exit;
         }
 
+        $del = (new \gamboamartin\organigrama\tests\base_test())->del_org_clasificacion_dep($this->link);
+        if(errores::$error){
+            $error = (new errores())->error(mensaje: 'Error al eliminar', data: $del);
+            print_r($error);
+            exit;
+        }
+
 
         $alta = (new base_test())->alta_nom_nomina($this->link);
         if(errores::$error){

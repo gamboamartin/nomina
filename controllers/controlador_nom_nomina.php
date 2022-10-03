@@ -9,11 +9,13 @@
 
 namespace gamboamartin\nomina\controllers;
 
+use config\generales;
 use gamboamartin\errores\errores;
 use gamboamartin\facturacion\models\fc_factura;
 use gamboamartin\system\actions;
 use gamboamartin\system\links_menu;
 use gamboamartin\template\html;
+use gamboamartin\validacion\validacion;
 use gamboamartin\xml_cfdi_4\cfdis;
 use html\nom_nomina_html;
 use html\nom_par_deduccion_html;
@@ -372,6 +374,12 @@ class controlador_nom_nomina extends base_nom
             return $this->retorno_error(mensaje: 'Error al obtener nomina', data: $nom_nomina, header: $header, ws: $ws);
         }
 
+        $keys = array('fc_factura_id');
+        $valida = (new validacion())->valida_ids(keys: $keys, registro: $nom_nomina);
+        if (errores::$error) {
+            return $this->retorno_error(mensaje: 'Error al validar nomina', data: $valida, header: $header, ws: $ws);
+        }
+
 
         $fc_factura = (new fc_factura($this->link))->registro(
             registro_id:$nom_nomina->fc_factura_id, retorno_obj: true );
@@ -379,9 +387,6 @@ class controlador_nom_nomina extends base_nom
             return $this->retorno_error(mensaje: 'Error al obtener factura',
                 data: $fc_factura, header: $header, ws: $ws);
         }
-
-
-
 
         $deducciones = (new nom_nomina($this->link))->deducciones(nom_nomina_id: $this->registro_id);
         if(errores::$error){
@@ -431,13 +436,16 @@ class controlador_nom_nomina extends base_nom
                 mensaje: 'Error al asignar otros_pagos', data: $nomina, header: $header, ws: $ws);
         }
 
-
         $xml = (new cfdis())->complemento_nomina(
             comprobante: $comprobante,emisor:  $emisor, nomina: $nomina,receptor:  $receptor);
         if (errores::$error) {
             return $this->retorno_error(mensaje: 'Error al generar xml', data: $xml, header: $header, ws: $ws);
         }
-        echo htmlentities($xml);exit;
+
+        $ruta_archivos = (new generales())->path_base.'archivos';
+        print_r($ruta_archivos);exit;
+
+        //file_put_contents($filename, $data)
 
         return $nom_nomina;
     }
