@@ -443,9 +443,31 @@ class controlador_nom_nomina extends base_nom
         }
 
         $ruta_archivos = (new generales())->path_base.'archivos';
-        print_r($ruta_archivos);exit;
+        if(!file_exists($ruta_archivos)){
+            mkdir($ruta_archivos,0777,true);
+        }
+        if(!file_exists($ruta_archivos)){
+            return $this->retorno_error(mensaje: 'Error no existe '.$ruta_archivos, data: $ruta_archivos, header: $header, ws: $ws);
+        }
 
-        //file_put_contents($filename, $data)
+        $ruta_archivos_model = $ruta_archivos.'/'.$this->tabla;
+
+        if(!file_exists($ruta_archivos_model)){
+            mkdir($ruta_archivos_model,0777,true);
+        }
+        if(!file_exists($ruta_archivos_model)){
+            return $this->retorno_error(mensaje: 'Error no existe '.$ruta_archivos_model, data: $ruta_archivos_model, header: $header, ws: $ws);
+        }
+
+        $file_xml_st = $ruta_archivos_model.'/'.$this->registro_id.'.st.xml';
+
+        file_put_contents($file_xml_st, $xml);
+
+        ob_clean();
+        echo trim(file_get_contents($file_xml_st));
+        header('Content-Type: text/xml');
+        exit;
+
 
         return $nom_nomina;
     }
