@@ -89,7 +89,7 @@ class nom_par_deduccion extends nominas{
 
     public function inserta_deduccion_anticipo(array $anticipo, int $nom_nomina_id, array $nom_conf_abono): array|stdClass
     {
-        $nom_par_deduccion = $this->maquetar_nom_par_deduccion(registro: $anticipo,nom_nomina_id: $nom_nomina_id,
+        $nom_par_deduccion = $this->maquetar_nom_par_deduccion(anticipo: $anticipo,nom_nomina_id: $nom_nomina_id,
             nom_conf_abono: $nom_conf_abono);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al maquetar deduccion', data: $nom_par_deduccion);
@@ -102,16 +102,23 @@ class nom_par_deduccion extends nominas{
         return $alta;
     }
 
-    private function maquetar_nom_par_deduccion(array $registro, int $nom_nomina_id, array $nom_conf_abono):array{
-        $datos['descripcion'] = $registro['em_anticipo_descripcion'].$registro['em_anticipo_id'];
-        $datos['codigo'] = $registro['em_anticipo_codigo'].$registro['em_tipo_descuento_codigo'].$nom_nomina_id;
+    private function maquetar_nom_par_deduccion(array $anticipo, int $nom_nomina_id, array $nom_conf_abono):array{
+
+        $descuento = round($anticipo['em_tipo_descuento_monto'],2);
+        $saldo = round($anticipo['em_anticipo_saldo'],2);
+        if($descuento > $saldo){
+            $descuento = $saldo;
+        }
+
+        $datos['descripcion'] = $anticipo['em_anticipo_descripcion'].$anticipo['em_anticipo_id'];
+        $datos['codigo'] = $anticipo['em_anticipo_codigo'].$anticipo['em_tipo_descuento_codigo'].$nom_nomina_id;
         $datos['descripcion_select'] = strtoupper($datos['descripcion']);
         $datos['codigo_bis'] = strtoupper($datos['codigo']);
         $datos['alias'] = $datos['codigo'].$datos['descripcion'];
         $datos['nom_nomina_id'] = $nom_nomina_id;
         $datos['nom_deduccion_id'] = $nom_conf_abono['nom_deduccion_id'];
-        $datos['importe_gravado'] = ($nom_conf_abono['adm_campo_descripcion'] === "importe_gravado") ?  $registro['em_tipo_descuento_monto'] : 0;
-        $datos['importe_exento'] = ($nom_conf_abono['adm_campo_descripcion'] === "importe_exento") ?  $registro['em_tipo_descuento_monto'] : 0;
+        $datos['importe_gravado'] = ($nom_conf_abono['adm_campo_descripcion'] === "importe_gravado") ?  $descuento : 0;
+        $datos['importe_exento'] = ($nom_conf_abono['adm_campo_descripcion'] === "importe_exento") ?  $descuento : 0;
 
         return $datos;
     }

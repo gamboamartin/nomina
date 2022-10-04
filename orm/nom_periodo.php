@@ -170,6 +170,18 @@ class nom_periodo extends nominas_confs {
         }
 
         foreach ($empleados_res as $empleado) {
+            foreach ($empleados_excel as $empleado_excel){
+                if($empleado_excel->codigo === $empleado['em_empleado_codigo']){
+                    $registro_inc['nom_tipo_incidencia_id'] = 1;
+                    $registro_inc['em_empleado_id'] = $empleado['em_empleado_id'];
+                    $registro_inc['n_dias'] = $empleado_excel->faltas;
+                    
+                    $nom_incidencia = (new nom_incidencia($this->link))->alta_registro(registro: $registro_inc);
+                    if (errores::$error) {
+                        return $this->error->error(mensaje: 'Error al dar de alta incidencias', data: $nom_incidencia);
+                    }
+                }
+            }
             $alta_empleado = $this->alta_empleado_periodo(empleado: $empleado, nom_periodo: $nom_periodo);
             if (errores::$error) {
                 return $this->error->error(mensaje: 'Error al dar de alta la nomina del empleado', data: $alta_empleado);
