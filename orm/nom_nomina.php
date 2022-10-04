@@ -3,6 +3,7 @@
 namespace models;
 
 use base\orm\modelo;
+use gamboamartin\empleado\models\em_abono_anticipo;
 use gamboamartin\empleado\models\em_anticipo;
 use gamboamartin\empleado\models\em_empleado;
 use gamboamartin\errores\errores;
@@ -217,14 +218,22 @@ class nom_nomina extends modelo
             /**
              * OBTENER NOM COMF ABONO MEDIANTE em_tipo_anticipo
              * OBTENER MNONTO A DESCONTAR
-             * INSERTAR NOM OPAR DE DEUCCION //LISTO
-             * INSRTAR EM ABONO ANTICIPO
              * INSERTAR RELACION ENTRE EM ABONO Y NOM PAR DEDUCCION /CRUD FALTANTE KEVIN BAUTIZA /M A N
              */
             $alta = (new nom_par_deduccion($this->link))->inserta_deduccion_anticipo(
                 anticipo: $anticipo,nom_nomina_id:  $nom_nomina_id);
             if (errores::$error) {
                 return $this->error->error(mensaje: 'Error al dat de alta deduccion', data: $alta);
+            }
+
+            $r_abono = $this->maquetar_em_abono_anticipo($anticipo, nom_nomina_id:  $nom_nomina_id);
+            if (errores::$error) {
+                return $this->error->error(mensaje: 'Error al maquetar abono', data: $r_abono);
+            }
+
+            $alta_em_abono_anticiopo = (new em_abono_anticipo($this->link))->alta_registro($r_abono);
+            if (errores::$error) {
+                return $this->error->error(mensaje: 'Error al dat de alta abono', data: $alta_em_abono_anticiopo);
             }
         }
         return $alta;
@@ -1169,6 +1178,21 @@ class nom_nomina extends modelo
             }
         }
         return $registro;
+    }
+
+    private function maquetar_em_abono_anticipo(array $registro, int $nom_nomina_id):array{
+        $datos['descripcion'] = $registro['em_anticipo_descripcion'].$registro['em_anticipo_id'];
+        $datos['codigo'] = $registro['em_anticipo_codigo'].$registro['em_tipo_descuento_codigo'].$nom_nomina_id;
+        $datos['descripcion_select'] = strtoupper($datos['descripcion']);
+        $datos['codigo_bis'] = strtoupper($datos['codigo']);
+        $datos['alias'] = $datos['codigo'].$datos['descripcion'];
+        $datos['em_tipo_abono_anticipo_id'] = 1;
+        $datos['em_anticipo_id'] = $registro['em_anticipo_id'];
+        $datos['cat_sat_forma_pago_id'] = 1;
+        $datos['monto'] = 1;
+        $datos['fecha'] = date('Y-m-d');
+
+        return $datos;
     }
 
     public function maqueta_nom_comcepto(int $nom_nomina_id, array $concepto, float $monto){

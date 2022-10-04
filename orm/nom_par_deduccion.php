@@ -103,15 +103,15 @@ class nom_par_deduccion extends nominas{
 
     private function maquetar_nom_par_deduccion(array $registro, int $nom_nomina_id):array{
 
-        $datos['descripcion'] = $registro['em_metodo_calculo_descripcion']; // DESCRIPCION DE ANTICIPO MAS ID DE ANTICIPO
-        $datos['codigo'] = $registro['em_anticipo_id'].$registro['em_empleado_codigo']; //DETERMINAR PRIMARIA
-        $datos['descripcion_select'] = $registro['em_metodo_calculo_descripcion'].$registro['em_tipo_descuento_monto']; //DESCRIPCION MAYUSC
-        $datos['codigo_bis'] = $datos['codigo'];
+        $datos['descripcion'] = $registro['em_anticipo_descripcion'].$registro['em_anticipo_id'];
+        $datos['codigo'] = $registro['em_anticipo_codigo'].$registro['em_tipo_descuento_codigo'].$nom_nomina_id;
+        $datos['descripcion_select'] = strtoupper($datos['descripcion']);
+        $datos['codigo_bis'] = strtoupper($datos['codigo']);
         $datos['alias'] = $datos['codigo'].$datos['descripcion'];
         $datos['nom_nomina_id'] = $nom_nomina_id;
         $datos['nom_deduccion_id'] = 1;
-        $datos['importe_gravado'] = $datos['em_tipo_descuento_monto'];;
-        $datos['importe_exento'] = $datos['em_tipo_descuento_monto'];;
+        $datos['importe_gravado'] = $registro['em_tipo_descuento_monto'];;
+        $datos['importe_exento'] = $registro['em_tipo_descuento_monto'];;
 
         return $datos;
     }
