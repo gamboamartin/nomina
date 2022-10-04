@@ -25,6 +25,7 @@ use html\nom_periodo_html;
 use models\com_cliente;
 use models\com_producto;
 use models\com_sucursal;
+use models\doc_documento;
 use models\em_empleado;
 use models\nom_concepto_imss;
 use models\nom_deduccion;
@@ -316,7 +317,17 @@ class controlador_nom_periodo extends system {
         return $r_modifica;
     }
 
+    /**
+     * @throws \JsonException
+     */
     public function lee_archivo(bool $header, bool $ws = false){
+        $doc_documento_modelo = new doc_documento($this->link);
+        $doc_documento_modelo->registro['doc_tipo_documento_id'] = 1;
+        $doc_documento = $doc_documento_modelo->alta_bd(file: $_FILES['archivo']);
+        if(errores::$error){
+            return $this->errores->error(mensaje: 'Error al dar de alta el documento',data:  $doc_documento);
+        }
+
         $ruta_absoluta = $this->guarda_archivo(file: $_FILES);
         if(errores::$error){
             return $this->errores->error(mensaje: 'Error guardar archivio',data:  $ruta_absoluta);
