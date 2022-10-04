@@ -105,7 +105,22 @@ class nom_par_deduccion extends nominas{
     private function maquetar_nom_par_deduccion(array $anticipo, int $nom_nomina_id, array $nom_conf_abono):array{
 
         $descuento = round($anticipo['em_tipo_descuento_monto'],2);
-        $saldo = round($anticipo['em_anticipo_saldo'],2);
+
+        if($anticipo['em_metodo_calculo_descripcion'] === "porcentaje_monto_bruto"){
+            $total_percepciones = (new nom_nomina($this->link))->total_percepciones_gravado($nom_nomina_id);
+            if (errores::$error) {
+                return $this->error->error(mensaje: 'Error al obtener el total de percepciones', data: $total_percepciones);
+            }
+
+            $total_otros_pagos = (new nom_nomina($this->link))->total_otras_deducciones_monto($nom_nomina_id);
+            if (errores::$error) {
+                return $this->error->error(mensaje: 'Error al obtener el total de otros pagos', data: $total_otros_pagos);
+            }
+
+            $descuento = ($total_percepciones + $total_otros_pagos) * $anticipo['em_tipo_descuento_monto'];
+        }
+
+        $saldo = isset($anticipo['em_anticipo_saldo'])?  round($anticipo['em_anticipo_saldo'],2) : 0.0;
         if($descuento > $saldo){
             $descuento = $saldo;
         }
