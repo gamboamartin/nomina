@@ -84,6 +84,13 @@ class nom_nominaTest extends test {
             exit;
         }
 
+        $del = (new \gamboamartin\organigrama\tests\base_test())->del_org_clasificacion_dep(link: $this->link);
+        if(errores::$error){
+            $error = (new errores())->error('Error al eliminar', $del);
+            print_r($error);
+            exit;
+        }
+
 
         $alta = (new base_test())->alta_em_empleado(link: $this->link);
         if(errores::$error){
@@ -192,6 +199,13 @@ class nom_nominaTest extends test {
 
 
         $del = (new \gamboamartin\organigrama\tests\base_test())->del_org_empresa($this->link);
+        if(errores::$error){
+            $error = (new errores())->error('Error al eliminar', $del);
+            print_r($error);
+            exit;
+        }
+
+        $del = (new \gamboamartin\organigrama\tests\base_test())->del_org_clasificacion_dep($this->link);
         if(errores::$error){
             $error = (new errores())->error('Error al eliminar', $del);
             print_r($error);
@@ -530,6 +544,14 @@ class nom_nominaTest extends test {
             exit;
         }
 
+        $del = (new \gamboamartin\organigrama\tests\base_test())->del_org_clasificacion_dep($this->link);
+        if(errores::$error){
+            $error = (new errores())->error(mensaje: 'Error al eliminar', data: $del);
+            print_r($error);
+            exit;
+        }
+
+
 
 
         $em_empleado_id = 1;
@@ -671,7 +693,12 @@ class nom_nominaTest extends test {
             print_r($error);
             exit;
         }
-
+        $del = (new \gamboamartin\organigrama\tests\base_test())->del_org_clasificacion_dep($this->link);
+        if(errores::$error){
+            $error = (new errores())->error(mensaje: 'Error al eliminar', data: $del);
+            print_r($error);
+            exit;
+        }
 
         $alta = (new base_test())->alta_nom_nomina($this->link);
         if(errores::$error){
@@ -828,6 +855,13 @@ class nom_nominaTest extends test {
             exit;
         }
 
+
+        $del = (new \gamboamartin\organigrama\tests\base_test())->del_org_clasificacion_dep($this->link);
+        if(errores::$error){
+            $error = (new errores())->error(mensaje: 'Error al eliminar', data: $del);
+            print_r($error);
+            exit;
+        }
         $alta = (new base_test())->alta_nom_nomina($this->link);
         if(errores::$error){
             $error = (new errores())->error(mensaje: 'Error al insertar', data: $alta);

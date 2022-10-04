@@ -1,10 +1,10 @@
 <?php
 namespace gamboamartin\nomina\controllers;
+use gamboamartin\comercial\models\com_sucursal;
 use gamboamartin\errores\errores;
 use gamboamartin\facturacion\models\fc_factura;
 use gamboamartin\validacion\validacion;
 use models\calcula_nomina;
-use models\com_sucursal;
 use models\nom_nomina;
 use PDO;
 use stdClass;

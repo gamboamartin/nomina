@@ -3,6 +3,8 @@
 namespace models;
 
 use base\orm\modelo;
+use gamboamartin\empleado\models\em_abono_anticipo;
+use gamboamartin\empleado\models\em_anticipo;
 use gamboamartin\empleado\models\em_empleado;
 use gamboamartin\errores\errores;
 use gamboamartin\facturacion\models\fc_csd;
@@ -55,6 +57,31 @@ class nom_nomina extends modelo
 
         return $r_nom_par_otro_pago;
     }
+
+    /**
+     * @param int $em_empleado_id
+     * @param int $nom_nomina_id
+     * @return array
+     */
+    private function acciones_anticipo(int $em_empleado_id, int $nom_nomina_id): array
+    {
+
+
+        $anticipos = (new em_anticipo($this->link))->get_anticipos_empleado(em_empleado_id: $em_empleado_id);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al obtener los anticipos', data: $anticipos);
+        }
+
+
+        $abonos_aplicados = $this->inserta_deducciones_abonos_con_saldo(anticipos: $anticipos , nom_nomina_id: $nom_nomina_id);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al dat de alta deduccion', data: $abonos_aplicados);
+        }
+
+
+        return $abonos_aplicados;
+    }
+
 
     /**
      * @return array|stdClass
@@ -168,22 +195,76 @@ class nom_nomina extends modelo
             return $this->error->error(mensaje: 'Error insertar conceptos', data: $r_conceptos);
         }
 
+        $abonos_aplicados = $this->acciones_anticipo(em_empleado_id: $this->registro['em_empleado_id'],nom_nomina_id: $r_alta_bd->registro_id);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al ejecutar acciones de anticipo', data: $abonos_aplicados);
+        }
+
         return $r_alta_bd;
     }
 
-    public function maqueta_nom_comcepto(int $nom_nomina_id, array $concepto, float $monto){
-        $registro_concepto_imss['nom_nomina_id'] = $nom_nomina_id;
-        $registro_concepto_imss['nom_tipo_concepto_imss_id'] = $concepto['nom_tipo_concepto_imss_id'];
-        $registro_concepto_imss['monto'] = $monto;
-        $registro_concepto_imss['descripcion'] = $nom_nomina_id."-".
-            $concepto['nom_tipo_concepto_imss_alias'];
-        $registro_concepto_imss['descripcion_select'] = $registro_concepto_imss['descripcion'];
-        $registro_concepto_imss['alias'] = $registro_concepto_imss['descripcion'];
-        $registro_concepto_imss['codigo'] = $nom_nomina_id."-".
-            $concepto['nom_tipo_concepto_imss_alias']."-".rand();
-        $registro_concepto_imss['codigo_bis'] = $registro_concepto_imss['codigo'];
 
-        return $registro_concepto_imss;
+
+
+    private function inserta_deduccion_abono_con_saldo(array $anticipo, int $nom_nomina_id): array|stdClass
+    {
+        $alta = new stdClass();
+        $saldo = (new em_anticipo($this->link))->get_saldo_anticipo(em_anticipo_id: $anticipo['em_anticipo_id']);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al obtener el saldo del anticipo', data: $saldo);
+        }
+
+        if ($saldo > 0.0) {
+            /**
+             * OBTENER NOM COMF ABONO MEDIANTE em_tipo_anticipo
+             * OBTENER MNONTO A DESCONTAR
+             * INSERTAR RELACION ENTRE EM ABONO Y NOM PAR DEDUCCION /CRUD FALTANTE KEVIN BAUTIZA /M A N
+             */
+
+            $alta = (new nom_par_deduccion($this->link))->inserta_deduccion_anticipo(
+                anticipo: $anticipo,nom_nomina_id:  $nom_nomina_id);
+            if (errores::$error) {
+                return $this->error->error(mensaje: 'Error al dat de alta deduccion', data: $alta);
+            }
+
+            $r_abono = $this->maquetar_em_abono_anticipo(registro: $anticipo, nom_nomina_id:  $nom_nomina_id);
+            if (errores::$error) {
+                return $this->error->error(mensaje: 'Error al maquetar abono', data: $r_abono);
+            }
+
+            $alta_em_abono_anticiopo = (new em_abono_anticipo($this->link))->alta_registro($r_abono);
+            if (errores::$error) {
+                return $this->error->error(mensaje: 'Error al dar de alta abono', data: $alta_em_abono_anticiopo);
+            }
+
+            $r_rel_deduccion_abono = $this->maquetar_nom_rel_deduccion_abono(deduccion: $alta,
+                abono:  $alta_em_abono_anticiopo, nom_nomina_id:  $nom_nomina_id);
+            if (errores::$error) {
+                return $this->error->error(mensaje: 'Error al maquetar rel deduccion abono', data: $r_abono);
+            }
+
+            $alta_rel_deduccion_abono = (new nom_rel_deduccion_abono($this->link))->alta_registro($r_rel_deduccion_abono);
+            if (errores::$error) {
+                return $this->error->error(mensaje: 'Error al dar de alta rel deduccion abono',
+                    data: $alta_rel_deduccion_abono);
+            }
+        }
+        return $alta;
+    }
+
+    private function inserta_deducciones_abonos_con_saldo(stdClass $anticipos, int $nom_nomina_id): array
+    {
+        $abonos_aplicados = array();
+        foreach ($anticipos->registros as $anticipo){
+
+            $alta = $this->inserta_deduccion_abono_con_saldo(anticipo: $anticipo , nom_nomina_id: $nom_nomina_id);
+            if (errores::$error) {
+                return $this->error->error(mensaje: 'Error al dat de alta deduccion', data: $alta);
+            }
+            $abonos_aplicados[] = $alta;
+
+        }
+        return $abonos_aplicados;
     }
 
     public function inserta_conceptos(array $conceptos, stdClass $cuotas, int $nom_nomina_id): array
@@ -1110,6 +1191,50 @@ class nom_nomina extends modelo
             }
         }
         return $registro;
+    }
+
+    private function maquetar_em_abono_anticipo(array $registro, int $nom_nomina_id):array{
+        $datos['descripcion'] = $registro['em_anticipo_descripcion'].$registro['em_anticipo_id'];
+        $datos['codigo'] = $registro['em_anticipo_codigo'].$registro['em_tipo_descuento_codigo'].$nom_nomina_id;
+        $datos['descripcion_select'] = strtoupper($datos['descripcion']);
+        $datos['codigo_bis'] = strtoupper($datos['codigo']);
+        $datos['alias'] = $datos['codigo'].$datos['descripcion'];
+        $datos['em_tipo_abono_anticipo_id'] = 1;
+        $datos['em_anticipo_id'] = $registro['em_anticipo_id'];
+        $datos['cat_sat_forma_pago_id'] = 1;
+        $datos['monto'] = 1;
+        $datos['fecha'] = date('Y-m-d');
+
+        return $datos;
+    }
+
+private function maquetar_nom_rel_deduccion_abono(array|stdClass $deduccion, array|stdClass $abono, int $nom_nomina_id):array{
+        $datos['descripcion'] = $deduccion->registro['nom_par_deduccion_descripcion'];
+        $datos['descripcion'] .= $abono->registro['em_abono_anticipo_descripcion'];
+        $datos['codigo'] = $deduccion->registro['nom_par_deduccion_codigo'];
+        $datos['codigo'] .= $abono->registro['em_abono_anticipo_codigo'].$nom_nomina_id;
+        $datos['descripcion_select'] = strtoupper($datos['descripcion']);
+        $datos['codigo_bis'] = strtoupper($datos['codigo']);
+        $datos['alias'] = $datos['codigo'].$datos['descripcion'];
+        $datos['nom_par_deduccion_id'] = $deduccion->registro_id;
+        $datos['em_abono_anticipo_id'] = $abono->registro_id;
+
+        return $datos;
+    }
+
+    public function maqueta_nom_comcepto(int $nom_nomina_id, array $concepto, float $monto){
+        $registro_concepto_imss['nom_nomina_id'] = $nom_nomina_id;
+        $registro_concepto_imss['nom_tipo_concepto_imss_id'] = $concepto['nom_tipo_concepto_imss_id'];
+        $registro_concepto_imss['monto'] = $monto;
+        $registro_concepto_imss['descripcion'] = $nom_nomina_id."-".
+            $concepto['nom_tipo_concepto_imss_alias'];
+        $registro_concepto_imss['descripcion_select'] = $registro_concepto_imss['descripcion'];
+        $registro_concepto_imss['alias'] = $registro_concepto_imss['descripcion'];
+        $registro_concepto_imss['codigo'] = $nom_nomina_id."-".
+            $concepto['nom_tipo_concepto_imss_alias']."-".rand();
+        $registro_concepto_imss['codigo_bis'] = $registro_concepto_imss['codigo'];
+
+        return $registro_concepto_imss;
     }
 
     public function modifica_bd(array $registro, int $id, bool $reactiva = false): array|stdClass

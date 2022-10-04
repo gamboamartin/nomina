@@ -39,15 +39,42 @@ class xml_nomTest extends test {
         $xml_nom = new liberator($xml_nom);
 
 
-
-        $del = (new base_test())->del_em_empleado($this->link);
+        $del = (new base_test())->del_nom_conf_empleado($this->link);
         if(errores::$error){
             $error = (new errores())->error('Error al eliminar', $del);
             print_r($error);
             exit;
         }
 
-        $del = (new base_test())->del_im_registro_patronal($this->link);
+        $del = (new base_test())->del_nom_nomina($this->link);
+        if(errores::$error){
+            $error = (new errores())->error('Error al eliminar', $del);
+            print_r($error);
+            exit;
+        }
+
+        $del = (new base_test())->del_nom_rel_empleado_sucursal($this->link);
+        if(errores::$error){
+            $error = (new errores())->error('Error al eliminar', $del);
+            print_r($error);
+            exit;
+        }
+
+        $del = (new base_test())->del_nom_periodo($this->link);
+        if(errores::$error){
+            $error = (new errores())->error('Error al eliminar', $del);
+            print_r($error);
+            exit;
+        }
+
+        $del = (new \gamboamartin\empleado\test\base_test())->del_em_empleado($this->link);
+        if(errores::$error){
+            $error = (new errores())->error('Error al eliminar', $del);
+            print_r($error);
+            exit;
+        }
+
+        $del = (new \gamboamartin\im_registro_patronal\test\base_test())->del_im_registro_patronal($this->link);
         if(errores::$error){
             $error = (new errores())->error('Error al eliminar', $del);
             print_r($error);
@@ -55,6 +82,13 @@ class xml_nomTest extends test {
         }
 
         $del = (new \gamboamartin\facturacion\tests\base_test())->del_fc_csd($this->link);
+        if(errores::$error){
+            $error = (new errores())->error('Error al eliminar', $del);
+            print_r($error);
+            exit;
+        }
+
+        $del = (new \gamboamartin\im_registro_patronal\test\base_test())->del_im_conf_pres_empresa($this->link);
         if(errores::$error){
             $error = (new errores())->error('Error al eliminar', $del);
             print_r($error);
@@ -76,6 +110,13 @@ class xml_nomTest extends test {
         }
 
         $del = (new \gamboamartin\cat_sat\tests\base_test())->del_cat_sat_tipo_nomina($this->link);
+        if(errores::$error){
+            $error = (new errores())->error('Error al eliminar', $del);
+            print_r($error);
+            exit;
+        }
+
+        $del = (new \gamboamartin\organigrama\tests\base_test())->del_org_clasificacion_dep($this->link);
         if(errores::$error){
             $error = (new errores())->error('Error al eliminar', $del);
             print_r($error);

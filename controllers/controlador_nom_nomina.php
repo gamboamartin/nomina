@@ -9,21 +9,19 @@
 
 namespace gamboamartin\nomina\controllers;
 
+use config\generales;
 use gamboamartin\errores\errores;
 use gamboamartin\facturacion\models\fc_factura;
 use gamboamartin\system\actions;
 use gamboamartin\system\links_menu;
 use gamboamartin\template\html;
+use gamboamartin\validacion\validacion;
 use gamboamartin\xml_cfdi_4\cfdis;
 use html\nom_nomina_html;
 use html\nom_par_deduccion_html;
 use html\nom_par_otro_pago_html;
 use html\nom_par_percepcion_html;
 use JsonException;
-use models\calcula_nomina;
-use models\com_sucursal;
-use models\im_movimiento;
-use models\im_registro_patronal;
 use models\nom_concepto_imss;
 use models\nom_nomina;
 use models\nom_par_deduccion;
@@ -372,6 +370,12 @@ class controlador_nom_nomina extends base_nom
             return $this->retorno_error(mensaje: 'Error al obtener nomina', data: $nom_nomina, header: $header, ws: $ws);
         }
 
+        $keys = array('fc_factura_id');
+        $valida = (new validacion())->valida_ids(keys: $keys, registro: $nom_nomina);
+        if (errores::$error) {
+            return $this->retorno_error(mensaje: 'Error al validar nomina', data: $valida, header: $header, ws: $ws);
+        }
+
 
         $fc_factura = (new fc_factura($this->link))->registro(
             registro_id:$nom_nomina->fc_factura_id, retorno_obj: true );
@@ -379,9 +383,6 @@ class controlador_nom_nomina extends base_nom
             return $this->retorno_error(mensaje: 'Error al obtener factura',
                 data: $fc_factura, header: $header, ws: $ws);
         }
-
-
-
 
         $deducciones = (new nom_nomina($this->link))->deducciones(nom_nomina_id: $this->registro_id);
         if(errores::$error){
@@ -431,13 +432,38 @@ class controlador_nom_nomina extends base_nom
                 mensaje: 'Error al asignar otros_pagos', data: $nomina, header: $header, ws: $ws);
         }
 
-
         $xml = (new cfdis())->complemento_nomina(
             comprobante: $comprobante,emisor:  $emisor, nomina: $nomina,receptor:  $receptor);
         if (errores::$error) {
             return $this->retorno_error(mensaje: 'Error al generar xml', data: $xml, header: $header, ws: $ws);
         }
-        echo htmlentities($xml);exit;
+
+        $ruta_archivos = (new generales())->path_base.'archivos';
+        if(!file_exists($ruta_archivos)){
+            mkdir($ruta_archivos,0777,true);
+        }
+        if(!file_exists($ruta_archivos)){
+            return $this->retorno_error(mensaje: 'Error no existe '.$ruta_archivos, data: $ruta_archivos, header: $header, ws: $ws);
+        }
+
+        $ruta_archivos_model = $ruta_archivos.'/'.$this->tabla;
+
+        if(!file_exists($ruta_archivos_model)){
+            mkdir($ruta_archivos_model,0777,true);
+        }
+        if(!file_exists($ruta_archivos_model)){
+            return $this->retorno_error(mensaje: 'Error no existe '.$ruta_archivos_model, data: $ruta_archivos_model, header: $header, ws: $ws);
+        }
+
+        $file_xml_st = $ruta_archivos_model.'/'.$this->registro_id.'.st.xml';
+
+        file_put_contents($file_xml_st, $xml);
+
+        ob_clean();
+        echo trim(file_get_contents($file_xml_st));
+        header('Content-Type: text/xml');
+        exit;
+
 
         return $nom_nomina;
     }
