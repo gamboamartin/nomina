@@ -220,20 +220,33 @@ class nom_nomina extends modelo
              * OBTENER MNONTO A DESCONTAR
              * INSERTAR RELACION ENTRE EM ABONO Y NOM PAR DEDUCCION /CRUD FALTANTE KEVIN BAUTIZA /M A N
              */
+
             $alta = (new nom_par_deduccion($this->link))->inserta_deduccion_anticipo(
                 anticipo: $anticipo,nom_nomina_id:  $nom_nomina_id);
             if (errores::$error) {
                 return $this->error->error(mensaje: 'Error al dat de alta deduccion', data: $alta);
             }
 
-            $r_abono = $this->maquetar_em_abono_anticipo($anticipo, nom_nomina_id:  $nom_nomina_id);
+            $r_abono = $this->maquetar_em_abono_anticipo(registro: $anticipo, nom_nomina_id:  $nom_nomina_id);
             if (errores::$error) {
                 return $this->error->error(mensaje: 'Error al maquetar abono', data: $r_abono);
             }
 
             $alta_em_abono_anticiopo = (new em_abono_anticipo($this->link))->alta_registro($r_abono);
             if (errores::$error) {
-                return $this->error->error(mensaje: 'Error al dat de alta abono', data: $alta_em_abono_anticiopo);
+                return $this->error->error(mensaje: 'Error al dar de alta abono', data: $alta_em_abono_anticiopo);
+            }
+
+            $r_rel_deduccion_abono = $this->maquetar_nom_rel_deduccion_abono(deduccion: $alta,
+                abono:  $alta_em_abono_anticiopo, nom_nomina_id:  $nom_nomina_id);
+            if (errores::$error) {
+                return $this->error->error(mensaje: 'Error al maquetar rel deduccion abono', data: $r_abono);
+            }
+
+            $alta_rel_deduccion_abono = (new nom_rel_deduccion_abono($this->link))->alta_registro($r_rel_deduccion_abono);
+            if (errores::$error) {
+                return $this->error->error(mensaje: 'Error al dar de alta rel deduccion abono',
+                    data: $alta_rel_deduccion_abono);
             }
         }
         return $alta;
@@ -1191,6 +1204,20 @@ class nom_nomina extends modelo
         $datos['cat_sat_forma_pago_id'] = 1;
         $datos['monto'] = 1;
         $datos['fecha'] = date('Y-m-d');
+
+        return $datos;
+    }
+
+private function maquetar_nom_rel_deduccion_abono(array|stdClass $deduccion, array|stdClass $abono, int $nom_nomina_id):array{
+        $datos['descripcion'] = $deduccion->registro['nom_par_deduccion_descripcion'];
+        $datos['descripcion'] .= $abono->registro['em_abono_anticipo_descripcion'];
+        $datos['codigo'] = $deduccion->registro['nom_par_deduccion_codigo'];
+        $datos['codigo'] .= $abono->registro['em_abono_anticipo_codigo'].$nom_nomina_id;
+        $datos['descripcion_select'] = strtoupper($datos['descripcion']);
+        $datos['codigo_bis'] = strtoupper($datos['codigo']);
+        $datos['alias'] = $datos['codigo'].$datos['descripcion'];
+        $datos['nom_par_deduccion_id'] = $deduccion->registro_id;
+        $datos['em_abono_anticipo_id'] = $abono->registro_id;
 
         return $datos;
     }
