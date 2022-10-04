@@ -222,25 +222,25 @@ class nom_nomina extends modelo
                 return $this->error->error(mensaje: 'Error al obtener conf. abono', data: $conf_abono);
             }
 
-            if ($conf_abono->n_registros == 0){
-                return $this->error->error(mensaje: 'Error no existe una conf. para el tipo de anticipo', data: $conf_abono);
-            }
+            if ($conf_abono->n_registros > 0) {
 
-            $alta = (new nom_par_deduccion($this->link))->inserta_deduccion_anticipo(
-                anticipo: $anticipo,nom_nomina_id:  $nom_nomina_id, nom_conf_abono: $conf_abono->registros[0]);
-            if (errores::$error) {
-                return $this->error->error(mensaje: 'Error al dat de alta deduccion', data: $alta);
-            }
 
-            $alta_em_abono_anticiopo = $this->inserta_em_abono_anticipo(anticipo: $anticipo,nom_nomina_id:  $nom_nomina_id);
-            if (errores::$error) {
-                return $this->error->error(mensaje: 'Error al dat de alta abono', data: $alta_em_abono_anticiopo);
-            }
+                $alta_npd = (new nom_par_deduccion($this->link))->inserta_deduccion_anticipo(
+                    anticipo: $anticipo, nom_nomina_id: $nom_nomina_id, nom_conf_abono: $conf_abono->registros[0]);
+                if (errores::$error) {
+                    return $this->error->error(mensaje: 'Error al dat de alta deduccion', data: $alta_npd);
+                }
 
-            $alta_em_abono_anticiopo = $this->inserta_nom_rel_deduccion_abono(deduccion: $alta,
-                abono: $alta_em_abono_anticiopo,nom_nomina_id:  $nom_nomina_id);
-            if (errores::$error) {
-                return $this->error->error(mensaje: 'Error al dat de alta abono', data: $alta_em_abono_anticiopo);
+                $alta_em_abono_anticipo = $this->inserta_em_abono_anticipo(anticipo: $anticipo, nom_nomina_id: $nom_nomina_id);
+                if (errores::$error) {
+                    return $this->error->error(mensaje: 'Error al dat de alta abono', data: $alta_em_abono_anticipo);
+                }
+
+                $alta_nrda = $this->inserta_nom_rel_deduccion_abono(deduccion: $alta,
+                    abono: $alta_em_abono_anticipo, nom_nomina_id: $nom_nomina_id);
+                if (errores::$error) {
+                    return $this->error->error(mensaje: 'Error al dat de alta abono', data: $alta_nrda);
+                }
             }
         }
         return $alta;
