@@ -320,26 +320,20 @@ class controlador_nom_periodo extends system {
     /**
      * @throws \JsonException
      */
-    public function lee_archivo(bool $header, bool $ws = false){
+    public function lee_archivo(bool $header, bool $ws = false)
+    {
         $doc_documento_modelo = new doc_documento($this->link);
         $doc_documento_modelo->registro['doc_tipo_documento_id'] = 1;
         $doc_documento = $doc_documento_modelo->alta_bd(file: $_FILES['archivo']);
-        if(errores::$error){
-            return $this->errores->error(mensaje: 'Error al dar de alta el documento',data:  $doc_documento);
+        if (errores::$error) {
+            return $this->errores->error(mensaje: 'Error al dar de alta el documento', data: $doc_documento);
         }
 
-        $ruta_absoluta = $this->guarda_archivo(file: $_FILES);
-        if(errores::$error){
-            return $this->errores->error(mensaje: 'Error guardar archivio',data:  $ruta_absoluta);
-        }
-
-        $empleados_excel = $this->obten_empleados_excel(ruta_absoluta: $ruta_absoluta);
+        $empleados_excel = $this->obten_empleados_excel(ruta_absoluta: $doc_documento->registro['doc_documento_ruta_absoluta']);
         if(errores::$error){
             return $this->errores->error(mensaje: 'Error obtener empleados',data:  $empleados_excel);
         }
 
-        unlink($ruta_absoluta);
-        
         $resultado = (new nom_periodo($this->link))->genera_registro_nomina_excel(nom_periodo_id: $this->registro_id,
         empleados_excel: $empleados_excel);
         if(errores::$error){
