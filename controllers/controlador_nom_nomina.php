@@ -211,6 +211,25 @@ class controlador_nom_nomina extends base_nom
 
         return $row;
     }
+    private function asigna_link_timbra_row(stdClass $row): array|stdClass
+    {
+        $keys = array('nom_nomina_id');
+        $valida = $this->validacion->valida_ids(keys: $keys,registro:  $row);
+        if(errores::$error){
+            return $this->errores->error(mensaje: 'Error al validar row',data:  $valida);
+        }
+
+        $link_timbra = $this->obj_link->link_con_id(accion:'timbra',registro_id:  $row->nom_nomina_id,
+            seccion:  $this->tabla);
+        if(errores::$error){
+            return $this->errores->error(mensaje: 'Error al genera link',data:  $link_timbra);
+        }
+
+        $row->link_timbra = $link_timbra;
+        $row->link_timbra_style = 'info';
+
+        return $row;
+    }
 
     private function base(stdClass $params = new stdClass()): array|stdClass
     {
@@ -542,6 +561,12 @@ class controlador_nom_nomina extends base_nom
     {
         foreach ($registros as $indice=> $row){
             $row = $this->asigna_link_genera_xml_row(row: $row);
+            if(errores::$error){
+                return $this->errores->error(mensaje: 'Error al maquetar row',data:  $row);
+            }
+            $registros[$indice] = $row;
+
+            $row = $this->asigna_link_timbra_row(row: $row);
             if(errores::$error){
                 return $this->errores->error(mensaje: 'Error al maquetar row',data:  $row);
             }
@@ -1051,6 +1076,18 @@ class controlador_nom_nomina extends base_nom
             exit;
         }
         return $result;
+    }
+
+    public function timbra(bool $header, bool $ws = false): array|stdClass
+    {
+        $nom_nomina = $this->modelo->registro(registro_id: $this->registro_id, retorno_obj: true);
+        if (errores::$error) {
+            return $this->retorno_error(mensaje: 'Error al obtener nomina', data: $nom_nomina, header: $header, ws: $ws);
+        }
+
+        
+
+        return $nom_nomina;
     }
 
 

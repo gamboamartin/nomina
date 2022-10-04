@@ -11,6 +11,7 @@
         <th data-breakpoints="xs sm md"  data-type="html">Total Cuota Patronal</th>
 
         <th data-breakpoints="xs md" class="control"  data-type="html">Genera XML</th>
+        <th data-breakpoints="xs md" class="control"  data-type="html">Timbra XML</th>
         <th data-breakpoints="xs md" class="control"  data-type="html">Modifica</th>
         <th data-breakpoints="xs md" class="control"  data-type="html">Elimina</th>
     </tr>
