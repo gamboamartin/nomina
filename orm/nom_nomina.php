@@ -236,7 +236,7 @@ class nom_nomina extends modelo
                     return $this->error->error(mensaje: 'Error al dat de alta abono', data: $alta_em_abono_anticipo);
                 }
 
-                $alta_nrda = $this->inserta_nom_rel_deduccion_abono(deduccion: $alta,
+                $alta_nrda = $this->inserta_nom_rel_deduccion_abono(deduccion: $alta_npd,
                     abono: $alta_em_abono_anticipo, nom_nomina_id: $nom_nomina_id);
                 if (errores::$error) {
                     return $this->error->error(mensaje: 'Error al dat de alta abono', data: $alta_nrda);
@@ -260,8 +260,15 @@ class nom_nomina extends modelo
         return $alta_em_abono_anticiopo;
     }
 
-    public function inserta_nom_rel_deduccion_abono(stdClass $deduccion, stdClass $abono, int $nom_nomina_id): array|stdClass
+    private function inserta_nom_rel_deduccion_abono(stdClass $deduccion, stdClass $abono, int $nom_nomina_id): array|stdClass
     {
+
+        $keys = array('registro');
+        $valida = $this->validacion->valida_existencia_keys(keys:$keys, registro: $deduccion);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al validar deduccion', data: $valida);
+        }
+
         $r_rel_deduccion_abono = $this->maquetar_nom_rel_deduccion_abono(deduccion: $deduccion, abono:  $abono,
             nom_nomina_id:  $nom_nomina_id);
         if (errores::$error) {
