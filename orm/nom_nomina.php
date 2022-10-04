@@ -1228,20 +1228,11 @@ class nom_nomina extends modelo
 
     private function maquetar_em_abono_anticipo(array $anticipo, array|stdClass $deduccion, array $nom_conf_abono,
                                                 int $nom_nomina_id):array{
-
-        /**
-         * CASOS DE USO
-         * 1.- MONTO CALCULADO <= $SALDO
-         * 2.- MONTO CALCULADO > $SALDO
-
-         */
-
         $descuento = round($anticipo['em_tipo_descuento_monto'],2);
         $saldo = round($anticipo['em_anticipo_saldo'],2);
         if($descuento > $saldo){
             $descuento = $saldo;
         }
-
 
         $datos['descripcion'] = $anticipo['em_anticipo_descripcion'].$anticipo['em_anticipo_id'];
         $datos['codigo'] = $anticipo['em_anticipo_codigo'].$anticipo['em_tipo_descuento_codigo'].$nom_nomina_id;
