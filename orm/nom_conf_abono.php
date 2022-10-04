@@ -12,7 +12,7 @@ class nom_conf_abono extends modelo{
 
     public function __construct(PDO $link){
         $tabla = 'nom_conf_abono';
-        $columnas = array($tabla=>false, 'em_tipo_abono_anticipo'=>$tabla, 'nom_deduccion'=>$tabla);
+        $columnas = array($tabla=>false, 'em_tipo_abono_anticipo'=>$tabla, 'nom_deduccion'=>$tabla, 'adm_campo'=>$tabla);
         $campos_obligatorios = array('descripcion','codigo','descripcion_select','alias','codigo_bis',
             'em_tipo_abono_anticipo_id','nom_deduccion_id');
         $campos_view = array(
