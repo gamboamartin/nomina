@@ -334,6 +334,11 @@ class controlador_nom_periodo extends system {
             return $this->errores->error(mensaje: 'Error obtener empleados',data:  $empleados_excel);
         }
 
+        $columna = $this->obten_columna_faltas(ruta_absoluta: $doc_documento->registro['doc_documento_ruta_absoluta']);
+        if(errores::$error){
+            return $this->errores->error(mensaje: 'Error obtener columna de faltas',data:  $columna);
+        }
+
         $resultado = (new nom_periodo($this->link))->genera_registro_nomina_excel(nom_periodo_id: $this->registro_id,
         empleados_excel: $empleados_excel);
         if(errores::$error){
@@ -344,6 +349,26 @@ class controlador_nom_periodo extends system {
         $link.="&session_id=$this->session_id";
         header('Location:' . $link);
         exit;
+    }
+
+    public function obten_columna_faltas(string $ruta_absoluta){
+        $documento = IOFactory::load($ruta_absoluta);
+        $totalDeHojas = $documento->getSheetCount();
+
+        $columna = -1;
+        for ($indiceHoja = 0; $indiceHoja < $totalDeHojas; $indiceHoja++) {
+            $hojaActual = $documento->getSheet($indiceHoja);
+            foreach ($hojaActual->getRowIterator() as $fila) {
+                foreach ($fila->getCellIterator() as $celda) {
+                    $valorRaw = $celda->getValue();
+                    if($valorRaw === 'FALTAS') {
+                        $columna = $celda->getColumn();
+                    }
+                }
+            }
+        }
+
+        return $columna;
     }
 
     public function obten_empleados_excel(string $ruta_absoluta){
