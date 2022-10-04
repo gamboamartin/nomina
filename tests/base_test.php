@@ -59,7 +59,7 @@ class base_test{
         $registro['id'] = 1;
         $registro['nombre'] = 1;
         $registro['ap'] = 1;
-        $registro['rfc'] = 1;
+        $registro['rfc'] = 'AAAA010101257';
         $registro['codigo'] = 1;
         $registro['descripcion_select'] = 1;
         $registro['alias'] = 1;
