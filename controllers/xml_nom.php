@@ -5,6 +5,7 @@ use gamboamartin\errores\errores;
 use gamboamartin\facturacion\models\fc_factura;
 use gamboamartin\validacion\validacion;
 use models\calcula_nomina;
+use models\nom_data_subsidio;
 use models\nom_nomina;
 use PDO;
 use stdClass;
@@ -133,10 +134,11 @@ class xml_nom{
         return $emisor;
     }
 
-    private function data_otro_pago(stdClass $nomina, array $otro_pago): stdClass|array
+    private function data_otro_pago(PDO $link, stdClass $nomina, array $otro_pago): stdClass|array
     {
         $keys = array('cat_sat_tipo_otro_pago_nom_codigo','nom_otro_pago_codigo','nom_par_otro_pago_descripcion',
-            'nom_par_otro_pago_importe_gravado','nom_par_otro_pago_importe_exento');
+            'nom_par_otro_pago_importe_gravado','nom_par_otro_pago_importe_exento','nom_otro_pago_es_subsidio',
+            'nom_par_otro_pago_id');
 
         $valida = $this->validacion->valida_existencia_keys(keys:$keys, registro: $otro_pago);
         if(errores::$error){
@@ -151,20 +153,50 @@ class xml_nom{
         }
 
         $data_otro_pago = new stdClass();
+        $es_subsidio = false;
+        $subsidio_causado = 0;
+        if($otro_pago['nom_otro_pago_es_subsidio'] ==='activo'){
+            if((int)$otro_pago['nom_par_otro_pago_id'] > 0) {
+                $nom_data_subsidios = (new nom_data_subsidio($link))->get_data_by_otro_pago(nom_par_otro_pago_id: $otro_pago['nom_par_otro_pago_id']);
+                if (errores::$error) {
+                    return $this->error->error(mensaje: 'Error al obtener nom_data_subsidios', data: $nom_data_subsidios);
+                }
+
+                foreach ($nom_data_subsidios as $nom_data_subsidio) {
+                    $subsidio_causado += round($nom_data_subsidio['nom_data_subsidio_monto_subsidio_bruto'], 2);
+                }
+            }
+            $subsidio_causado = round($subsidio_causado,2);
+            $es_subsidio = true;
+        }
+
+
+
         $data_otro_pago->tipo_otro_pago = $otro_pago['cat_sat_tipo_otro_pago_nom_codigo'];
         $data_otro_pago->clave = $otro_pago['nom_otro_pago_codigo'];
         $data_otro_pago->concepto = $otro_pago['nom_par_otro_pago_descripcion'];
         $data_otro_pago->importe = round(round($otro_pago['nom_par_otro_pago_importe_gravado'],2) + round($otro_pago['nom_par_otro_pago_importe_exento'],2),2);
+        $data_otro_pago->es_subsidio = $es_subsidio;
+        $data_otro_pago->subsidio_causado = $subsidio_causado;
         $nomina->otros_pagos->otro_pago[] = $data_otro_pago;
 
         return $nomina;
 
     }
 
-    private function data_otros_pagos(stdClass $nomina, array $otros_pagos): array|stdClass
+    private function data_otros_pagos(PDO $link, stdClass $nomina, array $otros_pagos): array|stdClass
     {
         foreach ($otros_pagos as $otro_pago){
-            $nomina = $this->data_otro_pago(nomina: $nomina, otro_pago: $otro_pago);
+            $keys = array('cat_sat_tipo_otro_pago_nom_codigo','nom_otro_pago_codigo','nom_par_otro_pago_descripcion',
+                'nom_par_otro_pago_importe_gravado','nom_par_otro_pago_importe_exento','nom_otro_pago_es_subsidio',
+                'nom_par_otro_pago_id');
+
+            $valida = $this->validacion->valida_existencia_keys(keys:$keys, registro: $otro_pago);
+            if(errores::$error){
+                return $this->error->error(mensaje: 'Error al validar otro pago',data:  $valida);
+            }
+
+            $nomina = $this->data_otro_pago(link: $link,nomina: $nomina, otro_pago: $otro_pago);
             if (errores::$error) {
                 return $this->error->error(mensaje: 'Error al asignar percepcion', data: $nomina);
             }
@@ -352,6 +384,9 @@ class xml_nom{
             $otros_pagos[0]['nom_par_otro_pago_descripcion'] ='SUB EFP';
             $otros_pagos[0]['nom_par_otro_pago_importe_gravado'] ='0';
             $otros_pagos[0]['nom_par_otro_pago_importe_exento'] ='0';
+            $otros_pagos[0]['nom_otro_pago_es_subsidio'] ='activo';
+            $otros_pagos[0]['subsidio_causado'] =0;
+            $otros_pagos[0]['nom_par_otro_pago_id'] =-1;
         }
 
         $nomina = $this->otros_pagos_header(link:$link, nomina: $nomina,nom_nomina_id:  $nom_nomina_id);
@@ -359,7 +394,7 @@ class xml_nom{
             return $this->error->error(mensaje: 'Error al obtener otros_pagos', data: $nomina);
         }
 
-        $nomina = $this->data_otros_pagos(nomina: $nomina, otros_pagos: $otros_pagos);
+        $nomina = $this->data_otros_pagos(link: $link, nomina: $nomina, otros_pagos: $otros_pagos);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al asignar percepciones', data: $nomina);
         }

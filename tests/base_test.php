@@ -453,6 +453,11 @@ class base_test{
             return (new errores())->error('Error al eliminar', $del);
         }
 
+        $del = $this->del_nom_rel_deduccion_abono($link);
+        if(errores::$error){
+            return (new errores())->error('Error al eliminar', $del);
+        }
+
         $del = $this->del($link, 'models\\nom_par_deduccion');
         if(errores::$error){
             return (new errores())->error('Error al eliminar', $del);
@@ -481,6 +486,16 @@ class base_test{
     public function del_nom_periodo(PDO $link): array
     {
         $del = $this->del($link, 'models\\nom_periodo');
+        if(errores::$error){
+            return (new errores())->error('Error al eliminar', $del);
+        }
+        return $del;
+    }
+
+    public function del_nom_rel_deduccion_abono(PDO $link): array
+    {
+
+        $del = $this->del($link, 'models\\nom_rel_deduccion_abono');
         if(errores::$error){
             return (new errores())->error('Error al eliminar', $del);
         }
