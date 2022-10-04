@@ -34,6 +34,7 @@ use models\nom_percepcion;
 use models\nom_periodo;
 use PDO;
 use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use stdClass;
 
 class controlador_nom_periodo extends system {
@@ -334,11 +335,6 @@ class controlador_nom_periodo extends system {
             return $this->errores->error(mensaje: 'Error obtener empleados',data:  $empleados_excel);
         }
 
-        $columna = $this->obten_columna_faltas(ruta_absoluta: $doc_documento->registro['doc_documento_ruta_absoluta']);
-        if(errores::$error){
-            return $this->errores->error(mensaje: 'Error obtener columna de faltas',data:  $columna);
-        }
-
         $resultado = (new nom_periodo($this->link))->genera_registro_nomina_excel(nom_periodo_id: $this->registro_id,
         empleados_excel: $empleados_excel);
         if(errores::$error){
@@ -351,8 +347,7 @@ class controlador_nom_periodo extends system {
         exit;
     }
 
-    public function obten_columna_faltas(string $ruta_absoluta){
-        $documento = IOFactory::load($ruta_absoluta);
+    public function obten_columna_faltas(Spreadsheet $documento){
         $totalDeHojas = $documento->getSheetCount();
 
         $columna = -1;
@@ -374,6 +369,11 @@ class controlador_nom_periodo extends system {
     public function obten_empleados_excel(string $ruta_absoluta){
         $documento = IOFactory::load($ruta_absoluta);
         $totalDeHojas = $documento->getSheetCount();
+
+        $columna_faltas = $this->obten_columna_faltas(documento: $documento);
+        if(errores::$error){
+            return $this->errores->error(mensaje: 'Error obtener columna de faltas',data:  $columna_faltas);
+        }
 
         $empleados = array();
         for ($indiceHoja = 0; $indiceHoja < $totalDeHojas; $indiceHoja++) {
@@ -401,6 +401,7 @@ class controlador_nom_periodo extends system {
                 $reg->nombre = $hojaActual->getCell('B'.$registro->fila)->getValue();
                 $reg->ap = $hojaActual->getCell('C'.$registro->fila)->getValue();
                 $reg->am = $hojaActual->getCell('D'.$registro->fila)->getValue();
+                $reg->faltas = $hojaActual->getCell($columna_faltas.$registro->fila)->getValue();
                 $empleados[] = $reg;
             }
         }
