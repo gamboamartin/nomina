@@ -87,9 +87,10 @@ class nom_par_deduccion extends nominas{
         return $r_elimina_bd;
     }
 
-    public function inserta_deduccion_anticipo(array $anticipo, int $nom_nomina_id): array|stdClass
+    public function inserta_deduccion_anticipo(array $anticipo, int $nom_nomina_id, array $nom_conf_abono): array|stdClass
     {
-        $nom_par_deduccion = $this->maquetar_nom_par_deduccion(registro: $anticipo,nom_nomina_id: $nom_nomina_id);
+        $nom_par_deduccion = $this->maquetar_nom_par_deduccion(registro: $anticipo,nom_nomina_id: $nom_nomina_id,
+            nom_conf_abono: $nom_conf_abono);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al maquetar deduccion', data: $nom_par_deduccion);
         }
@@ -101,15 +102,14 @@ class nom_par_deduccion extends nominas{
         return $alta;
     }
 
-    private function maquetar_nom_par_deduccion(array $registro, int $nom_nomina_id):array{
-
+    private function maquetar_nom_par_deduccion(array $registro, int $nom_nomina_id, array $nom_conf_abono):array{
         $datos['descripcion'] = $registro['em_anticipo_descripcion'].$registro['em_anticipo_id'];
         $datos['codigo'] = $registro['em_anticipo_codigo'].$registro['em_tipo_descuento_codigo'].$nom_nomina_id;
         $datos['descripcion_select'] = strtoupper($datos['descripcion']);
         $datos['codigo_bis'] = strtoupper($datos['codigo']);
         $datos['alias'] = $datos['codigo'].$datos['descripcion'];
         $datos['nom_nomina_id'] = $nom_nomina_id;
-        $datos['nom_deduccion_id'] = 1;
+        $datos['nom_deduccion_id'] = $nom_conf_abono['nom_deduccion_id'];
         $datos['importe_gravado'] = $registro['em_tipo_descuento_monto'];;
         $datos['importe_exento'] = $registro['em_tipo_descuento_monto'];;
 

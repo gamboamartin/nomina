@@ -215,41 +215,65 @@ class nom_nomina extends modelo
         }
 
         if ($saldo > 0.0) {
-            /**
-             * OBTENER NOM COMF ABONO MEDIANTE em_tipo_anticipo
-             * OBTENER MNONTO A DESCONTAR
-             * INSERTAR RELACION ENTRE EM ABONO Y NOM PAR DEDUCCION /CRUD FALTANTE KEVIN BAUTIZA /M A N
-             */
+            $filtro['nom_conf_abono.em_tipo_abono_anticipo_id'] = $anticipo['em_tipo_anticipo_id'];
+
+            $conf_abono = (new nom_conf_abono($this->link))->filtro_and(filtro: $filtro, limit: 1);
+            if(errores::$error){
+                return $this->error->error(mensaje: 'Error al obtener conf. abono', data: $conf_abono);
+            }
+
+            if ($conf_abono->n_registros == 0){
+                return $this->error->error(mensaje: 'Error no existe una conf. para el tipo de anticipo', data: $conf_abono);
+            }
 
             $alta = (new nom_par_deduccion($this->link))->inserta_deduccion_anticipo(
-                anticipo: $anticipo,nom_nomina_id:  $nom_nomina_id);
+                anticipo: $anticipo,nom_nomina_id:  $nom_nomina_id, nom_conf_abono: $conf_abono->registros[0]);
             if (errores::$error) {
                 return $this->error->error(mensaje: 'Error al dat de alta deduccion', data: $alta);
             }
 
-            $r_abono = $this->maquetar_em_abono_anticipo(registro: $anticipo, nom_nomina_id:  $nom_nomina_id);
+            $alta_em_abono_anticiopo = $this->inserta_em_abono_anticipo(anticipo: $anticipo,nom_nomina_id:  $nom_nomina_id);
             if (errores::$error) {
-                return $this->error->error(mensaje: 'Error al maquetar abono', data: $r_abono);
+                return $this->error->error(mensaje: 'Error al dat de alta abono', data: $alta_em_abono_anticiopo);
             }
 
-            $alta_em_abono_anticiopo = (new em_abono_anticipo($this->link))->alta_registro($r_abono);
+            $alta_em_abono_anticiopo = $this->inserta_nom_rel_deduccion_abono(deduccion: $alta,
+                abono: $alta_em_abono_anticiopo,nom_nomina_id:  $nom_nomina_id);
             if (errores::$error) {
-                return $this->error->error(mensaje: 'Error al dar de alta abono', data: $alta_em_abono_anticiopo);
-            }
-
-            $r_rel_deduccion_abono = $this->maquetar_nom_rel_deduccion_abono(deduccion: $alta,
-                abono:  $alta_em_abono_anticiopo, nom_nomina_id:  $nom_nomina_id);
-            if (errores::$error) {
-                return $this->error->error(mensaje: 'Error al maquetar rel deduccion abono', data: $r_abono);
-            }
-
-            $alta_rel_deduccion_abono = (new nom_rel_deduccion_abono($this->link))->alta_registro($r_rel_deduccion_abono);
-            if (errores::$error) {
-                return $this->error->error(mensaje: 'Error al dar de alta rel deduccion abono',
-                    data: $alta_rel_deduccion_abono);
+                return $this->error->error(mensaje: 'Error al dat de alta abono', data: $alta_em_abono_anticiopo);
             }
         }
         return $alta;
+    }
+
+    public function inserta_em_abono_anticipo(array $anticipo, int $nom_nomina_id): array|stdClass
+    {
+        $r_abono = $this->maquetar_em_abono_anticipo(registro: $anticipo, nom_nomina_id:  $nom_nomina_id);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al maquetar abono', data: $r_abono);
+        }
+
+        $alta_em_abono_anticiopo = (new em_abono_anticipo($this->link))->alta_registro($r_abono);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al dar de alta abono', data: $alta_em_abono_anticiopo);
+        }
+        return $alta_em_abono_anticiopo;
+    }
+
+    public function inserta_nom_rel_deduccion_abono(stdClass $deduccion, stdClass $abono, int $nom_nomina_id): array|stdClass
+    {
+        $r_rel_deduccion_abono = $this->maquetar_nom_rel_deduccion_abono(deduccion: $deduccion, abono:  $abono,
+            nom_nomina_id:  $nom_nomina_id);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al maquetar rel deduccion abono', data: $r_rel_deduccion_abono);
+        }
+
+        $alta_rel_deduccion_abono = (new nom_rel_deduccion_abono($this->link))->alta_registro($r_rel_deduccion_abono);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al dar de alta rel deduccion abono',
+                data: $alta_rel_deduccion_abono);
+        }
+        return $alta_rel_deduccion_abono;
     }
 
     private function inserta_deducciones_abonos_con_saldo(stdClass $anticipos, int $nom_nomina_id): array
