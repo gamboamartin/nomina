@@ -34,6 +34,7 @@ use models\nom_percepcion;
 use models\nom_periodo;
 use PDO;
 use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use stdClass;
 
 class controlador_nom_periodo extends system {
@@ -346,9 +347,33 @@ class controlador_nom_periodo extends system {
         exit;
     }
 
+    public function obten_columna_faltas(Spreadsheet $documento){
+        $totalDeHojas = $documento->getSheetCount();
+
+        $columna = -1;
+        for ($indiceHoja = 0; $indiceHoja < $totalDeHojas; $indiceHoja++) {
+            $hojaActual = $documento->getSheet($indiceHoja);
+            foreach ($hojaActual->getRowIterator() as $fila) {
+                foreach ($fila->getCellIterator() as $celda) {
+                    $valorRaw = $celda->getValue();
+                    if($valorRaw === 'FALTAS') {
+                        $columna = $celda->getColumn();
+                    }
+                }
+            }
+        }
+
+        return $columna;
+    }
+
     public function obten_empleados_excel(string $ruta_absoluta){
         $documento = IOFactory::load($ruta_absoluta);
         $totalDeHojas = $documento->getSheetCount();
+
+        $columna_faltas = $this->obten_columna_faltas(documento: $documento);
+        if(errores::$error){
+            return $this->errores->error(mensaje: 'Error obtener columna de faltas',data:  $columna_faltas);
+        }
 
         $empleados = array();
         for ($indiceHoja = 0; $indiceHoja < $totalDeHojas; $indiceHoja++) {
@@ -376,6 +401,7 @@ class controlador_nom_periodo extends system {
                 $reg->nombre = $hojaActual->getCell('B'.$registro->fila)->getValue();
                 $reg->ap = $hojaActual->getCell('C'.$registro->fila)->getValue();
                 $reg->am = $hojaActual->getCell('D'.$registro->fila)->getValue();
+                $reg->faltas = $hojaActual->getCell($columna_faltas.$registro->fila)->getValue();
                 $empleados[] = $reg;
             }
         }
