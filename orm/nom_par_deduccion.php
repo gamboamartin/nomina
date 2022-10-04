@@ -110,8 +110,8 @@ class nom_par_deduccion extends nominas{
         $datos['alias'] = $datos['codigo'].$datos['descripcion'];
         $datos['nom_nomina_id'] = $nom_nomina_id;
         $datos['nom_deduccion_id'] = $nom_conf_abono['nom_deduccion_id'];
-        $datos['importe_gravado'] = $registro['em_tipo_descuento_monto'];;
-        $datos['importe_exento'] = $registro['em_tipo_descuento_monto'];;
+        $datos['importe_gravado'] = ($nom_conf_abono['adm_campo_descripcion'] === "importe_gravado") ?  $registro['em_tipo_descuento_monto'] : 0;
+        $datos['importe_exento'] = ($nom_conf_abono['adm_campo_descripcion'] === "importe_exento") ?  $registro['em_tipo_descuento_monto'] : 0;
 
         return $datos;
     }

@@ -1236,7 +1236,7 @@ class nom_nomina extends modelo
         $datos['em_tipo_abono_anticipo_id'] = $nom_conf_abono['em_tipo_abono_anticipo_id'];
         $datos['em_anticipo_id'] = $registro['em_anticipo_id'];
         $datos['cat_sat_forma_pago_id'] = $deduccion->registro['fc_factura_cat_sat_forma_pago_id'];
-        $datos['monto'] = $deduccion->registro['nom_par_deduccion_importe_gravado'];
+        $datos['monto'] = $registro['em_tipo_descuento_monto'];
         $datos['fecha'] = date('Y-m-d');
 
         return $datos;
