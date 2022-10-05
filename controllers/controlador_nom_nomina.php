@@ -22,6 +22,7 @@ use html\nom_par_deduccion_html;
 use html\nom_par_otro_pago_html;
 use html\nom_par_percepcion_html;
 use JsonException;
+use models\doc_documento;
 use models\nom_concepto_imss;
 use models\nom_nomina;
 use models\nom_par_deduccion;
@@ -380,8 +381,6 @@ class controlador_nom_nomina extends base_nom
         return $r_elimina;
     }
 
-
-
     public function genera_xml(bool $header, bool $ws = false): array|stdClass
     {
         $nom_nomina = $this->modelo->registro(registro_id: $this->registro_id, retorno_obj: true);
@@ -474,12 +473,27 @@ class controlador_nom_nomina extends base_nom
             return $this->retorno_error(mensaje: 'Error no existe '.$ruta_archivos_model, data: $ruta_archivos_model, header: $header, ws: $ws);
         }
 
+        $documento = array();
+        $file = array();
+
+
+
         $file_xml_st = $ruta_archivos_model.'/'.$this->registro_id.'.st.xml';
 
         file_put_contents($file_xml_st, $xml);
 
+
+        $file['name'] = $file_xml_st;
+        $file['tmp_name'] = $file_xml_st;
+        $documento['doc_tipo_documento_id'] = 1;
+
+        $documento = (new doc_documento(link: $this->link))->alta_registro(registro: $documento, file: $file);
+        if (errores::$error) {
+            return $this->retorno_error(mensaje: 'Error al guardar xml', data: $documento, header: $header, ws: $ws);
+        }
+        unlink($file_xml_st);
         ob_clean();
-        echo trim(file_get_contents($file_xml_st));
+        echo trim(file_get_contents($documento->registro['doc_documento_ruta_absoluta']));
         header('Content-Type: text/xml');
         exit;
 
@@ -1085,7 +1099,7 @@ class controlador_nom_nomina extends base_nom
             return $this->retorno_error(mensaje: 'Error al obtener nomina', data: $nom_nomina, header: $header, ws: $ws);
         }
 
-        
+        print_r($nom_nomina);exit;
 
         return $nom_nomina;
     }

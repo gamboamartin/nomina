@@ -1560,6 +1560,22 @@ private function maquetar_nom_rel_deduccion_abono(array|stdClass $deduccion, arr
         return round($total_deducciones,2);
     }
 
+    public function total_ingreso_bruto(int $nom_nomina_id): float|array
+    {
+        $total_percepciones = $this->total_percepciones_monto(nom_nomina_id: $nom_nomina_id);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al obtener el total de percepciones', data: $total_percepciones);
+        }
+
+        $total_otros_pagos = $this->total_otros_pagos_monto(nom_nomina_id: $nom_nomina_id);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al obtener el total de otros pagos', data: $total_otros_pagos);
+        }
+
+        return round($total_percepciones + $total_otros_pagos,2);
+
+    }
+
     public function total_otras_deducciones_exento(int $nom_nomina_id): float|array
     {
         $campos = array();
@@ -1602,6 +1618,54 @@ private function maquetar_nom_rel_deduccion_abono(array|stdClass $deduccion, arr
 
         $total_deducciones = $total_deducciones_exento + $total_deducciones_gravado;
         return round($total_deducciones,2);
+    }
+
+    public function total_otros_pagos_exento(int $nom_nomina_id): float|array
+    {
+        $campos = array();
+        $campos['total_importe_exento'] = 'nom_par_otro_pago.importe_exento';
+        $filtro['nom_nomina.id'] = $nom_nomina_id;
+        $r_nom_par_otro_pago = (new nom_par_otro_pago($this->link))->suma(campos: $campos,filtro: $filtro);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al obtener otros pagos', data: $r_nom_par_otro_pago);
+        }
+
+        return round($r_nom_par_otro_pago['total_importe_exento'],2);
+
+    }
+
+    public function total_otros_pagos_gravado(int $nom_nomina_id): float|array
+    {
+        if($nom_nomina_id <=0 ){
+            return $this->error->error(mensaje: 'Error nom_nomina_id debe ser mayor a 0', data: $nom_nomina_id);
+        }
+
+        $campos = array();
+        $campos['total_importe_gravado'] = 'nom_par_otro_pago.importe_gravado';
+        $filtro['nom_nomina.id'] = $nom_nomina_id;
+        $r_nom_par_otro_pago = (new nom_par_otro_pago($this->link))->suma(campos: $campos,filtro: $filtro);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al obtener percepciones', data: $r_nom_par_otro_pago);
+        }
+
+        return round($r_nom_par_otro_pago['total_importe_gravado'],2);
+
+    }
+
+    public function total_otros_pagos_monto(int $nom_nomina_id): float|array
+    {
+
+        $total_otros_pagos_gravado = $this->total_otros_pagos_gravado(nom_nomina_id: $nom_nomina_id);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al obtener total gravado', data: $total_otros_pagos_gravado);
+        }
+        $total_otros_pagos_exento = $this->total_otros_pagos_exento(nom_nomina_id: $nom_nomina_id);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al obtener total exento', data: $total_otros_pagos_exento);
+        }
+
+        $total_otros_pagos = $total_otros_pagos_gravado + $total_otros_pagos_exento;
+        return round($total_otros_pagos,2);
     }
 
     public function total_percepciones_exento(int $nom_nomina_id): float|array
