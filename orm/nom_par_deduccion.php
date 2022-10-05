@@ -105,37 +105,10 @@ class nom_par_deduccion extends nominas{
 
     private function maquetar_nom_par_deduccion(array $anticipo, int $nom_nomina_id, array $nom_conf_abono):array{
 
-        $keys = array('em_anticipo_saldo');
-        $valida = $this->validacion->valida_double_mayores_0(keys: $keys, registro: $anticipo);
+        $descuento =  (new nom_nomina($this->link))->calcula_monto_abono(anticipo: $anticipo, nom_nomina_id: $nom_nomina_id);
         if (errores::$error) {
-            return $this->error->error(mensaje: 'Error al validar $anticipo', data: $valida);
+            return $this->error->error(mensaje: 'Error al calcular monto abono', data: $descuento);
         }
-
-        $keys = array('em_metodo_calculo_descripcion');
-        $valida = $this->validacion->valida_existencia_keys(keys: $keys, registro: $anticipo);
-        if (errores::$error) {
-            return $this->error->error(mensaje: 'Error al validar $anticipo', data: $valida);
-        }
-
-        $descuento = round($anticipo['em_tipo_descuento_monto'],2);
-
-        if($anticipo['em_metodo_calculo_descripcion'] === "porcentaje_monto_bruto"){
-
-            $total_bruto = (new nom_nomina($this->link))->total_ingreso_bruto(nom_nomina_id: $nom_nomina_id);
-            if (errores::$error) {
-                return $this->error->error(mensaje: 'Error al obtener $total_bruto', data: $total_bruto);
-            }
-
-
-            $descuento =  round($total_bruto,2) * round($anticipo['em_tipo_descuento_monto'],2);
-            $descuento =  round($descuento / 100,2);
-        }
-
-        $saldo =  round($anticipo['em_anticipo_saldo'],2) ;
-        if($descuento > $saldo){
-            $descuento = $saldo;
-        }
-
 
         $datos = (new limpieza())->maqueta_row_abono_base(anticipo: $anticipo, nom_nomina_id: $nom_nomina_id);
         if (errores::$error) {

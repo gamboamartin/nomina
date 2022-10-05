@@ -528,6 +528,38 @@ class nom_nomina extends modelo
         return $registro;
     }
 
+    public function calcula_monto_abono(array $anticipo,int $nom_nomina_id):float|array{
+        $keys = array('em_anticipo_saldo');
+        $valida = $this->validacion->valida_double_mayores_0(keys: $keys, registro: $anticipo);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al validar $anticipo', data: $valida);
+        }
+
+        $keys = array('em_metodo_calculo_descripcion');
+        $valida = $this->validacion->valida_existencia_keys(keys: $keys, registro: $anticipo);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al validar $anticipo', data: $valida);
+        }
+
+        $descuento = round($anticipo['em_tipo_descuento_monto'],2);
+
+        if($anticipo['em_metodo_calculo_descripcion'] === "porcentaje_monto_bruto"){
+
+            $total_bruto = (new nom_nomina($this->link))->total_ingreso_bruto(nom_nomina_id: $nom_nomina_id);
+            if (errores::$error) {
+                return $this->error->error(mensaje: 'Error al obtener $total_bruto', data: $total_bruto);
+            }
+            $descuento =  round($total_bruto,2) * round($anticipo['em_tipo_descuento_monto'],2);
+            $descuento =  round($descuento / 100,2);
+        }
+
+        $saldo =  round($anticipo['em_anticipo_saldo'],2) ;
+        if($descuento > $saldo){
+            $descuento = $saldo;
+        }
+        return $descuento;
+    }
+
     private function codigo_nomina(int $org_sucursal_id, array $registro): array|string
     {
 
@@ -1229,10 +1261,9 @@ class nom_nomina extends modelo
 
     private function maquetar_em_abono_anticipo(array $anticipo, array|stdClass $deduccion, array $nom_conf_abono,
                                                 int $nom_nomina_id):array{
-        $descuento = round($anticipo['em_tipo_descuento_monto'],2);
-        $saldo = round($anticipo['em_anticipo_saldo'],2);
-        if($descuento > $saldo){
-            $descuento = $saldo;
+        $descuento =  $this->calcula_monto_abono(anticipo: $anticipo, nom_nomina_id: $nom_nomina_id);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al calcular monto abono', data: $descuento);
         }
 
         $datos = (new limpieza())->maqueta_row_abono_base(anticipo: $anticipo, nom_nomina_id: $nom_nomina_id);
@@ -1249,7 +1280,8 @@ class nom_nomina extends modelo
         return $datos;
     }
 
-private function maquetar_nom_rel_deduccion_abono(array|stdClass $deduccion, array|stdClass $abono, int $nom_nomina_id):array{
+
+    private function maquetar_nom_rel_deduccion_abono(array|stdClass $deduccion, array|stdClass $abono, int $nom_nomina_id):array{
         $datos['descripcion'] = $deduccion->registro['nom_par_deduccion_descripcion'];
         $datos['descripcion'] .= $abono->registro['em_abono_anticipo_descripcion'];
         $datos['codigo'] = $deduccion->registro['nom_par_deduccion_codigo'];
