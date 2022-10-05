@@ -16,6 +16,8 @@ class nom_incidencia extends modelo{
             columnas: $columnas);
 
         $this->NAMESPACE = __NAMESPACE__;
+
+        print_r($this->get_incidencias(1,2));
     }
 
     public function alta_bd(): array|stdClass
@@ -55,5 +57,24 @@ class nom_incidencia extends modelo{
         }
 
         return $n_dias['n_dias'];
+    }
+
+    public function get_incidencias(int $em_empleado_id, int $nom_periodo_id):array|stdClass{
+
+        $periodo = (new nom_periodo($this->link))->registro( registro_id: $nom_periodo_id);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al obtener el periodo', data: $periodo);
+        }
+
+        $filtro['nom_incidencia.em_empleado_id'] = $em_empleado_id;
+        $filtro_rango['nom_incidencia.fecha_incidencia']['valor1'] = $periodo['nom_periodo_fecha_inicial_pago'];
+        $filtro_rango['nom_incidencia.fecha_incidencia']['valor2'] = $periodo['nom_periodo_fecha_final_pago'];
+
+        $incidencias = $this->filtro_and(filtro: $filtro, filtro_rango: $filtro_rango);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al obtener el las incidencias', data: $incidencias);
+        }
+
+        return $incidencias;
     }
 }
