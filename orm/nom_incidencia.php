@@ -43,4 +43,17 @@ class nom_incidencia extends modelo{
 
         return $r_alta;
     }
+
+    public function incidencias_por_tipo(int $em_empleado_id, int $nom_tipo_incidencia_id){
+        $filtro['em_empleado.id'] = $em_empleado_id;
+        $filtro['nom_tipo_incidencia.id'] = $nom_tipo_incidencia_id;
+        $campos['n_dias'] = 'nom_incidencia.n_dias';
+
+        $n_dias = (new nom_incidencia($this->link))->suma(campos: $campos, filtro: $filtro);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al obtener incidencias', data: $n_dias);
+        }
+
+        return $n_dias['n_dias'];
+    }
 }

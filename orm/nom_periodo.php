@@ -219,6 +219,13 @@ class nom_periodo extends nominas_confs {
 
     public function alta_empleado_periodo(array $empleado, array $nom_periodo): array|stdClass
     {
+        /*Incidencias faltas*/
+        $n_dias = (new nom_incidencia($this->link))->incidencias_por_tipo(em_empleado_id: $empleado['em_empleado_id'],
+            nom_tipo_incidencia_id: 1);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al obtener incidencias', data: $n_dias);
+        }
+
         $filtro['em_empleado.id'] = $empleado['em_empleado_id'];
         $nom_conf_empleado = (new nom_conf_empleado($this->link))->filtro_and(filtro: $filtro);
         if (errores::$error) {
