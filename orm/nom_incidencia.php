@@ -60,12 +60,12 @@ class nom_incidencia extends modelo{
 
     public function get_incidencias(int $em_empleado_id, int $nom_periodo_id):array|stdClass{
 
-        if ($em_empleado_id === -1) {
-            return $this->error->error(mensaje: 'Error $em_empleado_id no puede ser -1',data:  $em_empleado_id);
+        if($em_empleado_id <= 0){
+            return $this->error->error(mensaje: 'Error $em_empleado_id es menor a 1', data: $em_empleado_id);
         }
 
-        if ($nom_periodo_id === -1) {
-            return $this->error->error(mensaje: 'Error $nom_periodo_id no puede ser -1',data:  $nom_periodo_id);
+        if($nom_periodo_id <= 0){
+            return $this->error->error(mensaje: 'Error $nom_periodo_id es menor a 1', data: $nom_periodo_id);
         }
 
         $periodo = (new nom_periodo($this->link))->registro( registro_id: $nom_periodo_id);
@@ -87,12 +87,12 @@ class nom_incidencia extends modelo{
 
     public function total_dias_incidencias(int $em_empleado_id, int $nom_periodo_id):array|int{
 
-        if ($em_empleado_id === -1) {
-            return $this->error->error(mensaje: 'Error $em_empleado_id no puede ser -1',data:  $em_empleado_id);
+        if($em_empleado_id <= 0){
+            return $this->error->error(mensaje: 'Error $em_empleado_id es menor a 1', data: $em_empleado_id);
         }
 
-        if ($nom_periodo_id === -1) {
-            return $this->error->error(mensaje: 'Error $nom_periodo_id no puede ser -1',data:  $nom_periodo_id);
+        if($nom_periodo_id <= 0){
+            return $this->error->error(mensaje: 'Error $nom_periodo_id es menor a 1', data: $nom_periodo_id);
         }
 
         $incidencias = $this->get_incidencias(em_empleado_id: $em_empleado_id, nom_periodo_id: $nom_periodo_id);
