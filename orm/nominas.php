@@ -475,6 +475,8 @@ class nominas extends modelo {
     }
 
 
+
+
     /**
      * @throws JsonException
      */
@@ -638,6 +640,7 @@ class nominas extends modelo {
         $nom_par_otro_pago_ins['importe_exento'] = $monto;
         return $nom_par_otro_pago_ins;
     }
+
 
 
     protected function total_percepcion(array $registro): float|array

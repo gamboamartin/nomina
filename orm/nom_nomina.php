@@ -11,6 +11,7 @@ use gamboamartin\facturacion\models\fc_csd;
 use gamboamartin\facturacion\models\fc_factura;
 use gamboamartin\facturacion\models\fc_partida;
 use gamboamartin\organigrama\models\org_sucursal;
+use models\base\limpieza;
 use PDO;
 use stdClass;
 
@@ -1234,11 +1235,11 @@ class nom_nomina extends modelo
             $descuento = $saldo;
         }
 
-        $datos['descripcion'] = $anticipo['em_anticipo_descripcion'].$anticipo['em_anticipo_id'];
-        $datos['codigo'] = $anticipo['em_anticipo_codigo'].$anticipo['em_tipo_descuento_codigo'].$nom_nomina_id;
-        $datos['descripcion_select'] = strtoupper($datos['descripcion']);
-        $datos['codigo_bis'] = strtoupper($datos['codigo']);
-        $datos['alias'] = $datos['codigo'].$datos['descripcion'];
+        $datos = (new limpieza())->maqueta_row_abono_base(anticipo: $anticipo, nom_nomina_id: $nom_nomina_id);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al integra base row', data: $datos);
+        }
+
         $datos['em_tipo_abono_anticipo_id'] = $nom_conf_abono['em_tipo_abono_anticipo_id'];
         $datos['em_anticipo_id'] = $anticipo['em_anticipo_id'];
         $datos['cat_sat_forma_pago_id'] = $deduccion->registro['fc_factura_cat_sat_forma_pago_id'];

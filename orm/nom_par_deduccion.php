@@ -2,6 +2,7 @@
 namespace models;
 use gamboamartin\errores\errores;
 use JsonException;
+use models\base\limpieza;
 use PDO;
 use stdClass;
 
@@ -136,17 +137,15 @@ class nom_par_deduccion extends nominas{
         }
 
 
-        $key_importe = trim($nom_conf_abono['adm_campo_descripcion']);
+        $datos = (new limpieza())->maqueta_row_abono_base(anticipo: $anticipo, nom_nomina_id: $nom_nomina_id);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al integra base row', data: $datos);
+        }
 
+        $key_importe = trim($nom_conf_abono['adm_campo_descripcion']);
         $datos['importe_gravado'] = 0.0;
         $datos['importe_exento'] = 0.0;
 
-
-        $datos['descripcion'] = $anticipo['em_anticipo_descripcion'].$anticipo['em_anticipo_id'];
-        $datos['codigo'] = $anticipo['em_anticipo_codigo'].$anticipo['em_tipo_descuento_codigo'].$nom_nomina_id;
-        $datos['descripcion_select'] = strtoupper($datos['descripcion']);
-        $datos['codigo_bis'] = strtoupper($datos['codigo']);
-        $datos['alias'] = $datos['codigo'].$datos['descripcion'];
         $datos['nom_nomina_id'] = $nom_nomina_id;
         $datos['nom_deduccion_id'] = $nom_conf_abono['nom_deduccion_id'];
         $datos[$key_importe] = $descuento;

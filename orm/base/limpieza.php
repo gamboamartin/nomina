@@ -158,4 +158,14 @@ class limpieza{
         return $registro;
     }
 
+    public function maqueta_row_abono_base(array $anticipo, int $nom_nomina_id): array
+    {
+        $datos['descripcion'] = $anticipo['em_anticipo_descripcion'].$anticipo['em_anticipo_id'];
+        $datos['codigo'] = $anticipo['em_anticipo_codigo'].$anticipo['em_tipo_descuento_codigo'].$nom_nomina_id;
+        $datos['descripcion_select'] = strtoupper($datos['descripcion']);
+        $datos['codigo_bis'] = strtoupper($datos['codigo']);
+        $datos['alias'] = $datos['codigo'].$datos['descripcion'];
+        return $datos;
+    }
+
 }
