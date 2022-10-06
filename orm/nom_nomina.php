@@ -41,7 +41,7 @@ class nom_nomina extends modelo
 
         $this->NAMESPACE = __NAMESPACE__;
 
-
+        $this->maqueta_registros_excel(14);
     }
 
     private function ajusta_otro_pago_sub_base(int $nom_nomina_id): array|stdClass
@@ -1340,12 +1340,42 @@ class nom_nomina extends modelo
         }
 
         $datos = array();
-        $datos['ID REM'] = $registro['em_empleado_codigo'] ;
-        $datos['NSS'] = $registro['em_empleado_nss'] ;
+        $datos['ID REM'] = $registro['em_empleado_codigo'];
+        $datos['NSS'] = $registro['em_empleado_nss'];
         $datos['NOMBRE COMPLETO'] = $registro['em_empleado_nombre'].' ';
         $datos['NOMBRE COMPLETO'] .= $registro['em_empleado_ap'].' ';
         $datos['NOMBRE COMPLETO'] .= $registro['em_empleado_am'];
         $datos['DIAS LABORADOS'] = $registro['nom_nomina_num_dias_pagados'];
+        $datos['DIAS X INCAPACIDAD'] = 0;
+        $datos['SD'] = $registro['em_empleado_salario_diario'];
+        $datos['FI'] = 0;
+        $datos['SDI'] = $registro['em_empleado_salario_diario_integrado'];
+        $datos['SUELDO'] = 0;
+        $datos['SUBSIDIO'] = 0;
+        $datos['PRIMA DOMINICAL'] = 0;
+        $datos['VACACIONES'] = 0;
+        $datos['SEPTIMO DíA'] = 0;
+        $datos['COMPENSACIÓN'] = 0;
+        $datos['DESPENSA'] = 0;
+        $datos['OTROS INGRESOS'] = 0;
+        $datos['DEVOLUCIÓN INFONAVIT'] = 0;
+        $datos['INDEMNIZACIÓN'] = 0;
+        $datos['PRIMA ANTIGUEDAD'] = 0;
+        $datos['SUMA PERCEPCION'] = 0;
+        $datos['BASE GRAVABLE'] = 0;
+        $datos['RETENCION ISR'] = 0;
+        $datos['RETENCION IMSS'] = 0;
+        $datos['INFONAVIT'] = 0;
+        $datos['FONACOT'] = 0;
+        $datos['PENSION ALIMENTICIA'] = 0;
+        $datos['OTROS DESCUENTOS'] = 0;
+        $datos['DESCUENTO COMEDOR'] = 0;
+        $datos['DESCUENTO P. PERSONAL'] = 0;
+        $datos['SUMA DEDUCCION'] = 0;
+        $datos['NETO A PAGAR'] = 0;
+        $datos['CUENTA'] = $registro['em_cuenta_bancaria_num_cuenta'];
+        $datos['CLABE'] = $registro['em_cuenta_bancaria_clabe'];
+        $datos['BANCO'] = $registro['bn_banco_descripcion'];
 
         print_r($datos);
 
