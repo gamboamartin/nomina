@@ -38,6 +38,8 @@ class nom_nomina extends modelo
 
         parent::__construct(link: $link, tabla: $tabla, campos_obligatorios: $campos_obligatorios,
             columnas: $columnas);
+
+        $this->NAMESPACE = __NAMESPACE__;
     }
 
     private function ajusta_otro_pago_sub_base(int $nom_nomina_id): array|stdClass
