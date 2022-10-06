@@ -40,6 +40,8 @@ class nom_nomina extends modelo
             columnas: $columnas);
 
         $this->NAMESPACE = __NAMESPACE__;
+
+
     }
 
     private function ajusta_otro_pago_sub_base(int $nom_nomina_id): array|stdClass
@@ -1327,6 +1329,28 @@ class nom_nomina extends modelo
         $registro_concepto_imss['codigo_bis'] = $registro_concepto_imss['codigo'];
 
         return $registro_concepto_imss;
+    }
+
+    public function maqueta_registros_excel(int $nom_nomina_id){
+
+        $registro = $this->registro($nom_nomina_id);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al obtener los registros de la nomina',
+                data: $registro);
+        }
+
+        $datos = array();
+        $datos['ID REM'] = $registro['em_empleado_codigo'] ;
+        $datos['NSS'] = $registro['em_empleado_nss'] ;
+        $datos['NOMBRE COMPLETO'] = $registro['em_empleado_nombre'].' ';
+        $datos['NOMBRE COMPLETO'] .= $registro['em_empleado_ap'].' ';
+        $datos['NOMBRE COMPLETO'] .= $registro['em_empleado_am'];
+        $datos['DIAS LABORADOS'] = $registro['nom_nomina_num_dias_pagados'];
+
+        print_r($datos);
+
+
+        return $datos;
     }
 
     public function modifica_bd(array $registro, int $id, bool $reactiva = false): array|stdClass
