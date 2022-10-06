@@ -41,7 +41,7 @@ class nom_nomina extends modelo
 
         $this->NAMESPACE = __NAMESPACE__;
 
-        $this->maqueta_registros_excel(14);
+
     }
 
     private function ajusta_otro_pago_sub_base(int $nom_nomina_id): array|stdClass
@@ -1333,9 +1333,21 @@ class nom_nomina extends modelo
 
     public function maqueta_registros_excel(int $nom_nomina_id){
 
-        $registro = $this->registro($nom_nomina_id);
+        $registro = $this->registro(registro_id: $nom_nomina_id);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al obtener los registros de la nomina',
+                data: $registro);
+        }
+
+        $suma_percepcion =$this->total_percepciones_monto(nom_nomina_id: $nom_nomina_id);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al obtener la suma de percepciones',
+                data: $registro);
+        }
+
+        $suma_deduccion =$this->total_deducciones_monto(nom_nomina_id: $nom_nomina_id);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al obtener la suma de deducciones',
                 data: $registro);
         }
 
@@ -1361,7 +1373,7 @@ class nom_nomina extends modelo
         $datos['DEVOLUCIÓN INFONAVIT'] = 0;
         $datos['INDEMNIZACIÓN'] = 0;
         $datos['PRIMA ANTIGUEDAD'] = 0;
-        $datos['SUMA PERCEPCION'] = 0;
+        $datos['SUMA PERCEPCION'] = $suma_percepcion;
         $datos['BASE GRAVABLE'] = 0;
         $datos['RETENCION ISR'] = 0;
         $datos['RETENCION IMSS'] = 0;
@@ -1371,8 +1383,8 @@ class nom_nomina extends modelo
         $datos['OTROS DESCUENTOS'] = 0;
         $datos['DESCUENTO COMEDOR'] = 0;
         $datos['DESCUENTO P. PERSONAL'] = 0;
-        $datos['SUMA DEDUCCION'] = 0;
-        $datos['NETO A PAGAR'] = 0;
+        $datos['SUMA DEDUCCION'] = $suma_deduccion;
+        $datos['NETO A PAGAR'] = $suma_percepcion - $suma_deduccion;
         $datos['CUENTA'] = $registro['em_cuenta_bancaria_num_cuenta'];
         $datos['CLABE'] = $registro['em_cuenta_bancaria_clabe'];
         $datos['BANCO'] = $registro['bn_banco_descripcion'];
