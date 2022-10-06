@@ -30,6 +30,8 @@ use stdClass;
 
 class controlador_nom_conf_factura extends system {
 
+    public array $keys_selects = array();
+
     public function __construct(PDO $link, html $html = new \gamboamartin\template_1\html(),
                                 stdClass $paths_conf = new stdClass()){
         $modelo = new nom_conf_factura(link: $link);
@@ -38,6 +40,14 @@ class controlador_nom_conf_factura extends system {
         parent::__construct(html:$html_, link: $link,modelo:  $modelo, obj_link: $obj_link, paths_conf: $paths_conf);
 
         $this->titulo_lista = 'Configuracion Factura';
+
+        $this->asignar_propiedad(identificador: 'cat_sat_forma_pago_id', propiedades: ["label" => "Forma Pago"]);
+        $this->asignar_propiedad(identificador: 'cat_sat_metodo_pago_id', propiedades: ["label" => "Metodo Pago"]);
+        $this->asignar_propiedad(identificador: 'cat_sat_moneda_id', propiedades: ["label" => "Moneda"]);
+        $this->asignar_propiedad(identificador: 'com_tipo_cambio_id', propiedades: ["label" => "Tipo Cambio"]);
+        $this->asignar_propiedad(identificador: 'cat_sat_uso_cfdi_id', propiedades: ["label" => "CFDI"]);
+        $this->asignar_propiedad(identificador: 'cat_sat_tipo_de_comprobante_id', propiedades: ["label" => "Tipo Comprobante"]);
+        $this->asignar_propiedad(identificador: 'com_producto_id', propiedades: ["label" => "Producto"]);
 
         $btns = (new nom_conf_factura_html(html: $this->html_base))->btns_views();
 
@@ -50,8 +60,6 @@ class controlador_nom_conf_factura extends system {
         $this->btns = $btns;
 
         $this->total_items_sections = 1;
-
-
 
         $this->actions_number['lista']['item'] = 1;
         $this->actions_number['lista']['etiqueta'] = 'Nueva Configuracion';
@@ -75,43 +83,24 @@ class controlador_nom_conf_factura extends system {
             return $this->retorno_error(mensaje: 'Error al generar template',data:  $r_alta, header: $header,ws:$ws);
         }
 
-        $keys_selects = array();
-        $keys_selects['cat_sat_forma_pago'] = new stdClass();
-        $keys_selects['cat_sat_forma_pago']->label = 'Forma pago';
-        $keys_selects['cat_sat_forma_pago']->cols = 6;
-
-        $keys_selects['cat_sat_metodo_pago'] = new stdClass();
-        $keys_selects['cat_sat_metodo_pago']->label = 'Metodo pago';
-        $keys_selects['cat_sat_metodo_pago']->cols = 6;
-
-        $keys_selects['cat_sat_moneda'] = new stdClass();
-        $keys_selects['cat_sat_moneda']->label = 'Moneda';
-        $keys_selects['cat_sat_moneda']->cols = 6;
-
-        $keys_selects['com_tipo_cambio'] = new stdClass();
-        $keys_selects['com_tipo_cambio']->label = 'Tipo cambio';
-        $keys_selects['com_tipo_cambio']->cols = 6;
-
-        $keys_selects['cat_sat_uso_cfdi'] = new stdClass();
-        $keys_selects['cat_sat_uso_cfdi']->label = 'Uso de CFDI';
-        $keys_selects['cat_sat_uso_cfdi']->cols = 6;
-
-        $keys_selects['cat_sat_tipo_de_comprobante'] = new stdClass();
-        $keys_selects['cat_sat_tipo_de_comprobante']->label = 'Tipo de comprobante';
-        $keys_selects['cat_sat_tipo_de_comprobante']->cols = 6;
-
-        $keys_selects['com_producto'] = new stdClass();
-        $keys_selects['com_producto']->label = 'Producto';
-        $keys_selects['com_producto']->cols = 6;
-
-        $inputs = (new nom_conf_factura_html(html: $this->html_base))->genera_inputs_alta(controler: $this,
-                    keys_selects: $keys_selects, link: $this->link);
+        $inputs = $this->genera_inputs(keys_selects: $this->keys_selects);
         if(errores::$error){
             $error = $this->errores->error(mensaje: 'Error al generar inputs',data:  $inputs);
             print_r($error);
             die('Error');
         }
         return $r_alta;
+    }
+
+    public function asignar_propiedad(string $identificador, mixed $propiedades)
+    {
+        if (!array_key_exists($identificador, $this->keys_selects)) {
+            $this->keys_selects[$identificador] = new stdClass();
+        }
+
+        foreach ($propiedades as $key => $value) {
+            $this->keys_selects[$identificador]->$key = $value;
+        }
     }
 
     public function modifica(bool $header, bool $ws = false, string $breadcrumbs = '', bool $aplica_form = true,
@@ -133,8 +122,22 @@ class controlador_nom_conf_factura extends system {
             return $this->errores->error(mensaje: 'Error al generar template',data:  $r_modifica);
         }
 
-        $inputs = (new nom_conf_factura_html(html: $this->html_base))->inputs_nom_conf_factura (
-            controlador:$this, params: $params);
+        $this->asignar_propiedad(identificador:'cat_sat_forma_pago_id',
+            propiedades: ["id_selected"=>$this->row_upd->cat_sat_forma_pago_id]);
+        $this->asignar_propiedad(identificador:'cat_sat_metodo_pago_id',
+            propiedades: ["id_selected"=>$this->row_upd->cat_sat_metodo_pago_id]);
+        $this->asignar_propiedad(identificador:'cat_sat_moneda_id',
+            propiedades: ["id_selected"=>$this->row_upd->cat_sat_moneda_id]);
+        $this->asignar_propiedad(identificador:'com_tipo_cambio_id',
+            propiedades: ["id_selected"=>$this->row_upd->com_tipo_cambio_id]);
+        $this->asignar_propiedad(identificador:'cat_sat_uso_cfdi_id',
+            propiedades: ["id_selected"=>$this->row_upd->cat_sat_uso_cfdi_id]);
+        $this->asignar_propiedad(identificador:'cat_sat_tipo_de_comprobante_id',
+            propiedades: ["id_selected"=>$this->row_upd->cat_sat_tipo_de_comprobante_id]);
+        $this->asignar_propiedad(identificador:'com_producto_id',
+            propiedades: ["id_selected"=>$this->row_upd->com_producto_id]);
+
+        $inputs = $this->genera_inputs(keys_selects: $this->keys_selects);
         if(errores::$error){
             return $this->errores->error(mensaje: 'Error al inicializar inputs',data:  $inputs);
         }
