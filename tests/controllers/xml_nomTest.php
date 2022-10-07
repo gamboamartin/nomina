@@ -46,13 +46,13 @@ class xml_nomTest extends test {
             exit;
         }
 
+
         $del = (new base_test())->del_nom_nomina($this->link);
         if(errores::$error){
             $error = (new errores())->error('Error al eliminar', $del);
             print_r($error);
             exit;
         }
-
         $del = (new base_test())->del_nom_rel_empleado_sucursal($this->link);
         if(errores::$error){
             $error = (new errores())->error('Error al eliminar', $del);

@@ -268,10 +268,14 @@ class base_test{
     {
 
         $model = (new modelo_base($link))->genera_modelo(modelo: $name_model);
+        if(errores::$error){
+            return (new errores())->error(mensaje: 'Error al genera modelo '.$name_model, data: $model);
+        }
         $del = $model->elimina_todo();
         if(errores::$error){
             return (new errores())->error(mensaje: 'Error al eliminar '.$name_model, data: $del);
         }
+
         return $del;
     }
 
@@ -417,6 +421,8 @@ class base_test{
 
     public function del_nom_nomina(PDO $link): array
     {
+
+
         $del = $this->del_nom_par_deduccion($link);
         if(errores::$error){
             return (new errores())->error('Error al eliminar', $del);
@@ -436,7 +442,6 @@ class base_test{
         if(errores::$error){
             return (new errores())->error('Error al eliminar', $del);
         }
-
 
 
         $del = $this->del($link, 'models\\nom_nomina');

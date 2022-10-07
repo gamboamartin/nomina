@@ -41,7 +41,7 @@ class nom_nomina extends modelo
 
         $this->NAMESPACE = __NAMESPACE__;
 
-
+        //$this->maqueta_registros_excel(14);
     }
 
     private function ajusta_otro_pago_sub_base(int $nom_nomina_id): array|stdClass
@@ -1311,6 +1311,24 @@ class nom_nomina extends modelo
                 data: $registro);
         }
 
+        $suma_base_gravable =$this->total_percepciones_gravado(nom_nomina_id: $nom_nomina_id);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al obtener la suma de percepciones',
+                data: $registro);
+        }
+
+        $suma_base_gravable += $this->total_otros_pagos_gravado(nom_nomina_id: $nom_nomina_id);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al obtener la suma de otros pagos',
+                data: $registro);
+        }
+
+        $suma_isr =$this->deduccion_isr(nom_nomina_id: $nom_nomina_id);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al obtener la suma de deducciones',
+                data: $registro);
+        }
+
         $datos = array();
         $datos['ID REM'] = $registro['em_empleado_codigo'];
         $datos['NSS'] = $registro['em_empleado_nss'];
@@ -1334,7 +1352,6 @@ class nom_nomina extends modelo
         $datos['INDEMNIZACIÓN'] = 0;
         $datos['PRIMA ANTIGUEDAD'] = 0;
         $datos['SUMA PERCEPCION'] = $suma_percepcion;
-        $datos['BASE GRAVABLE'] = 0; //total_gravado
         $datos['RETENCION ISR'] = 0; //sumatoria nom pardeduccion donde nom par es impuestro retenido = activo
         $datos['RETENCION IMSS'] = 0; //sumatoria nom pardeduccion donde nom par es es imss retenido = activo
         $datos['INFONAVIT'] = 0; //
@@ -1343,6 +1360,8 @@ class nom_nomina extends modelo
         $datos['OTROS DESCUENTOS'] = 0; //
         $datos['DESCUENTO COMEDOR'] = 0; //
         $datos['DESCUENTO P. PERSONAL'] = 0; //
+        $datos['BASE GRAVABLE'] = $suma_base_gravable;
+
         $datos['SUMA DEDUCCION'] = $suma_deduccion;
         $datos['NETO A PAGAR'] = $suma_percepcion - $suma_deduccion;
         $datos['CUENTA'] = $registro['em_cuenta_bancaria_num_cuenta'];
