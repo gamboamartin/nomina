@@ -87,7 +87,6 @@ class nom_nomina extends modelo
         return $abonos_aplicados;
     }
 
-
     /**
      * @return array|stdClass
      */
@@ -201,130 +200,6 @@ class nom_nomina extends modelo
         }
 
         return $r_alta_bd;
-    }
-
-
-
-
-    private function inserta_deduccion_abono_con_saldo(array $anticipo, int $nom_nomina_id): array|stdClass
-    {
-        $alta_npd = new stdClass();
-        $saldo = (new em_anticipo($this->link))->get_saldo_anticipo(em_anticipo_id: $anticipo['em_anticipo_id']);
-        if (errores::$error) {
-            return $this->error->error(mensaje: 'Error al obtener el saldo del anticipo', data: $saldo);
-        }
-
-        if ($saldo > 0.0) {
-            $filtro['nom_conf_abono.em_tipo_abono_anticipo_id'] = $anticipo['em_tipo_anticipo_id'];
-
-            $conf_abono = (new nom_conf_abono($this->link))->filtro_and(filtro: $filtro, limit: 1);
-            if(errores::$error){
-                return $this->error->error(mensaje: 'Error al obtener conf. abono', data: $conf_abono);
-            }
-
-            if ($conf_abono->n_registros > 0) {
-
-                $alta_npd = (new nom_par_deduccion($this->link))->inserta_deduccion_anticipo(
-                    anticipo: $anticipo, nom_nomina_id: $nom_nomina_id, nom_conf_abono: $conf_abono->registros[0]);
-                if (errores::$error) {
-                    return $this->error->error(mensaje: 'Error al dat de alta deduccion', data: $alta_npd);
-                }
-
-                $alta_em_abono_anticipo = $this->inserta_em_abono_anticipo(anticipo: $anticipo, deduccion: $alta_npd,
-                    nom_conf_abono: $conf_abono->registros[0],nom_nomina_id: $nom_nomina_id);
-                if (errores::$error) {
-                    return $this->error->error(mensaje: 'Error al dat de alta abono', data: $alta_em_abono_anticipo);
-                }
-
-                $alta_nrda = $this->inserta_nom_rel_deduccion_abono(deduccion: $alta_npd,
-                    abono: $alta_em_abono_anticipo, nom_nomina_id: $nom_nomina_id);
-                if (errores::$error) {
-                    return $this->error->error(mensaje: 'Error al dat de alta abono', data: $alta_nrda);
-                }
-            }
-        }
-        return $alta_npd;
-    }
-
-    public function inserta_em_abono_anticipo(array $anticipo, array|stdClass $deduccion, array $nom_conf_abono,
-                                              int $nom_nomina_id): array|stdClass
-    {
-        $r_abono = $this->maquetar_em_abono_anticipo(anticipo: $anticipo, deduccion: $deduccion,
-            nom_conf_abono : $nom_conf_abono, nom_nomina_id:  $nom_nomina_id);
-        if (errores::$error) {
-            return $this->error->error(mensaje: 'Error al maquetar abono', data: $r_abono);
-        }
-
-        $alta_em_abono_anticiopo = (new em_abono_anticipo($this->link))->alta_registro($r_abono);
-        if (errores::$error) {
-            return $this->error->error(mensaje: 'Error al dar de alta abono', data: $alta_em_abono_anticiopo);
-        }
-        return $alta_em_abono_anticiopo;
-    }
-
-    private function inserta_nom_rel_deduccion_abono(stdClass $deduccion, stdClass $abono, int $nom_nomina_id): array|stdClass
-    {
-
-        $keys = array('registro');
-        $valida = $this->validacion->valida_existencia_keys(keys:$keys, registro: $deduccion);
-        if (errores::$error) {
-            return $this->error->error(mensaje: 'Error al validar deduccion', data: $valida);
-        }
-
-        $r_rel_deduccion_abono = $this->maquetar_nom_rel_deduccion_abono(deduccion: $deduccion, abono:  $abono,
-            nom_nomina_id:  $nom_nomina_id);
-        if (errores::$error) {
-            return $this->error->error(mensaje: 'Error al maquetar rel deduccion abono', data: $r_rel_deduccion_abono);
-        }
-
-        $alta_rel_deduccion_abono = (new nom_rel_deduccion_abono($this->link))->alta_registro($r_rel_deduccion_abono);
-        if (errores::$error) {
-            return $this->error->error(mensaje: 'Error al dar de alta rel deduccion abono',
-                data: $alta_rel_deduccion_abono);
-        }
-        return $alta_rel_deduccion_abono;
-    }
-
-    private function inserta_deducciones_abonos_con_saldo(stdClass $anticipos, int $nom_nomina_id): array
-    {
-        $abonos_aplicados = array();
-        foreach ($anticipos->registros as $anticipo){
-
-            $alta = $this->inserta_deduccion_abono_con_saldo(anticipo: $anticipo , nom_nomina_id: $nom_nomina_id);
-            if (errores::$error) {
-                return $this->error->error(mensaje: 'Error al dat de alta deduccion', data: $alta);
-            }
-            $abonos_aplicados[] = $alta;
-
-        }
-        return $abonos_aplicados;
-    }
-
-    public function inserta_conceptos(array $conceptos, stdClass $cuotas, int $nom_nomina_id): array
-    {
-        $r_conceptos = array();
-        foreach($conceptos as $concepto){
-            foreach ($cuotas as $campo => $cuota){
-                if($concepto['nom_tipo_concepto_imss_alias'] === $campo){
-                    $registro_concepto_imss = $this->maqueta_nom_comcepto(nom_nomina_id: $nom_nomina_id,
-                        concepto: $concepto,monto: $cuota);
-                    if (errores::$error) {
-                        return $this->error->error(mensaje: 'Error al maquetar registro',
-                            data: $registro_concepto_imss);
-                    }
-
-                    $r_alta_nom_concepto_imss = (new nom_concepto_imss($this->link))->alta_registro(
-                        registro: $registro_concepto_imss);
-                    if (errores::$error) {
-                        return $this->error->error(mensaje: 'Error al generar insertar concepto',
-                            data: $r_alta_nom_concepto_imss);
-                    }
-                    $r_conceptos[] = $r_alta_nom_concepto_imss;
-                }
-            }
-        }
-
-        return $r_conceptos;
     }
 
     /**
@@ -1214,6 +1089,136 @@ class nom_nomina extends modelo
         return $salario_minimo->registros[0]['em_empleado_salario_diario'];
     }
 
+    public function inserta_conceptos(array $conceptos, stdClass $cuotas, int $nom_nomina_id): array
+    {
+        $r_conceptos = array();
+        foreach($conceptos as $concepto){
+            foreach ($cuotas as $campo => $cuota){
+                if($concepto['nom_tipo_concepto_imss_alias'] === $campo){
+                    $registro_concepto_imss = $this->maqueta_nom_comcepto(nom_nomina_id: $nom_nomina_id,
+                        concepto: $concepto,monto: $cuota);
+                    if (errores::$error) {
+                        return $this->error->error(mensaje: 'Error al maquetar registro',
+                            data: $registro_concepto_imss);
+                    }
+
+                    $r_alta_nom_concepto_imss = (new nom_concepto_imss($this->link))->alta_registro(
+                        registro: $registro_concepto_imss);
+                    if (errores::$error) {
+                        return $this->error->error(mensaje: 'Error al generar insertar concepto',
+                            data: $r_alta_nom_concepto_imss);
+                    }
+                    $r_conceptos[] = $r_alta_nom_concepto_imss;
+                }
+            }
+        }
+
+        return $r_conceptos;
+    }
+
+    private function inserta_deduccion_abono_con_saldo(array $anticipo, int $nom_nomina_id): array|stdClass
+    {
+        $alta_npd = new stdClass();
+        $saldo = (new em_anticipo($this->link))->get_saldo_anticipo(em_anticipo_id: $anticipo['em_anticipo_id']);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al obtener el saldo del anticipo', data: $saldo);
+        }
+
+        if ($saldo > 0.0) {
+            $filtro['nom_conf_abono.em_tipo_abono_anticipo_id'] = $anticipo['em_tipo_anticipo_id'];
+
+            $conf_abono = (new nom_conf_abono($this->link))->filtro_and(filtro: $filtro, limit: 1);
+            if(errores::$error){
+                return $this->error->error(mensaje: 'Error al obtener conf. abono', data: $conf_abono);
+            }
+
+            if ($conf_abono->n_registros > 0) {
+
+                $alta_npd = (new nom_par_deduccion($this->link))->inserta_deduccion_anticipo(
+                    anticipo: $anticipo, nom_nomina_id: $nom_nomina_id, nom_conf_abono: $conf_abono->registros[0]);
+                if (errores::$error) {
+                    return $this->error->error(mensaje: 'Error al dat de alta deduccion', data: $alta_npd);
+                }
+
+                $alta_em_abono_anticipo = $this->inserta_em_abono_anticipo(anticipo: $anticipo, deduccion: $alta_npd,
+                    nom_conf_abono: $conf_abono->registros[0],nom_nomina_id: $nom_nomina_id);
+                if (errores::$error) {
+                    return $this->error->error(mensaje: 'Error al dat de alta abono', data: $alta_em_abono_anticipo);
+                }
+
+                $alta_nrda = $this->inserta_nom_rel_deduccion_abono(deduccion: $alta_npd,
+                    abono: $alta_em_abono_anticipo, nom_nomina_id: $nom_nomina_id);
+                if (errores::$error) {
+                    return $this->error->error(mensaje: 'Error al dat de alta abono', data: $alta_nrda);
+                }
+            }
+        }
+        return $alta_npd;
+    }
+
+    private function inserta_deducciones_abonos_con_saldo(stdClass $anticipos, int $nom_nomina_id): array
+    {
+        $abonos_aplicados = array();
+        foreach ($anticipos->registros as $anticipo){
+
+            $alta = $this->inserta_deduccion_abono_con_saldo(anticipo: $anticipo , nom_nomina_id: $nom_nomina_id);
+            if (errores::$error) {
+                return $this->error->error(mensaje: 'Error al dat de alta deduccion', data: $alta);
+            }
+            $abonos_aplicados[] = $alta;
+
+        }
+        return $abonos_aplicados;
+    }
+
+    public function inserta_em_abono_anticipo(array $anticipo, array|stdClass $deduccion, array $nom_conf_abono,
+                                              int $nom_nomina_id): array|stdClass
+    {
+        $r_abono = $this->maquetar_em_abono_anticipo(anticipo: $anticipo, deduccion: $deduccion,
+            nom_conf_abono : $nom_conf_abono, nom_nomina_id:  $nom_nomina_id);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al maquetar abono', data: $r_abono);
+        }
+
+        $alta_em_abono_anticiopo = (new em_abono_anticipo($this->link))->alta_registro($r_abono);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al dar de alta abono', data: $alta_em_abono_anticiopo);
+        }
+        return $alta_em_abono_anticiopo;
+    }
+
+    private function inserta_factura(array $registro): array|stdClass
+    {
+        $r_alta_factura = (new fc_factura($this->link))->alta_registro(registro: $registro);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al dar de alta la factura', data: $r_alta_factura);
+        }
+        return $r_alta_factura;
+    }
+
+    private function inserta_nom_rel_deduccion_abono(stdClass $deduccion, stdClass $abono, int $nom_nomina_id): array|stdClass
+    {
+
+        $keys = array('registro');
+        $valida = $this->validacion->valida_existencia_keys(keys:$keys, registro: $deduccion);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al validar deduccion', data: $valida);
+        }
+
+        $r_rel_deduccion_abono = $this->maquetar_nom_rel_deduccion_abono(deduccion: $deduccion, abono:  $abono,
+            nom_nomina_id:  $nom_nomina_id);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al maquetar rel deduccion abono', data: $r_rel_deduccion_abono);
+        }
+
+        $alta_rel_deduccion_abono = (new nom_rel_deduccion_abono($this->link))->alta_registro($r_rel_deduccion_abono);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al dar de alta rel deduccion abono',
+                data: $alta_rel_deduccion_abono);
+        }
+        return $alta_rel_deduccion_abono;
+    }
+
     private function inserta_otro_pago_sub_base(int $nom_nomina_id): array|stdClass
     {
         $nom_par_otro_pago_ins = $this->genera_nom_par_otro_pago_ins(nom_nomina_id: $nom_nomina_id);
@@ -1261,15 +1266,6 @@ class nom_nomina extends modelo
         return $percepciones;
     }
 
-    private function inserta_factura(array $registro): array|stdClass
-    {
-        $r_alta_factura = (new fc_factura($this->link))->alta_registro(registro: $registro);
-        if (errores::$error) {
-            return $this->error->error(mensaje: 'Error al dar de alta la factura', data: $r_alta_factura);
-        }
-        return $r_alta_factura;
-    }
-
     private function limpia_campos(array $registro, array $campos_limpiar): array
     {
         foreach ($campos_limpiar as $valor) {
@@ -1278,42 +1274,6 @@ class nom_nomina extends modelo
             }
         }
         return $registro;
-    }
-
-    private function maquetar_em_abono_anticipo(array $anticipo, array|stdClass $deduccion, array $nom_conf_abono,
-                                                int $nom_nomina_id):array{
-        $descuento =  $this->calcula_monto_abono(anticipo: $anticipo, nom_nomina_id: $nom_nomina_id);
-        if (errores::$error) {
-            return $this->error->error(mensaje: 'Error al calcular monto abono', data: $descuento);
-        }
-
-        $datos = (new limpieza())->maqueta_row_abono_base(anticipo: $anticipo, nom_nomina_id: $nom_nomina_id);
-        if (errores::$error) {
-            return $this->error->error(mensaje: 'Error al integra base row', data: $datos);
-        }
-
-        $datos['em_tipo_abono_anticipo_id'] = $nom_conf_abono['em_tipo_abono_anticipo_id'];
-        $datos['em_anticipo_id'] = $anticipo['em_anticipo_id'];
-        $datos['cat_sat_forma_pago_id'] = $deduccion->registro['fc_factura_cat_sat_forma_pago_id'];
-        $datos['monto'] = $descuento;
-        $datos['fecha'] = date('Y-m-d');
-
-        return $datos;
-    }
-
-
-    private function maquetar_nom_rel_deduccion_abono(array|stdClass $deduccion, array|stdClass $abono, int $nom_nomina_id):array{
-        $datos['descripcion'] = $deduccion->registro['nom_par_deduccion_descripcion'];
-        $datos['descripcion'] .= $abono->registro['em_abono_anticipo_descripcion'];
-        $datos['codigo'] = $deduccion->registro['nom_par_deduccion_codigo'];
-        $datos['codigo'] .= $abono->registro['em_abono_anticipo_codigo'].$nom_nomina_id;
-        $datos['descripcion_select'] = strtoupper($datos['descripcion']);
-        $datos['codigo_bis'] = strtoupper($datos['codigo']);
-        $datos['alias'] = $datos['codigo'].$datos['descripcion'];
-        $datos['nom_par_deduccion_id'] = $deduccion->registro_id;
-        $datos['em_abono_anticipo_id'] = $abono->registro_id;
-
-        return $datos;
     }
 
     public function maqueta_nom_comcepto(int $nom_nomina_id, array $concepto, float $monto){
@@ -1360,29 +1320,29 @@ class nom_nomina extends modelo
         $datos['DIAS LABORADOS'] = $registro['nom_nomina_num_dias_pagados'];
         $datos['DIAS X INCAPACIDAD'] = 0;
         $datos['SD'] = $registro['em_empleado_salario_diario'];
-        $datos['FI'] = 0;
+        $datos['FI'] = 0; //EMPLEADO.OBTEN FACTOR
         $datos['SDI'] = $registro['em_empleado_salario_diario_integrado'];
-        $datos['SUELDO'] = 0;
-        $datos['SUBSIDIO'] = 0;
+        $datos['SUELDO'] = 0; //nom_nomina_num_dias_pagados *  em_empleado_salario_diario
+        $datos['SUBSIDIO'] = 0; //sumatoria nom par otro pago donde nom par es subsidio = activo
         $datos['PRIMA DOMINICAL'] = 0;
         $datos['VACACIONES'] = 0;
         $datos['SEPTIMO DíA'] = 0;
         $datos['COMPENSACIÓN'] = 0;
-        $datos['DESPENSA'] = 0;
+        $datos['DESPENSA'] = 0; //
         $datos['OTROS INGRESOS'] = 0;
         $datos['DEVOLUCIÓN INFONAVIT'] = 0;
         $datos['INDEMNIZACIÓN'] = 0;
         $datos['PRIMA ANTIGUEDAD'] = 0;
         $datos['SUMA PERCEPCION'] = $suma_percepcion;
-        $datos['BASE GRAVABLE'] = 0;
-        $datos['RETENCION ISR'] = 0;
-        $datos['RETENCION IMSS'] = 0;
-        $datos['INFONAVIT'] = 0;
-        $datos['FONACOT'] = 0;
-        $datos['PENSION ALIMENTICIA'] = 0;
-        $datos['OTROS DESCUENTOS'] = 0;
-        $datos['DESCUENTO COMEDOR'] = 0;
-        $datos['DESCUENTO P. PERSONAL'] = 0;
+        $datos['BASE GRAVABLE'] = 0; //total_gravado
+        $datos['RETENCION ISR'] = 0; //sumatoria nom pardeduccion donde nom par es impuestro retenido = activo
+        $datos['RETENCION IMSS'] = 0; //sumatoria nom pardeduccion donde nom par es es imss retenido = activo
+        $datos['INFONAVIT'] = 0; //
+        $datos['FONACOT'] = 0; //
+        $datos['PENSION ALIMENTICIA'] = 0; //
+        $datos['OTROS DESCUENTOS'] = 0; //
+        $datos['DESCUENTO COMEDOR'] = 0; //
+        $datos['DESCUENTO P. PERSONAL'] = 0; //
         $datos['SUMA DEDUCCION'] = $suma_deduccion;
         $datos['NETO A PAGAR'] = $suma_percepcion - $suma_deduccion;
         $datos['CUENTA'] = $registro['em_cuenta_bancaria_num_cuenta'];
@@ -1391,6 +1351,41 @@ class nom_nomina extends modelo
 
         print_r($datos);
 
+
+        return $datos;
+    }
+
+    private function maquetar_em_abono_anticipo(array $anticipo, array|stdClass $deduccion, array $nom_conf_abono,
+                                                int $nom_nomina_id):array{
+        $descuento =  $this->calcula_monto_abono(anticipo: $anticipo, nom_nomina_id: $nom_nomina_id);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al calcular monto abono', data: $descuento);
+        }
+
+        $datos = (new limpieza())->maqueta_row_abono_base(anticipo: $anticipo, nom_nomina_id: $nom_nomina_id);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al integra base row', data: $datos);
+        }
+
+        $datos['em_tipo_abono_anticipo_id'] = $nom_conf_abono['em_tipo_abono_anticipo_id'];
+        $datos['em_anticipo_id'] = $anticipo['em_anticipo_id'];
+        $datos['cat_sat_forma_pago_id'] = $deduccion->registro['fc_factura_cat_sat_forma_pago_id'];
+        $datos['monto'] = $descuento;
+        $datos['fecha'] = date('Y-m-d');
+
+        return $datos;
+    }
+
+    private function maquetar_nom_rel_deduccion_abono(array|stdClass $deduccion, array|stdClass $abono, int $nom_nomina_id):array{
+        $datos['descripcion'] = $deduccion->registro['nom_par_deduccion_descripcion'];
+        $datos['descripcion'] .= $abono->registro['em_abono_anticipo_descripcion'];
+        $datos['codigo'] = $deduccion->registro['nom_par_deduccion_codigo'];
+        $datos['codigo'] .= $abono->registro['em_abono_anticipo_codigo'].$nom_nomina_id;
+        $datos['descripcion_select'] = strtoupper($datos['descripcion']);
+        $datos['codigo_bis'] = strtoupper($datos['codigo']);
+        $datos['alias'] = $datos['codigo'].$datos['descripcion'];
+        $datos['nom_par_deduccion_id'] = $deduccion->registro_id;
+        $datos['em_abono_anticipo_id'] = $abono->registro_id;
 
         return $datos;
     }
@@ -1469,6 +1464,7 @@ class nom_nomina extends modelo
 
 
     }
+
     public function otro_pago_subsidio_id(int $nom_nomina_id): array|int
     {
 
@@ -1595,10 +1591,6 @@ class nom_nomina extends modelo
         $total_deducciones = $total_deducciones_gravado + $total_deducciones_gravado;
         return round($total_deducciones,2);
     }
-
-
-
-
 
     /**
      * Obtiene el total gravado de una nomina

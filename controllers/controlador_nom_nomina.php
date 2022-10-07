@@ -212,6 +212,7 @@ class controlador_nom_nomina extends base_nom
 
         return $row;
     }
+
     private function asigna_link_timbra_row(stdClass $row): array|stdClass
     {
         $keys = array('nom_nomina_id');
@@ -261,7 +262,17 @@ class controlador_nom_nomina extends base_nom
         return $data;
     }
 
+    public function calcula_cuota_obrero_patronal(stdClass $row){
+        $campos['cuotas'] = 'nom_concepto_imss.monto';
+        $filtro_sum['nom_nomina.id'] = $row->nom_nomina_id;
+        $total_cuota = (new nom_concepto_imss($this->link))->suma(campos: $campos,filtro: $filtro_sum);
+        if (errores::$error) {
+            return $this->errores->error(mensaje: 'Error al obtener suma', data: $total_cuota);
+        }
+        $row->total_cuota_patronal = $total_cuota['cuotas'];
 
+        return $row;
+    }
 
     public function crea_nomina(bool $header, bool $ws = false): array|string
     {
@@ -280,6 +291,28 @@ class controlador_nom_nomina extends base_nom
             die('Error');
         }
         return $r_alta;
+    }
+
+    private function cuotas_obrero_patronales(): array|stdClass
+    {
+        $filtro['nom_nomina.id'] = $this->registro_id;
+        $cuotas = (new nom_concepto_imss($this->link))->filtro_and(filtro: $filtro);
+        if (errores::$error) {
+            return $this->errores->error(mensaje: 'Error al obtener cuotas', data: $cuotas);
+        }
+
+        $this->cuotas_obrero_patronales = $cuotas;
+
+        $campos['cuotas'] = 'nom_concepto_imss.monto';
+        $filtro_sum['nom_nomina.id'] = $this->registro_id;
+        $total_cuota = (new nom_concepto_imss($this->link))->suma(campos: $campos,filtro: $filtro_sum);
+        if (errores::$error) {
+            return $this->errores->error(mensaje: 'Error al obtener suma', data: $total_cuota);
+        }
+
+        $this->cuota_total = $total_cuota['cuotas'];
+
+        return  $this->cuotas_obrero_patronales;
     }
 
     private function data_deduccion_btn(array $deduccion): array
@@ -596,18 +629,6 @@ class controlador_nom_nomina extends base_nom
         return $registros;
     }
 
-    public function calcula_cuota_obrero_patronal(stdClass $row){
-        $campos['cuotas'] = 'nom_concepto_imss.monto';
-        $filtro_sum['nom_nomina.id'] = $row->nom_nomina_id;
-        $total_cuota = (new nom_concepto_imss($this->link))->suma(campos: $campos,filtro: $filtro_sum);
-        if (errores::$error) {
-            return $this->errores->error(mensaje: 'Error al obtener suma', data: $total_cuota);
-        }
-        $row->total_cuota_patronal = $total_cuota['cuotas'];
-
-        return $row;
-    }
-
     public function modifica(bool $header, bool $ws = false, string $breadcrumbs = '', bool $aplica_form = true,
                              bool $muestra_btn = true): array|string
     {
@@ -629,28 +650,6 @@ class controlador_nom_nomina extends base_nom
         }
 
         return $base->template;
-    }
-
-    private function cuotas_obrero_patronales(): array|stdClass
-    {
-        $filtro['nom_nomina.id'] = $this->registro_id;
-        $cuotas = (new nom_concepto_imss($this->link))->filtro_and(filtro: $filtro);
-        if (errores::$error) {
-            return $this->errores->error(mensaje: 'Error al obtener cuotas', data: $cuotas);
-        }
-
-        $this->cuotas_obrero_patronales = $cuotas;
-
-        $campos['cuotas'] = 'nom_concepto_imss.monto';
-        $filtro_sum['nom_nomina.id'] = $this->registro_id;
-        $total_cuota = (new nom_concepto_imss($this->link))->suma(campos: $campos,filtro: $filtro_sum);
-        if (errores::$error) {
-            return $this->errores->error(mensaje: 'Error al obtener suma', data: $total_cuota);
-        }
-
-        $this->cuota_total = $total_cuota['cuotas'];
-
-        return  $this->cuotas_obrero_patronales;
     }
 
     public function modifica_deduccion(bool $header, bool $ws = false): array|stdClass|string
