@@ -408,7 +408,7 @@ class nom_nomina extends modelo
         }
 
         if ($existe){
-            $this->registro['num_dias_pagados'] -= -1;
+            $this->registro['num_dias_pagados'] -= 1;
         }
 
         $dias_incidencia = (new nom_incidencia($this->link))->total_dias_incidencias(
