@@ -1312,6 +1312,8 @@ class nom_nomina extends modelo
                 data: $registro);
         }
 
+        $septimo_dia = ($registro['em_empleado_salario_diario'] / 6) * $registro['nom_nomina_num_dias_pagados'];
+
         $suma_percepcion =$this->total_percepciones_monto(nom_nomina_id: $nom_nomina_id);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al obtener la suma de percepciones',
@@ -1364,7 +1366,7 @@ class nom_nomina extends modelo
         $datos['subsidio'] = $subsidio;
         $datos['prima_dominical'] = 0;
         $datos['vacaciones'] = 0;
-        $datos['septimo_dia'] = 0;
+        $datos['septimo_dia'] = $septimo_dia;
         $datos['compensacion'] = 0;
         $datos['despensa'] = 0; //
         $datos['otros_ingresos'] = 0;
