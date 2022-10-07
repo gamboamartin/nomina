@@ -40,8 +40,6 @@ class nom_nomina extends modelo
             columnas: $columnas);
 
         $this->NAMESPACE = __NAMESPACE__;
-
-        //$this->maqueta_registros_excel(14);
     }
 
     private function ajusta_otro_pago_sub_base(int $nom_nomina_id): array|stdClass
@@ -1299,6 +1297,19 @@ class nom_nomina extends modelo
                 data: $registro);
         }
 
+        $fi = (new em_empleado($this->link))->obten_factor(em_empleado_id: $registro['em_empleado_id'],
+            fecha_inicio_rel: $registro['em_empleado_fecha_inicio_rel_laboral']);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al obtener FI',
+                data: $registro);
+        }
+
+        $subsidio = $this->total_otros_pagos_activo(nom_nomina_id: $nom_nomina_id);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al obtener la suma de otros pagos',
+                data: $registro);
+        }
+
         $suma_percepcion =$this->total_percepciones_monto(nom_nomina_id: $nom_nomina_id);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al obtener la suma de percepciones',
@@ -1323,53 +1334,56 @@ class nom_nomina extends modelo
                 data: $registro);
         }
 
-        $suma_isr =$this->deduccion_isr(nom_nomina_id: $nom_nomina_id);
+        $retencion_isr = $this->total_deducciones_isr_activo(nom_nomina_id: $nom_nomina_id);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al obtener la suma de deducciones',
                 data: $registro);
         }
 
+        $retencion_imss = $this->total_deducciones_imss_activo(nom_nomina_id: $nom_nomina_id);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al obtener la suma de deducciones',
+                data: $registro);
+        }
+
+
         $datos = array();
-        $datos['ID REM'] = $registro['em_empleado_codigo'];
-        $datos['NSS'] = $registro['em_empleado_nss'];
-        $datos['NOMBRE COMPLETO'] = $registro['em_empleado_nombre'].' ';
-        $datos['NOMBRE COMPLETO'] .= $registro['em_empleado_ap'].' ';
-        $datos['NOMBRE COMPLETO'] .= $registro['em_empleado_am'];
-        $datos['DIAS LABORADOS'] = $registro['nom_nomina_num_dias_pagados'];
-        $datos['DIAS X INCAPACIDAD'] = 0;
-        $datos['SD'] = $registro['em_empleado_salario_diario'];
-        $datos['FI'] = 0; //EMPLEADO.OBTEN FACTOR
-        $datos['SDI'] = $registro['em_empleado_salario_diario_integrado'];
-        $datos['SUELDO'] = 0; //nom_nomina_num_dias_pagados *  em_empleado_salario_diario
-        $datos['SUBSIDIO'] = 0; //sumatoria nom par otro pago donde nom par es subsidio = activo
-        $datos['PRIMA DOMINICAL'] = 0;
-        $datos['VACACIONES'] = 0;
-        $datos['SEPTIMO DíA'] = 0;
-        $datos['COMPENSACIÓN'] = 0;
-        $datos['DESPENSA'] = 0; //
-        $datos['OTROS INGRESOS'] = 0;
-        $datos['DEVOLUCIÓN INFONAVIT'] = 0;
-        $datos['INDEMNIZACIÓN'] = 0;
-        $datos['PRIMA ANTIGUEDAD'] = 0;
-        $datos['SUMA PERCEPCION'] = $suma_percepcion;
-        $datos['RETENCION ISR'] = 0; //sumatoria nom pardeduccion donde nom par es impuestro retenido = activo
-        $datos['RETENCION IMSS'] = 0; //sumatoria nom pardeduccion donde nom par es es imss retenido = activo
-        $datos['INFONAVIT'] = 0; //
-        $datos['FONACOT'] = 0; //
-        $datos['PENSION ALIMENTICIA'] = 0; //
-        $datos['OTROS DESCUENTOS'] = 0; //
-        $datos['DESCUENTO COMEDOR'] = 0; //
-        $datos['DESCUENTO P. PERSONAL'] = 0; //
-        $datos['BASE GRAVABLE'] = $suma_base_gravable;
-
-        $datos['SUMA DEDUCCION'] = $suma_deduccion;
-        $datos['NETO A PAGAR'] = $suma_percepcion - $suma_deduccion;
-        $datos['CUENTA'] = $registro['em_cuenta_bancaria_num_cuenta'];
-        $datos['CLABE'] = $registro['em_cuenta_bancaria_clabe'];
-        $datos['BANCO'] = $registro['bn_banco_descripcion'];
-
-        print_r($datos);
-
+        $datos['id_rem'] = $registro['em_empleado_codigo'];
+        $datos['nss'] = $registro['em_empleado_nss'];
+        $datos['nombre_completo'] = $registro['em_empleado_nombre'].' ';
+        $datos['nombre_completo'] .= $registro['em_empleado_ap'].' ';
+        $datos['nombre_completo'] .= $registro['em_empleado_am'];
+        $datos['dias_laborados'] = $registro['nom_nomina_num_dias_pagados'];
+        $datos['dias_x_incapacidad'] = 0;
+        $datos['sd'] = $registro['em_empleado_salario_diario'];
+        $datos['fi'] = $fi;
+        $datos['sdi'] = $registro['em_empleado_salario_diario_integrado'];
+        $datos['sueldo'] = $registro['nom_nomina_num_dias_pagados'] * $registro['em_empleado_salario_diario'];
+        $datos['subsidio'] = $subsidio;
+        $datos['prima_dominical'] = 0;
+        $datos['vacaciones'] = 0;
+        $datos['septimo_dia'] = 0;
+        $datos['compensacion'] = 0;
+        $datos['despensa'] = 0; //
+        $datos['otros_ingresos'] = 0;
+        $datos['devolucion_infonavit'] = 0;
+        $datos['indemnizacion'] = 0;
+        $datos['prima_antiguedad'] = 0;
+        $datos['suma_percepcion'] = $suma_percepcion;
+        $datos['retencion_isr'] = $retencion_isr;
+        $datos['retencion_imss'] = $retencion_imss;
+        $datos['infonavit'] = 0; //
+        $datos['fonacot'] = 0; //
+        $datos['pension_alimencia'] = 0; //
+        $datos['otros_descuentos'] = 0; //
+        $datos['descuento_comedor'] = 0; //
+        $datos['descuento_p_personal'] = 0; //
+        $datos['base_gravable'] = $suma_base_gravable;
+        $datos['suma_deduccion'] = $suma_deduccion;
+        $datos['neto_a_pagar'] = $suma_percepcion - $suma_deduccion;
+        $datos['cuenta'] = $registro['em_cuenta_bancaria_num_cuenta'];
+        $datos['clabe'] = $registro['em_cuenta_bancaria_clabe'];
+        $datos['banco'] = $registro['bn_banco_descripcion'];
 
         return $datos;
     }
@@ -1567,6 +1581,50 @@ class nom_nomina extends modelo
         return $r_nom_par_percepcion->registros;
     }
 
+    public function total_deducciones_isr_activo(int $nom_nomina_id): float|array
+    {
+        $filtro['nom_nomina.id']  = $nom_nomina_id;
+        $filtro['nom_deduccion.es_isr']  = 'activo';
+        $r_nom_par_deduccion = (new nom_par_deduccion($this->link))->filtro_and(filtro: $filtro);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al obtener deduccion',data:  $r_nom_par_deduccion);
+        }
+
+        $total = 0.0;
+
+        if ($r_nom_par_deduccion->n_registros == 0){
+            return $total;
+        }
+
+        foreach ($r_nom_par_deduccion->registros as $registro){
+            $total += ($registro['nom_par_deduccion_importe_gravado'] + $registro['nom_par_deduccion_importe_exento']);
+        }
+
+        return round($total,2);
+    }
+
+    public function total_deducciones_imss_activo(int $nom_nomina_id): float|array
+    {
+        $filtro['nom_nomina.id']  = $nom_nomina_id;
+        $filtro['nom_deduccion.es_imss']  = 'activo';
+        $r_nom_par_deduccion = (new nom_par_deduccion($this->link))->filtro_and(filtro: $filtro);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al obtener deduccion',data:  $r_nom_par_deduccion);
+        }
+
+        $total = 0.0;
+
+        if ($r_nom_par_deduccion->n_registros == 0){
+            return $total;
+        }
+
+        foreach ($r_nom_par_deduccion->registros as $registro){
+            $total += ($registro['nom_par_deduccion_importe_gravado'] + $registro['nom_par_deduccion_importe_exento']);
+        }
+
+        return round($total,2);
+    }
+
     private function total_deducciones_exento(int $nom_nomina_id): float|array
     {
         $campos = array();
@@ -1747,6 +1805,28 @@ class nom_nomina extends modelo
 
         $total_deducciones = $total_deducciones_exento + $total_deducciones_gravado;
         return round($total_deducciones,2);
+    }
+
+    public function total_otros_pagos_activo(int $nom_nomina_id): float|array
+    {
+        $filtro['nom_nomina.id']  = $nom_nomina_id;
+        $filtro['nom_otro_pago.es_subsidio']  = 'activo';
+        $r_nom_par_otro_pago = (new nom_par_otro_pago($this->link))->filtro_and(filtro: $filtro);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al obtener otro pago',data:  $r_nom_par_otro_pago);
+        }
+
+        $total = 0.0;
+
+        if ($r_nom_par_otro_pago->n_registros == 0){
+                return $total;
+        }
+
+        foreach ($r_nom_par_otro_pago->registros as $registro){
+            $total += ($registro['nom_par_otro_pago_importe_gravado'] + $registro['nom_par_otro_pago_importe_exento']);
+        }
+
+        return round($total,2);
     }
 
     public function total_otros_pagos_exento(int $nom_nomina_id): float|array
