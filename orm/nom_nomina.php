@@ -1931,7 +1931,7 @@ class nom_nomina extends modelo
             return $this->error->error(mensaje: 'Error al obtener total gravado', data: $total_percepciones_exento);
         }
 
-        $total_percepciones = $total_percepciones_gravado + $total_percepciones_gravado;
+        $total_percepciones = $total_percepciones_gravado + $total_percepciones_exento;
         return round($total_percepciones,2);
     }
 
