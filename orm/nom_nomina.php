@@ -1312,7 +1312,11 @@ class nom_nomina extends modelo
                 data: $registro);
         }
 
-        $septimo_dia = ($registro['em_empleado_salario_diario'] / 6) * $registro['nom_nomina_num_dias_pagados'];
+        $septimo_dia = $this->total_percepciones_septimo_dia_activo(nom_nomina_id: $nom_nomina_id);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al obtener la suma de percepciones',
+                data: $registro);
+        }
 
         $suma_percepcion =$this->total_percepciones_monto(nom_nomina_id: $nom_nomina_id);
         if (errores::$error) {
@@ -1881,6 +1885,7 @@ class nom_nomina extends modelo
         return round($total_otros_pagos,2);
     }
 
+
     public function total_percepciones_exento(int $nom_nomina_id): float|array
     {
         $campos = array();
@@ -1933,6 +1938,28 @@ class nom_nomina extends modelo
 
         $total_percepciones = $total_percepciones_gravado + $total_percepciones_exento;
         return round($total_percepciones,2);
+    }
+
+    public function total_percepciones_septimo_dia_activo(int $nom_nomina_id): float|array
+    {
+        $filtro['nom_nomina.id']  = $nom_nomina_id;
+        $filtro['nom_percepcion.aplica_septimo_dia']  = 'activo';
+        $r_nom_par_percepcion = (new nom_par_percepcion($this->link))->filtro_and(filtro: $filtro);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al obtener percepcion',data:  $r_nom_par_percepcion);
+        }
+
+        $total = 0.0;
+
+        if ($r_nom_par_percepcion->n_registros == 0){
+            return $total;
+        }
+
+        foreach ($r_nom_par_percepcion->registros as $registro){
+            $total += ($registro['nom_par_percepcion_importe_gravado'] + $registro['nom_par_percepcion_importe_exento']);
+        }
+
+        return round($total,2);
     }
 
     private function total_sueldos_exento(int $nom_nomina_id): float|array
