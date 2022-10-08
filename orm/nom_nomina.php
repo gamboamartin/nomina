@@ -1378,6 +1378,7 @@ class nom_nomina extends modelo
         $datos['indemnizacion'] = 0;
         $datos['prima_antiguedad'] = 0;
         $datos['suma_percepcion'] = $suma_percepcion;
+        $datos['base_gravable'] = $suma_base_gravable;
         $datos['retencion_isr'] = $retencion_isr;
         $datos['retencion_imss'] = $retencion_imss;
         $datos['infonavit'] = 0; //
@@ -1386,7 +1387,6 @@ class nom_nomina extends modelo
         $datos['otros_descuentos'] = 0; //
         $datos['descuento_comedor'] = 0; //
         $datos['descuento_p_personal'] = 0; //
-        $datos['base_gravable'] = $suma_base_gravable;
         $datos['suma_deduccion'] = $suma_deduccion;
         $datos['neto_a_pagar'] = $suma_percepcion - $suma_deduccion;
         $datos['cuenta'] = $registro['em_cuenta_bancaria_num_cuenta'];
