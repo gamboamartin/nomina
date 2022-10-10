@@ -1318,6 +1318,12 @@ class nom_nomina extends modelo
                 data: $registro);
         }
 
+        $despensa = $this->total_percepciones_despensa(nom_nomina_id: $nom_nomina_id);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al obtener la suma de percepciones',
+                data: $registro);
+        }
+
         $suma_percepcion =$this->total_percepciones_monto(nom_nomina_id: $nom_nomina_id);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al obtener la suma de percepciones',
@@ -1372,7 +1378,7 @@ class nom_nomina extends modelo
         $datos['vacaciones'] = 0;
         $datos['septimo_dia'] = $septimo_dia;
         $datos['compensacion'] = 0;
-        $datos['despensa'] = 0; //
+        $datos['despensa'] = $despensa; //
         $datos['otros_ingresos'] = 0;
         $datos['devolucion_infonavit'] = 0;
         $datos['indemnizacion'] = 0;
@@ -1827,7 +1833,7 @@ class nom_nomina extends modelo
         $total = 0.0;
 
         if ($r_nom_par_otro_pago->n_registros == 0){
-                return $total;
+            return $total;
         }
 
         foreach ($r_nom_par_otro_pago->registros as $registro){
@@ -1944,6 +1950,28 @@ class nom_nomina extends modelo
     {
         $filtro['nom_nomina.id']  = $nom_nomina_id;
         $filtro['nom_percepcion.aplica_septimo_dia']  = 'activo';
+        $r_nom_par_percepcion = (new nom_par_percepcion($this->link))->filtro_and(filtro: $filtro);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al obtener percepcion',data:  $r_nom_par_percepcion);
+        }
+
+        $total = 0.0;
+
+        if ($r_nom_par_percepcion->n_registros == 0){
+            return $total;
+        }
+
+        foreach ($r_nom_par_percepcion->registros as $registro){
+            $total += ($registro['nom_par_percepcion_importe_gravado'] + $registro['nom_par_percepcion_importe_exento']);
+        }
+
+        return round($total,2);
+    }
+
+    public function total_percepciones_despensa(int $nom_nomina_id): float|array
+    {
+        $filtro['nom_nomina.id']  = $nom_nomina_id;
+        $filtro['cat_sat_tipo_percepcion_nom.codigo']  = '029';
         $r_nom_par_percepcion = (new nom_par_percepcion($this->link))->filtro_and(filtro: $filtro);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al obtener percepcion',data:  $r_nom_par_percepcion);
