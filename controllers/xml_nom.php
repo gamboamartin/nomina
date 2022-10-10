@@ -26,7 +26,7 @@ class xml_nom{
      * @return array|stdClass
      * @version 0.454.25
      */
-    public function comprobante(int $fc_factura_id, PDO $link): array|stdClass
+    private function comprobante(int $fc_factura_id, PDO $link): array|stdClass
     {
 
         if($fc_factura_id <= 0){
@@ -44,7 +44,42 @@ class xml_nom{
         return $comprobante;
     }
 
-    public function emisor(int $fc_factura_id, PDO $link): array|stdClass
+    public function data_cfdi_base(int $fc_factura_id, PDO $link): array|stdClass
+    {
+        $fc_factura = (new fc_factura($link))->registro(
+            registro_id:$fc_factura_id, retorno_obj: true );
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al obtener factura', data: $fc_factura);
+        }
+
+
+        $comprobante = $this->comprobante(fc_factura_id: $fc_factura_id, link: $link);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al crear comprobante', data: $comprobante);
+        }
+
+
+        $emisor = $this->emisor(fc_factura_id: $fc_factura_id, link: $link);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al crear emisor', data: $emisor);
+        }
+
+        $receptor = $this->receptor(com_sucursal_id:$fc_factura->com_sucursal_id ,
+            fc_factura_id: $fc_factura->fc_factura_id, link: $link);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al crear receptor', data: $receptor);
+        }
+
+        $data = new stdClass();
+        $data->fc_factura = $fc_factura;
+        $data->comprobante = $comprobante;
+        $data->emisor = $emisor;
+        $data->receptor = $receptor;
+
+        return $data;
+    }
+
+    private function emisor(int $fc_factura_id, PDO $link): array|stdClass
     {
         $fc_factura = (new fc_factura($link))->registro(registro_id:$fc_factura_id, retorno_obj: true );
         if(errores::$error){
@@ -472,7 +507,7 @@ class xml_nom{
     }
 
 
-    public function receptor(int $com_sucursal_id, int $fc_factura_id, PDO $link): array|stdClass
+    private function receptor(int $com_sucursal_id, int $fc_factura_id, PDO $link): array|stdClass
     {
         $com_sucursal = (new com_sucursal($link))->registro(registro_id:$com_sucursal_id, retorno_obj: true );
         if(errores::$error){

@@ -427,12 +427,9 @@ class controlador_nom_nomina extends base_nom
             return $this->retorno_error(mensaje: 'Error al validar nomina', data: $valida, header: $header, ws: $ws);
         }
 
-
-        $fc_factura = (new fc_factura($this->link))->registro(
-            registro_id:$nom_nomina->fc_factura_id, retorno_obj: true );
+        $data_cfdi = (new xml_nom())->data_cfdi_base(fc_factura_id:  $nom_nomina->fc_factura_id,link: $this->link);
         if(errores::$error){
-            return $this->retorno_error(mensaje: 'Error al obtener factura',
-                data: $fc_factura, header: $header, ws: $ws);
+            return $this->retorno_error(mensaje: 'Error al obtener data cfdi', data: $data_cfdi, header: $header, ws: $ws);
         }
 
         $deducciones = (new nom_nomina($this->link))->deducciones(nom_nomina_id: $this->registro_id);
@@ -440,26 +437,7 @@ class controlador_nom_nomina extends base_nom
             return $this->retorno_error(mensaje: 'Error al obtener deducciones', data: $deducciones, header: $header, ws: $ws);
         }
 
-
-        $comprobante = (new xml_nom())->comprobante(fc_factura_id: $nom_nomina->fc_factura_id, link: $this->link);
-        if(errores::$error){
-            return $this->retorno_error(mensaje: 'Error al crear comprobante', data: $comprobante, header: $header, ws: $ws);
-        }
-
-
-        $emisor = (new xml_nom())->emisor(fc_factura_id: $nom_nomina->fc_factura_id, link: $this->link);
-        if(errores::$error){
-            return $this->retorno_error(mensaje: 'Error al crear emisor', data: $emisor, header: $header, ws: $ws);
-        }
-
-        $receptor = (new xml_nom())->receptor(com_sucursal_id:$fc_factura->com_sucursal_id ,
-            fc_factura_id: $fc_factura->fc_factura_id, link: $this->link);
-        if(errores::$error){
-            return $this->retorno_error(mensaje: 'Error al crear receptor', data: $receptor, header: $header, ws: $ws);
-        }
-
-
-        $nomina = (new xml_nom())->nomina_header(emisor: $emisor, link: $this->link,nom_nomina:  $nom_nomina);
+        $nomina = (new xml_nom())->nomina_header(emisor: $data_cfdi->emisor, link: $this->link,nom_nomina:  $nom_nomina);
         if (errores::$error) {
             return $this->retorno_error(mensaje: 'Error al obtener nomina base',
                 data: $nomina, header: $header, ws: $ws);
@@ -483,8 +461,8 @@ class controlador_nom_nomina extends base_nom
                 mensaje: 'Error al asignar otros_pagos', data: $nomina, header: $header, ws: $ws);
         }
 
-        $xml = (new cfdis())->complemento_nomina(
-            comprobante: $comprobante,emisor:  $emisor, nomina: $nomina,receptor:  $receptor);
+        $xml = (new cfdis())->complemento_nomina(comprobante: $data_cfdi->comprobante,emisor:  $data_cfdi->emisor,
+            nomina: $data_cfdi->nomina,receptor:  $data_cfdi->receptor);
         if (errores::$error) {
             return $this->retorno_error(mensaje: 'Error al generar xml', data: $xml, header: $header, ws: $ws);
         }

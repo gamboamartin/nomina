@@ -36,7 +36,7 @@ class xml_nomTest extends test {
         $_SESSION['usuario_id'] = 2;
         $_GET['session_id'] = '1';
         $xml_nom = new xml_nom();
-            //$xml_nom = new liberator($xml_nom);
+        $xml_nom = new liberator($xml_nom);
 
         $fc_factura_id = 1;
         $link = $this->link;
