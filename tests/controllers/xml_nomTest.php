@@ -197,6 +197,31 @@ class xml_nomTest extends test {
         errores::$error = false;
     }
 
+    public function test_data_emisor(){
+
+        errores::$error = false;
+
+        $_GET['seccion'] = 'cat_sat_tipo_persona';
+        $_GET['accion'] = 'lista';
+        $_SESSION['grupo_id'] = 1;
+        $_SESSION['usuario_id'] = 2;
+        $_GET['session_id'] = '1';
+        $xml_nom = new xml_nom();
+        $xml_nom = new liberator($xml_nom);
+
+        $fc_factura = new stdClass();
+        $fc_factura->org_empresa_rfc = 'ABAC152512554';
+        $fc_factura->org_empresa_razon_social = 'x';
+        $fc_factura->cat_sat_regimen_fiscal_codigo = '011';
+        $resultado = $xml_nom->data_emisor($fc_factura);
+        $this->assertIsObject($resultado);
+        $this->assertNotTrue(errores::$error);
+        $this->assertEquals('ABAC152512554', $resultado->rfc);
+        $this->assertEquals('x', $resultado->nombre);
+        $this->assertEquals('011', $resultado->regimen_fiscal);
+        errores::$error = false;
+    }
+
 
 
 

@@ -175,11 +175,29 @@ class xml_nom{
     /**
      * Genera los datos de emision de nomina
      * @param stdClass $fc_factura Factura
-     * @return stdClass
-     *
+     * @return stdClass|array
+     * @version 0.456.25
      */
-    private function data_emisor(stdClass $fc_factura): stdClass
+    private function data_emisor(stdClass $fc_factura): stdClass|array
     {
+        $keys = array('org_empresa_rfc','org_empresa_razon_social','cat_sat_regimen_fiscal_codigo');
+        $valida = $this->validacion->valida_existencia_keys(keys:$keys, registro: $fc_factura);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al validar fc_factura', data: $valida);
+        }
+
+        $keys = array('org_empresa_rfc');
+        $valida = $this->validacion->valida_rfcs(keys:$keys, registro: $fc_factura);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al validar fc_factura', data: $valida);
+        }
+
+        $keys = array('cat_sat_regimen_fiscal_codigo');
+        $valida = $this->validacion->valida_codigos_int_0_3_numbers(keys:$keys, registro: $fc_factura);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al validar fc_factura', data: $valida);
+        }
+
         $emisor = new stdClass();
         $emisor->rfc = $fc_factura->org_empresa_rfc;
         $emisor->nombre = $fc_factura->org_empresa_razon_social;
