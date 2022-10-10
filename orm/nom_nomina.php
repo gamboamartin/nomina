@@ -85,6 +85,25 @@ class nom_nomina extends modelo
         return $abonos_aplicados;
     }
 
+    public function calcula_septimo_dia(int $dias_trabajados_reales, int $dias_septimo_dia,
+                                        float $salario_diario): float|array
+    {
+        if($dias_trabajados_reales <= 0){
+            return $this->error->error(mensaje: 'Error dias_trabajados_reales no puede ser menor o igual a 0',
+                data: $dias_trabajados_reales);
+        }
+        if($dias_septimo_dia <= 0){
+            return $this->error->error(mensaje: 'Error dias_septimo_dia no puede ser menor o igual a 0',
+                data: $dias_septimo_dia);
+        }
+        if($salario_diario <= 0){
+            return $this->error->error(mensaje: 'Error salario_diario no puede ser menor o igual a 0',
+                data: $salario_diario);
+        }
+        $monto_base = round($salario_diario / $dias_septimo_dia, 4);
+        return round($monto_base * $dias_trabajados_reales,2);
+    }
+
     /**
      * @return array|stdClass
      */
