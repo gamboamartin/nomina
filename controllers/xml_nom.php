@@ -322,8 +322,46 @@ class xml_nom{
         return $nomina;
     }
 
-    private function data_receptor(stdClass $com_sucursal, stdClass $fc_factura): stdClass
+    /**
+     * Asigna los datos para receptor
+     * @param stdClass $com_sucursal Datos de receptor
+     * @param stdClass $fc_factura Datos de factura
+     * @return stdClass|array
+     * @version 0.460.25
+     */
+    PUBLIC function data_receptor(stdClass $com_sucursal, stdClass $fc_factura): stdClass|array
     {
+
+        $keys = array('com_cliente_rfc','com_cliente_razon_social');
+        $valida = $this->validacion->valida_existencia_keys(keys:$keys,registro:  $fc_factura);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al validar factura', data: $valida);
+        }
+
+        $keys = array('dp_cp_descripcion','cat_sat_regimen_fiscal_codigo');
+        $valida = $this->validacion->valida_existencia_keys(keys:$keys,registro:  $com_sucursal);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al validar com_sucursal', data: $valida);
+        }
+
+        $keys = array('com_cliente_rfc');
+        $valida = $this->validacion->valida_rfcs(keys:$keys,registro:  $fc_factura);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al validar factura', data: $valida);
+        }
+
+        $keys = array('dp_cp_descripcion');
+        $valida = $this->validacion->valida_codigos_int_0_5_numbers(keys:$keys,registro:  $com_sucursal);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al validar com_sucursal', data: $valida);
+        }
+
+        $keys = array('cat_sat_regimen_fiscal_codigo');
+        $valida = $this->validacion->valida_codigos_int_0_3_numbers(keys:$keys,registro:  $com_sucursal);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al validar com_sucursal', data: $valida);
+        }
+
         $receptor = new stdClass();
         $receptor->rfc = $fc_factura->com_cliente_rfc;
         $receptor->nombre = $fc_factura->com_cliente_razon_social;

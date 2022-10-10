@@ -222,6 +222,36 @@ class xml_nomTest extends test {
         errores::$error = false;
     }
 
+    public function test_data_receptor(){
+
+        errores::$error = false;
+
+        $_GET['seccion'] = 'cat_sat_tipo_persona';
+        $_GET['accion'] = 'lista';
+        $_SESSION['grupo_id'] = 1;
+        $_SESSION['usuario_id'] = 2;
+        $_GET['session_id'] = '1';
+        $xml_nom = new xml_nom();
+        //$xml_nom = new liberator($xml_nom);
+
+        $com_sucursal = new stdClass();
+        $fc_factura = new stdClass();
+        $fc_factura->com_cliente_rfc = 'AAA010101AAA';
+        $fc_factura->com_cliente_razon_social = 'a';
+
+        $com_sucursal->dp_cp_descripcion = '04451';
+        $com_sucursal->cat_sat_regimen_fiscal_codigo = '451';
+
+        $resultado = $xml_nom->data_receptor($com_sucursal, $fc_factura);
+        $this->assertIsObject($resultado);
+        $this->assertNotTrue(errores::$error);
+        $this->assertEquals('AAA010101AAA', $resultado->rfc);
+        $this->assertEquals('a', $resultado->nombre);
+        $this->assertEquals('04451', $resultado->domicilio_fiscal_receptor);
+        $this->assertEquals('451', $resultado->regimen_fiscal_receptor);
+        errores::$error = false;
+    }
+
     public function test_emisor(){
 
         errores::$error = false;
