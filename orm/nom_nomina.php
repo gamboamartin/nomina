@@ -118,9 +118,9 @@ class nom_nomina extends modelo
             return $this->error->error(mensaje: 'Error al generar registros', data: $registros);
         }
 
-        $this->registro = $this->calculo_dias_pagados(nom_conf_empleado: $registros['nom_conf_empleado']);
+        $dias = $this->calculo_dias_pagados(nom_conf_empleado: $registros['nom_conf_empleado']);
         if (errores::$error) {
-            return $this->error->error(mensaje: 'Error al calcular los dias pagados', data: $this->registro);
+            return $this->error->error(mensaje: 'Error al calcular los dias pagados', data: $dias);
         }
 
         $registros_factura = $this->genera_registro_factura(registros: $registros['fc_csd'],
@@ -186,7 +186,7 @@ class nom_nomina extends modelo
             return $this->error->error(mensaje: 'Error al insertar percepcion default', data: $r_alta_nom_par_percepcion);
         }
 
-        $percepciones = $this->insertar_percepciones_configuracion(
+        $percepciones = $this->insertar_percepciones_configuracion(dias: $dias,em_empleado: $registros['em_empleado'],
             nom_conf_nomina_id: $registros['nom_conf_empleado']->nom_conf_nomina_id,nom_nomina_id: $r_alta_bd->registro_id);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al insertar percepciones de configuracion', data: $percepciones);
@@ -421,15 +421,17 @@ class nom_nomina extends modelo
         return $registro;
     }
 
-    public function calculo_dias_pagados(stdClass $nom_conf_empleado):float|array{
+    public function calculo_dias_pagados(stdClass $nom_conf_empleado):stdClass|array{
 
+        $dias = new stdClass();
+        $dias->dias_septimo_dia = 0;
         $existe = (new nom_conf_percepcion($this->link))->aplica_septimo_dia($nom_conf_empleado->nom_conf_nomina_id);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al determinar si aplica septimo dia', data: $existe);
         }
-
         if ($existe){
             $this->registro['num_dias_pagados'] -= 1;
+            $dias->dias_septimo_dia = $this->registro['num_dias_pagados'];
         }
 
         $dias_incidencia = (new nom_incidencia($this->link))->total_dias_incidencias(
@@ -439,8 +441,9 @@ class nom_nomina extends modelo
         }
 
         $this->registro['num_dias_pagados'] -= $dias_incidencia;
+        $dias->dias_pagados_reales = $this->registro['num_dias_pagados'];
 
-        return $this->registro;
+        return $dias;
     }
 
     public function calcula_monto_abono(array $anticipo,int $nom_nomina_id):float|array{
@@ -1261,7 +1264,8 @@ class nom_nomina extends modelo
         return $r_alta_partida;
     }
 
-    private function insertar_percepciones_configuracion(int $nom_conf_nomina_id, int $nom_nomina_id) : array|stdClass
+    private function insertar_percepciones_configuracion(stdClass $dias,mixed $em_empleado, int $nom_conf_nomina_id,
+                                                         int $nom_nomina_id) : array|stdClass
     {
         $percepciones = $this->obtener_percepciones_por_configuracion(nom_conf_nomina_id: $nom_conf_nomina_id);
         if (errores::$error) {
@@ -1273,6 +1277,16 @@ class nom_nomina extends modelo
                 $registros_par_percepcion = $this->genera_registro_par_percepcion(nom_nomina_id: $nom_nomina_id,percepcion: $percepcion);
                 if (errores::$error) {
                     return $this->error->error(mensaje: 'Error al generar registros de percepcion', data: $registros_par_percepcion);
+                }
+
+                if($percepcion['nom_percepcion_aplica_septimo_dia'] === 'activo'){
+                    $septimo_dia = $this->calcula_septimo_dia(dias_trabajados_reales: $dias->dias_pagados_reales,
+                        dias_septimo_dia: $dias->dias_septimo_dia,
+                        salario_diario: $em_empleado->em_empleado_salario_diario);
+                    if (errores::$error) {
+                        return $this->error->error(mensaje: 'Error al calcular septimo dia', data: $septimo_dia);
+                    }
+                    $registros_par_percepcion['importe_gravado'] = $septimo_dia;
                 }
 
                 $r_alta_nom_par_percepcion = (new nom_par_percepcion($this->link))->alta_registro(registro: $registros_par_percepcion);
