@@ -79,20 +79,40 @@ class xml_nom{
         return $data;
     }
 
-    private function emisor(int $fc_factura_id, PDO $link): array|stdClass
+    public function data_cfdi_base_nomina(stdClass $data_cfdi, PDO $link, stdClass $nom_nomina): array|stdClass
     {
-        $fc_factura = (new fc_factura($link))->registro(registro_id:$fc_factura_id, retorno_obj: true );
+        $deducciones = (new nom_nomina($link))->deducciones(nom_nomina_id: $nom_nomina->nom_nomina_id);
         if(errores::$error){
-            return $this->error->error(mensaje: 'Error al obtener factura', data: $fc_factura);
+            return $this->error->error(mensaje: 'Error al obtener deducciones', data: $deducciones);
         }
 
-        $emisor = $this->data_emisor(fc_factura: $fc_factura);
-        if(errores::$error){
-            return $this->error->error(mensaje: 'Error al crear emisor', data: $emisor);
+        $nomina = $this->nomina_header(emisor: $data_cfdi->emisor, link: $link,nom_nomina:  $nom_nomina);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al obtener nomina base', data: $nomina);
         }
 
-        return $emisor;
+        $nomina = $this->percepciones(link: $link,nomina:  $nomina,nom_nomina_id:  $nom_nomina->nom_nomina_id);
+        if (errores::$error) {
+            return $this->error->error(
+                mensaje: 'Error al asignar percepciones', data: $nomina);
+        }
+
+        $nomina = $this->deducciones(link: $link,nomina:  $nomina,nom_nomina_id:  $nom_nomina->nom_nomina_id);
+        if (errores::$error) {
+            return $this->error->error(
+                mensaje: 'Error al asignar percepciones', data: $nomina);
+        }
+
+        $nomina = $this->otros_pagos(link: $link,nomina:  $nomina,nom_nomina_id:  $nom_nomina->nom_nomina_id);
+        if (errores::$error) {
+            return $this->error->error(
+                mensaje: 'Error al asignar otros_pagos', data: $nomina);
+        }
+
+        return $nomina;
     }
+
+
 
     /**
      * Maqueta el objeto de un comprobante para cfdi
@@ -312,7 +332,7 @@ class xml_nom{
         return $receptor;
     }
 
-    public function deducciones(PDO $link, stdClass $nomina, int $nom_nomina_id): array|stdClass
+    private function deducciones(PDO $link, stdClass $nomina, int $nom_nomina_id): array|stdClass
     {
 
         $deducciones = (new nom_nomina($link))->deducciones(nom_nomina_id: $nom_nomina_id);
@@ -353,6 +373,21 @@ class xml_nom{
         return $nomina;
     }
 
+    private function emisor(int $fc_factura_id, PDO $link): array|stdClass
+    {
+        $fc_factura = (new fc_factura($link))->registro(registro_id:$fc_factura_id, retorno_obj: true );
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al obtener factura', data: $fc_factura);
+        }
+
+        $emisor = $this->data_emisor(fc_factura: $fc_factura);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al crear emisor', data: $emisor);
+        }
+
+        return $emisor;
+    }
+
 
     private function nomina_base(PDO $link, stdClass $nom_nomina): array|stdClass
     {
@@ -390,7 +425,7 @@ class xml_nom{
         return $nomina;
     }
 
-    public function nomina_header(stdClass $emisor, PDO $link, stdClass $nom_nomina): array|stdClass
+    private function nomina_header(stdClass $emisor, PDO $link, stdClass $nom_nomina): array|stdClass
     {
         $nomina = $this->nomina_base(link: $link, nom_nomina: $nom_nomina);
         if (errores::$error) {
@@ -441,7 +476,7 @@ class xml_nom{
         return $nomina;
     }
 
-    public function otros_pagos(PDO $link, stdClass $nomina, int $nom_nomina_id): array|stdClass
+    private function otros_pagos(PDO $link, stdClass $nomina, int $nom_nomina_id): array|stdClass
     {
 
         $otros_pagos = (new nom_nomina($link))->otros_pagos(nom_nomina_id: $nom_nomina_id);
@@ -481,7 +516,7 @@ class xml_nom{
         return $nomina;
     }
 
-    public function percepciones(PDO $link, stdClass $nomina, int $nom_nomina_id): array|stdClass
+    private function percepciones(PDO $link, stdClass $nomina, int $nom_nomina_id): array|stdClass
     {
 
         $percepciones = (new nom_nomina($link))->percepciones(nom_nomina_id: $nom_nomina_id);

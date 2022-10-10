@@ -432,37 +432,15 @@ class controlador_nom_nomina extends base_nom
             return $this->retorno_error(mensaje: 'Error al obtener data cfdi', data: $data_cfdi, header: $header, ws: $ws);
         }
 
-        $deducciones = (new nom_nomina($this->link))->deducciones(nom_nomina_id: $this->registro_id);
-        if(errores::$error){
-            return $this->retorno_error(mensaje: 'Error al obtener deducciones', data: $deducciones, header: $header, ws: $ws);
-        }
 
-        $nomina = (new xml_nom())->nomina_header(emisor: $data_cfdi->emisor, link: $this->link,nom_nomina:  $nom_nomina);
-        if (errores::$error) {
-            return $this->retorno_error(mensaje: 'Error al obtener nomina base',
-                data: $nomina, header: $header, ws: $ws);
-        }
-
-        $nomina = (new xml_nom())->percepciones(link: $this->link,nomina:  $nomina,nom_nomina_id:  $this->registro_id);
+        $nomina = (new xml_nom())->data_cfdi_base_nomina(data_cfdi: $data_cfdi,link:  $this->link, nom_nomina: $nom_nomina);
         if (errores::$error) {
             return $this->retorno_error(
-                mensaje: 'Error al asignar percepciones', data: $nomina, header: $header, ws: $ws);
-        }
-
-        $nomina = (new xml_nom())->deducciones(link: $this->link,nomina:  $nomina,nom_nomina_id:  $this->registro_id);
-        if (errores::$error) {
-            return $this->retorno_error(
-                mensaje: 'Error al asignar percepciones', data: $nomina, header: $header, ws: $ws);
-        }
-
-        $nomina = (new xml_nom())->otros_pagos(link: $this->link,nomina:  $nomina,nom_nomina_id:  $this->registro_id);
-        if (errores::$error) {
-            return $this->retorno_error(
-                mensaje: 'Error al asignar otros_pagos', data: $nomina, header: $header, ws: $ws);
+                mensaje: 'Error al asignar xml nomina', data: $nomina, header: $header, ws: $ws);
         }
 
         $xml = (new cfdis())->complemento_nomina(comprobante: $data_cfdi->comprobante,emisor:  $data_cfdi->emisor,
-            nomina: $data_cfdi->nomina,receptor:  $data_cfdi->receptor);
+            nomina: $nomina,receptor:  $data_cfdi->receptor);
         if (errores::$error) {
             return $this->retorno_error(mensaje: 'Error al generar xml', data: $xml, header: $header, ws: $ws);
         }
