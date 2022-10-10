@@ -3,7 +3,7 @@ namespace models;
 use base\orm\modelo;
 use PDO;
 
-class nom_perf_exedente extends modelo{
+class nom_per_excedente extends modelo{
 
     public function __construct(PDO $link){
         $tabla = __CLASS__;
