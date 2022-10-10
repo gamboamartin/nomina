@@ -6,4 +6,5 @@
 <?php echo $controlador->inputs->descripcion; ?>
 <?php echo $controlador->inputs->descripcion_select; ?>
 <?php echo $controlador->inputs->alias; ?>
+<?php echo $controlador->inputs->select->nom_conf_nomina_id; ?>
 <?php include (new views())->ruta_templates.'botons/submit/modifica_bd.php';?>
