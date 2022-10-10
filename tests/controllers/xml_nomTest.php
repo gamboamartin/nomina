@@ -222,6 +222,51 @@ class xml_nomTest extends test {
         errores::$error = false;
     }
 
+    public function test_emisor(){
+
+        errores::$error = false;
+
+        $_GET['seccion'] = 'cat_sat_tipo_persona';
+        $_GET['accion'] = 'lista';
+        $_SESSION['grupo_id'] = 1;
+        $_SESSION['usuario_id'] = 2;
+        $_GET['session_id'] = '1';
+        $xml_nom = new xml_nom();
+        $xml_nom = new liberator($xml_nom);
+
+        $fc_factura_id = 1;
+        $link = $this->link;
+
+        $del = (new base_test())->del_nom_nomina($link);
+        if(errores::$error){
+            $error = (new errores())->error('Error al eliminar', $del);
+            print_r($error);
+            exit;
+        }
+
+        $alta = (new \gamboamartin\facturacion\tests\base_test())->del_fc_factura($link);
+        if(errores::$error){
+            $error = (new errores())->error('Error al eliminar', $alta);
+            print_r($error);
+            exit;
+        }
+
+        $alta = (new \gamboamartin\facturacion\tests\base_test())->alta_fc_factura($link);
+        if(errores::$error){
+            $error = (new errores())->error('Error al dar de alta', $alta);
+            print_r($error);
+            exit;
+        }
+
+        $resultado = $xml_nom->emisor($fc_factura_id, $link);
+        $this->assertIsObject($resultado);
+        $this->assertNotTrue(errores::$error);
+        $this->assertEquals('AAA010101ABC', $resultado->rfc);
+        $this->assertEquals('1', $resultado->nombre);
+        $this->assertEquals('021', $resultado->regimen_fiscal);
+        errores::$error = false;
+    }
+
 
 
 

@@ -373,8 +373,17 @@ class xml_nom{
         return $nomina;
     }
 
+    /**
+     * @param int $fc_factura_id Identificador de factura
+     * @param PDO $link Conexion a BD
+     * @return array|stdClass
+     * @version 0.458.25
+     */
     private function emisor(int $fc_factura_id, PDO $link): array|stdClass
     {
+        if($fc_factura_id<=0){
+            return $this->error->error(mensaje: 'Error fc_factura_id debe ser mayor a 0', data: $fc_factura_id);
+        }
         $fc_factura = (new fc_factura($link))->registro(registro_id:$fc_factura_id, retorno_obj: true );
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al obtener factura', data: $fc_factura);
