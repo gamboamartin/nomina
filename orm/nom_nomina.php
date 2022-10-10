@@ -422,9 +422,9 @@ class nom_nomina extends modelo
     }
 
     public function calculo_dias_pagados(stdClass $nom_conf_empleado):stdClass|array{
-
         $dias = new stdClass();
         $dias->dias_septimo_dia = 0;
+        $dias->dias_pagados_periodo = $this->registro['num_dias_pagados'];
         $existe = (new nom_conf_percepcion($this->link))->aplica_septimo_dia($nom_conf_empleado->nom_conf_nomina_id);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al determinar si aplica septimo dia', data: $existe);
@@ -441,6 +441,7 @@ class nom_nomina extends modelo
         }
 
         $this->registro['num_dias_pagados'] -= $dias_incidencia;
+        $dias->dias_pagados_periodo -= $dias_incidencia;
         $dias->dias_pagados_reales = $this->registro['num_dias_pagados'];
 
         return $dias;
@@ -1287,6 +1288,11 @@ class nom_nomina extends modelo
                         return $this->error->error(mensaje: 'Error al calcular septimo dia', data: $septimo_dia);
                     }
                     $registros_par_percepcion['importe_gravado'] = $septimo_dia;
+                }
+
+                if($percepcion['nom_percepcion_aplica_despensa'] === 'activo'){
+                    $registros_par_percepcion['importe_exento'] = round($dias->dias_pagados_periodo *
+                        $percepcion['nom_conf_percepcion_importe_exento'],2);
                 }
 
                 $r_alta_nom_par_percepcion = (new nom_par_percepcion($this->link))->alta_registro(registro: $registros_par_percepcion);
