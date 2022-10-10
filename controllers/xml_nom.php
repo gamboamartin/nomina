@@ -19,9 +19,19 @@ class xml_nom{
         $this->validacion = new validacion();
     }
 
+    /**
+     * Genera un comprobante para cfdi
+     * @param int $fc_factura_id Factura a verificar
+     * @param PDO $link Conexion a la base de datos
+     * @return array|stdClass
+     * @version 0.454.25
+     */
     public function comprobante(int $fc_factura_id, PDO $link): array|stdClass
     {
 
+        if($fc_factura_id <= 0){
+            return $this->error->error(mensaje: 'Error fc_factura_id debe ser mayor a 0', data: $fc_factura_id);
+        }
         $fc_factura = (new fc_factura($link))->registro(registro_id:$fc_factura_id, retorno_obj: true );
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al obtener factura', data: $fc_factura);
@@ -74,19 +84,28 @@ class xml_nom{
         $comprobante = new stdClass();
         $comprobante->lugar_expedicion = $fc_factura->dp_cp_descripcion;
         $comprobante->folio = $fc_factura->fc_factura_folio;
-        $comprobante->total = (new fc_factura($link))->total(fc_factura_id:$fc_factura->fc_factura_id );
+
+        $total = (new fc_factura($link))->total(fc_factura_id:$fc_factura->fc_factura_id );
         if(errores::$error){
-            return $this->error->error(mensaje: 'Error al obtener total', data: $comprobante->total);
+            return $this->error->error(mensaje: 'Error al obtener total', data: $total);
         }
-        $comprobante->sub_total = (new fc_factura($link))->sub_total(fc_factura_id:$fc_factura->fc_factura_id );
+
+        $comprobante->total = $total;
+
+        $sub_total = (new fc_factura($link))->sub_total(fc_factura_id:$fc_factura->fc_factura_id );
         if(errores::$error){
-            return $this->error->error(mensaje: 'Error al obtener sub_total', data: $comprobante->sub_total);
+            return $this->error->error(mensaje: 'Error al obtener sub_total', data: $sub_total);
         }
-        $comprobante->descuento = (
+
+        $comprobante->sub_total = $sub_total;
+
+        $descuento = (
             new fc_factura($link))->get_factura_descuento(fc_factura_id:$fc_factura->fc_factura_id );
         if(errores::$error){
-            return $this->error->error(mensaje: 'Error al obtener sub_total', data: $comprobante->sub_total);
+            return $this->error->error(mensaje: 'Error al obtener descuento', data: $descuento);
         }
+
+        $comprobante->descuento = $descuento;
         return $comprobante;
     }
 

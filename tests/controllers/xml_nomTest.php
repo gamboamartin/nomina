@@ -26,6 +26,55 @@ class xml_nomTest extends test {
         $this->paths_conf->views = '/var/www/html/cat_sat/config/views.php';
     }
 
+    public function test_comprobante(){
+
+        errores::$error = false;
+
+        $_GET['seccion'] = 'cat_sat_tipo_persona';
+        $_GET['accion'] = 'lista';
+        $_SESSION['grupo_id'] = 1;
+        $_SESSION['usuario_id'] = 2;
+        $_GET['session_id'] = '1';
+        $xml_nom = new xml_nom();
+            //$xml_nom = new liberator($xml_nom);
+
+        $fc_factura_id = 1;
+        $link = $this->link;
+
+        $del = (new base_test())->del_nom_nomina($link);
+        if(errores::$error){
+            $error = (new errores())->error('Error al eliminar', $del);
+            print_r($error);
+            exit;
+        }
+
+        $del = (new \gamboamartin\facturacion\tests\base_test())->del_fc_factura($link);
+        if(errores::$error){
+            $error = (new errores())->error('Error al eliminar', $del);
+            print_r($error);
+            exit;
+        }
+
+        $alta = (new \gamboamartin\facturacion\tests\base_test())->alta_fc_partida($link);
+        if(errores::$error){
+            $error = (new errores())->error('Error al insertar', $alta);
+            print_r($error);
+            exit;
+        }
+
+
+
+        $resultado = $xml_nom->comprobante($fc_factura_id, $link);
+        $this->assertIsObject($resultado);
+        $this->assertNotTrue(errores::$error);
+        $this->assertEquals(1, $resultado->folio);
+        $this->assertEquals(1, $resultado->total);
+        $this->assertEquals(1, $resultado->sub_total);
+        $this->assertEquals(0, $resultado->descuento);
+        errores::$error = false;
+
+    }
+
     public function test_data_comprobante(): void
     {
         errores::$error = false;
