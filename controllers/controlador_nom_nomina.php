@@ -427,20 +427,7 @@ class controlador_nom_nomina extends base_nom
             return $this->retorno_error(mensaje: 'Error al validar nomina', data: $valida, header: $header, ws: $ws);
         }
 
-        $data_cfdi = (new xml_nom())->data_cfdi_base(fc_factura_id:  $nom_nomina->fc_factura_id,link: $this->link);
-        if(errores::$error){
-            return $this->retorno_error(mensaje: 'Error al obtener data cfdi', data: $data_cfdi, header: $header, ws: $ws);
-        }
-
-
-        $nomina = (new xml_nom())->data_cfdi_base_nomina(data_cfdi: $data_cfdi,link:  $this->link, nom_nomina: $nom_nomina);
-        if (errores::$error) {
-            return $this->retorno_error(
-                mensaje: 'Error al asignar xml nomina', data: $nomina, header: $header, ws: $ws);
-        }
-
-        $xml = (new cfdis())->complemento_nomina(comprobante: $data_cfdi->comprobante,emisor:  $data_cfdi->emisor,
-            nomina: $nomina,receptor:  $data_cfdi->receptor);
+        $xml = (new xml_nom())->xml(link: $this->link, nom_nomina: $nom_nomina);
         if (errores::$error) {
             return $this->retorno_error(mensaje: 'Error al generar xml', data: $xml, header: $header, ws: $ws);
         }

@@ -4,6 +4,7 @@ use gamboamartin\comercial\models\com_sucursal;
 use gamboamartin\errores\errores;
 use gamboamartin\facturacion\models\fc_factura;
 use gamboamartin\validacion\validacion;
+use gamboamartin\xml_cfdi_4\cfdis;
 use models\calcula_nomina;
 use models\nom_data_subsidio;
 use models\nom_nomina;
@@ -44,7 +45,7 @@ class xml_nom{
         return $comprobante;
     }
 
-    public function data_cfdi_base(int $fc_factura_id, PDO $link): array|stdClass
+    private function data_cfdi_base(int $fc_factura_id, PDO $link): array|stdClass
     {
         $fc_factura = (new fc_factura($link))->registro(
             registro_id:$fc_factura_id, retorno_obj: true );
@@ -79,7 +80,7 @@ class xml_nom{
         return $data;
     }
 
-    public function data_cfdi_base_nomina(stdClass $data_cfdi, PDO $link, stdClass $nom_nomina): array|stdClass
+    private function data_cfdi_base_nomina(stdClass $data_cfdi, PDO $link, stdClass $nom_nomina): array|stdClass
     {
         $deducciones = (new nom_nomina($link))->deducciones(nom_nomina_id: $nom_nomina->nom_nomina_id);
         if(errores::$error){
@@ -585,5 +586,26 @@ class xml_nom{
             return $this->error->error(mensaje: 'Error al crear receptor', data: $receptor);
         }
         return $receptor;
+    }
+
+    public function xml(PDO $link, stdClass $nom_nomina): bool|array|string
+    {
+        $data_cfdi = $this->data_cfdi_base(fc_factura_id:  $nom_nomina->fc_factura_id,link: $link);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al obtener data cfdi', data: $data_cfdi);
+        }
+
+
+        $nomina = $this->data_cfdi_base_nomina(data_cfdi: $data_cfdi,link:  $link, nom_nomina: $nom_nomina);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al asignar xml nomina', data: $nomina);
+        }
+
+        $xml = (new cfdis())->complemento_nomina(comprobante: $data_cfdi->comprobante,emisor:  $data_cfdi->emisor,
+            nomina: $nomina,receptor:  $data_cfdi->receptor);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al generar xml', data: $xml);
+        }
+        return $xml;
     }
 }
