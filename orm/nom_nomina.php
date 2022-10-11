@@ -1718,7 +1718,7 @@ class nom_nomina extends modelo
             return $this->error->error(mensaje: 'Error al obtener total exento ded', data: $total_deducciones_exento);
         }
 
-        $total_deducciones = $total_deducciones_gravado + $total_deducciones_gravado;
+        $total_deducciones = $total_deducciones_gravado + $total_deducciones_exento;
         return round($total_deducciones,2);
     }
 
