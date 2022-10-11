@@ -163,6 +163,27 @@ class calcula_nominaTest extends test {
             exit;
         }
 
+        $del = (new base_test())->del_nom_conf_factura($this->link);
+        if(errores::$error){
+            $error = (new errores())->error('Error al eliminar', $del);
+            print_r($error);
+            exit;
+        }
+
+        $del = (new \gamboamartin\comercial\test\base_test())->del_com_producto($this->link);
+        if(errores::$error){
+            $error = (new errores())->error('Error al eliminar', $del);
+            print_r($error);
+            exit;
+        }
+
+        $del = (new \gamboamartin\comercial\test\base_test())->del_com_sucursal($this->link);
+        if(errores::$error){
+            $error = (new errores())->error('Error al eliminar', $del);
+            print_r($error);
+            exit;
+        }
+
 
 
         $alta = (new base_test())->alta_nom_nomina($this->link);
@@ -263,6 +284,27 @@ class calcula_nominaTest extends test {
         }
 
         $del = (new \gamboamartin\organigrama\tests\base_test())->del_org_clasificacion_dep($link);
+        if(errores::$error){
+            $error = (new errores())->error('Error al eliminar', $del);
+            print_r($error);
+            exit;
+        }
+
+        $del = (new base_test())->del_nom_conf_factura($link);
+        if(errores::$error){
+            $error = (new errores())->error('Error al eliminar', $del);
+            print_r($error);
+            exit;
+        }
+
+        $del = (new \gamboamartin\comercial\test\base_test())->del_com_producto($link);
+        if(errores::$error){
+            $error = (new errores())->error('Error al eliminar', $del);
+            print_r($error);
+            exit;
+        }
+
+        $del = (new \gamboamartin\comercial\test\base_test())->del_com_sucursal($link);
         if(errores::$error){
             $error = (new errores())->error('Error al eliminar', $del);
             print_r($error);

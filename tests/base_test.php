@@ -6,6 +6,7 @@ use gamboamartin\empleado\models\em_empleado;
 use gamboamartin\errores\errores;
 use models\im_registro_patronal;
 use models\nom_conf_empleado;
+use models\nom_conf_factura;
 use models\nom_conf_nomina;
 use models\nom_nomina;
 use models\nom_periodo;
@@ -139,10 +140,45 @@ class base_test{
         return $alta;
     }
 
+    public function alta_nom_conf_factura(PDO $link): array|\stdClass
+    {
+
+        $alta = (new \gamboamartin\comercial\test\base_test())->alta_com_producto($link);
+        if(errores::$error){
+            return (new errores())->error('Error al dar de alta', $alta);
+
+        }
+
+        $registro = array();
+        $registro['id'] = 1;
+        $registro['codigo'] = 1;
+        $registro['descripcion'] = 1;
+        $registro['cat_sat_forma_pago_id'] = 1;
+        $registro['cat_sat_metodo_pago_id'] = 1;
+        $registro['com_tipo_cambio_id'] = 1;
+        $registro['cat_sat_moneda_id'] = 1;
+        $registro['cat_sat_uso_cfdi_id'] = 1;
+        $registro['cat_sat_tipo_de_comprobante_id'] = 1;
+        $registro['com_producto_id'] = 1;
+
+
+        $alta = (new nom_conf_factura($link))->alta_registro($registro);
+        if(errores::$error){
+            return (new errores())->error(mensaje: 'Error al insertar', data: $alta);
+
+        }
+        return $alta;
+    }
+
     public function alta_nom_conf_nomina(PDO $link): array|\stdClass
     {
 
         $alta = (new \gamboamartin\cat_sat\tests\base_test())->alta_cat_sat_tipo_nomina($link);
+        if(errores::$error){
+            return (new errores())->error('Error al dar de alta', $alta);
+        }
+
+        $alta = (new base_test())->alta_nom_conf_factura($link);
         if(errores::$error){
             return (new errores())->error('Error al dar de alta', $alta);
         }
@@ -247,6 +283,13 @@ class base_test{
     
     public function alta_nom_rel_empleado_sucursal(PDO $link): array|\stdClass
     {
+
+        $alta = (new \gamboamartin\comercial\test\base_test())->alta_com_sucursal($link);
+        if(errores::$error){
+            return (new errores())->error('Error al dar de alta', $alta);
+
+        }
+
         $nom_rel_empleado_sucursal = array();
         $nom_rel_empleado_sucursal['id'] = 1;
         $nom_rel_empleado_sucursal['codigo'] = 1;
@@ -371,6 +414,16 @@ class base_test{
     public function del_nom_conf_empleado(PDO $link): array
     {
         $del = $this->del($link, 'models\\nom_conf_empleado');
+        if(errores::$error){
+            return (new errores())->error('Error al eliminar', $del);
+        }
+        return $del;
+    }
+
+    public function del_nom_conf_factura(PDO $link): array
+    {
+
+        $del = $this->del($link, 'models\\nom_conf_factura');
         if(errores::$error){
             return (new errores())->error('Error al eliminar', $del);
         }

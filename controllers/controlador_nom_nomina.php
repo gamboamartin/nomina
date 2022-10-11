@@ -440,21 +440,20 @@ class controlador_nom_nomina extends base_nom
             return $this->retorno_error(mensaje: 'Error no existe '.$ruta_archivos, data: $ruta_archivos, header: $header, ws: $ws);
         }
 
-        $ruta_archivos_model = $ruta_archivos.'/'.$this->tabla;
+        $ruta_archivos_tmp = $ruta_archivos.'/tmp';
 
-        if(!file_exists($ruta_archivos_model)){
-            mkdir($ruta_archivos_model,0777,true);
+        if(!file_exists($ruta_archivos_tmp)){
+            mkdir($ruta_archivos_tmp,0777,true);
         }
-        if(!file_exists($ruta_archivos_model)){
-            return $this->retorno_error(mensaje: 'Error no existe '.$ruta_archivos_model, data: $ruta_archivos_model, header: $header, ws: $ws);
+        if(!file_exists($ruta_archivos_tmp)){
+            return $this->retorno_error(mensaje: 'Error no existe '.$ruta_archivos_tmp, data: $ruta_archivos_tmp, header: $header, ws: $ws);
         }
 
         $documento = array();
         $file = array();
 
 
-
-        $file_xml_st = $ruta_archivos_model.'/'.$this->registro_id.'.st.xml';
+        $file_xml_st = $ruta_archivos_tmp.'/'.$this->registro_id.'.st.xml';
 
         file_put_contents($file_xml_st, $xml);
 

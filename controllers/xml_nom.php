@@ -607,9 +607,22 @@ class xml_nom{
         return $nomina;
     }
 
-
+    /**
+     * Obtiene el receptor para un xml
+     * @param int $com_sucursal_id cliente tipo empleado
+     * @param int $fc_factura_id Factura de nomina
+     * @param PDO $link conexion de la bd
+     * @return array|stdClass
+     * @version 0.461.25
+     */
     private function receptor(int $com_sucursal_id, int $fc_factura_id, PDO $link): array|stdClass
     {
+        if($com_sucursal_id<=0){
+            return $this->error->error(mensaje: 'Error com_sucursal_id debe ser mayor a 0', data: $com_sucursal_id);
+        }
+        if($fc_factura_id<=0){
+            return $this->error->error(mensaje: 'Error fc_factura_id debe ser mayor a 0', data: $fc_factura_id);
+        }
         $com_sucursal = (new com_sucursal($link))->registro(registro_id:$com_sucursal_id, retorno_obj: true );
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al obtener sucursal', data: $com_sucursal);

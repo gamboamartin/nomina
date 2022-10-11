@@ -15,7 +15,8 @@ class nom_conf_factura extends modelo{
     public function __construct(PDO $link){
         $tabla = __CLASS__;
         $columnas = array($tabla=>false);
-        $campos_obligatorios = array();
+        $campos_obligatorios = array('cat_sat_forma_pago_id','cat_sat_metodo_pago_id','cat_sat_moneda_id',
+            'com_tipo_cambio_id','cat_sat_uso_cfdi_id','cat_sat_tipo_de_comprobante_id','com_producto_id');
 
         $campos_view['cat_sat_forma_pago_id']['type'] = "selects";
         $campos_view['cat_sat_forma_pago_id']['model'] = (new cat_sat_forma_pago($link));

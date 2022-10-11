@@ -99,6 +99,28 @@ class nom_nominaTest extends test {
             exit;
         }
 
+        $del = (new base_test())->del_nom_conf_factura($this->link);
+        if(errores::$error){
+            $error = (new errores())->error('Error al eliminar', $del);
+            print_r($error);
+            exit;
+        }
+
+        $del = (new \gamboamartin\comercial\test\base_test())->del_com_producto($this->link);
+        if(errores::$error){
+            $error = (new errores())->error('Error al eliminar', $del);
+            print_r($error);
+            exit;
+        }
+        $del = (new \gamboamartin\comercial\test\base_test())->del_com_sucursal($this->link);
+        if(errores::$error){
+            $error = (new errores())->error('Error al eliminar', $del);
+            print_r($error);
+            exit;
+        }
+
+
+
         $alta = (new base_test())->alta_nom_conf_empleado(link: $this->link);
         if(errores::$error){
             $error = (new errores())->error('Error al insertar', $alta);
@@ -211,7 +233,25 @@ class nom_nominaTest extends test {
             print_r($error);
             exit;
         }
+        $del = (new base_test())->del_nom_conf_factura($this->link);
+        if(errores::$error){
+            $error = (new errores())->error('Error al eliminar', $del);
+            print_r($error);
+            exit;
+        }
 
+        $del = (new \gamboamartin\comercial\test\base_test())->del_com_producto($this->link);
+        if(errores::$error){
+            $error = (new errores())->error('Error al eliminar', $del);
+            print_r($error);
+            exit;
+        }
+        $del = (new \gamboamartin\comercial\test\base_test())->del_com_sucursal($this->link);
+        if(errores::$error){
+            $error = (new errores())->error('Error al eliminar', $del);
+            print_r($error);
+            exit;
+        }
 
         $alta = (new base_test())->alta_nom_nomina($this->link);
         if(errores::$error){
@@ -569,6 +609,14 @@ class nom_nominaTest extends test {
             exit;
         }
 
+
+        $del = (new \gamboamartin\comercial\test\base_test())->del_com_sucursal($this->link);
+        if(errores::$error){
+            $error = (new errores())->error('Error al eliminar', $del);
+            print_r($error);
+            exit;
+        }
+
         $alta = (new base_test())->alta_nom_rel_empleado_sucursal($this->link);
         if(errores::$error){
             $error = (new errores())->error(mensaje: 'Error al insertar', data: $alta);
@@ -693,7 +741,29 @@ class nom_nominaTest extends test {
             print_r($error);
             exit;
         }
+
+
         $del = (new \gamboamartin\organigrama\tests\base_test())->del_org_clasificacion_dep($this->link);
+        if(errores::$error){
+            $error = (new errores())->error(mensaje: 'Error al eliminar', data: $del);
+            print_r($error);
+            exit;
+        }
+
+        $del = (new base_test())->del_nom_conf_factura($this->link);
+        if(errores::$error){
+            $error = (new errores())->error(mensaje: 'Error al eliminar', data: $del);
+            print_r($error);
+            exit;
+        }
+
+        $del = (new \gamboamartin\comercial\test\base_test())->del_com_producto($this->link);
+        if(errores::$error){
+            $error = (new errores())->error(mensaje: 'Error al eliminar', data: $del);
+            print_r($error);
+            exit;
+        }
+        $del = (new \gamboamartin\comercial\test\base_test())->del_com_sucursal($this->link);
         if(errores::$error){
             $error = (new errores())->error(mensaje: 'Error al eliminar', data: $del);
             print_r($error);
@@ -862,6 +932,27 @@ class nom_nominaTest extends test {
             print_r($error);
             exit;
         }
+
+        $del = (new base_test())->del_nom_conf_factura($this->link);
+        if(errores::$error){
+            $error = (new errores())->error(mensaje: 'Error al eliminar', data: $del);
+            print_r($error);
+            exit;
+        }
+
+        $del = (new \gamboamartin\comercial\test\base_test())->del_com_producto($this->link);
+        if(errores::$error){
+            $error = (new errores())->error(mensaje: 'Error al eliminar', data: $del);
+            print_r($error);
+            exit;
+        }
+        $del = (new \gamboamartin\comercial\test\base_test())->del_com_sucursal($this->link);
+        if(errores::$error){
+            $error = (new errores())->error(mensaje: 'Error al eliminar', data: $del);
+            print_r($error);
+            exit;
+        }
+
         $alta = (new base_test())->alta_nom_nomina($this->link);
         if(errores::$error){
             $error = (new errores())->error(mensaje: 'Error al insertar', data: $alta);
