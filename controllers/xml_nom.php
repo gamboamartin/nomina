@@ -45,8 +45,18 @@ class xml_nom{
         return $comprobante;
     }
 
+    /**
+     * Genera un xml base
+     * @param int $fc_factura_id Factura identificador
+     * @param PDO $link Conexion a la base de datos
+     * @return array|stdClass
+     * @version 0.474.26
+     */
     private function data_cfdi_base(int $fc_factura_id, PDO $link): array|stdClass
     {
+        if($fc_factura_id <= 0){
+            return $this->error->error(mensaje: 'Error fc_factura_id debe ser mayor a 0', data: $fc_factura_id);
+        }
         $fc_factura = (new fc_factura($link))->registro(
             registro_id:$fc_factura_id, retorno_obj: true );
         if(errores::$error){

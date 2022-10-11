@@ -75,6 +75,51 @@ class xml_nomTest extends test {
 
     }
 
+    public function test_data_cfdi_base(): void
+    {
+        errores::$error = false;
+
+        $_GET['seccion'] = 'cat_sat_tipo_persona';
+        $_GET['accion'] = 'lista';
+        $_SESSION['grupo_id'] = 1;
+        $_SESSION['usuario_id'] = 2;
+        $_GET['session_id'] = '1';
+        $xml_nom = new xml_nom();
+
+        $xml_nom = new liberator($xml_nom);
+
+
+        $del = (new base_test())->del_nom_nomina($this->link);
+        if(errores::$error){
+            $error = (new errores())->error('Error al eliminar', $del);
+            print_r($error);
+            exit;
+        }
+
+        $del = (new \gamboamartin\facturacion\tests\base_test())->del_fc_factura($this->link);
+        if(errores::$error){
+            $error = (new errores())->error('Error al eliminar', $del);
+            print_r($error);
+            exit;
+        }
+
+        $alta = (new \gamboamartin\facturacion\tests\base_test())->alta_fc_partida($this->link);
+        if(errores::$error){
+            $error = (new errores())->error('Error al dar de alta', $alta);
+            print_r($error);
+            exit;
+        }
+
+        $fc_factura_id = 1;
+        $link = $this->link;
+        $resultado = $xml_nom->data_cfdi_base($fc_factura_id, $link);
+        $this->assertIsObject($resultado);
+        $this->assertNotTrue(errores::$error);
+        $this->assertEquals(1, $resultado->fc_factura->fc_factura_id);
+
+        errores::$error = false;
+    }
+
     public function test_data_comprobante(): void
     {
         errores::$error = false;
