@@ -1148,7 +1148,7 @@ class nom_nomina extends modelo
         }
 
         if ($saldo > 0.0) {
-            $filtro['nom_conf_abono.em_tipo_abono_anticipo_id'] = $anticipo['em_tipo_anticipo_id'];
+            $filtro['nom_conf_abono.em_tipo_anticipo_id'] = $anticipo['em_tipo_anticipo_id'];
 
             $conf_abono = (new nom_conf_abono($this->link))->filtro_and(filtro: $filtro, limit: 1);
             if(errores::$error){
