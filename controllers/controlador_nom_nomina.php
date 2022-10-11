@@ -432,12 +432,9 @@ class controlador_nom_nomina extends base_nom
             return $this->retorno_error(mensaje: 'Error al generar xml', data: $xml, header: $header, ws: $ws);
         }
 
-        $ruta_archivos = (new generales())->path_base.'archivos';
-        if(!file_exists($ruta_archivos)){
-            mkdir($ruta_archivos,0777,true);
-        }
-        if(!file_exists($ruta_archivos)){
-            return $this->retorno_error(mensaje: 'Error no existe '.$ruta_archivos, data: $ruta_archivos, header: $header, ws: $ws);
+        $ruta_archivos = $this->ruta_archivos();
+        if (errores::$error) {
+            return $this->retorno_error(mensaje: 'Error al generar ruta de archivos', data: $ruta_archivos, header: $header, ws: $ws);
         }
 
         $ruta_archivos_tmp = $ruta_archivos.'/tmp';
@@ -1033,12 +1030,25 @@ class controlador_nom_nomina extends base_nom
         return $result;
     }
 
+    private function ruta_archivos(): array|string
+    {
+        $ruta_archivos = (new generales())->path_base.'archivos';
+        if(!file_exists($ruta_archivos)){
+            mkdir($ruta_archivos,0777,true);
+        }
+        if(!file_exists($ruta_archivos)){
+            return $this->errores->error(mensaje: 'Error no existe '.$ruta_archivos, data: $ruta_archivos);
+        }
+        return $ruta_archivos;
+    }
+
     public function timbra(bool $header, bool $ws = false): array|stdClass
     {
         $nom_nomina = $this->modelo->registro(registro_id: $this->registro_id, retorno_obj: true);
         if (errores::$error) {
             return $this->retorno_error(mensaje: 'Error al obtener nomina', data: $nom_nomina, header: $header, ws: $ws);
         }
+
 
         print_r($nom_nomina);exit;
 
