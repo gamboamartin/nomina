@@ -414,6 +414,20 @@ class controlador_nom_nomina extends base_nom
         return $r_elimina;
     }
 
+    private function genera_ruta_archivo_tmp(): array|string
+    {
+        $ruta_archivos = $this->ruta_archivos();
+        if (errores::$error) {
+            return $this->errores->error(mensaje: 'Error al generar ruta de archivos', data: $ruta_archivos);
+        }
+
+        $ruta_archivos_tmp = $this->ruta_archivos_tmp(ruta_archivos: $ruta_archivos);
+        if (errores::$error) {
+            return $this->errores->error(mensaje: 'Error al generar ruta de archivos', data: $ruta_archivos_tmp);
+        }
+        return $ruta_archivos_tmp;
+    }
+
     public function genera_xml(bool $header, bool $ws = false): array|stdClass
     {
         $nom_nomina = $this->modelo->registro(registro_id: $this->registro_id, retorno_obj: true);
@@ -432,12 +446,8 @@ class controlador_nom_nomina extends base_nom
             return $this->retorno_error(mensaje: 'Error al generar xml', data: $xml, header: $header, ws: $ws);
         }
 
-        $ruta_archivos = $this->ruta_archivos();
-        if (errores::$error) {
-            return $this->retorno_error(mensaje: 'Error al generar ruta de archivos', data: $ruta_archivos, header: $header, ws: $ws);
-        }
 
-        $ruta_archivos_tmp = $this->ruta_archivos_tmp(ruta_archivos: $ruta_archivos);
+        $ruta_archivos_tmp = $this->genera_ruta_archivo_tmp();
         if (errores::$error) {
             return $this->retorno_error(mensaje: 'Error al generar ruta de archivos', data: $ruta_archivos_tmp, header: $header, ws: $ws);
         }

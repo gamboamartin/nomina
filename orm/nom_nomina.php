@@ -1930,7 +1930,12 @@ class nom_nomina extends modelo
         return round($total_otros_pagos,2);
     }
 
-
+    /**
+     * Obtiene el total de percepciones exento
+     * @param int $nom_nomina_id Nomina ID
+     * @return float|array
+     
+     */
     public function total_percepciones_exento(int $nom_nomina_id): float|array
     {
         $campos = array();

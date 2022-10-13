@@ -29,17 +29,20 @@ class nom_nominaTest extends test {
         $this->paths_conf->generales = '/var/www/html/cat_sat/config/generales.php';
         $this->paths_conf->database = '/var/www/html/cat_sat/config/database.php';
         $this->paths_conf->views = '/var/www/html/cat_sat/config/views.php';
-    }
-
-
-    public function test_alta_bd(){
-        errores::$error = false;
 
         $_GET['seccion'] = 'cat_sat_tipo_persona';
         $_GET['accion'] = 'lista';
         $_SESSION['grupo_id'] = 1;
         $_SESSION['usuario_id'] = 2;
         $_GET['session_id'] = '1';
+
+    }
+
+
+    public function test_alta_bd(){
+        errores::$error = false;
+
+
         $nomina = new nom_nomina($this->link);
 
         $del = (new base_test())->del_nom_concepto_imss($this->link);
@@ -177,11 +180,7 @@ class nom_nominaTest extends test {
     {
         errores::$error = false;
 
-        $_GET['seccion'] = 'cat_sat_tipo_persona';
-        $_GET['accion'] = 'lista';
-        $_SESSION['grupo_id'] = 1;
-        $_SESSION['usuario_id'] = 2;
-        $_GET['session_id'] = '1';
+
         $nomina = new nom_nomina($this->link);
 
         $del = (new base_test())->del_nom_concepto_imss($this->link);
@@ -302,11 +301,7 @@ class nom_nominaTest extends test {
     {
         errores::$error = false;
 
-        $_GET['seccion'] = 'cat_sat_tipo_persona';
-        $_GET['accion'] = 'lista';
-        $_SESSION['grupo_id'] = 1;
-        $_SESSION['usuario_id'] = 2;
-        $_GET['session_id'] = '1';
+
         $nomina = new nom_nomina($this->link);
         $nomina = new liberator($nomina);
 
@@ -324,10 +319,7 @@ class nom_nominaTest extends test {
     {
         errores::$error = false;
 
-        $_GET['seccion'] = 'cat_sat_tipo_persona';
-        $_GET['accion'] = 'lista';
-        $_SESSION['grupo_id'] = 1;
-        $_GET['session_id'] = '1';
+
         $nomina = new nom_nomina($this->link);
 
 
@@ -342,11 +334,7 @@ class nom_nominaTest extends test {
     {
         errores::$error = false;
 
-        $_GET['seccion'] = 'cat_sat_tipo_persona';
-        $_GET['accion'] = 'lista';
-        $_SESSION['grupo_id'] = 1;
-        $_SESSION['usuario_id'] = 2;
-        $_GET['session_id'] = '1';
+
         $nomina = new nom_nomina($this->link);
         $nomina = new liberator($nomina);
 
@@ -392,10 +380,7 @@ class nom_nominaTest extends test {
     {
         errores::$error = false;
 
-        $_GET['seccion'] = 'cat_sat_tipo_persona';
-        $_GET['accion'] = 'lista';
-        $_SESSION['grupo_id'] = 1;
-        $_GET['session_id'] = '1';
+
         $nomina = new nom_nomina($this->link);
         $nomina = new liberator($nomina);
 
@@ -419,11 +404,7 @@ class nom_nominaTest extends test {
     {
         errores::$error = false;
 
-        $_GET['seccion'] = 'cat_sat_tipo_persona';
-        $_GET['accion'] = 'lista';
-        $_SESSION['grupo_id'] = 1;
-        $_SESSION['usuario_id'] = 2;
-        $_GET['session_id'] = '1';
+
         $nomina = new nom_nomina($this->link);
         $nomina = new liberator($nomina);
 
@@ -473,10 +454,7 @@ class nom_nominaTest extends test {
     {
         errores::$error = false;
 
-        $_GET['seccion'] = 'cat_sat_tipo_persona';
-        $_GET['accion'] = 'lista';
-        $_SESSION['grupo_id'] = 1;
-        $_GET['session_id'] = '1';
+
         $nomina = new nom_nomina($this->link);
         $nomina = new liberator($nomina);
 
@@ -497,11 +475,7 @@ class nom_nominaTest extends test {
     {
         errores::$error = false;
 
-        $_GET['seccion'] = 'cat_sat_tipo_persona';
-        $_GET['accion'] = 'lista';
-        $_SESSION['grupo_id'] = 1;
-        $_SESSION['usuario_id'] = 2;
-        $_GET['session_id'] = '1';
+
         $nomina = new nom_nomina($this->link);
         $nomina->registro['im_registro_patronal_id'] = 1;
         $nomina->registro['em_empleado_id'] = 1;
@@ -520,11 +494,7 @@ class nom_nominaTest extends test {
     {
         errores::$error = false;
 
-        $_GET['seccion'] = 'cat_sat_tipo_persona';
-        $_GET['accion'] = 'lista';
-        $_SESSION['grupo_id'] = 1;
-        $_SESSION['usuario_id'] = 2;
-        $_GET['session_id'] = '1';
+
         $nomina = new nom_nomina($this->link);
         $nomina = new liberator($nomina);
 
@@ -540,11 +510,7 @@ class nom_nominaTest extends test {
     {
         errores::$error = false;
 
-        $_GET['seccion'] = 'cat_sat_tipo_persona';
-        $_GET['accion'] = 'lista';
-        $_SESSION['grupo_id'] = 1;
-        $_SESSION['usuario_id'] = 2;
-        $_GET['session_id'] = '1';
+
         $nomina = new nom_nomina($this->link);
         $nomina = new liberator($nomina);
 
@@ -637,10 +603,7 @@ class nom_nominaTest extends test {
     {
         errores::$error = false;
 
-        $_GET['seccion'] = 'cat_sat_tipo_persona';
-        $_GET['accion'] = 'lista';
-        $_SESSION['grupo_id'] = 1;
-        $_GET['session_id'] = '1';
+
         $nomina = new nom_nomina($this->link);
 
 
@@ -657,10 +620,7 @@ class nom_nominaTest extends test {
     {
         errores::$error = false;
 
-        $_GET['seccion'] = 'cat_sat_tipo_persona';
-        $_GET['accion'] = 'lista';
-        $_SESSION['grupo_id'] = 1;
-        $_GET['session_id'] = '1';
+
         $nomina = new nom_nomina($this->link);
 
 
@@ -678,10 +638,7 @@ class nom_nominaTest extends test {
     {
         errores::$error = false;
 
-        $_GET['seccion'] = 'cat_sat_tipo_persona';
-        $_GET['accion'] = 'lista';
-        $_SESSION['grupo_id'] = 1;
-        $_GET['session_id'] = '1';
+
         $nomina = new nom_nomina($this->link);
 
 
@@ -698,11 +655,7 @@ class nom_nominaTest extends test {
     {
         errores::$error = false;
 
-        $_GET['seccion'] = 'cat_sat_tipo_persona';
-        $_GET['accion'] = 'lista';
-        $_SESSION['grupo_id'] = 1;
-        $_SESSION['usuario_id'] = 2;
-        $_GET['session_id'] = '1';
+
         $nomina = new nom_nomina($this->link);
 
 
@@ -811,11 +764,7 @@ class nom_nominaTest extends test {
 
         errores::$error = false;
 
-        $_GET['seccion'] = 'cat_sat_tipo_persona';
-        $_GET['accion'] = 'lista';
-        $_SESSION['grupo_id'] = 1;
-        $_SESSION['usuario_id'] = 2;
-        $_GET['session_id'] = '1';
+
 
 
         $nom_par_percepcion = array();
@@ -873,11 +822,6 @@ class nom_nominaTest extends test {
     {
         errores::$error = false;
 
-        $_GET['seccion'] = 'cat_sat_tipo_persona';
-        $_GET['accion'] = 'lista';
-        $_SESSION['grupo_id'] = 1;
-        $_SESSION['usuario_id'] = 2;
-        $_GET['session_id'] = '1';
         $nomina = new nom_nomina($this->link);
         $nomina = new liberator($nomina);
 
