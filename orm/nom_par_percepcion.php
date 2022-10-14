@@ -87,4 +87,23 @@ class nom_par_percepcion extends nominas{
 
         return $percepciones;
     }
+
+    public function total_par_percepciones_gravado_isn(int $nom_nomina_id): float|array
+    {
+        if($nom_nomina_id <=0 ){
+            return $this->error->error(mensaje: 'Error nom_nomina_id debe ser mayor a 0', data: $nom_nomina_id);
+        }
+
+        $campos = array();
+        $campos['total_importe_gravado'] = 'nom_par_percepcion.importe_gravado';
+        $filtro['nom_nomina.id'] = $nom_nomina_id;
+        $filtro['nom_percepcion.aplica_isn'] = 'activo';
+        $r_nom_par_percepcion = (new nom_par_percepcion($this->link))->suma(campos: $campos,filtro: $filtro);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al obtener percepciones', data: $r_nom_par_percepcion);
+        }
+
+        return round($r_nom_par_percepcion['total_importe_gravado'],2);
+
+    }
 }
