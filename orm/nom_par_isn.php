@@ -18,6 +18,8 @@ class nom_par_isn extends modelo{
         $campos_view['cat_sat_isn_id']['type'] = 'selects';
         $campos_view['cat_sat_isn_id']['model'] = (new cat_sat_isn($link));
 
+        $campos_view['monto']['type'] = 'inputs';
+
         parent::__construct(link: $link,tabla:  $tabla, campos_obligatorios: $campos_obligatorios,
             columnas: $columnas, campos_view: $campos_view);
 
