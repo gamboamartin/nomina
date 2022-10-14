@@ -26,12 +26,11 @@ class nom_par_isn_html extends html_controler {
 
     private function asigna_inputs_modifica(controlador_nom_par_isn $controler, stdClass $inputs): array|stdClass
     {
-
         $controler->inputs->select = new stdClass();
         $controler->inputs->select->nom_nomina_id = $inputs->selects->nom_nomina_id;
         $controler->inputs->select->cat_sat_isn_id = $inputs->selects->cat_sat_isn_id;
 
-        $controler->inputs->monto = $inputs->inputs->monto;
+        $controler->inputs->monto = $inputs->texts->monto;
 
         return $controler->inputs;
     }
@@ -162,7 +161,7 @@ class nom_par_isn_html extends html_controler {
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al generar input', data: $in_monto);
         }
-        $texts->fecha_pago = $in_monto;
+        $texts->monto = $in_monto;
 
         return $texts;
     }
