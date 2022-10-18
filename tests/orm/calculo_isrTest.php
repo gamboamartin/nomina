@@ -75,89 +75,32 @@ class calculo_isrTest extends test {
 
         $calculo = new calculo_isr();
 
-        $del = (new base_test())->del_nom_concepto_imss($this->link);
+        $del = (new base_test())->del_org_clasificacion_dep($this->link);
         if(errores::$error){
             $error = (new errores())->error('Error al eliminar', $del);
             print_r($error);
             exit;
         }
-
         $del = (new base_test())->del_cat_sat_tipo_nomina($this->link);
         if(errores::$error){
-            $error = (new errores())->error(mensaje: 'Error al eliminar', data: $del);
+            $error = (new errores())->error('Error al eliminar', $del);
             print_r($error);
             exit;
         }
-
-        $del = (new base_test())->del_em_empleado($this->link);
+        $del = (new base_test())->del_com_producto($this->link);
         if(errores::$error){
-            $error = (new errores())->error(mensaje: 'Error al eliminar', data: $del);
+            $error = (new errores())->error('Error al eliminar', $del);
             print_r($error);
             exit;
         }
-        $del = (new \gamboamartin\facturacion\tests\base_test)->del_fc_factura($this->link);
-        if(errores::$error){
-            $error = (new errores())->error(mensaje: 'Error al eliminar', data: $del);
-            print_r($error);
-            exit;
-        }
-
-        $del = (new base_test())->del_nom_conf_nomina($this->link);
-        if(errores::$error){
-            $error = (new errores())->error(mensaje: 'Error al eliminar', data: $del);
-            print_r($error);
-            exit;
-        }
-        $del = (new base_test())->del_nom_periodo($this->link);
-        if(errores::$error){
-            $error = (new errores())->error(mensaje: 'Error al eliminar', data: $del);
-            print_r($error);
-            exit;
-        }
-
-        $del = (new base_test())->del_im_registro_patronal($this->link);
-        if(errores::$error){
-            $error = (new errores())->error(mensaje: 'Error al eliminar', data: $del);
-            print_r($error);
-            exit;
-        }
-
-        $del = (new \gamboamartin\facturacion\tests\base_test())->del_fc_csd($this->link);
-        if(errores::$error){
-            $error = (new errores())->error(mensaje: 'Error al eliminar', data: $del);
-            print_r($error);
-            exit;
-        }
-
-        $del = (new \gamboamartin\organigrama\tests\base_test())->del_org_empresa($this->link);
-        if(errores::$error){
-            $error = (new errores())->error(mensaje: 'Error al eliminar', data: $del);
-            print_r($error);
-            exit;
-        }
-
-        $del = (new \gamboamartin\organigrama\tests\base_test())->del_org_clasificacion_dep($this->link);
-        if(errores::$error){
-            $error = (new errores())->error(mensaje: 'Error al eliminar', data: $del);
-            print_r($error);
-            exit;
-        }
-
-        $del = (new base_test())->del_nom_conf_factura($this->link);
+        $del = (new base_test())->del_com_sucursal($this->link);
         if(errores::$error){
             $error = (new errores())->error('Error al eliminar', $del);
             print_r($error);
             exit;
         }
 
-        $del = (new \gamboamartin\comercial\test\base_test())->del_com_producto($this->link);
-        if(errores::$error){
-            $error = (new errores())->error('Error al eliminar', $del);
-            print_r($error);
-            exit;
-        }
-
-        $del = (new \gamboamartin\comercial\test\base_test())->del_com_sucursal($this->link);
+        $del = (new base_test())->del_org_empresa($this->link);
         if(errores::$error){
             $error = (new errores())->error('Error al eliminar', $del);
             print_r($error);

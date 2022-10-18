@@ -202,7 +202,7 @@ class nom_nomina extends modelo
             porc_riesgo_trabajo: $registros['im_registro_patronal']->im_clase_riesgo_factor,
             fecha: $registros['em_empleado']->em_empleado_fecha_inicio_rel_laboral,
             n_dias: $this->registro['num_dias_pagados'],
-            sbc: $registros['em_empleado']->em_empleado_salario_diario_integrado);
+            sbc: $registros['em_empleado']->em_empleado_salario_diario_integrado,link: $this->link);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al generar calculos', data: $calculos);
         }
@@ -1934,7 +1934,7 @@ class nom_nomina extends modelo
      * Obtiene el total de percepciones exento
      * @param int $nom_nomina_id Nomina ID
      * @return float|array
-     
+
      */
     public function total_percepciones_exento(int $nom_nomina_id): float|array
     {
