@@ -15,7 +15,9 @@ use models\im_uma;
 use models\nom_conf_empleado;
 use models\nom_conf_factura;
 use models\nom_conf_nomina;
+use models\nom_conf_percepcion;
 use models\nom_nomina;
+use models\nom_percepcion;
 use models\nom_periodo;
 use models\nom_rel_empleado_sucursal;
 use PDO;
@@ -291,8 +293,8 @@ class base_test{
         return $alta;
     }
 
-    public function alta_nom_conf_nomina(PDO $link, int $cat_sat_tipo_nomina_id = 1,
-                                         int $nom_conf_factura_id = 1, int $id = 1): array|\stdClass
+    public function alta_nom_conf_nomina(PDO $link, int $cat_sat_tipo_nomina_id = 1, int $nom_conf_factura_id = 1,
+                                         int $id = 1): array|\stdClass
     {
 
         $existe = (new cat_sat_tipo_nomina($link))->existe_by_id(registro_id: $cat_sat_tipo_nomina_id);
@@ -343,10 +345,62 @@ class base_test{
         return $alta;
     }
 
+    public function alta_nom_conf_percepcion(PDO $link, int $id = 1, int $nom_conf_nomina_id = 1,
+                                             string $nom_percepcion_aplica_septimo_dia = 'inactivo',
+                                             int $nom_percepcion_id = 1): array|\stdClass
+    {
+
+        $existe = (new nom_conf_nomina($link))->existe_by_id(registro_id: $nom_conf_nomina_id);
+        if(errores::$error){
+            return (new errores())->error('Error al verificar si existe', $existe);
+
+        }
+
+        if(!$existe) {
+            $alta = (new base_test())->alta_nom_conf_nomina(link: $link, id: $nom_conf_nomina_id);
+            if(errores::$error){
+                return (new errores())->error('Error al dar de alta', $alta);
+            }
+        }
+
+        $filtro = array();
+        $filtro['nom_percepcion.aplica_septimo_dia'] = $nom_percepcion_aplica_septimo_dia;
+        $filtro['nom_percepcion.id'] = $nom_percepcion_id;
+        $existe = (new nom_percepcion($link))->existe(filtro: $filtro);
+        if(errores::$error){
+            return (new errores())->error('Error al verificar si existe', $existe);
+
+        }
+
+        if(!$existe) {
+            $alta = (new base_test())->alta_nom_percepcion(link: $link,
+                aplica_septimo_dia: $nom_percepcion_aplica_septimo_dia, id: $nom_percepcion_id);
+            if(errores::$error){
+                return (new errores())->error('Error al dar de alta', $alta);
+            }
+        }
+
+        $registro = array();
+        $registro['id'] = $id;
+        $registro['codigo'] = 1;
+        $registro['descripcion'] = 1;
+        $registro['nom_conf_nomina_id'] = $nom_conf_nomina_id;
+        $registro['nom_percepcion_id'] = $nom_percepcion_id;
+
+        $alta = (new nom_conf_percepcion($link))->alta_registro($registro);
+        if(errores::$error){
+            return (new errores())->error(mensaje: 'Error al insertar', data: $alta);
+
+        }
+        return $alta;
+    }
+
     public function alta_nom_nomina(PDO $link, int $em_empleado_id = 1, int $im_uma_id = 1,
-                                    int $nom_conf_empleado_id = 1, int $nom_periodo_id = 1,
-                                    int $nom_rel_empleado_sucursal_id = 1, float $salario_diario = 250,
-                                    float $salario_diario_integrado = 250): array|stdClass
+                                    int $nom_conf_empleado_id = 1, string $nom_percepcion_aplica_subsidio = 'activo',
+                                    string $nom_percepcion_codigo = '1', string $nom_percepcion_codigo_bis = '1',
+                                    string $nom_percepcion_descripcion = '1', int $nom_percepcion_id = 1,
+                                    int $nom_periodo_id = 1, int $nom_rel_empleado_sucursal_id = 1,
+                                    float $salario_diario = 250, float $salario_diario_integrado = 250): array|stdClass
     {
 
 
@@ -418,6 +472,25 @@ class base_test{
             }
         }
 
+        $filtro = array();
+        $filtro['nom_percepcion.aplica_subsidio'] = $nom_percepcion_aplica_subsidio;
+        $filtro['nom_percepcion.id'] = $nom_percepcion_id;
+        $filtro['nom_percepcion.descripcion'] = $nom_percepcion_descripcion;
+        $existe = (new nom_percepcion($link))->existe(filtro:$filtro);
+        if(errores::$error){
+            return (new errores())->error('Error al verificar si existe', $existe);
+
+        }
+        if(!$existe) {
+            $alta = $this->alta_nom_percepcion(link: $link, aplica_subsidio: $nom_percepcion_aplica_subsidio,
+                codigo: $nom_percepcion_codigo, codigo_bis: $nom_percepcion_codigo_bis,
+                descripcion: $nom_percepcion_descripcion, id: $nom_percepcion_id);
+            if (errores::$error) {
+                return (new errores())->error('Error al dar de alta', $alta);
+
+            }
+        }
+
 
         $registro = array();
         $registro['id'] = $nom_periodo_id;
@@ -440,6 +513,31 @@ class base_test{
         $alta = (new nom_nomina($link))->alta_registro($registro);
         if(errores::$error){
             return (new errores())->error(mensaje: 'Error al insertar', data: $alta);
+        }
+        return $alta;
+    }
+
+    public function alta_nom_percepcion(PDO $link, string $aplica_septimo_dia = 'inactivo',
+                                        string $aplica_subsidio = 'inactivo', int $cat_sat_tipo_percepcion_nom_id = 1,
+                                        string $codigo = '1', string $codigo_bis = '1', string $descripcion = '1',
+                                        int $id = 1): array|\stdClass
+    {
+
+
+        $registro = array();
+        $registro['id'] = $id;
+        $registro['codigo'] = $codigo;
+        $registro['codigo_bis'] = $codigo_bis;
+        $registro['descripcion'] = $descripcion;
+        $registro['aplica_septimo_dia'] = $aplica_septimo_dia;
+        $registro['aplica_subsidio'] = $aplica_subsidio;
+        $registro['cat_sat_tipo_percepcion_nom_id'] = $cat_sat_tipo_percepcion_nom_id;
+
+
+        $alta = (new nom_percepcion($link))->alta_registro($registro);
+        if(errores::$error){
+            return (new errores())->error(mensaje: 'Error al insertar', data: $alta);
+
         }
         return $alta;
     }
@@ -929,6 +1027,20 @@ class base_test{
     public function del_nom_par_percepcion(PDO $link): array
     {
         $del = $this->del($link, 'models\\nom_par_percepcion');
+        if(errores::$error){
+            return (new errores())->error('Error al eliminar', $del);
+        }
+        return $del;
+    }
+
+    public function del_nom_percepcion(PDO $link): array
+    {
+        $del = $this->del_nom_par_percepcion($link);
+        if(errores::$error){
+            return (new errores())->error('Error al eliminar', $del);
+        }
+
+        $del = $this->del($link, 'models\\nom_percepcion');
         if(errores::$error){
             return (new errores())->error('Error al eliminar', $del);
         }

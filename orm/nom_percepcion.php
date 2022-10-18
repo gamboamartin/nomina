@@ -10,7 +10,7 @@ class nom_percepcion extends nominas_confs {
     public function __construct(PDO $link){
         $tabla = __CLASS__;
         $columnas = array($tabla=>false,'cat_sat_tipo_percepcion_nom'=>$tabla);
-        $campos_obligatorios = array();
+        $campos_obligatorios = array('cat_sat_tipo_percepcion_nom_id');
 
         parent::__construct(link: $link,tabla:  $tabla, campos_obligatorios: $campos_obligatorios,
             columnas: $columnas);
@@ -18,6 +18,9 @@ class nom_percepcion extends nominas_confs {
 
     public function registro_estado_subsidio(): array|stdClass
     {
+        /**
+         * refactorizar
+         */
         $QUERY = "SELECT * FROM nom_percepcion WHERE aplica_subsidio = 'activo' LIMIT 1";
         $r_nom_percepcion = $this->ejecuta_consulta($QUERY);
         if (errores::$error) {
@@ -28,6 +31,9 @@ class nom_percepcion extends nominas_confs {
 
     public function id_registro_estado_subsidio(mixed $registro): int
     {
+        /**
+         * REFACTORIZAR
+         */
         if ($registro->n_registros === 0) {
             return -1;
         }

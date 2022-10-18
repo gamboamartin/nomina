@@ -81,6 +81,13 @@ class nom_nominaTest extends test {
             exit;
         }
 
+        $del = (new base_test())->del_nom_percepcion($this->link);
+        if(errores::$error){
+            $error = (new errores())->error('Error al eliminar', $del);
+            print_r($error);
+            exit;
+        }
+
 
         $alta = (new base_test())->alta_nom_periodo(link: $this->link);
         if(errores::$error){
@@ -110,7 +117,12 @@ class nom_nominaTest extends test {
             exit;
         }
 
-
+        $alta = (new base_test())->alta_nom_percepcion(link: $this->link, aplica_subsidio: 'activo', codigo: 2, codigo_bis: 2, descripcion: 2, id: 2);
+        if(errores::$error){
+            $error = (new errores())->error('Error al insertar', $alta);
+            print_r($error);
+            exit;
+        }
 
         $nom_nomina_ins = array();
         $nom_nomina_ins['id'] = 1;

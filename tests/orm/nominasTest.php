@@ -74,78 +74,24 @@ class nominasTest extends test {
         $nominas = new nom_par_percepcion($this->link);
         //$nominas = new liberator($nominas);
 
-        $del = (new base_test())->del_nom_concepto_imss($this->link);
-        if(errores::$error){
-            $error = (new errores())->error('Error al eliminar', $del);
-            print_r($error);
-            exit;
-        }
-
-        $del = (new base_test())->del_cat_sat_tipo_nomina($this->link);
-        if(errores::$error){
-            $error = (new errores())->error('Error al eliminar', $del);
-            print_r($error);
-            exit;
-        }
-
-        $del = (new base_test())->del_em_empleado($this->link);
-        if(errores::$error){
-            $error = (new errores())->error('Error al eliminar', $del);
-            print_r($error);
-            exit;
-        }
-
-        $del = (new base_test())->del_im_registro_patronal($this->link);
-        if(errores::$error){
-            $error = (new errores())->error('Error al eliminar', $del);
-            print_r($error);
-            exit;
-        }
-
-        $del = (new \gamboamartin\facturacion\tests\base_test())->del_fc_csd($this->link);
-        if(errores::$error){
-            $error = (new errores())->error('Error al eliminar', $del);
-            print_r($error);
-            exit;
-        }
 
 
-
-        $del = (new \gamboamartin\organigrama\tests\base_test())->del_org_empresa($this->link);
-        if(errores::$error){
-            $error = (new errores())->error('Error al eliminar', $del);
-            print_r($error);
-            exit;
-        }
-
-        $del = (new \gamboamartin\organigrama\tests\base_test())->del_org_clasificacion_dep($this->link);
+        $del = (new base_test())->del_nom_percepcion($this->link);
         if(errores::$error){
             $error = (new errores())->error(mensaje: 'Error al eliminar', data: $del);
             print_r($error);
             exit;
         }
 
-        $del = (new base_test())->del_nom_conf_factura($this->link);
+        $del = (new base_test())->del_fc_factura($this->link);
         if(errores::$error){
             $error = (new errores())->error(mensaje: 'Error al eliminar', data: $del);
             print_r($error);
             exit;
         }
 
-        $del = (new \gamboamartin\comercial\test\base_test())->del_com_producto($this->link);
-        if(errores::$error){
-            $error = (new errores())->error(mensaje: 'Error al eliminar', data: $del);
-            print_r($error);
-            exit;
-        }
-        $del = (new \gamboamartin\comercial\test\base_test())->del_com_sucursal($this->link);
-        if(errores::$error){
-            $error = (new errores())->error(mensaje: 'Error al eliminar', data: $del);
-            print_r($error);
-            exit;
-        }
-
-        $alta = (new base_test())->alta_nom_nomina($this->link);
+        $alta = (new base_test())->alta_nom_nomina(link: $this->link,
+            nom_percepcion_descripcion: 'Sueldos, Salarios Rayas y Jornales');
         if(errores::$error){
             $error = (new errores())->error('Error al dar de alta ', $alta);
             print_r($error);
