@@ -59,6 +59,8 @@ class controlador_nom_nomina extends base_nom
         $modelo = new nom_nomina(link: $link);
         $html_ = new nom_nomina_html(html: $html);
         $obj_link = new links_menu($this->registro_id);
+
+
         parent::__construct(html: $html_, link: $link, modelo: $modelo, obj_link: $obj_link, paths_conf: $paths_conf);
 
         $link_nom_nomina_modifica_bd = $obj_link->link_con_id(accion: 'modifica_bd',
@@ -150,6 +152,73 @@ class controlador_nom_nomina extends base_nom
         $this->keys_row_lista = $keys_rows_lista;
 
         $this->cuotas_obrero_patronales = new stdClass();
+
+
+
+        $columns = array();
+        $columns['nom_nomina_id']['titulo'] = 'Id';
+        $columns['em_empleado_codigo']['titulo'] = 'Codigo';
+        $columns['em_empleado_rfc']['titulo'] = 'RFC';
+        $columns['em_empleado_rfc']['filtro'] = 'em_empleado.rfc';
+        $columns['em_empleado_nombre']['titulo'] = 'Nombre';
+        $columns['em_empleado_ap']['titulo'] = 'AP';
+        $columns['em_empleado_am']['titulo'] = 'AM';
+        $columns['nom_nomina_fecha_inicial_pago']['titulo'] = 'F Ini';
+        $columns['nom_nomina_fecha_final_pago']['titulo'] = 'F Ini';
+        $columns['nom_nomina_fecha_pago']['titulo'] = 'F Pago';
+        $columns['nom_periodo_codigo']['titulo'] = 'Periodo Cod';
+        $columns['nom_nomina_total_percepcion_total']['titulo'] = 'Percepcion Total';
+        $columns['nom_nomina_total_otro_pago_total']['titulo'] = 'Otro Pago Total';
+        $columns['nom_nomina_total_deduccion_total']['titulo'] = 'Deduccion Total';
+        $columns['nom_nomina_total']['titulo'] = 'Total';
+        $columns['cat_sat_tipo_nomina_descripcion']['titulo'] = 'Tipo Nom';
+        $columns['org_empresa_rfc']['titulo'] = 'RFC Empresa';
+
+        $columns['modifica']['titulo'] = 'Modifica';
+        $columns['genera_xml']['titulo'] = 'Genera XML';
+        $columns['timbra']['titulo'] = 'Timbra';
+        $columns['elimina']['titulo'] = 'Elimina';
+
+
+
+        $columndefs = array();
+
+
+        $columndefs[0]["type"] = "button";
+        $columndefs[0]["targets"] = 16;
+        $columndefs[0]["rendered"][0]["index"] = "modifica";
+        $columndefs[0]["rendered"][0]["class"] = "btn-warning";
+        $columndefs[0]["rendered"][0]["text"] = "Modifica";
+
+
+
+        $columndefs[1]["type"] = "button";
+        $columndefs[1]["targets"] = 17;
+        $columndefs[1]["rendered"][0]["index"] = "genera_xml";
+        $columndefs[1]["rendered"][0]["class"] = "btn-warning";
+        $columndefs[1]["rendered"][0]["text"] = "Genera XML";
+
+        $columndefs[2]["type"] = "button";
+        $columndefs[2]["targets"] = 18;
+        $columndefs[2]["rendered"][0]["index"] = "timbra";
+        $columndefs[2]["rendered"][0]["class"] = "btn-warning";
+        $columndefs[2]["rendered"][0]["text"] = "Timbra";
+
+        $columndefs[3]["type"] = "button";
+        $columndefs[3]["targets"] = 19;
+        $columndefs[3]["rendered"][0]["index"] = "elimina";
+        $columndefs[3]["rendered"][0]["class"] = "btn-danger";
+        $columndefs[3]["rendered"][0]["text"] = "Elimina";
+
+
+
+        $this->datatable_init(columns: $columns,columndefs: $columndefs);
+        if(errores::$error){
+            $error = $this->errores->error(mensaje: 'Error al inicializar columnDefs', data: $this->datatable);
+            var_dump($error);
+            die('Error');
+        }
+
     }
 
     public function alta(bool $header, bool $ws = false): array|string

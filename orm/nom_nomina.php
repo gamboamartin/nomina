@@ -36,8 +36,48 @@ class nom_nomina extends modelo
             'fecha_inicial_pago', 'fecha_final_pago', 'im_registro_patronal_id', 'em_empleado_id','nom_periodo_id',
             'num_dias_pagados','org_departamento_id','org_puesto_id','im_clase_riesgo_id','em_cuenta_bancaria_id');
 
+        $columnas_extra = array();
+        $columnas_extra['nom_nomina_total_percepcion_gravado'] =
+            "IFNULL ((SELECT SUM(nom_par_percepcion.importe_gravado) 
+            FROM  nom_par_percepcion WHERE nom_par_percepcion.nom_nomina_id = nom_nomina.id),0)";
+
+        $columnas_extra['nom_nomina_total_percepcion_exento'] =
+            "IFNULL ((SELECT SUM(nom_par_percepcion.importe_exento) 
+            FROM  nom_par_percepcion WHERE nom_par_percepcion.nom_nomina_id = nom_nomina.id), 0)";
+
+        $columnas_extra['nom_nomina_total_percepcion_total'] =
+            "IFNULL($columnas_extra[nom_nomina_total_percepcion_gravado] + $columnas_extra[nom_nomina_total_percepcion_exento],0)";
+
+        $columnas_extra['nom_nomina_total_otro_pago_gravado'] =
+            "IFNULL ((SELECT SUM(nom_par_otro_pago.importe_gravado) 
+            FROM  nom_par_otro_pago WHERE nom_par_otro_pago.nom_nomina_id = nom_nomina.id),0)";
+
+        $columnas_extra['nom_nomina_total_otro_pago_exento'] =
+            "IFNULL((SELECT SUM(nom_par_otro_pago.importe_exento) 
+            FROM  nom_par_otro_pago WHERE nom_par_otro_pago.nom_nomina_id = nom_nomina.id),0)";
+
+        $columnas_extra['nom_nomina_total_otro_pago_total'] =
+            "IFNULL($columnas_extra[nom_nomina_total_otro_pago_exento] + $columnas_extra[nom_nomina_total_otro_pago_gravado],0)";
+
+        $columnas_extra['nom_nomina_total_deduccion_gravado'] =
+            "IFNULL ((SELECT SUM(nom_par_deduccion.importe_gravado) 
+            FROM  nom_par_deduccion WHERE nom_par_deduccion.nom_nomina_id = nom_nomina.id),0)";
+
+        $columnas_extra['nom_nomina_total_deduccion_exento'] =
+            "IFNULL ((SELECT SUM(nom_par_deduccion.importe_exento) 
+            FROM  nom_par_deduccion WHERE nom_par_deduccion.nom_nomina_id = nom_nomina.id), 0)";
+
+        $columnas_extra['nom_nomina_total_deduccion_total'] =
+            "IFNULL($columnas_extra[nom_nomina_total_deduccion_exento] + $columnas_extra[nom_nomina_total_deduccion_gravado] ,0)";
+
+
+        $columnas_extra['nom_nomina_total'] =
+            "IFNULL($columnas_extra[nom_nomina_total_percepcion_total] + $columnas_extra[nom_nomina_total_otro_pago_total]- $columnas_extra[nom_nomina_total_deduccion_total],0)";
+
+
+
         parent::__construct(link: $link, tabla: $tabla, campos_obligatorios: $campos_obligatorios,
-            columnas: $columnas);
+            columnas: $columnas, columnas_extra: $columnas_extra);
 
         $this->NAMESPACE = __NAMESPACE__;
     }
