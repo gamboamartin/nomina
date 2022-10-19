@@ -158,9 +158,12 @@ class controlador_nom_nomina extends base_nom
         $columns = array();
         $columns['nom_nomina_id']['titulo'] = 'Id';
         $columns['em_empleado_codigo']['titulo'] = 'Codigo';
+
         $columns['em_empleado_rfc']['titulo'] = 'RFC';
-        $columns['em_empleado_rfc']['filtro'] = 'em_empleado.rfc';
+
+
         $columns['em_empleado_nombre']['titulo'] = 'Nombre';
+
         $columns['em_empleado_ap']['titulo'] = 'AP';
         $columns['em_empleado_am']['titulo'] = 'AM';
         $columns['nom_nomina_fecha_inicial_pago']['titulo'] = 'F Ini';
@@ -174,45 +177,14 @@ class controlador_nom_nomina extends base_nom
         $columns['cat_sat_tipo_nomina_descripcion']['titulo'] = 'Tipo Nom';
         $columns['org_empresa_rfc']['titulo'] = 'RFC Empresa';
 
-        $columns['modifica']['titulo'] = 'Modifica';
-        $columns['genera_xml']['titulo'] = 'Genera XML';
-        $columns['timbra']['titulo'] = 'Timbra';
-        $columns['elimina']['titulo'] = 'Elimina';
+        $columns['modifica']['titulo'] = 'Acciones';
+        $columns['modifica']['type'] = 'button';
+        $columns['modifica']['campos'] = array('genera_xml','timbra','elimina_bd');
 
+        $filtro[] = 'em_empleado.rfc';
+        $filtro[] = 'em_empleado.nombre';
 
-
-        $columndefs = array();
-
-
-        $columndefs[0]["type"] = "button";
-        $columndefs[0]["targets"] = 16;
-        $columndefs[0]["rendered"][0]["index"] = "modifica";
-        $columndefs[0]["rendered"][0]["class"] = "btn-warning";
-        $columndefs[0]["rendered"][0]["text"] = "Modifica";
-
-
-
-        $columndefs[1]["type"] = "button";
-        $columndefs[1]["targets"] = 17;
-        $columndefs[1]["rendered"][0]["index"] = "genera_xml";
-        $columndefs[1]["rendered"][0]["class"] = "btn-warning";
-        $columndefs[1]["rendered"][0]["text"] = "Genera XML";
-
-        $columndefs[2]["type"] = "button";
-        $columndefs[2]["targets"] = 18;
-        $columndefs[2]["rendered"][0]["index"] = "timbra";
-        $columndefs[2]["rendered"][0]["class"] = "btn-warning";
-        $columndefs[2]["rendered"][0]["text"] = "Timbra";
-
-        $columndefs[3]["type"] = "button";
-        $columndefs[3]["targets"] = 19;
-        $columndefs[3]["rendered"][0]["index"] = "elimina";
-        $columndefs[3]["rendered"][0]["class"] = "btn-danger";
-        $columndefs[3]["rendered"][0]["text"] = "Elimina";
-
-
-
-        $this->datatable_init(columns: $columns,columndefs: $columndefs);
+        $this->datatable_init(columns: $columns,filtro:  $filtro);
         if(errores::$error){
             $error = $this->errores->error(mensaje: 'Error al inicializar columnDefs', data: $this->datatable);
             var_dump($error);

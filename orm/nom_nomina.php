@@ -461,6 +461,7 @@ class nom_nomina extends modelo
         return $registro;
     }
 
+
     public function calculo_dias_pagados(stdClass $nom_conf_empleado):stdClass|array{
         $dias = new stdClass();
         $dias->dias_septimo_dia = 0;
