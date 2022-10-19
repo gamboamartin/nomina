@@ -862,6 +862,13 @@ class base_test{
 
         }
 
+        $del = (new base_test())->del_em_empleado($link);
+        if(errores::$error){
+            return (new errores())->error('Error al eliminar', $del);
+
+        }
+
+
         $del = (new \gamboamartin\im_registro_patronal\test\base_test())->del_im_registro_patronal($link);
         if(errores::$error){
             return (new errores())->error('Error al eliminar', $del);

@@ -183,6 +183,12 @@ class controlador_nom_nomina extends base_nom
 
         $filtro[] = 'em_empleado.rfc';
         $filtro[] = 'em_empleado.nombre';
+        $filtro[] = 'nom_nomina.fecha_inicial_pago';
+        $filtro[] = 'nom_nomina.fecha_final_pago';
+        $filtro[] = 'nom_nomina.fecha_pago';
+        $filtro[] = 'nom_periodo.codigo';
+        $filtro[] = 'cat_sat_tipo_nomina.descripcion';
+        $filtro[] = 'org_empresa.rfc';
 
         $this->datatable_init(columns: $columns,filtro:  $filtro);
         if(errores::$error){
