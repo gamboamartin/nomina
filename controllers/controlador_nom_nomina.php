@@ -20,6 +20,7 @@ use html\nom_par_deduccion_html;
 use html\nom_par_otro_pago_html;
 use html\nom_par_percepcion_html;
 use JsonException;
+use models\adm_accion_grupo;
 use models\doc_documento;
 use models\nom_concepto_imss;
 use models\nom_nomina;
@@ -61,7 +62,45 @@ class controlador_nom_nomina extends base_nom
         $obj_link = new links_menu($this->registro_id);
 
 
-        parent::__construct(html: $html_, link: $link, modelo: $modelo, obj_link: $obj_link, paths_conf: $paths_conf);
+        $columns = array();
+        $columns['nom_nomina_id']['titulo'] = 'Id';
+        $columns['em_empleado_codigo']['titulo'] = 'Codigo';
+
+        $columns['em_empleado_rfc']['titulo'] = 'RFC';
+
+
+        $columns['em_empleado_nombre']['titulo'] = 'Nombre';
+
+        $columns['em_empleado_ap']['titulo'] = 'AP';
+        $columns['em_empleado_am']['titulo'] = 'AM';
+        $columns['nom_nomina_fecha_inicial_pago']['titulo'] = 'F Ini';
+        $columns['nom_nomina_fecha_final_pago']['titulo'] = 'F Ini';
+        $columns['nom_nomina_fecha_pago']['titulo'] = 'F Pago';
+        $columns['nom_periodo_codigo']['titulo'] = 'Periodo Cod';
+        $columns['nom_nomina_total_percepcion_total']['titulo'] = 'Percepcion Total';
+        $columns['nom_nomina_total_otro_pago_total']['titulo'] = 'Otro Pago Total';
+        $columns['nom_nomina_total_deduccion_total']['titulo'] = 'Deduccion Total';
+        $columns['nom_nomina_total']['titulo'] = 'Total';
+        $columns['cat_sat_tipo_nomina_descripcion']['titulo'] = 'Tipo Nom';
+        $columns['org_empresa_rfc']['titulo'] = 'RFC Empresa';
+
+
+        $filtro = array();
+        $filtro[] = 'em_empleado.rfc';
+        $filtro[] = 'em_empleado.nombre';
+        $filtro[] = 'nom_nomina.fecha_inicial_pago';
+        $filtro[] = 'nom_nomina.fecha_final_pago';
+        $filtro[] = 'nom_nomina.fecha_pago';
+        $filtro[] = 'nom_periodo.codigo';
+        $filtro[] = 'cat_sat_tipo_nomina.descripcion';
+        $filtro[] = 'org_empresa.rfc';
+
+        $datatables = new stdClass();
+        $datatables->filtro = $filtro;
+        $datatables->columns = $columns;
+
+        parent::__construct(html: $html_, link: $link, modelo: $modelo, obj_link: $obj_link, datatables: $datatables,
+            paths_conf: $paths_conf);
 
         $link_nom_nomina_modifica_bd = $obj_link->link_con_id(accion: 'modifica_bd',
             registro_id: $this->registro_id, seccion: $this->seccion);
@@ -154,48 +193,6 @@ class controlador_nom_nomina extends base_nom
         $this->cuotas_obrero_patronales = new stdClass();
 
 
-
-        $columns = array();
-        $columns['nom_nomina_id']['titulo'] = 'Id';
-        $columns['em_empleado_codigo']['titulo'] = 'Codigo';
-
-        $columns['em_empleado_rfc']['titulo'] = 'RFC';
-
-
-        $columns['em_empleado_nombre']['titulo'] = 'Nombre';
-
-        $columns['em_empleado_ap']['titulo'] = 'AP';
-        $columns['em_empleado_am']['titulo'] = 'AM';
-        $columns['nom_nomina_fecha_inicial_pago']['titulo'] = 'F Ini';
-        $columns['nom_nomina_fecha_final_pago']['titulo'] = 'F Ini';
-        $columns['nom_nomina_fecha_pago']['titulo'] = 'F Pago';
-        $columns['nom_periodo_codigo']['titulo'] = 'Periodo Cod';
-        $columns['nom_nomina_total_percepcion_total']['titulo'] = 'Percepcion Total';
-        $columns['nom_nomina_total_otro_pago_total']['titulo'] = 'Otro Pago Total';
-        $columns['nom_nomina_total_deduccion_total']['titulo'] = 'Deduccion Total';
-        $columns['nom_nomina_total']['titulo'] = 'Total';
-        $columns['cat_sat_tipo_nomina_descripcion']['titulo'] = 'Tipo Nom';
-        $columns['org_empresa_rfc']['titulo'] = 'RFC Empresa';
-
-        $columns['modifica']['titulo'] = 'Acciones';
-        $columns['modifica']['type'] = 'button';
-        $columns['modifica']['campos'] = array('genera_xml','timbra','elimina_bd');
-
-        $filtro[] = 'em_empleado.rfc';
-        $filtro[] = 'em_empleado.nombre';
-        $filtro[] = 'nom_nomina.fecha_inicial_pago';
-        $filtro[] = 'nom_nomina.fecha_final_pago';
-        $filtro[] = 'nom_nomina.fecha_pago';
-        $filtro[] = 'nom_periodo.codigo';
-        $filtro[] = 'cat_sat_tipo_nomina.descripcion';
-        $filtro[] = 'org_empresa.rfc';
-
-        $this->datatable_init(columns: $columns,filtro:  $filtro);
-        if(errores::$error){
-            $error = $this->errores->error(mensaje: 'Error al inicializar columnDefs', data: $this->datatable);
-            var_dump($error);
-            die('Error');
-        }
 
     }
 
