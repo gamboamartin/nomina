@@ -125,6 +125,24 @@ class nom_nomina extends modelo
         return $abonos_aplicados;
     }
 
+    public function calcula_prima_dominical(int $dias_prima, array $nom_par_percepcion,float $salario_diario): array
+    {
+        if($dias_prima <= 0){
+            return $this->error->error(mensaje: 'Error dias de prima no puede ser menor o igual a 0',
+                data: $dias_prima);
+        }
+        if($salario_diario <= 0){
+            return $this->error->error(mensaje: 'Error salario_diario no puede ser menor o igual a 0',
+                data: $salario_diario);
+        }
+        $monto_base = round($salario_diario * 0.25, 4);
+
+        $nom_par_percepcion['importe_gravado'] = round($monto_base * $dias_prima,2);
+
+        return $nom_par_percepcion;
+    }
+
+
     public function calcula_septimo_dia(int $dias_trabajados_reales, int $dias_septimo_dia,
                                         float $salario_diario): float|array
     {
@@ -272,6 +290,30 @@ class nom_nomina extends modelo
             $nom_par_percepcion_sep['importe_gravado'] = $septimo_dia;
 
             $r_alta_nom_par_percepcion = (new nom_par_percepcion($this->link))->alta_registro(registro: $nom_par_percepcion_sep);
+            if (errores::$error) {
+                return $this->error->error(mensaje: 'Error al insertar percepcion default', data: $r_alta_nom_par_percepcion);
+            }
+        }
+
+        if($registros['nom_conf_empleado']->nom_conf_nomina_aplica_prima_dominical === 'activo'){
+            $nom_percepcion = (new nom_percepcion($this->link))->get_aplica_prima_dominical();
+            if (errores::$error) {
+                return $this->error->error(mensaje: 'Error insertar conceptos', data: $nom_percepcion);
+            }
+
+            $nom_par_percepcion_pri= array();
+            $nom_par_percepcion_pri['nom_nomina_id'] = $r_alta_bd->registro_id;
+            $nom_par_percepcion_pri['nom_percepcion_id'] = $nom_percepcion['nom_percepcion_id'];
+
+            $nom_par_percepcion_pri = $this->calcula_prima_dominical(dias_prima: $dias->dias_prima_dominical,
+                nom_par_percepcion: $nom_par_percepcion_pri,
+                salario_diario: $registros['em_empleado']->em_empleado_salario_diario);
+            if (errores::$error) {
+                return $this->error->error(mensaje: 'Error al calcular septimo dia', data: $nom_par_percepcion_pri);
+            }
+
+            $r_alta_nom_par_percepcion = (new nom_par_percepcion($this->link))->alta_registro(
+                registro: $nom_par_percepcion_pri);
             if (errores::$error) {
                 return $this->error->error(mensaje: 'Error al insertar percepcion default', data: $r_alta_nom_par_percepcion);
             }
@@ -494,6 +536,9 @@ class nom_nomina extends modelo
         if($nom_conf_empleado->nom_conf_nomina_aplica_septimo_dia === 'activo'){
             $this->registro['num_dias_pagados'] -= 1;
             $dias->dias_septimo_dia = $this->registro['num_dias_pagados'];
+        }
+        if($nom_conf_empleado->nom_conf_nomina_aplica_prima_dominical === 'activo'){
+            $dias->dias_prima_dominical = 1;
         }
 
         $dias_incidencia = (new nom_incidencia($this->link))->total_dias_incidencias(
