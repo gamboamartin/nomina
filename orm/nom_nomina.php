@@ -142,6 +142,23 @@ class nom_nomina extends modelo
         return $nom_par_percepcion;
     }
 
+    public function calcula_prima_vacacional(int $dias_prima, array $nom_par_percepcion,float $salario_diario): array
+    {
+        if($dias_prima <= 0){
+            return $this->error->error(mensaje: 'Error dias de prima no puede ser menor o igual a 0',
+                data: $dias_prima);
+        }
+        if($salario_diario <= 0){
+            return $this->error->error(mensaje: 'Error salario_diario no puede ser menor o igual a 0',
+                data: $salario_diario);
+        }
+        $monto_base = round($salario_diario * 0.25, 4);
+
+        $nom_par_percepcion['importe_gravado'] = round($monto_base * $dias_prima,2);
+
+        return $nom_par_percepcion;
+    }
+
 
     public function calcula_septimo_dia(int $dias_trabajados_reales, int $dias_septimo_dia,
                                         float $salario_diario): float|array
