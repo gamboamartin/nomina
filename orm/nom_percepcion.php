@@ -31,7 +31,7 @@ class nom_percepcion extends nominas_confs {
 
     public function get_aplica_septimo_dia(): array|stdClass
     {
-        $filtro['nom_percepcion_aplica_septimo_dia'] = 'activo';
+        $filtro['nom_percepcion.aplica_septimo_dia'] = 'activo';
         $r_nom_percepcion = $this->filtro_and(filtro: $filtro,limit: 1);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al buscar percepcion subsidio', data: $r_nom_percepcion);
@@ -41,7 +41,7 @@ class nom_percepcion extends nominas_confs {
 
     public function get_aplica_isn(): array|stdClass
     {
-        $filtro['nom_percepcion_aplica_isn'] = 'activo';
+        $filtro['nom_percepcion.aplica_isn'] = 'activo';
         $r_nom_percepcion = $this->filtro_and(filtro: $filtro,limit: 1);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al buscar percepcion subsidio', data: $r_nom_percepcion);
@@ -51,7 +51,7 @@ class nom_percepcion extends nominas_confs {
 
     public function get_aplica_prima_dominical(): array|stdClass
     {
-        $filtro['nom_percepcion_aplica_prima_dominical'] = 'activo';
+        $filtro['nom_percepcion.aplica_prima_dominical'] = 'activo';
         $r_nom_percepcion = $this->filtro_and(filtro: $filtro,limit: 1);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al buscar percepcion subsidio', data: $r_nom_percepcion);
