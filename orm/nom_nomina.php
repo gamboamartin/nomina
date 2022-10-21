@@ -226,12 +226,12 @@ class nom_nomina extends modelo
             return $this->error->error(mensaje: 'Error al insertar percepcion default', data: $r_alta_nom_par_percepcion);
         }
 
-        $percepciones = $this->insertar_percepciones_configuracion(dias: $dias,em_empleado: $registros['em_empleado'],
+        $percepciones = $this->insertar_percepciones_configuracion(dias: $dias,
             nom_conf_nomina_id: $registros['nom_conf_empleado']->nom_conf_nomina_id,nom_nomina_id: $r_alta_bd->registro_id);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al insertar percepciones de configuracion', data: $percepciones);
         }
-
+/***************************/
         $conceptos = (new nom_tipo_concepto_imss($this->link))->registros_activos();
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al obtener registros de tipos de conceptos', data: $conceptos);
@@ -251,6 +251,30 @@ class nom_nomina extends modelo
             nom_nomina_id: $r_alta_bd->registro_id);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error insertar conceptos', data: $r_conceptos);
+        }
+
+        if($registros['nom_conf_empleado']->nom_conf_nomina_aplica_septimo_dia === 'activo'){
+            $nom_percepcion = (new nom_percepcion($this->link))->get_aplica_septimo_dia();
+            if (errores::$error) {
+                return $this->error->error(mensaje: 'Error insertar conceptos', data: $nom_percepcion);
+            }
+
+            $nom_par_percepcion_sep = array();
+            $nom_par_percepcion_sep['nom_nomina_id'] = $r_alta_bd->registro_id;
+            $nom_par_percepcion_sep['nom_percepcion_id'] = $nom_percepcion['nom_percepcion_id'];
+
+            $septimo_dia = $this->calcula_septimo_dia(dias_trabajados_reales: $dias->dias_pagados_reales,
+                dias_septimo_dia: $dias->dias_septimo_dia,
+                salario_diario: $registros['em_empleado']->em_empleado_salario_diario);
+            if (errores::$error) {
+                return $this->error->error(mensaje: 'Error al calcular septimo dia', data: $septimo_dia);
+            }
+            $nom_par_percepcion_sep['importe_gravado'] = $septimo_dia;
+
+            $r_alta_nom_par_percepcion = (new nom_par_percepcion($this->link))->alta_registro(registro: $nom_par_percepcion_sep);
+            if (errores::$error) {
+                return $this->error->error(mensaje: 'Error al insertar percepcion default', data: $r_alta_nom_par_percepcion);
+            }
         }
 
         $abonos_aplicados = $this->acciones_anticipo(em_empleado_id: $this->registro['em_empleado_id'],nom_nomina_id: $r_alta_bd->registro_id);
@@ -463,14 +487,11 @@ class nom_nomina extends modelo
 
 
     public function calculo_dias_pagados(stdClass $nom_conf_empleado):stdClass|array{
+
         $dias = new stdClass();
         $dias->dias_septimo_dia = 0;
         $dias->dias_pagados_periodo = $this->registro['num_dias_pagados'];
-        $existe = (new nom_conf_percepcion($this->link))->aplica_septimo_dia($nom_conf_empleado->nom_conf_nomina_id);
-        if (errores::$error) {
-            return $this->error->error(mensaje: 'Error al determinar si aplica septimo dia', data: $existe);
-        }
-        if ($existe){
+        if($nom_conf_empleado->nom_conf_nomina_aplica_septimo_dia === 'activo'){
             $this->registro['num_dias_pagados'] -= 1;
             $dias->dias_septimo_dia = $this->registro['num_dias_pagados'];
         }
@@ -1306,7 +1327,7 @@ class nom_nomina extends modelo
         return $r_alta_partida;
     }
 
-    private function insertar_percepciones_configuracion(stdClass $dias,mixed $em_empleado, int $nom_conf_nomina_id,
+    private function insertar_percepciones_configuracion(stdClass $dias, int $nom_conf_nomina_id,
                                                          int $nom_nomina_id) : array|stdClass
     {
         $percepciones = $this->obtener_percepciones_por_configuracion(nom_conf_nomina_id: $nom_conf_nomina_id);
@@ -1319,16 +1340,6 @@ class nom_nomina extends modelo
                 $registros_par_percepcion = $this->genera_registro_par_percepcion(nom_nomina_id: $nom_nomina_id,percepcion: $percepcion);
                 if (errores::$error) {
                     return $this->error->error(mensaje: 'Error al generar registros de percepcion', data: $registros_par_percepcion);
-                }
-
-                if($percepcion['nom_percepcion_aplica_septimo_dia'] === 'activo'){
-                    $septimo_dia = $this->calcula_septimo_dia(dias_trabajados_reales: $dias->dias_pagados_reales,
-                        dias_septimo_dia: $dias->dias_septimo_dia,
-                        salario_diario: $em_empleado->em_empleado_salario_diario);
-                    if (errores::$error) {
-                        return $this->error->error(mensaje: 'Error al calcular septimo dia', data: $septimo_dia);
-                    }
-                    $registros_par_percepcion['importe_gravado'] = $septimo_dia;
                 }
 
                 if($percepcion['nom_percepcion_aplica_despensa'] === 'activo'){

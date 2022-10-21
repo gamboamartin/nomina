@@ -36,7 +36,7 @@ class nom_percepcion extends nominas_confs {
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al buscar percepcion subsidio', data: $r_nom_percepcion);
         }
-        return $r_nom_percepcion;
+        return $r_nom_percepcion->registros[0];
     }
 
     public function get_aplica_isn(): array|stdClass
@@ -46,7 +46,7 @@ class nom_percepcion extends nominas_confs {
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al buscar percepcion subsidio', data: $r_nom_percepcion);
         }
-        return $r_nom_percepcion;
+        return $r_nom_percepcion->registros[0];
     }
 
     public function get_aplica_prima_dominical(): array|stdClass
@@ -56,7 +56,7 @@ class nom_percepcion extends nominas_confs {
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al buscar percepcion subsidio', data: $r_nom_percepcion);
         }
-        return $r_nom_percepcion;
+        return $r_nom_percepcion->registros[0];
     }
 
     public function id_registro_estado_subsidio(mixed $registro): int
