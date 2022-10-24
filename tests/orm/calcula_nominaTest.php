@@ -180,6 +180,61 @@ class calcula_nominaTest extends test {
 
     }
 
+    public function test_nomina_descuentos(): void
+    {
+        errores::$error = false;
+
+        $_GET['seccion'] = 'cat_sat_tipo_persona';
+        $_GET['accion'] = 'lista';
+        $_SESSION['grupo_id'] = 1;
+        $_SESSION['usuario_id'] = 2;
+        $_GET['session_id'] = '1';
+        $calculo = new calcula_nomina();
+
+        $link = $this->link;
+
+        
+        $cat_sat_periodicidad_pago_nom_id = 3;
+        $em_salario_diario = 172.87;
+        $em_empleado_salario_diario_integrado = 180.69;
+        $nom_nomina_fecha_final_pago = '2022-01-01';
+        $nom_nomina_num_dias_pagados = 15;
+        $total_gravado = 2593.05;
+
+        $resultado = $calculo->nomina_descuentos($cat_sat_periodicidad_pago_nom_id, $em_salario_diario,
+            $em_empleado_salario_diario_integrado, $link, $nom_nomina_fecha_final_pago, $nom_nomina_num_dias_pagados,
+            $total_gravado);
+
+
+        $this->assertIsFloat($resultado);
+        $this->assertNotTrue(errores::$error);
+        $this->assertEquals(-8.6,$resultado);
+
+        errores::$error = false;
+
+        $link = $this->link;
+
+
+        $cat_sat_periodicidad_pago_nom_id = 3;
+        $em_salario_diario = 172.88;
+        $em_empleado_salario_diario_integrado = 180.69;
+        $nom_nomina_fecha_final_pago = '2022-01-01';
+        $nom_nomina_num_dias_pagados = 15;
+        $total_gravado = 2593.05;
+
+        $resultado = $calculo->nomina_descuentos($cat_sat_periodicidad_pago_nom_id, $em_salario_diario,
+            $em_empleado_salario_diario_integrado, $link, $nom_nomina_fecha_final_pago, $nom_nomina_num_dias_pagados,
+            $total_gravado);
+
+        $this->assertIsFloat($resultado);
+        $this->assertNotTrue(errores::$error);
+        $this->assertEquals(55.77,$resultado);
+
+        errores::$error = false;
+
+        errores::$error = false;
+    }
+
 
 
 

@@ -284,7 +284,7 @@ class calculo_isr{
      * @return float|array
      * @version 0.173.6
      */
-    private function isr(int $cat_sat_periodicidad_pago_nom_id, PDO $link, float|int $monto, string $fecha = ''): float|array
+    public function isr(int $cat_sat_periodicidad_pago_nom_id, PDO $link, float|int $monto, string $fecha = ''): float|array
     {
         if($cat_sat_periodicidad_pago_nom_id<=0){
             return $this->error->error(mensaje: 'Error $cat_sat_periodicidad_pago_nom_id debe ser mayor a 0',

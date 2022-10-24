@@ -144,5 +144,55 @@ class calcula_nomina{
         return $data;
     }
 
+    public function nomina_descuentos(int $cat_sat_periodicidad_pago_nom_id, float $em_salario_diario,
+                                      float $em_empleado_salario_diario_integrado,
+                                      PDO $link, string $nom_nomina_fecha_final_pago,
+                                      int $nom_nomina_num_dias_pagados, float $total_gravado): float|array
+    {
+
+        if($cat_sat_periodicidad_pago_nom_id<=0){
+            return $this->error->error(mensaje: 'Error $cat_sat_periodicidad_pago_nom_id debe ser mayor a 0',
+                data: $cat_sat_periodicidad_pago_nom_id);
+        }
+        if($total_gravado<0.0){
+            return $this->error->error(mensaje: 'Error monto debe ser mayor o igual a 0', data: $total_gravado);
+        }
+
+        if($nom_nomina_fecha_final_pago === ''){
+            $nom_nomina_fecha_final_pago = date('Y-m-d');
+        }
+
+        $isr = 0.0;
+        $subsidio = 0.0;
+        $imss['total'] = 0.0;
+
+        if($total_gravado > 0.0) {
+            $isr = (new calculo_isr())->isr(
+                cat_sat_periodicidad_pago_nom_id: $cat_sat_periodicidad_pago_nom_id, link: $link,
+                monto: $total_gravado, fecha: $nom_nomina_fecha_final_pago);
+            if (errores::$error) {
+                return $this->error->error(mensaje: 'Error al obtener isr', data: $isr);
+            }
+
+            $subsidio = (new calculo_subsidio())->subsidio(
+                cat_sat_periodicidad_pago_nom_id: $cat_sat_periodicidad_pago_nom_id, link: $link, monto: $total_gravado,
+                fecha: $nom_nomina_fecha_final_pago);
+            if (errores::$error) {
+                return $this->error->error(mensaje: 'Error al obtener $subsidio', data: $subsidio);
+            }
+
+
+            $imss = (new calcula_imss())->imss(cat_sat_periodicidad_pago_nom_id: $cat_sat_periodicidad_pago_nom_id,
+                fecha: $nom_nomina_fecha_final_pago, n_dias: $nom_nomina_num_dias_pagados,
+                sbc: $em_empleado_salario_diario_integrado, sd: $em_salario_diario);
+            if (errores::$error) {
+                return $this->error->error(mensaje: 'Error al obtener imss', data: $imss);
+            }
+        }
+
+        return round((round($isr,2) + round($imss['total'],2)) - round( $subsidio,2),2);
+
+    }
+
 
 }

@@ -192,7 +192,7 @@ class calculo_subsidio{
      * @return float|array
      * @version 0.180.6
      */
-    private function subsidio(int $cat_sat_periodicidad_pago_nom_id, PDO $link, float|int $monto,
+    public function subsidio(int $cat_sat_periodicidad_pago_nom_id, PDO $link, float|int $monto,
                               string $fecha = ''): float|array
     {
         if($cat_sat_periodicidad_pago_nom_id<=0){
