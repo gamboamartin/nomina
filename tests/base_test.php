@@ -335,6 +335,8 @@ class base_test{
         $nom_conf_empleado['descripcion_select'] = 1;
         $nom_conf_empleado['cat_sat_periodicidad_pago_nom_id'] = 1;
         $nom_conf_empleado['cat_sat_tipo_nomina_id'] = 1;
+        $nom_conf_empleado['aplica_septimo_dia'] = 'inactivo';
+        $nom_conf_empleado['aplica_prima_dominical'] = 'inactivo';
 
 
         $alta = (new nom_conf_nomina($link))->alta_registro($nom_conf_empleado);

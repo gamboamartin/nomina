@@ -193,7 +193,6 @@ class controlador_nom_nomina extends base_nom
         $this->cuotas_obrero_patronales = new stdClass();
 
 
-
     }
 
     public function alta(bool $header, bool $ws = false): array|string

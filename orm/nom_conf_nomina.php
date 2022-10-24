@@ -11,7 +11,7 @@ class nom_conf_nomina extends modelo{
         $tabla = __CLASS__;
         $columnas = array($tabla=>false, 'nom_conf_factura' => $tabla, 'cat_sat_periodicidad_pago_nom' => $tabla);
         $campos_obligatorios = array('cat_sat_periodicidad_pago_nom_id','cat_sat_tipo_nomina_id',
-            'nom_conf_factura_id','descripcion_select');
+            'nom_conf_factura_id','descripcion_select','aplica_septimo_dia','aplica_prima_dominical');
         $campos_view = array("nom_conf_nomina_id" => array("type" => "selects", "model" => $this),
             "nom_percepcion_id" => array("type" => "selects", "model" => new nom_percepcion(link: $link)));
 

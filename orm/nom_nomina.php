@@ -547,6 +547,12 @@ class nom_nomina extends modelo
 
     public function calculo_dias_pagados(stdClass $nom_conf_empleado):stdClass|array{
 
+        $keys = array('nom_conf_nomina_aplica_septimo_dia','nom_conf_nomina_aplica_prima_dominical');
+        $valida = $this->validacion->valida_statuses(keys: $keys, registro: $nom_conf_empleado);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al validar nom_conf_empleado', data: $valida);
+        }
+
         $dias = new stdClass();
         $dias->dias_septimo_dia = 0;
         $dias->dias_pagados_periodo = $this->registro['num_dias_pagados'];
