@@ -235,6 +235,34 @@ class calcula_nominaTest extends test {
         errores::$error = false;
     }
 
+    /*public function test_nomina_neto(): void
+    {
+        errores::$error = false;
+
+        $_GET['seccion'] = 'cat_sat_tipo_persona';
+        $_GET['accion'] = 'lista';
+        $_SESSION['grupo_id'] = 1;
+        $_SESSION['usuario_id'] = 2;
+        $_GET['session_id'] = '1';
+        $calculo = new calcula_nomina();
+
+        $link = $this->link;
+
+
+        $cat_sat_periodicidad_pago_nom_id = 3;
+        $em_salario_diario = 172.87;
+        $em_empleado_salario_diario_integrado = 180.69;
+        $nom_nomina_fecha_final_pago = '2022-01-01';
+        $nom_nomina_num_dias_pagados = 15;
+        $total_gravado = 2601.65;
+
+       $resultado = $calculo->nomina_neto($cat_sat_periodicidad_pago_nom_id, $em_salario_diario,
+            $em_empleado_salario_diario_integrado, $link, $nom_nomina_fecha_final_pago, $nom_nomina_num_dias_pagados,
+            $total_gravado);
+
+        print_r($resultado);exit;
+    }*/
+
 
 
 

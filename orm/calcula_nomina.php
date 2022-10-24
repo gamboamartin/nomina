@@ -194,5 +194,54 @@ class calcula_nomina{
 
     }
 
+    public function nomina_neto(int $cat_sat_periodicidad_pago_nom_id, float $em_salario_diario,
+                                      float $em_empleado_salario_diario_integrado,
+                                      PDO $link, string $nom_nomina_fecha_final_pago,
+                                      int $nom_nomina_num_dias_pagados, float $total_neto): float|array
+    {
+
+
+        $importe_deducciones = 0;
+        $total_gravado = $total_neto;
+
+        $importe_deducciones = $this->nomina_descuentos($cat_sat_periodicidad_pago_nom_id, $em_salario_diario,
+            $em_empleado_salario_diario_integrado, $link, $nom_nomina_fecha_final_pago, $nom_nomina_num_dias_pagados, $total_gravado);
+
+        if(errores::$error){
+            return  $this->error->error(mensaje: 'Error al obtener deducciones', data: $importe_deducciones);
+        }
+
+
+        if($importe_deducciones < 0 ){
+            $calculado = false;
+
+            while (!$calculado){
+
+                $importe_deducciones = $this->nomina_descuentos($cat_sat_periodicidad_pago_nom_id, $em_salario_diario,
+                    $em_empleado_salario_diario_integrado, $link, $nom_nomina_fecha_final_pago, $nom_nomina_num_dias_pagados, $total_gravado);
+
+                $total_neto_calculado = $total_gravado - round($importe_deducciones,2);
+
+               // print_r($importe_deducciones);exit;
+
+                if($total_neto_calculado === $total_neto){
+                    $calculado = true;
+
+                }
+                else{
+                    $total_gravado = round(round($total_gravado,2) + .01,2);
+                }
+
+
+            }
+
+        }
+
+        return $total_gravado;
+
+
+
+    }
+
 
 }
