@@ -42,6 +42,15 @@
                             </div>
                         </div>
                     </form>
+                    <div class="widget-header">
+                        <h2>Neto</h2>
+                    </div>
+                    <form method="post" action="<?php echo $controlador->link_nom_nomina_modifica_bd; ?>" class="form-additional">
+                        <?php echo $controlador->inputs->neto; ?>
+                        <div class="controls">
+                            <button type="submit" class="btn btn-success ">Recalcula sobre Neto</button><br>
+                        </div>
+                    </form>
                 </div>
 
             </div>

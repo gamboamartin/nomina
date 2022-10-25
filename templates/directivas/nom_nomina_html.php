@@ -85,6 +85,7 @@ class nom_nomina_html extends base_nominas
         $controler->inputs->select->nom_periodo_id = $inputs->selects->nom_periodo_id;
         $controler->inputs->select->org_puesto_id = $inputs->selects->org_puesto_id;
         $controler->inputs->select->cat_sat_tipo_contrato_nom_id = $inputs->selects->cat_sat_tipo_contrato_nom_id;
+        $controler->inputs->neto = $inputs->texts->neto;
         $controler->inputs->codigo = $inputs->texts->codigo;
         $controler->inputs->codigo_bis = $inputs->texts->codigo_bis;
         $controler->inputs->rfc = $inputs->texts->rfc;
@@ -722,6 +723,13 @@ class nom_nomina_html extends base_nominas
             return $this->error->error(mensaje: 'Error al generar input',data:  $in_codigo_bis);
         }
         $texts->codigo_bis = $in_codigo_bis;
+        
+        $in_neto = $this->input_neto(cols: 4,row_upd:  $row_upd,value_vacio:  $value_vacio,
+            disabled:false);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al generar input',data:  $in_neto);
+        }
+        $texts->neto = $in_neto;
 
         $in_rfc = (new em_empleado_html(html: $this->html_base))->input_rfc(cols: 4, row_upd: $row_upd,
             value_vacio: $value_vacio, disabled: true);
@@ -877,6 +885,15 @@ class nom_nomina_html extends base_nominas
 
         $texts = new stdClass();
 
+        $row_upd->neto = $subtotal - $descuento;;
+
+        $in_neto = $this->input_neto(cols: 12, row_upd:  $row_upd,value_vacio:  $value_vacio,
+            disabled: false);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al generar input',data:  $in_neto);
+        }
+        $texts->neto = $in_neto;
+
         $in_codigo = $this->input_codigo(cols: 4, row_upd:  $row_upd,value_vacio:  $value_vacio,
             disabled: true);
         if(errores::$error){
@@ -1022,5 +1039,26 @@ class nom_nomina_html extends base_nominas
         $texts->total = $in_total;
 
         return $texts;
+    }
+
+    public function input_neto(int $cols, stdClass $row_upd, bool $value_vacio, bool $disabled = false): array|string
+    {
+        $valida = $this->directivas->valida_cols(cols: $cols);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al validar columnas', data: $valida);
+        }
+
+        $html =$this->directivas->input_text_required(disable: $disabled,name: 'neto',place_holder: 'Neto',
+            row_upd: $row_upd, value_vacio: $value_vacio);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al generar input', data: $html);
+        }
+
+        $div = $this->directivas->html->div_group(cols: $cols,html:  $html);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al integrar div', data: $div);
+        }
+
+        return $div;
     }
 }
