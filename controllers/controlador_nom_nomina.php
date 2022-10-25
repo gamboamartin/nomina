@@ -36,6 +36,7 @@ class controlador_nom_nomina extends base_nom
     public string $link_crea_nomina = '';
     public string $link_nom_nomina_alta_bd = '';
     public string $link_nom_nomina_modifica_bd = '';
+    public string $link_nom_nomina_recalcula_neto_bd = '';
     public string $link_nom_par_percepcion_alta_bd = '';
     public string $link_nom_par_deduccion_alta_bd = '';
     public string $link_nom_par_otro_pago_alta_bd = '';
@@ -110,6 +111,14 @@ class controlador_nom_nomina extends base_nom
             die('Error');
         }
 
+        $link_nom_nomina_recalcula_neto_bd = $obj_link->link_con_id(accion: 'recalcula_neto_bd',
+            registro_id: $this->registro_id, seccion: $this->seccion);
+        if (errores::$error) {
+            $error = $this->errores->error(mensaje: 'Error al generar link', data: $link_nom_nomina_recalcula_neto_bd);
+            print_r($error);
+            die('Error');
+        }
+
         $link_nom_par_percepcion_alta_bd = $obj_link->link_con_id(accion: 'nueva_percepcion_bd',
             registro_id: $this->registro_id, seccion: $this->seccion);
         if (errores::$error) {
@@ -165,6 +174,7 @@ class controlador_nom_nomina extends base_nom
 
         $this->link_nom_nomina_alta_bd = $obj_link->links->nom_nomina->alta_bd;
         $this->link_nom_nomina_modifica_bd = $link_nom_nomina_modifica_bd;
+        $this->link_nom_nomina_recalcula_neto_bd = $link_nom_nomina_recalcula_neto_bd;
         $this->link_nom_par_percepcion_alta_bd = $link_nom_par_percepcion_alta_bd;
         $this->link_nom_par_deduccion_alta_bd = $link_nom_par_deduccion_alta_bd;
         $this->link_nom_par_otro_pago_alta_bd = $link_nom_par_otro_pago_alta_bd;
