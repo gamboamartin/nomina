@@ -235,7 +235,7 @@ class calcula_nominaTest extends test {
         errores::$error = false;
     }
 
-    /*public function test_nomina_neto(): void
+    public function test_nomina_neto(): void
     {
         errores::$error = false;
 
@@ -260,8 +260,31 @@ class calcula_nominaTest extends test {
             $em_empleado_salario_diario_integrado, $link, $nom_nomina_fecha_final_pago, $nom_nomina_num_dias_pagados,
             $total_gravado);
 
-        print_r($resultado);exit;
-    }*/
+        $this->assertIsFloat($resultado);
+        $this->assertNotTrue(errores::$error);
+        $this->assertEquals(2593.05,$resultado);
+
+        errores::$error = false;
+        $link = $this->link;
+
+
+        $cat_sat_periodicidad_pago_nom_id = 3;
+        $em_salario_diario =  205.36;
+        $em_empleado_salario_diario_integrado =  215.49;
+        $nom_nomina_fecha_final_pago = '2022-01-01';
+        $nom_nomina_num_dias_pagados = 15;
+        $total_gravado =  2928.73;
+
+       $resultado = $calculo->nomina_neto($cat_sat_periodicidad_pago_nom_id, $em_salario_diario,
+            $em_empleado_salario_diario_integrado, $link, $nom_nomina_fecha_final_pago, $nom_nomina_num_dias_pagados,
+            $total_gravado);
+
+        $this->assertIsFloat($resultado);
+        $this->assertNotTrue(errores::$error);
+        $this->assertEquals(3057.67,$resultado);
+
+        errores::$error = false;
+    }
 
 
 
