@@ -1053,6 +1053,37 @@ class controlador_nom_nomina extends base_nom
         return $r_alta_nom_par_otro_paago;
     }
 
+    public function recalcula_neto_bd(bool $header, bool $ws = false){
+        if (isset($_POST['btn_action_next'])) {
+            unset($_POST['btn_action_next']);
+        }
+        
+        $r_modifica= (new nom_nomina($this->link))->recalcula_neto(registro: $_POST);
+        if (errores::$error) {
+            return $this->retorno_error(mensaje: 'Error al dar de alta deduccion', data: $r_modifica,
+                header: $header, ws: $ws);
+        }
+
+        $siguiente_view = (new actions())->init_alta_bd();
+        if (errores::$error) {
+            return $this->retorno_error(mensaje: 'Error al obtener siguiente view', data: $siguiente_view,
+                header: $header, ws: $ws);
+        }
+
+        if ($header) {
+            $this->retorno_base(registro_id:$this->registro_id, result: $r_modifica,
+                siguiente_view: $siguiente_view, ws:  $ws);
+        }
+        if ($ws) {
+            header('Content-Type: application/json');
+            echo json_encode($r_modifica, JSON_THROW_ON_ERROR);
+            exit;
+        }
+        $r_modifica->siguiente_view = $siguiente_view;
+
+        return $r_modifica;
+    }
+
     private function out(bool $header, mixed $result, string $siguiente_view, bool $ws){
         if ($header) {
             $this->retorno_base(registro_id:$this->registro_id, result: $result,
