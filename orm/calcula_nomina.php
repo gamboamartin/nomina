@@ -181,7 +181,6 @@ class calcula_nomina{
                 return $this->error->error(mensaje: 'Error al obtener $subsidio', data: $subsidio);
             }
 
-
             $imss = (new calcula_imss())->imss(cat_sat_periodicidad_pago_nom_id: $cat_sat_periodicidad_pago_nom_id,
                 fecha: $nom_nomina_fecha_final_pago, n_dias: $nom_nomina_num_dias_pagados,
                 sbc: $em_empleado_salario_diario_integrado, sd: $em_salario_diario);
@@ -219,7 +218,7 @@ class calcula_nomina{
 
                 $total_neto_calculado = $total_gravado - round($importe_deducciones,2);
 
-                if($total_neto_calculado === $total_neto) {
+                if((float)round($total_neto_calculado,2) === (float)round($total_neto,2)) {
                     $calculado = true;
                 } else{
                     $total_gravado = round(round($total_gravado,2) - .01,2);
@@ -235,9 +234,9 @@ class calcula_nomina{
 
                 $total_neto_calculado = $total_gravado - round($importe_deducciones,2);
 
-                if($total_neto_calculado === $total_neto) {
+                if((float)round($total_neto_calculado,2)  === (float)round($total_neto,2)) {
                     $calculado = true;
-                } else{
+                }else{
                     $total_gravado = round(round($total_gravado,2) + .01,2);
                 }
             }
