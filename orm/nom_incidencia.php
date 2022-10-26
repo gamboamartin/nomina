@@ -58,6 +58,141 @@ class nom_incidencia extends modelo{
         return $n_dias['n_dias'];
     }
 
+    public function get_incidencias_faltas(int $em_empleado_id, int $nom_periodo_id){
+        if($em_empleado_id <= 0){
+            return $this->error->error(mensaje: 'Error $em_empleado_id es menor a 1', data: $em_empleado_id);
+        }
+
+        if($nom_periodo_id <= 0){
+            return $this->error->error(mensaje: 'Error $nom_periodo_id es menor a 1', data: $nom_periodo_id);
+        }
+
+        $periodo = (new nom_periodo($this->link))->registro( registro_id: $nom_periodo_id);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al obtener el periodo', data: $periodo);
+        }
+
+        $filtro['nom_incidencia.em_empleado_id'] = $em_empleado_id;
+        $filtro['nom_tipo_incidencia.es_falta'] = 'activo';
+        $filtro_rango['nom_incidencia.fecha_incidencia']['valor1'] = $periodo['nom_periodo_fecha_inicial_pago'];
+        $filtro_rango['nom_incidencia.fecha_incidencia']['valor2'] = $periodo['nom_periodo_fecha_final_pago'];
+
+        $incidencias = $this->filtro_and(filtro: $filtro, filtro_rango: $filtro_rango);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al obtener el las incidencias', data: $incidencias);
+        }
+
+        return $incidencias;
+    }
+
+    public function get_incidencias_prima_dominical(int $em_empleado_id, int $nom_periodo_id){
+        if($em_empleado_id <= 0){
+            return $this->error->error(mensaje: 'Error $em_empleado_id es menor a 1', data: $em_empleado_id);
+        }
+
+        if($nom_periodo_id <= 0){
+            return $this->error->error(mensaje: 'Error $nom_periodo_id es menor a 1', data: $nom_periodo_id);
+        }
+
+        $periodo = (new nom_periodo($this->link))->registro( registro_id: $nom_periodo_id);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al obtener el periodo', data: $periodo);
+        }
+
+        $filtro['nom_incidencia.em_empleado_id'] = $em_empleado_id;
+        $filtro['nom_tipo_incidencia.es_prima_dominical'] = 'activo';
+        $filtro_rango['nom_incidencia.fecha_incidencia']['valor1'] = $periodo['nom_periodo_fecha_inicial_pago'];
+        $filtro_rango['nom_incidencia.fecha_incidencia']['valor2'] = $periodo['nom_periodo_fecha_final_pago'];
+
+        $incidencias = $this->filtro_and(filtro: $filtro, filtro_rango: $filtro_rango);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al obtener el las incidencias', data: $incidencias);
+        }
+
+        return $incidencias;
+    }
+
+    public function get_incidencias_dia_festivo_laborado(int $em_empleado_id, int $nom_periodo_id){
+        if($em_empleado_id <= 0){
+            return $this->error->error(mensaje: 'Error $em_empleado_id es menor a 1', data: $em_empleado_id);
+        }
+
+        if($nom_periodo_id <= 0){
+            return $this->error->error(mensaje: 'Error $nom_periodo_id es menor a 1', data: $nom_periodo_id);
+        }
+
+        $periodo = (new nom_periodo($this->link))->registro( registro_id: $nom_periodo_id);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al obtener el periodo', data: $periodo);
+        }
+
+        $filtro['nom_incidencia.em_empleado_id'] = $em_empleado_id;
+        $filtro['nom_tipo_incidencia.es_dia_festivo_laborado'] = 'activo';
+        $filtro_rango['nom_incidencia.fecha_incidencia']['valor1'] = $periodo['nom_periodo_fecha_inicial_pago'];
+        $filtro_rango['nom_incidencia.fecha_incidencia']['valor2'] = $periodo['nom_periodo_fecha_final_pago'];
+
+        $incidencias = $this->filtro_and(filtro: $filtro, filtro_rango: $filtro_rango);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al obtener el las incidencias', data: $incidencias);
+        }
+
+        return $incidencias;
+    }
+
+    public function get_incidencias_incapacidad(int $em_empleado_id, int $nom_periodo_id){
+        if($em_empleado_id <= 0){
+            return $this->error->error(mensaje: 'Error $em_empleado_id es menor a 1', data: $em_empleado_id);
+        }
+
+        if($nom_periodo_id <= 0){
+            return $this->error->error(mensaje: 'Error $nom_periodo_id es menor a 1', data: $nom_periodo_id);
+        }
+
+        $periodo = (new nom_periodo($this->link))->registro( registro_id: $nom_periodo_id);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al obtener el periodo', data: $periodo);
+        }
+
+        $filtro['nom_incidencia.em_empleado_id'] = $em_empleado_id;
+        $filtro['nom_tipo_incidencia.es_incapacidad'] = 'activo';
+        $filtro_rango['nom_incidencia.fecha_incidencia']['valor1'] = $periodo['nom_periodo_fecha_inicial_pago'];
+        $filtro_rango['nom_incidencia.fecha_incidencia']['valor2'] = $periodo['nom_periodo_fecha_final_pago'];
+
+        $incidencias = $this->filtro_and(filtro: $filtro, filtro_rango: $filtro_rango);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al obtener el las incidencias', data: $incidencias);
+        }
+
+        return $incidencias;
+    }
+
+    public function get_incidencias_vacaciones(int $em_empleado_id, int $nom_periodo_id){
+        if($em_empleado_id <= 0){
+            return $this->error->error(mensaje: 'Error $em_empleado_id es menor a 1', data: $em_empleado_id);
+        }
+
+        if($nom_periodo_id <= 0){
+            return $this->error->error(mensaje: 'Error $nom_periodo_id es menor a 1', data: $nom_periodo_id);
+        }
+
+        $periodo = (new nom_periodo($this->link))->registro( registro_id: $nom_periodo_id);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al obtener el periodo', data: $periodo);
+        }
+
+        $filtro['nom_incidencia.em_empleado_id'] = $em_empleado_id;
+        $filtro['nom_tipo_incidencia.es_vacaciones'] = 'activo';
+        $filtro_rango['nom_incidencia.fecha_incidencia']['valor1'] = $periodo['nom_periodo_fecha_inicial_pago'];
+        $filtro_rango['nom_incidencia.fecha_incidencia']['valor2'] = $periodo['nom_periodo_fecha_final_pago'];
+
+        $incidencias = $this->filtro_and(filtro: $filtro, filtro_rango: $filtro_rango);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al obtener el las incidencias', data: $incidencias);
+        }
+
+        return $incidencias;
+    }
+
     public function get_incidencias(int $em_empleado_id, int $nom_periodo_id):array|stdClass{
 
         if($em_empleado_id <= 0){
