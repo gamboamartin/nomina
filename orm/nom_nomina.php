@@ -365,6 +365,56 @@ class nom_nomina extends modelo
 
     }
 
+    public function recalcula_neto(array $registro, int $registro_id){
+        $r_nom_nomina = $this->registro(registro_id: $registro_id);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al obtener regsitro de nomina', data: $r_nom_nomina);
+        }
+        $nomina_bruto = 0;
+        if((float)$registro['neto'] !== (float)$r_nom_nomina['nom_nomina_total']) {
+            $nomina_bruto = (new calcula_nomina())->nomina_neto(
+                cat_sat_periodicidad_pago_nom_id: $r_nom_nomina['cat_sat_periodicidad_pago_nom_id'],
+                em_salario_diario: $r_nom_nomina['em_empleado_salario_diario'],
+                em_empleado_salario_diario_integrado: $r_nom_nomina['em_empleado_salario_diario_integrado'],
+                link: $this->link, nom_nomina_fecha_final_pago: $r_nom_nomina['nom_nomina_fecha_final_pago'],
+                nom_nomina_num_dias_pagados: $r_nom_nomina['nom_nomina_num_dias_pagados'], total_neto: $registro['neto']);
+            if (errores::$error) {
+                return $this->error->error(mensaje: 'Error al obtener neto', data: $nomina_bruto);
+            }
+
+            //if ((float)$nomina_bruto > (float)$r_nom_nomina['nom_nomina_total']) {
+
+                $modelo = new nom_percepcion(link: $this->link);
+
+                $r_nom_percepcion = $modelo->registro_estado_subsidio();
+                if (errores::$error) {
+                    return $this->error->error(mensaje: 'Error al obtener percepcion',data:  $r_nom_percepcion);
+                }
+
+                $id_nom_percepcion = $modelo->id_registro_estado_subsidio($r_nom_percepcion);
+                if (errores::$error || $id_nom_percepcion === -1) {
+                    return $this->error->error(mensaje: 'Error no existe una percepcion activa',data:  $id_nom_percepcion);
+                }
+
+                $filtro['nom_nomina.id'] = $r_nom_nomina['nom_nomina_id'];
+                $filtro['nom_percepcion.id'] = $id_nom_percepcion;
+                $nom_par_percepcion = (new nom_par_percepcion($this->link))->filtro_and(filtro: $filtro);
+                if (errores::$error) {
+                    return $this->error->error(mensaje: 'Error al obtener neto', data: $nomina_bruto);
+                }
+
+                $registro_per['importe_gravado'] = $nomina_bruto;
+                $r_registro = (new nom_par_percepcion($this->link))->modifica_bd(registro:$registro_per,
+                    id:$nom_par_percepcion->registros[0]['nom_par_percepcion_id']);
+                if (errores::$error) {
+                    return $this->error->error(mensaje: 'Error al ajustar percepcion', data: $r_registro);
+                }
+
+        }
+
+        return $nomina_bruto;
+    }
+
     /**
      * @param stdClass $partidas Partidas de nomina
      * @return bool|array

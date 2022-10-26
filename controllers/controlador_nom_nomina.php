@@ -1057,8 +1057,8 @@ class controlador_nom_nomina extends base_nom
         if (isset($_POST['btn_action_next'])) {
             unset($_POST['btn_action_next']);
         }
-        
-        $r_modifica= (new nom_nomina($this->link))->recalcula_neto(registro: $_POST);
+
+        $r_modifica= (new nom_nomina($this->link))->recalcula_neto(registro: $_POST, registro_id: $this->registro_id);
         if (errores::$error) {
             return $this->retorno_error(mensaje: 'Error al dar de alta deduccion', data: $r_modifica,
                 header: $header, ws: $ws);
