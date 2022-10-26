@@ -74,7 +74,9 @@ class nom_nomina extends modelo
         $columnas_extra['nom_nomina_total'] =
             "IFNULL($columnas_extra[nom_nomina_total_percepcion_total] + $columnas_extra[nom_nomina_total_otro_pago_total]- $columnas_extra[nom_nomina_total_deduccion_total],0)";
 
-
+        $columnas_extra['nom_nomina_total_cuota'] =
+            "IFNULL ((SELECT SUM(nom_concepto_imss.monto) 
+            FROM  nom_concepto_imss WHERE nom_concepto_imss.nom_nomina_id = nom_nomina.id),0)";
 
         parent::__construct(link: $link, tabla: $tabla, campos_obligatorios: $campos_obligatorios,
             columnas: $columnas, columnas_extra: $columnas_extra);
