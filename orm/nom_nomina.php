@@ -168,6 +168,24 @@ class nom_nomina extends modelo
         return $nom_par_percepcion;
     }
 
+    public function calcula_vacaciones(int $dias_vacaciones, array $nom_par_percepcion,float $salario_diario): array
+    {
+        if($dias_vacaciones <= 0){
+            return $this->error->error(mensaje: 'Error dias de prima no puede ser menor o igual a 0',
+                data: $dias_vacaciones);
+        }
+        if($salario_diario <= 0){
+            return $this->error->error(mensaje: 'Error salario_diario no puede ser menor o igual a 0',
+                data: $salario_diario);
+        }
+
+        $monto_base = round($salario_diario * $dias_vacaciones, 2);
+
+        $nom_par_percepcion['importe_gravado'] = round($monto_base,2);
+
+        return $nom_par_percepcion;
+    }
+
     public function calcula_prima_vacacional(int $dias_prima, array $nom_par_percepcion,float $salario_diario): array
     {
         if($dias_prima <= 0){
@@ -355,6 +373,30 @@ class nom_nomina extends modelo
 
             $r_alta_nom_par_percepcion = (new nom_par_percepcion($this->link))->alta_registro(
                 registro: $nom_par_percepcion_pri);
+            if (errores::$error) {
+                return $this->error->error(mensaje: 'Error al insertar percepcion default', data: $r_alta_nom_par_percepcion);
+            }
+        }
+
+        if($dias->dias_vacaciones > 0){
+            $nom_percepcion = (new nom_percepcion($this->link))->get_aplica_vacaciones();
+            if (errores::$error) {
+                return $this->error->error(mensaje: 'Error insertar conceptos', data: $nom_percepcion);
+            }
+
+            $nom_par_percepcion_vac= array();
+            $nom_par_percepcion_vac['nom_nomina_id'] = $r_alta_bd->registro_id;
+            $nom_par_percepcion_vac['nom_percepcion_id'] = $nom_percepcion['nom_percepcion_id'];
+
+            $nom_par_percepcion_vac = $this->calcula_vacaciones(dias_vacaciones: $dias->dias_vacaciones,
+                nom_par_percepcion: $nom_par_percepcion_vac,
+                salario_diario: $registros['em_empleado']->em_empleado_salario_diario);
+            if (errores::$error) {
+                return $this->error->error(mensaje: 'Error al calcular septimo dia', data: $nom_par_percepcion_vac);
+            }
+
+            $r_alta_nom_par_percepcion = (new nom_par_percepcion($this->link))->alta_registro(
+                registro: $nom_par_percepcion_vac);
             if (errores::$error) {
                 return $this->error->error(mensaje: 'Error al insertar percepcion default', data: $r_alta_nom_par_percepcion);
             }
@@ -628,6 +670,13 @@ class nom_nomina extends modelo
         }
 
         $dias = new stdClass();
+        $dias_vacaciones = (new nom_incidencia($this->link))->total_dias_vacaciones(
+            em_empleado_id: $this->registro['em_empleado_id'],nom_periodo_id: $this->registro['nom_periodo_id']);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al obtener los dias de incidencia', data: $dias_vacaciones);
+        }
+        $dias->dias_vacaciones = $dias_vacaciones;
+
         $dias->dias_septimo_dia = 0;
         $dias->dias_pagados_periodo = $this->registro['num_dias_pagados'];
         if($nom_conf_empleado->nom_conf_nomina_aplica_septimo_dia === 'activo'){

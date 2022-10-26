@@ -59,6 +59,16 @@ class nom_percepcion extends nominas_confs {
         return $r_nom_percepcion->registros[0];
     }
 
+    public function get_aplica_vacaciones(): array|stdClass
+    {
+        $filtro['nom_percepcion.aplica_vacaciones'] = 'activo';
+        $r_nom_percepcion = $this->filtro_and(filtro: $filtro,limit: 1);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al buscar percepcion subsidio', data: $r_nom_percepcion);
+        }
+        return $r_nom_percepcion->registros[0];
+    }
+
     public function id_registro_estado_subsidio(mixed $registro): int
     {
         /**
