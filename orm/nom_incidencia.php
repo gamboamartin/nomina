@@ -229,6 +229,32 @@ class nom_incidencia extends modelo
         return $incidencias;
     }
 
+    public function total_dias_prima_dominical(int $em_empleado_id, int $nom_periodo_id): array|int
+    {
+
+        if ($em_empleado_id <= 0) {
+            return $this->error->error(mensaje: 'Error $em_empleado_id es menor a 1', data: $em_empleado_id);
+        }
+
+        if ($nom_periodo_id <= 0) {
+            return $this->error->error(mensaje: 'Error $nom_periodo_id es menor a 1', data: $nom_periodo_id);
+        }
+
+        $incidencias = $this->get_incidencias_prima_dominical(em_empleado_id: $em_empleado_id, nom_periodo_id: $nom_periodo_id);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al obtener las incidencias', data: $incidencias);
+        }
+
+        $total = 0;
+        if ($incidencias->n_registros > 0) {
+            foreach ($incidencias->registros as $incidencia) {
+                $total += $incidencia['nom_incidencia_n_dias'];
+            }
+        }
+
+        return $total;
+    }
+
     public function total_dias_incidencias_n_dias(int $em_empleado_id, int $nom_periodo_id): array|int
     {
 
