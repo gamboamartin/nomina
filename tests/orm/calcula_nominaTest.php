@@ -67,6 +67,12 @@ class calcula_nominaTest extends test {
 
         $link = $this->link;
 
+        $del = (new base_test())->del_nom_incidencia($this->link);
+        if(errores::$error){
+            $error = (new errores())->error('Error al eliminar', $del);
+            print_r($error);
+            exit;
+        }
         $del = (new base_test())->del_org_clasificacion_dep($this->link);
         if(errores::$error){
             $error = (new errores())->error('Error al eliminar', $del);
@@ -93,6 +99,13 @@ class calcula_nominaTest extends test {
         }
 
         $del = (new base_test())->del_org_empresa($this->link);
+        if(errores::$error){
+            $error = (new errores())->error('Error al eliminar', $del);
+            print_r($error);
+            exit;
+        }
+
+        $del = (new base_test())->del_nom_percepcion($this->link);
         if(errores::$error){
             $error = (new errores())->error('Error al eliminar', $del);
             print_r($error);
@@ -147,6 +160,40 @@ class calcula_nominaTest extends test {
             exit;
         }
 
+        $del = (new base_test())->del_cat_sat_isr($link);
+        if(errores::$error){
+            $error = (new errores())->error('Error al insertar nomina', $del);
+            print_r($error);
+            exit;
+        }
+
+        $del = (new base_test())->del_cat_sat_subsidio($link);
+        if(errores::$error){
+            $error = (new errores())->error('Error al insertar nomina', $del);
+            print_r($error);
+            exit;
+        }
+
+        $alta = (new base_test())->alta_im_uma($link,1);
+        if(errores::$error){
+            $error = (new errores())->error('Error al insertar uma', $alta);
+            print_r($error);
+            exit;
+        }
+
+        $alta = (new base_test())->alta_cat_sat_subsidio($link);
+        if(errores::$error){
+            $error = (new errores())->error('Error al insertar isr', $alta);
+            print_r($error);
+            exit;
+        }
+        $alta = (new base_test())->alta_cat_sat_isr($link);
+        if(errores::$error){
+            $error = (new errores())->error('Error al insertar isr', $alta);
+            print_r($error);
+            exit;
+        }
+
         $alta = (new base_test())->alta_nom_nomina($link);
         if(errores::$error){
             $error = (new errores())->error('Error al insertar nomina', $alta);
@@ -173,7 +220,7 @@ class calcula_nominaTest extends test {
 
         $this->assertIsObject($resultado);
         $this->assertNotTrue(errores::$error);
-        $this->assertEquals(829.31,$resultado->isr);
+        $this->assertEquals(62.4,$resultado->isr);
         $this->assertEquals(0,$resultado->subsidio);
 
         errores::$error = false;

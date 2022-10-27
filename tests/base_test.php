@@ -160,7 +160,31 @@ class base_test{
 
         return $alta;
     }
-    
+
+    public function alta_cat_sat_isr(PDO $link): array|\stdClass
+    {
+
+        $alta = (new \gamboamartin\cat_sat\tests\base_test())->alta_cat_sat_isr($link);
+        if(errores::$error){
+            return (new errores())->error('Error al dar de alta', $alta);
+        }
+
+        return $alta;
+    }
+
+
+    public function alta_cat_sat_subsidio(PDO $link): array|\stdClass
+    {
+
+        $alta = (new \gamboamartin\cat_sat\tests\base_test())->alta_cat_sat_subsidio($link);
+        if(errores::$error){
+            return (new errores())->error('Error al dar de alta', $alta);
+        }
+
+        return $alta;
+    }
+
+
     public function alta_nom_conf_empleado(PDO $link, int $cat_sat_tipo_nomina_id = 1, int $em_cuenta_bancaria_id = 1,
                                            int $nom_conf_factura_id = 1, int $nom_conf_nomina_id = 1): array|\stdClass
     {
@@ -502,8 +526,8 @@ class base_test{
         $registro['fecha'] = 1;
         $registro['cat_sat_periodicidad_pago_nom_id'] = 1;
         $registro['em_cuenta_bancaria_id'] = 1;
-        $registro['fecha_inicial_pago'] = '2022-01-01';
-        $registro['fecha_final_pago'] = '2022-01-01';
+        $registro['fecha_inicial_pago'] = '2020-01-01';
+        $registro['fecha_final_pago'] = '2020-01-01';
         $registro['num_dias_pagados'] = '1';
         $registro['descuento'] = '0';
         $registro['nom_periodo_id'] = 1;
@@ -889,6 +913,28 @@ class base_test{
         return $del;
     }
 
+    public function del_cat_sat_isr(PDO $link): array
+    {
+
+        $del = (new  \gamboamartin\cat_sat\tests\base_test())->del_cat_sat_isr($link);
+        if(errores::$error){
+            return (new errores())->error('Error al eliminar', $del);
+
+        }
+        return $del;
+    }
+
+    public function del_cat_sat_subsidio(PDO $link): array
+    {
+
+        $del = (new  \gamboamartin\cat_sat\tests\base_test())->del_cat_sat_subsidio($link);
+        if(errores::$error){
+            return (new errores())->error('Error al eliminar', $del);
+
+        }
+        return $del;
+    }
+
 
     public function del_nom_concepto_imss(PDO $link): array
     {
@@ -1104,6 +1150,16 @@ class base_test{
         }
         return $del;
     }
+
+    public function del_nom_incidencia(PDO $link): array
+    {
+        $del = $this->del($link, 'models\\nom_incidencia');
+        if(errores::$error){
+            return (new errores())->error('Error al eliminar', $del);
+        }
+        return $del;
+    }
+
 
     public function del_org_empresa(PDO $link): array
     {

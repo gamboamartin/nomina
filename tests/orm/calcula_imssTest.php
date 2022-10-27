@@ -198,7 +198,7 @@ class calcula_imssTest extends test {
         $this->assertIsObject($resultado);
         $this->assertNotTrue(errores::$error);
         $this->assertEquals(2022,$resultado->year);
-        $this->assertEquals(89.62,$resultado->monto_uma);
+        $this->assertEquals(96.22,$resultado->monto_uma);
         $this->assertEquals(10,$resultado->n_dias);
         $this->assertEquals(1000,$resultado->sbc);
         $this->assertEquals(200,$resultado->sd);
