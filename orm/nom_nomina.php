@@ -1681,7 +1681,19 @@ class nom_nomina extends modelo
         $septimo_dia = $this->total_percepciones_septimo_dia_activo(nom_nomina_id: $nom_nomina_id);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al obtener la suma de percepciones',
-                data: $registro);
+                data: $septimo_dia);
+        }    
+        
+        $prima_dominical = $this->total_percepciones_prima_dominical_activo(nom_nomina_id: $nom_nomina_id);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al obtener prima dominical',
+                data: $prima_dominical);
+        }
+        
+        $vacaciones = $this->total_percepciones_vacaciones_activo(nom_nomina_id: $nom_nomina_id);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al obtener vacaciones',
+                data: $vacaciones);
         }
 
         $despensa = $this->total_percepciones_despensa(nom_nomina_id: $nom_nomina_id);
@@ -1745,8 +1757,8 @@ class nom_nomina extends modelo
         $datos['sdi'] = $registro['em_empleado_salario_diario_integrado'];
         $datos['sueldo'] = $registro['nom_nomina_num_dias_pagados'] * $registro['em_empleado_salario_diario'];
         $datos['subsidio'] = $subsidio;
-        $datos['prima_dominical'] = 0;
-        $datos['vacaciones'] = 0;
+        $datos['prima_dominical'] = $prima_dominical;
+        $datos['vacaciones'] = $vacaciones;
         $datos['septimo_dia'] = $septimo_dia;
         $datos['compensacion'] = 0;
         $datos['despensa'] = $despensa; //
@@ -2330,6 +2342,50 @@ class nom_nomina extends modelo
     {
         $filtro['nom_nomina.id']  = $nom_nomina_id;
         $filtro['nom_percepcion.aplica_septimo_dia']  = 'activo';
+        $r_nom_par_percepcion = (new nom_par_percepcion($this->link))->filtro_and(filtro: $filtro);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al obtener percepcion',data:  $r_nom_par_percepcion);
+        }
+
+        $total = 0.0;
+
+        if ($r_nom_par_percepcion->n_registros == 0){
+            return $total;
+        }
+
+        foreach ($r_nom_par_percepcion->registros as $registro){
+            $total += ($registro['nom_par_percepcion_importe_gravado'] + $registro['nom_par_percepcion_importe_exento']);
+        }
+
+        return round($total,2);
+    }
+
+    public function total_percepciones_prima_dominical_activo(int $nom_nomina_id): float|array
+    {
+        $filtro['nom_nomina.id']  = $nom_nomina_id;
+        $filtro['nom_percepcion.aplica_prima_dominical']  = 'activo';
+        $r_nom_par_percepcion = (new nom_par_percepcion($this->link))->filtro_and(filtro: $filtro);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al obtener percepcion',data:  $r_nom_par_percepcion);
+        }
+
+        $total = 0.0;
+
+        if ($r_nom_par_percepcion->n_registros == 0){
+            return $total;
+        }
+
+        foreach ($r_nom_par_percepcion->registros as $registro){
+            $total += ($registro['nom_par_percepcion_importe_gravado'] + $registro['nom_par_percepcion_importe_exento']);
+        }
+
+        return round($total,2);
+    }
+    
+    public function total_percepciones_vacaciones_activo(int $nom_nomina_id): float|array
+    {
+        $filtro['nom_nomina.id']  = $nom_nomina_id;
+        $filtro['nom_percepcion.aplica_vacaciones']  = 'activo';
         $r_nom_par_percepcion = (new nom_par_percepcion($this->link))->filtro_and(filtro: $filtro);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al obtener percepcion',data:  $r_nom_par_percepcion);
