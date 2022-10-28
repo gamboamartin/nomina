@@ -1726,6 +1726,11 @@ class nom_nomina extends modelo
                 data: $registro);
         }
 
+        $dias_incapacidad = (new nom_incidencia($this->link))->get_incidencias_incapacidad(
+            em_empleado_id: $registro['em_empleado_id'], nom_periodo_id: $registro['nom_periodo_id']);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al obtener las incidencias', data: $dias_incapacidad);
+        }
 
         $datos = array();
         $datos['id_rem'] = $registro['em_empleado_codigo'];
@@ -1764,6 +1769,10 @@ class nom_nomina extends modelo
         $datos['cuenta'] = $registro['em_cuenta_bancaria_num_cuenta'];
         $datos['clabe'] = $registro['em_cuenta_bancaria_clabe'];
         $datos['banco'] = $registro['bn_banco_descripcion'];
+
+        if ($dias_incapacidad->n_registros > 0){
+            $datos['dias_x_incapacidad'] = $dias_incapacidad->registros[0]['nom_incidencia_n_dias'];
+        }
 
         return $datos;
     }
