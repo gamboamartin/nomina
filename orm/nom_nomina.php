@@ -377,7 +377,7 @@ class nom_nomina extends modelo
         }
 
         if($registros['nom_conf_empleado']->nom_conf_nomina_aplica_septimo_dia === 'activo'
-            && $dias->dias_septimo_dia > 0){
+            && $dias->dias_septimo_dia > 0 && $dias->dias_pagados_reales > 0){
             $nom_percepcion = (new nom_percepcion($this->link))->get_aplica_septimo_dia();
             if (errores::$error) {
                 return $this->error->error(mensaje: 'Error insertar conceptos', data: $nom_percepcion);
