@@ -372,7 +372,8 @@ class nom_nomina extends modelo
             return $this->error->error(mensaje: 'Error insertar conceptos', data: $r_conceptos);
         }
 
-        if($registros['nom_conf_empleado']->nom_conf_nomina_aplica_septimo_dia === 'activo'){
+        if($registros['nom_conf_empleado']->nom_conf_nomina_aplica_septimo_dia === 'activo'
+            && $dias->dias_septimo_dia > 0){
             $nom_percepcion = (new nom_percepcion($this->link))->get_aplica_septimo_dia();
             if (errores::$error) {
                 return $this->error->error(mensaje: 'Error insertar conceptos', data: $nom_percepcion);
@@ -396,7 +397,8 @@ class nom_nomina extends modelo
             }
         }
 
-        if($registros['nom_conf_empleado']->nom_conf_nomina_aplica_prima_dominical === 'activo'){
+        if($registros['nom_conf_empleado']->nom_conf_nomina_aplica_prima_dominical === 'activo' &&
+            $dias->dias_prima_dominical > 0){
             $nom_percepcion = (new nom_percepcion($this->link))->get_aplica_prima_dominical();
             if (errores::$error) {
                 return $this->error->error(mensaje: 'Error insertar conceptos', data: $nom_percepcion);
@@ -420,7 +422,8 @@ class nom_nomina extends modelo
             }
         }
 
-        if($registros['nom_conf_empleado']->nom_conf_nomina_aplica_dia_festivo_laborado === 'activo'){
+        if($registros['nom_conf_empleado']->nom_conf_nomina_aplica_dia_festivo_laborado === 'activo'
+            && $dias->dias_festivos_laborados > 0){
             $nom_percepcion = (new nom_percepcion($this->link))->get_aplica_dia_festivo_laborado();
             if (errores::$error) {
                 return $this->error->error(mensaje: 'Error insertar conceptos', data: $nom_percepcion);
@@ -431,7 +434,7 @@ class nom_nomina extends modelo
             $nom_par_percepcion_dfl['nom_percepcion_id'] = $nom_percepcion['nom_percepcion_id'];
 
             $nom_par_percepcion_dfl = $this->calcula_dia_festivo_laborado(
-                dias_festivos_laborados: $dias->dias_prima_dominical,
+                dias_festivos_laborados: $dias->dias_festivos_laborados,
                 nom_par_percepcion: $nom_par_percepcion_dfl,
                 salario_diario: $registros['em_empleado']->em_empleado_salario_diario);
             if (errores::$error) {
