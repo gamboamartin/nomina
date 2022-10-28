@@ -335,14 +335,16 @@ class nom_nomina extends modelo
             return $this->error->error(mensaje: 'Error no existe una percepcion activa',data:  $id_nom_percepcion);
         }
 
-        $nom_par_percepcion_ins = array();
-        $nom_par_percepcion_ins['nom_nomina_id'] = $r_alta_bd->registro_id;
-        $nom_par_percepcion_ins['nom_percepcion_id'] = $id_nom_percepcion;
-        $nom_par_percepcion_ins['importe_gravado'] = $registros_cfd_partida['valor_unitario'] * $registros_cfd_partida['cantidad'];
+        if($registros_cfd_partida['valor_unitario'] > 0) {
+            $nom_par_percepcion_ins = array();
+            $nom_par_percepcion_ins['nom_nomina_id'] = $r_alta_bd->registro_id;
+            $nom_par_percepcion_ins['nom_percepcion_id'] = $id_nom_percepcion;
+            $nom_par_percepcion_ins['importe_gravado'] = $registros_cfd_partida['valor_unitario'] * $registros_cfd_partida['cantidad'];
 
-        $r_alta_nom_par_percepcion = (new nom_par_percepcion($this->link))->alta_registro(registro: $nom_par_percepcion_ins);
-        if (errores::$error) {
-            return $this->error->error(mensaje: 'Error al insertar percepcion default', data: $r_alta_nom_par_percepcion);
+            $r_alta_nom_par_percepcion = (new nom_par_percepcion($this->link))->alta_registro(registro: $nom_par_percepcion_ins);
+            if (errores::$error) {
+                return $this->error->error(mensaje: 'Error al insertar percepcion default', data: $r_alta_nom_par_percepcion);
+            }
         }
 
         $percepciones = $this->insertar_percepciones_configuracion(dias: $dias,
