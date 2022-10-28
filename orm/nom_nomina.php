@@ -1298,12 +1298,6 @@ class nom_nomina extends modelo
             return $this->error->error(mensaje: 'Error al validar registro', data: $valida);
         }
 
-        $keys = array('num_dias_pagados');
-        $valida = $this->validacion->valida_double_mayores_0(keys: $keys, registro: $this->registro);
-        if (errores::$error) {
-            return $this->error->error(mensaje: 'Error al validar registro', data: $valida);
-        }
-
         $keys = array('em_empleado_salario_diario');
         $valida = $this->validacion->valida_double_mayores_0(keys: $keys, registro: $em_empleado);
         if (errores::$error) {
