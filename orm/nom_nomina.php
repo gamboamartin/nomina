@@ -352,26 +352,28 @@ class nom_nomina extends modelo
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al insertar percepciones de configuracion', data: $percepciones);
         }
-/***************************/
-        $conceptos = (new nom_tipo_concepto_imss($this->link))->registros_activos();
-        if (errores::$error) {
-            return $this->error->error(mensaje: 'Error al obtener registros de tipos de conceptos', data: $conceptos);
-        }
 
-        $calcula_cuota_obrero_patronal = new calcula_cuota_obrero_patronal();
-        $calculos = $calcula_cuota_obrero_patronal->cuota_obrero_patronal(
-            porc_riesgo_trabajo: $registros['im_registro_patronal']->im_clase_riesgo_factor,
-            fecha: $this->registro['fecha_final_pago'],
-            n_dias: $this->registro['num_dias_pagados'],
-            sbc: $registros['em_empleado']->em_empleado_salario_diario_integrado,link: $this->link);
-        if (errores::$error) {
-            return $this->error->error(mensaje: 'Error al generar calculos', data: $calculos);
-        }
+        if($this->registro['num_dias_pagados'] > 0) {
+            $conceptos = (new nom_tipo_concepto_imss($this->link))->registros_activos();
+            if (errores::$error) {
+                return $this->error->error(mensaje: 'Error al obtener registros de tipos de conceptos', data: $conceptos);
+            }
 
-        $r_conceptos = $this->inserta_conceptos(conceptos: $conceptos,cuotas: $calcula_cuota_obrero_patronal->cuotas,
-            nom_nomina_id: $r_alta_bd->registro_id);
-        if (errores::$error) {
-            return $this->error->error(mensaje: 'Error insertar conceptos', data: $r_conceptos);
+            $calcula_cuota_obrero_patronal = new calcula_cuota_obrero_patronal();
+            $calculos = $calcula_cuota_obrero_patronal->cuota_obrero_patronal(
+                porc_riesgo_trabajo: $registros['im_registro_patronal']->im_clase_riesgo_factor,
+                fecha: $this->registro['fecha_final_pago'],
+                n_dias: $this->registro['num_dias_pagados'],
+                sbc: $registros['em_empleado']->em_empleado_salario_diario_integrado, link: $this->link);
+            if (errores::$error) {
+                return $this->error->error(mensaje: 'Error al generar calculos', data: $calculos);
+            }
+
+            $r_conceptos = $this->inserta_conceptos(conceptos: $conceptos, cuotas: $calcula_cuota_obrero_patronal->cuotas,
+                nom_nomina_id: $r_alta_bd->registro_id);
+            if (errores::$error) {
+                return $this->error->error(mensaje: 'Error insertar conceptos', data: $r_conceptos);
+            }
         }
 
         if($registros['nom_conf_empleado']->nom_conf_nomina_aplica_septimo_dia === 'activo'
