@@ -776,6 +776,15 @@ class nom_nomina extends modelo
             }
             $dias->dias_festivos_laborados = $dias_incidencia;
         }
+        
+        if($nom_conf_empleado->nom_conf_nomina_aplica_dia_descanso === 'activo'){
+            $dias_incidencia = (new nom_incidencia($this->link))->total_dias_aplica_dia_descanso(
+                em_empleado_id: $this->registro['em_empleado_id'],nom_periodo_id: $this->registro['nom_periodo_id']);
+            if (errores::$error) {
+                return $this->error->error(mensaje: 'Error al obtener los dias de incidencia', data: $dias_incidencia);
+            }
+            $dias->dias_festivos_laborados = $dias_incidencia;
+        }
 
         $dias_incidencia = (new nom_incidencia($this->link))->total_dias_incidencias_n_dias(
             em_empleado_id: $this->registro['em_empleado_id'],nom_periodo_id: $this->registro['nom_periodo_id']);
