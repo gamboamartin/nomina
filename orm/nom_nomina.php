@@ -169,6 +169,48 @@ class nom_nomina extends modelo
         return $nom_par_percepcion;
     }
 
+    public function calcula_aplica_dia_descanso(int $dias_descanso, array $nom_par_percepcion,float $salario_diario): array
+    {
+        if($dias_descanso <= 0){
+            return $this->error->error(mensaje: 'Error dias de descanso no puede ser menor o igual a 0',
+                data: $dias_descanso);
+        }
+        if($salario_diario <= 0){
+            return $this->error->error(mensaje: 'Error salario_diario no puede ser menor o igual a 0',
+                data: $salario_diario);
+        }
+
+        $im_uma = (new im_uma($this->link))->get_uma(fecha: date('Y-m-d'));
+        if(errores::$error){
+            return $this->error->error('Error al obtener registros de UMA', $im_uma);
+        }
+        if($im_uma->n_registros <= 0){
+            return $this->error->error('Error no exsite registro de UMA', $im_uma);
+        }
+        if(!isset($im_uma->registros[0]['im_uma_monto'])){
+            return $this->error->error('Error el uma no tiene monto asignado', $im_uma);
+        }
+        if(is_null($im_uma->registros[0]['im_uma_monto'])){
+            return $this->error->error('Error el uma no tiene monto asignado', $im_uma);
+        }
+
+        $monto_uma = $im_uma->registros[0]['im_uma_monto'];
+
+        $uma_5 = round($monto_uma * 5, 2);
+        $monto_dfl = round($salario_diario * $dias_descanso,2);
+
+        $nom_par_percepcion['importe_exento'] = round($monto_dfl,2);
+        $nom_par_percepcion['importe_gravado'] = round($monto_dfl,2);
+
+        if((float)$uma_5 < (float)$monto_dfl){
+            $res = $monto_dfl - $uma_5;
+            $nom_par_percepcion['importe_gravado'] = round($res + $monto_dfl,2);
+            $nom_par_percepcion['importe_exento'] = round($monto_dfl,2);
+        }
+
+        return $nom_par_percepcion;
+    }
+
     public function calcula_prima_dominical(int $dias_prima, array $nom_par_percepcion,float $salario_diario): array
     {
         if($dias_prima <= 0){
@@ -447,6 +489,32 @@ class nom_nomina extends modelo
 
             $r_alta_nom_par_percepcion = (new nom_par_percepcion($this->link))->alta_registro(
                 registro: $nom_par_percepcion_dfl);
+            if (errores::$error) {
+                return $this->error->error(mensaje: 'Error al insertar percepcion default', data: $r_alta_nom_par_percepcion);
+            }
+        }
+
+        if($registros['nom_conf_empleado']->nom_conf_nomina_aplica_aplica_dia_descanso === 'activo'
+            && $dias->dias_descanso > 0){
+            $nom_percepcion = (new nom_percepcion($this->link))->get_aplica_aplica_dia_descanso();
+            if (errores::$error) {
+                return $this->error->error(mensaje: 'Error insertar conceptos', data: $nom_percepcion);
+            }
+
+            $nom_par_percepcion_dd= array();
+            $nom_par_percepcion_dd['nom_nomina_id'] = $r_alta_bd->registro_id;
+            $nom_par_percepcion_dd['nom_percepcion_id'] = $nom_percepcion['nom_percepcion_id'];
+
+            $nom_par_percepcion_dd = $this->calcula_aplica_dia_descanso(
+                dias_descanso: $dias->dias_descanso,
+                nom_par_percepcion: $nom_par_percepcion_dd,
+                salario_diario: $registros['em_empleado']->em_empleado_salario_diario);
+            if (errores::$error) {
+                return $this->error->error(mensaje: 'Error al calcular septimo dia', data: $nom_par_percepcion_dd);
+            }
+
+            $r_alta_nom_par_percepcion = (new nom_par_percepcion($this->link))->alta_registro(
+                registro: $nom_par_percepcion_dd);
             if (errores::$error) {
                 return $this->error->error(mensaje: 'Error al insertar percepcion default', data: $r_alta_nom_par_percepcion);
             }
@@ -783,7 +851,7 @@ class nom_nomina extends modelo
             if (errores::$error) {
                 return $this->error->error(mensaje: 'Error al obtener los dias de incidencia', data: $dias_incidencia);
             }
-            $dias->dias_festivos_laborados = $dias_incidencia;
+            $dias->dias_descanso = $dias_incidencia;
         }
 
         $dias_incidencia = (new nom_incidencia($this->link))->total_dias_incidencias_n_dias(
