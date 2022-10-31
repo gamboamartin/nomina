@@ -98,7 +98,7 @@ class nom_conf_percepcion_html extends html_controler {
             return $this->error->error(mensaje: 'Error al validar columnas', data: $valida);
         }
 
-        $html = $this->directivas->input_text_required(disable: $disabled, name: 'importe_gravado',
+        $html = $this->directivas->input_text_required(disabled: $disabled, name: 'importe_gravado',
             place_holder: 'Importe Gravado', row_upd: $row_upd, value_vacio: $value_vacio);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al generar input', data: $html);
@@ -120,7 +120,7 @@ class nom_conf_percepcion_html extends html_controler {
             return $this->error->error(mensaje: 'Error al validar columnas', data: $valida);
         }
 
-        $html = $this->directivas->input_text_required(disable: $disabled, name: 'importe_exento',
+        $html = $this->directivas->input_text_required(disabled: $disabled, name: 'importe_exento',
             place_holder: 'Importe Exento', row_upd: $row_upd, value_vacio: $value_vacio);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al generar input', data: $html);
@@ -142,7 +142,7 @@ class nom_conf_percepcion_html extends html_controler {
             return $this->error->error(mensaje: 'Error al validar columnas', data: $valida);
         }
 
-        $html = $this->directivas->fecha_required(disable: $disabled, name: 'fecha_inicio',
+        $html = $this->directivas->fecha_required(disabled: $disabled, name: 'fecha_inicio',
             place_holder: 'Fecha Inicio', row_upd: $row_upd, value_vacio: $value_vacio);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al generar input', data: $html);
@@ -164,7 +164,7 @@ class nom_conf_percepcion_html extends html_controler {
             return $this->error->error(mensaje: 'Error al validar columnas', data: $valida);
         }
 
-        $html = $this->directivas->fecha_required(disable: $disabled, name: 'fecha_fin',
+        $html = $this->directivas->fecha_required(disabled: $disabled, name: 'fecha_fin',
             place_holder: 'Fecha Fin', row_upd: $row_upd, value_vacio: $value_vacio);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al generar input', data: $html);

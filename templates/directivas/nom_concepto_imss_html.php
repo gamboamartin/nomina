@@ -178,7 +178,7 @@ class nom_concepto_imss_html extends html_controler {
             return $this->error->error(mensaje: 'Error al validar columnas', data: $valida);
         }
 
-        $html =$this->directivas->input_text_required(disable: $disabled,name: 'monto',place_holder: 'Monto',
+        $html =$this->directivas->input_text_required(disabled: $disabled,name: 'monto',place_holder: 'Monto',
             row_upd: $row_upd, value_vacio: $value_vacio);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al generar input', data: $html);

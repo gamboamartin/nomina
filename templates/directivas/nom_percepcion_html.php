@@ -61,7 +61,7 @@ class nom_percepcion_html extends html_controler {
             return $this->error->error(mensaje: 'Error al validar columnas', data: $valida);
         }
 
-        $html = $this->directivas->input_text_required(disable: $disabled, name: 'aplica_imss',
+        $html = $this->directivas->input_text_required(disabled: $disabled, name: 'aplica_imss',
             place_holder: 'IMSS', row_upd: $row_upd, value_vacio: $value_vacio);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al generar input', data: $html);
@@ -83,7 +83,7 @@ class nom_percepcion_html extends html_controler {
             return $this->error->error(mensaje: 'Error al validar columnas', data: $valida);
         }
 
-        $html = $this->directivas->input_text_required(disable: $disabled, name: 'aplica_subsidio',
+        $html = $this->directivas->input_text_required(disabled: $disabled, name: 'aplica_subsidio',
             place_holder: 'Subsidio', row_upd: $row_upd, value_vacio: $value_vacio);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al generar input', data: $html);

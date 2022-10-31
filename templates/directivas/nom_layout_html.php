@@ -93,7 +93,7 @@ class nom_layout_html extends html_controler {
             return $this->error->error(mensaje: 'Error al validar columnas', data: $valida);
         }
 
-        $html = $this->directivas->fecha_required(disable: $disabled, name: 'fecha_pago',
+        $html = $this->directivas->fecha_required(disabled: $disabled, name: 'fecha_pago',
             place_holder: 'Fecha Pago', row_upd: $row, value_vacio: $value_vacio);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al generar input', data: $html);

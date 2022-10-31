@@ -60,7 +60,7 @@ class nom_par_percepcion_html extends base_nominas {
             return $this->error->error(mensaje: 'Error al validar columnas', data: $valida);
         }
 
-        $html =$this->directivas->input_text_required(disable: false,name: 'importe_exento',place_holder: 'Importe exento',
+        $html =$this->directivas->input_text_required(disabled: false,name: 'importe_exento',place_holder: 'Importe exento',
             row_upd: $row_upd, value_vacio: $value_vacio);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al generar input', data: $html);

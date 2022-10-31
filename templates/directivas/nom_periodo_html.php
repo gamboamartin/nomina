@@ -100,7 +100,7 @@ class nom_periodo_html extends html_controler {
             return $this->error->error(mensaje: 'Error al validar columnas', data: $valida);
         }
 
-        $html = $this->directivas->fecha_required(disable: $disabled, name: 'fecha_inicial_pago',
+        $html = $this->directivas->fecha_required(disabled: $disabled, name: 'fecha_inicial_pago',
             place_holder: 'Fecha inicial pago', row_upd: $row_upd, value_vacio: $value_vacio);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al generar input', data: $html);
@@ -122,7 +122,7 @@ class nom_periodo_html extends html_controler {
             return $this->error->error(mensaje: 'Error al validar columnas', data: $valida);
         }
 
-        $html = $this->directivas->fecha_required(disable: $disabled, name: 'fecha_final_pago',
+        $html = $this->directivas->fecha_required(disabled: $disabled, name: 'fecha_final_pago',
             place_holder: 'Fecha final pago', row_upd: $row_upd, value_vacio: $value_vacio);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al generar input', data: $html);
@@ -144,7 +144,7 @@ class nom_periodo_html extends html_controler {
             return $this->error->error(mensaje: 'Error al validar columnas', data: $valida);
         }
 
-        $html = $this->directivas->fecha_required(disable: $disabled, name: 'fecha_pago', place_holder: 'Fecha pago',
+        $html = $this->directivas->fecha_required(disabled: $disabled, name: 'fecha_pago', place_holder: 'Fecha pago',
             row_upd: $row_upd, value_vacio: $value_vacio);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al generar input', data: $html);

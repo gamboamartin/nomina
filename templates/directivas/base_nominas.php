@@ -31,7 +31,7 @@ class base_nominas extends html_controler{
             return $this->error->error(mensaje: 'Error al validar columnas', data: $valida);
         }
 
-        $html =$this->directivas->input_text_required(disable: false,name: 'importe_gravado',place_holder: 'Importe gravado',
+        $html =$this->directivas->input_text_required(disabled: false,name: 'importe_gravado',place_holder: 'Importe gravado',
             row_upd: $row_upd, value_vacio: $value_vacio);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al generar input', data: $html);
