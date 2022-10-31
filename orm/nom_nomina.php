@@ -1773,6 +1773,12 @@ class nom_nomina extends modelo
                 data: $vacaciones);
         }
 
+        $dias_descanso = $this->total_percepciones_dias_descanso_laborados(nom_nomina_id: $nom_nomina_id);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al obtener montos de dias de descanso',
+                data: $dias_descanso);
+        }
+
         $despensa = $this->total_percepciones_despensa(nom_nomina_id: $nom_nomina_id);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al obtener la suma de percepciones',
@@ -1828,7 +1834,7 @@ class nom_nomina extends modelo
         $datos['nombre_completo'] .= $registro['em_empleado_ap'].' ';
         $datos['nombre_completo'] .= $registro['em_empleado_am'];
         $datos['dias_laborados'] = $registro['nom_nomina_num_dias_pagados'];
-        $datos['dias_x_incapacidad'] = 0;
+        $datos['dias_x_incapacidad'] = 0.0;
         $datos['sd'] = $registro['em_empleado_salario_diario'];
         $datos['fi'] = $fi;
         $datos['sdi'] = $registro['em_empleado_salario_diario_integrado'];
@@ -1837,36 +1843,36 @@ class nom_nomina extends modelo
         $datos['prima_dominical'] = $prima_dominical;
         $datos['vacaciones'] = $vacaciones;
         $datos['septimo_dia'] = $septimo_dia;
-        $datos['compensacion'] = 0;
+        $datos['compensacion'] = 0.0;
         $datos['despensa'] = $despensa; //
-        $datos['otros_ingresos'] = 0;
-        $datos['devolucion_infonavit'] = 0;
-        $datos['prima_vacacional_gravado'] = 0;
-        $datos['prima_vacacional_exento'] = 0;
-        $datos['gratificacion_gravado'] = 0;
-        $datos['gratificacion_exento'] = 0;
-        $datos['aguinaldo_gravado'] = 0;
-        $datos['aguinaldo_exento'] = 0;
-        $datos['dias_festivos_gravado'] = 0;
-        $datos['dias_festivos_exento'] = 0;
-        $datos['descanso_laborado_gravado'] = 0;
-        $datos['descanso_laborado_exento'] = 0;
-        $datos['horas_extras_gravado'] = 0;
-        $datos['horas_extras_exento'] = 0;
-        $datos['ptu_gravado'] = 0;
-        $datos['ptu_exento'] = 0;
-        $datos['indemnizacion'] = 0;
-        $datos['prima_antiguedad'] = 0;
+        $datos['otros_ingresos'] = 0.0;
+        $datos['devolucion_infonavit'] = 0.0;
+        $datos['prima_vacacional_gravado'] = 0.0;
+        $datos['prima_vacacional_exento'] = 0.0;
+        $datos['gratificacion_gravado'] = 0.0;
+        $datos['gratificacion_exento'] = 0.0;
+        $datos['aguinaldo_gravado'] = 0.0;
+        $datos['aguinaldo_exento'] = 0.0;
+        $datos['dias_festivos_gravado'] = 0.0;
+        $datos['dias_festivos_exento'] = 0.0;
+        $datos['descanso_laborado_gravado'] = $dias_descanso->gravado;
+        $datos['descanso_laborado_exento'] = $dias_descanso->exento;
+        $datos['horas_extras_gravado'] = 0.0;
+        $datos['horas_extras_exento'] = 0.0;
+        $datos['ptu_gravado'] = 0.0;
+        $datos['ptu_exento'] = 0.0;
+        $datos['indemnizacion'] = 0.0;
+        $datos['prima_antiguedad'] = 0.0;
         $datos['suma_percepcion'] = $suma_percepcion;
         $datos['base_gravable'] = $suma_base_gravable;
         $datos['retencion_isr'] = $retencion_isr;
         $datos['retencion_imss'] = $retencion_imss;
-        $datos['infonavit'] = 0; //
-        $datos['fonacot'] = 0; //
-        $datos['pension_alimencia'] = 0; //
-        $datos['otros_descuentos'] = 0; //
-        $datos['descuento_comedor'] = 0; //
-        $datos['descuento_p_personal'] = 0; //
+        $datos['infonavit'] = 0.0; //
+        $datos['fonacot'] = 0.0; //
+        $datos['pension_alimencia'] = 0.0; //
+        $datos['otros_descuentos'] = 0.0; //
+        $datos['descuento_comedor'] = 0.0; //
+        $datos['descuento_p_personal'] = 0.0; //
         $datos['suma_deduccion'] = $suma_deduccion;
         $datos['neto_a_pagar'] = $suma_percepcion - $suma_deduccion;
         $datos['cuenta'] = $registro['em_cuenta_bancaria_num_cuenta'];
@@ -2471,6 +2477,27 @@ class nom_nomina extends modelo
         }
 
         return round($total,2);
+    }
+
+    public function total_percepciones_dias_descanso_laborados(int $nom_nomina_id)
+    {
+        $filtro['nom_nomina.id']  = $nom_nomina_id;
+        $filtro['nom_percepcion.aplica_dia_descanso']  = 'activo';
+        $r_nom_par_percepcion = (new nom_par_percepcion($this->link))->filtro_and(filtro: $filtro);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al obtener percepcion',data:  $r_nom_par_percepcion);
+        }
+
+        $montos = new stdClass();
+        $montos->gravado = 0.0;
+        $montos->exento = 0.0;
+
+        foreach ($r_nom_par_percepcion->registros as $registro){
+            $montos->gravado = round($registro['nom_par_percepcion_importe_gravado'],2);
+            $montos->exento = round($registro['nom_par_percepcion_importe_exento'],2);
+        }
+
+        return $montos;
     }
     
     public function total_percepciones_vacaciones_activo(int $nom_nomina_id): float|array
