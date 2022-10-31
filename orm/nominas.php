@@ -467,10 +467,20 @@ class nominas extends modelo {
             return $this->error->error(mensaje: 'Error al obtener nomina', data: $nom_nomina);
         }
 
+        $dias_vacaciones = (new nom_incidencia($this->link))->total_dias_vacaciones(
+            em_empleado_id: $nom_nomina->em_empleado_id,nom_periodo_id: $nom_nomina->nom_periodo_id);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al obtener los dias de incidencia', data: $dias_vacaciones);
+        }
+
+        $num_dias_pagados = $nom_nomina->nom_nomina_num_dias_pagados;
+        if($dias_vacaciones > 0){
+            $num_dias_pagados = $nom_nomina->nom_nomina_num_dias_pagados + $dias_vacaciones;
+        }
 
         return (new calcula_imss())->imss(
             cat_sat_periodicidad_pago_nom_id: $nom_nomina->cat_sat_periodicidad_pago_nom_id,
-            fecha:$nom_nomina->nom_nomina_fecha_final_pago, n_dias: $nom_nomina->nom_nomina_num_dias_pagados,
+            fecha:$nom_nomina->nom_nomina_fecha_final_pago, n_dias: $num_dias_pagados,
             sbc: $nom_nomina->em_empleado_salario_diario_integrado, sd: $nom_nomina->em_empleado_salario_diario);
     }
 
