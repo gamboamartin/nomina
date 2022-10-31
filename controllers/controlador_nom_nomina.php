@@ -1058,30 +1058,18 @@ class controlador_nom_nomina extends base_nom
             unset($_POST['btn_action_next']);
         }
 
-        $r_modifica= (new nom_nomina($this->link))->recalcula_neto(registro: $_POST, registro_id: $this->registro_id);
+        $monto = (new nom_nomina($this->link))->calculo_bruto(registro: $_POST, registro_id: $this->registro_id);
         if (errores::$error) {
-            return $this->retorno_error(mensaje: 'Error al dar de alta deduccion', data: $r_modifica,
+            return $this->retorno_error(mensaje: 'Error al calcular bruto sobre neto', data: $monto,
                 header: $header, ws: $ws);
         }
 
-        $siguiente_view = (new actions())->init_alta_bd();
-        if (errores::$error) {
-            return $this->retorno_error(mensaje: 'Error al obtener siguiente view', data: $siguiente_view,
-                header: $header, ws: $ws);
-        }
+        $_POST['bruto'] = $monto;
 
-        if ($header) {
-            $this->retorno_base(registro_id:$this->registro_id, result: $r_modifica,
-                siguiente_view: $siguiente_view, ws:  $ws);
-        }
-        if ($ws) {
-            header('Content-Type: application/json');
-            echo json_encode($r_modifica, JSON_THROW_ON_ERROR);
-            exit;
-        }
-        $r_modifica->siguiente_view = $siguiente_view;
-
-        return $r_modifica;
+        $link = "./index.php?seccion=nom_nomina&accion=selecciona_percepcion&registro_id=".$this->registro_id;
+        $link.="&session_id=$this->session_id";
+        header('Location:' . $link);
+        exit;
     }
 
     private function out(bool $header, mixed $result, string $siguiente_view, bool $ws){
