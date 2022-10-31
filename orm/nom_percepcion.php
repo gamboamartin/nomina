@@ -69,7 +69,7 @@ class nom_percepcion extends nominas_confs {
         return $r_nom_percepcion->registros[0];
     }
 
-    public function get_aplica_aplica_dia_descanso(): array|stdClass
+    public function get_aplica_dia_descanso(): array|stdClass
     {
         $filtro['nom_percepcion.aplica_dia_descanso'] = 'activo';
         $r_nom_percepcion = $this->filtro_and(filtro: $filtro,limit: 1);

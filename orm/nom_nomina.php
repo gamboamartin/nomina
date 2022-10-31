@@ -494,9 +494,9 @@ class nom_nomina extends modelo
             }
         }
 
-        if($registros['nom_conf_empleado']->nom_conf_nomina_aplica_aplica_dia_descanso === 'activo'
+        if($registros['nom_conf_empleado']->nom_conf_nomina_aplica_dia_descanso === 'activo'
             && $dias->dias_descanso > 0){
-            $nom_percepcion = (new nom_percepcion($this->link))->get_aplica_aplica_dia_descanso();
+            $nom_percepcion = (new nom_percepcion($this->link))->get_aplica_dia_descanso();
             if (errores::$error) {
                 return $this->error->error(mensaje: 'Error insertar conceptos', data: $nom_percepcion);
             }
