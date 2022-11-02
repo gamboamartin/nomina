@@ -1742,6 +1742,12 @@ class nom_nomina extends modelo
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al obtener vacaciones',
                 data: $vacaciones);
+        }        
+        
+        $compensacion = $this->total_percepciones_compensacion_activo(nom_nomina_id: $nom_nomina_id);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al obtener compensacion',
+                data: $compensacion);
         }
 
         $dias_descanso = $this->total_percepciones_dias_descanso_laborados(nom_nomina_id: $nom_nomina_id);
@@ -1814,7 +1820,7 @@ class nom_nomina extends modelo
         $datos['prima_dominical'] = $prima_dominical;
         $datos['vacaciones'] = $vacaciones;
         $datos['septimo_dia'] = $septimo_dia;
-        $datos['compensacion'] = 0.0;
+        $datos['compensacion'] = $compensacion;
         $datos['despensa'] = $despensa; //
         $datos['otros_ingresos'] = 0.0;
         $datos['devolucion_infonavit'] = 0.0;
@@ -2475,6 +2481,28 @@ class nom_nomina extends modelo
     {
         $filtro['nom_nomina.id']  = $nom_nomina_id;
         $filtro['nom_percepcion.aplica_vacaciones']  = 'activo';
+        $r_nom_par_percepcion = (new nom_par_percepcion($this->link))->filtro_and(filtro: $filtro);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al obtener percepcion',data:  $r_nom_par_percepcion);
+        }
+
+        $total = 0.0;
+
+        if ($r_nom_par_percepcion->n_registros == 0){
+            return $total;
+        }
+
+        foreach ($r_nom_par_percepcion->registros as $registro){
+            $total += ($registro['nom_par_percepcion_importe_gravado'] + $registro['nom_par_percepcion_importe_exento']);
+        }
+
+        return round($total,2);
+    }  
+    
+    public function total_percepciones_compensacion_activo(int $nom_nomina_id): float|array
+    {
+        $filtro['nom_nomina.id']  = $nom_nomina_id;
+        $filtro['nom_percepcion.aplica_compensacion']  = 'activo';
         $r_nom_par_percepcion = (new nom_par_percepcion($this->link))->filtro_and(filtro: $filtro);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al obtener percepcion',data:  $r_nom_par_percepcion);
