@@ -103,7 +103,7 @@ class controlador_nom_nomina extends base_nom
         parent::__construct(html: $html_, link: $link, modelo: $modelo, obj_link: $obj_link, datatables: $datatables,
             paths_conf: $paths_conf);
 
-        $link_nom_nomina_modifica_bd = $obj_link->link_con_id(accion: 'modifica_bd',
+        $link_nom_nomina_modifica_bd = $obj_link->link_con_id(accion: 'modifica_bd',link: $link,
             registro_id: $this->registro_id, seccion: $this->seccion);
         if (errores::$error) {
             $error = $this->errores->error(mensaje: 'Error al generar link', data: $link_nom_nomina_modifica_bd);
@@ -111,7 +111,7 @@ class controlador_nom_nomina extends base_nom
             die('Error');
         }
 
-        $link_nom_nomina_recalcula_neto_bd = $obj_link->link_con_id(accion: 'recalcula_neto_bd',
+        $link_nom_nomina_recalcula_neto_bd = $obj_link->link_con_id(accion: 'recalcula_neto_bd',link: $link,
             registro_id: $this->registro_id, seccion: $this->seccion);
         if (errores::$error) {
             $error = $this->errores->error(mensaje: 'Error al generar link', data: $link_nom_nomina_recalcula_neto_bd);
@@ -119,7 +119,7 @@ class controlador_nom_nomina extends base_nom
             die('Error');
         }
 
-        $link_nom_par_percepcion_alta_bd = $obj_link->link_con_id(accion: 'nueva_percepcion_bd',
+        $link_nom_par_percepcion_alta_bd = $obj_link->link_con_id(accion: 'nueva_percepcion_bd',link: $link,
             registro_id: $this->registro_id, seccion: $this->seccion);
         if (errores::$error) {
             $error = $this->errores->error(mensaje: 'Error al generar link', data: $link_nom_par_percepcion_alta_bd);
@@ -127,7 +127,7 @@ class controlador_nom_nomina extends base_nom
             die('Error');
         }
 
-        $link_nom_par_deduccion_alta_bd = $obj_link->link_con_id(accion: 'nueva_deduccion_bd',
+        $link_nom_par_deduccion_alta_bd = $obj_link->link_con_id(accion: 'nueva_deduccion_bd',link: $link,
             registro_id: $this->registro_id, seccion: $this->seccion);
         if (errores::$error) {
             $error = $this->errores->error(mensaje: 'Error al generar link', data: $link_nom_par_deduccion_alta_bd);
@@ -135,7 +135,7 @@ class controlador_nom_nomina extends base_nom
             die('Error');
         }
 
-        $link_nom_par_otro_pago_alta_bd = $obj_link->link_con_id(accion: 'otro_pago_bd',
+        $link_nom_par_otro_pago_alta_bd = $obj_link->link_con_id(accion: 'otro_pago_bd',link: $link,
             registro_id: $this->registro_id, seccion: $this->seccion);
         if (errores::$error) {
             $error = $this->errores->error(mensaje: 'Error al generar link', data: $link_nom_par_otro_pago_alta_bd);
@@ -143,7 +143,7 @@ class controlador_nom_nomina extends base_nom
             die('Error');
         }
 
-        $link_nom_par_percepcion_modifica_bd = $obj_link->link_con_id(accion: 'modifica_percepcion_bd',
+        $link_nom_par_percepcion_modifica_bd = $obj_link->link_con_id(accion: 'modifica_percepcion_bd',link: $link,
             registro_id: $this->registro_id, seccion: $this->seccion);
         if (errores::$error) {
             $error = $this->errores->error(mensaje: 'Error al generar link', data: $link_nom_par_percepcion_modifica_bd);
@@ -151,7 +151,7 @@ class controlador_nom_nomina extends base_nom
             die('Error');
         }
 
-        $link_nom_par_deduccion_modifica_bd = $obj_link->link_con_id(accion: 'modifica_deduccion_bd',
+        $link_nom_par_deduccion_modifica_bd = $obj_link->link_con_id(accion: 'modifica_deduccion_bd',link: $link,
             registro_id: $this->registro_id, seccion: $this->seccion);
         if (errores::$error) {
             $error = $this->errores->error(mensaje: 'Error al generar link', data: $link_nom_par_deduccion_modifica_bd);
@@ -159,7 +159,7 @@ class controlador_nom_nomina extends base_nom
             die('Error');
         }
 
-        $link_nom_par_otro_pago_modifica_bd = $obj_link->link_con_id(accion: 'modifica_otro_pago_bd',
+        $link_nom_par_otro_pago_modifica_bd = $obj_link->link_con_id(accion: 'modifica_otro_pago_bd',link: $link,
             registro_id: $this->registro_id, seccion: $this->seccion);
         if (errores::$error) {
             $error = $this->errores->error(mensaje: 'Error al generar link', data: $link_nom_par_otro_pago_modifica_bd);
@@ -252,7 +252,7 @@ class controlador_nom_nomina extends base_nom
             return $this->errores->error(mensaje: 'Error al validar row',data:  $valida);
         }
 
-        $link_genera_xml = $this->obj_link->link_con_id(accion:'genera_xml',registro_id:  $row->nom_nomina_id,
+        $link_genera_xml = $this->obj_link->link_con_id(accion:'genera_xml',link: $this->link,registro_id:  $row->nom_nomina_id,
             seccion:  $this->tabla);
         if(errores::$error){
             return $this->errores->error(mensaje: 'Error al genera link',data:  $link_genera_xml);
@@ -272,7 +272,7 @@ class controlador_nom_nomina extends base_nom
             return $this->errores->error(mensaje: 'Error al validar row',data:  $valida);
         }
 
-        $link_timbra = $this->obj_link->link_con_id(accion:'timbra',registro_id:  $row->nom_nomina_id,
+        $link_timbra = $this->obj_link->link_con_id(accion:'timbra',link: $this->link,registro_id:  $row->nom_nomina_id,
             seccion:  $this->tabla);
         if(errores::$error){
             return $this->errores->error(mensaje: 'Error al genera link',data:  $link_timbra);
