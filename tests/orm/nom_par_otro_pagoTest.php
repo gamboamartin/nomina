@@ -53,10 +53,40 @@ class nom_par_otro_pagoTest extends test {
             exit;
         }
 
+        $del = (new base_test())->del_cat_sat_isr(link: $this->link);
+        if(errores::$error){
+            $error = (new errores())->error('Error al eliminar', $del);
+            print_r($error);
+            exit;
+        }
+
+        $alta = (new base_test())->alta_cat_sat_isr(link: $this->link, cuota_fija:10.57, fecha_fin: '9999-01-01',
+            fecha_inicio: '1900-01-01', limite_inferior:179.97, limite_superior:316.27, porcentaje_excedente:10.88);
+        if(errores::$error){
+            $error = (new errores())->error('Error al insertar', $alta);
+            print_r($error);
+            exit;
+        }
+
 
         $alta = (new base_test())->alta_nom_nomina($this->link);
         if(errores::$error){
             $error = (new errores())->error(mensaje: 'Error al insertar', data: $alta);
+            print_r($error);
+            exit;
+        }
+
+        $del = (new base_test())->del_cat_sat_isr(link: $this->link);
+        if(errores::$error){
+            $error = (new errores())->error('Error al eliminar', $del);
+            print_r($error);
+            exit;
+        }
+
+        $alta = (new base_test())->alta_cat_sat_isr(link: $this->link, cuota_fija:25.4, fecha_fin: '9999-01-01',
+            fecha_inicio: '1900-01-01', limite_inferior:316.28, limite_superior:367.65, porcentaje_excedente:16);
+        if(errores::$error){
+            $error = (new errores())->error('Error al insertar', $alta);
             print_r($error);
             exit;
         }
@@ -68,6 +98,21 @@ class nom_par_otro_pagoTest extends test {
         $resultado = $percepcion->alta_bd();
         if(errores::$error){
             $error = (new errores())->error(mensaje: 'Error al insertar otro pago', data: $resultado);
+            print_r($error);
+            exit;
+        }
+
+        $del = (new base_test())->del_cat_sat_isr(link: $this->link);
+        if(errores::$error){
+            $error = (new errores())->error('Error al eliminar', $del);
+            print_r($error);
+            exit;
+        }
+
+        $alta = (new base_test())->alta_cat_sat_isr(link: $this->link, cuota_fija:10.57, fecha_fin: '9999-01-01',
+            fecha_inicio: '1900-01-01', limite_inferior:179.97, limite_superior:316.27, porcentaje_excedente:10.88);
+        if(errores::$error){
+            $error = (new errores())->error('Error al insertar', $alta);
             print_r($error);
             exit;
         }

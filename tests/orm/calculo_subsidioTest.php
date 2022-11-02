@@ -16,6 +16,7 @@ use models\nom_nomina;
 use models\nom_par_deduccion;
 use models\nom_par_percepcion;
 use stdClass;
+use tests\base_test;
 
 
 class calculo_subsidioTest extends test {
@@ -53,6 +54,35 @@ class calculo_subsidioTest extends test {
             exit;
         }
 
+        $del = (new base_test())->del_cat_sat_isr(link: $this->link);
+        if(errores::$error){
+            $error = (new errores())->error('Error al eliminar', $del);
+            print_r($error);
+            exit;
+        }
+
+        $alta = (new base_test())->alta_cat_sat_isr(link: $this->link,cuota_fija: .41,limite_inferior: 20.21,
+            limite_superior: 179.96,porcentaje_excedente: 6.4);
+        if(errores::$error){
+            $error = (new errores())->error('Error al insertar', $alta);
+            print_r($error);
+            exit;
+        }
+
+        $del = (new base_test())->del_cat_sat_subsidio(link: $this->link);
+        if(errores::$error){
+            $error = (new errores())->error('Error al eliminar', $del);
+            print_r($error);
+            exit;
+        }
+
+        $alta = (new base_test())->alta_cat_sat_subsidio(link: $this->link,cuota_fija: 13.38);
+        if(errores::$error){
+            $error = (new errores())->error('Error al insertar', $alta);
+            print_r($error);
+            exit;
+        }
+
         $nom_par_percepcion = array();
         $nom_par_percepcion['id'] = 1;
         $nom_par_percepcion['nom_nomina_id'] = 1;
@@ -66,6 +96,21 @@ class calculo_subsidioTest extends test {
             exit;
         }
 
+        $del = (new base_test())->del_cat_sat_isr(link: $this->link);
+        if(errores::$error){
+            $error = (new errores())->error('Error al eliminar', $del);
+            print_r($error);
+            exit;
+        }
+
+        $alta = (new base_test())->alta_cat_sat_isr(link: $this->link,cuota_fija: 10.57,limite_inferior: 179.97,
+            limite_superior: 316.27,porcentaje_excedente: 10.88);
+        if(errores::$error){
+            $error = (new errores())->error('Error al insertar', $alta);
+            print_r($error);
+            exit;
+        }
+
         $partida_percepcion_id = 1;
         $resultado = $calculo->calcula_subsidio_nomina($modelo, $partida_percepcion_id);
 
@@ -73,6 +118,22 @@ class calculo_subsidioTest extends test {
         $this->assertNotTrue(errores::$error);
         $this->assertEquals('13.38', $resultado);
 
+
+
+        $del = (new base_test())->del_cat_sat_subsidio(link: $this->link);
+        if(errores::$error){
+            $error = (new errores())->error('Error al eliminar', $del);
+            print_r($error);
+            exit;
+        }
+
+        $alta = (new base_test())->alta_cat_sat_subsidio(link: $this->link,cuota_fija: 9.69,limite_inferior: 0.01,
+            limite_superior: 316.27,porcentaje_excedente: 10.88);
+        if(errores::$error){
+            $error = (new errores())->error('Error al insertar', $alta);
+            print_r($error);
+            exit;
+        }
 
         $nom_par_percepcion = array();
         $nom_par_percepcion['id'] = 2;
@@ -113,6 +174,37 @@ class calculo_subsidioTest extends test {
         $del_percepcion = $modelo->elimina_todo();
         if(errores::$error){
             $error = (new errores())->error('Error al eliminar percepcion', $del_percepcion);
+            print_r($error);
+            exit;
+        }
+
+
+        $del = (new base_test())->del_cat_sat_isr(link: $this->link);
+        if(errores::$error){
+            $error = (new errores())->error('Error al eliminar', $del);
+            print_r($error);
+            exit;
+        }
+
+        $alta = (new base_test())->alta_cat_sat_isr(link: $this->link,cuota_fija: .41,limite_inferior: 21.21,
+            limite_superior: 179.96,porcentaje_excedente: 6.4);
+        if(errores::$error){
+            $error = (new errores())->error('Error al insertar', $alta);
+            print_r($error);
+            exit;
+        }
+
+        $del = (new base_test())->del_cat_sat_subsidio(link: $this->link);
+        if(errores::$error){
+            $error = (new errores())->error('Error al eliminar', $del);
+            print_r($error);
+            exit;
+        }
+
+        $alta = (new base_test())->alta_cat_sat_subsidio(link: $this->link,cuota_fija: 13.38,limite_inferior: 21.21,
+            limite_superior: 179.96,porcentaje_excedente: 6.4);
+        if(errores::$error){
+            $error = (new errores())->error('Error al insertar', $alta);
             print_r($error);
             exit;
         }
@@ -203,6 +295,38 @@ class calculo_subsidioTest extends test {
 
         $monto = 0.01;
         $cat_sat_periodicidad_pago_nom_id = 1;
+
+        $del = (new base_test())->del_cat_sat_isr(link: $this->link);
+        if(errores::$error){
+            $error = (new errores())->error('Error al eliminar', $del);
+            print_r($error);
+            exit;
+        }
+
+        $alta = (new base_test())->alta_cat_sat_isr(link: $this->link,cuota_fija: 0,limite_inferior: .01,
+            limite_superior: 21.20,porcentaje_excedente: 1.92);
+        if(errores::$error){
+            $error = (new errores())->error('Error al insertar', $alta);
+            print_r($error);
+            exit;
+        }
+
+        $del = (new base_test())->del_cat_sat_subsidio(link: $this->link);
+        if(errores::$error){
+            $error = (new errores())->error('Error al eliminar', $del);
+            print_r($error);
+            exit;
+        }
+
+        $alta = (new base_test())->alta_cat_sat_subsidio(link: $this->link, cuota_fija: 13.39, fecha_fin: '9999-01-01',
+            fecha_inicio: '1900-01-01', limite_inferior: .01, limite_superior: 58.19, porcentaje_excedente: 1.92);
+        if(errores::$error){
+            $error = (new errores())->error('Error al insertar', $alta);
+            print_r($error);
+            exit;
+        }
+
+
 
         $resultado = $calculo->get_subsidio($cat_sat_periodicidad_pago_nom_id, $this->link, $monto);
         $this->assertIsObject($resultado);

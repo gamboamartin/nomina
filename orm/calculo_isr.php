@@ -304,6 +304,7 @@ class calculo_isr{
             return $this->error->error(mensaje: 'Error al obtener isr', data: $row_isr);
         }
 
+
         $isr = $this->genera_isr(monto: $monto, row_isr: $row_isr);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al calcular isr', data: $isr);

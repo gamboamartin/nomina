@@ -1,8 +1,10 @@
 <?php
 namespace tests;
 use base\orm\modelo_base;
+use gamboamartin\cat_sat\models\cat_sat_isr;
 use gamboamartin\cat_sat\models\cat_sat_metodo_pago;
 use gamboamartin\cat_sat\models\cat_sat_moneda;
+use gamboamartin\cat_sat\models\cat_sat_subsidio;
 use gamboamartin\cat_sat\models\cat_sat_tipo_nomina;
 use gamboamartin\comercial\models\com_producto;
 use gamboamartin\comercial\models\com_sucursal;
@@ -149,10 +151,12 @@ class base_test{
         return $alta;
     }
 
-    public function alta_im_uma(PDO $link, float $monto = 0.0): array|\stdClass
+    public function alta_im_uma(PDO $link, string $fecha_fin = '2020-12-31', string $fecha_inicio = '2020-01-01',
+                                float $monto = 0.0): array|\stdClass
     {
 
-        $alta = (new \gamboamartin\im_registro_patronal\test\base_test())->alta_im_uma(link: $link, monto: $monto);
+        $alta = (new \gamboamartin\im_registro_patronal\test\base_test())->alta_im_uma(link: $link,
+            fecha_fin: $fecha_fin, fecha_inicio: $fecha_inicio, monto: $monto);
         if(errores::$error){
             return (new errores())->error('Error al dar de alta', $alta);
 
@@ -161,10 +165,16 @@ class base_test{
         return $alta;
     }
 
-    public function alta_cat_sat_isr(PDO $link): array|\stdClass
+    public function alta_cat_sat_isr(PDO $link, int $cat_sat_periodicidad_pago_nom_id = 1, float $cuota_fija = 0,
+                                     string $fecha_fin = '2020-12-31', string $fecha_inicio = '2020-01-01',
+                                     float $limite_inferior= 0.01, float $limite_superior = 99999,
+                                     float $porcentaje_excedente = 1.92): array|\stdClass
     {
 
-        $alta = (new \gamboamartin\cat_sat\tests\base_test())->alta_cat_sat_isr($link);
+        $alta = (new \gamboamartin\cat_sat\tests\base_test())->alta_cat_sat_isr(link: $link,
+            cat_sat_periodicidad_pago_nom_id: $cat_sat_periodicidad_pago_nom_id, cuota_fija: $cuota_fija,
+            fecha_fin: $fecha_fin, fecha_inicio: $fecha_inicio, limite_inferior: $limite_inferior,
+            limite_superior: $limite_superior, porcentaje_excedente: $porcentaje_excedente);
         if(errores::$error){
             return (new errores())->error('Error al dar de alta', $alta);
         }
@@ -173,10 +183,20 @@ class base_test{
     }
 
 
-    public function alta_cat_sat_subsidio(PDO $link): array|\stdClass
+    public function alta_cat_sat_subsidio(PDO $link, string $alias = '1', int $cat_sat_periodicidad_pago_nom_id = 1,
+                                          string $codigo = '1', string $codigo_bis = '1', float $cuota_fija = 0,
+                                          string $descripcion = '1', string $descripcion_select = '1',
+                                          string $fecha_fin = '2020-12-31', string $fecha_inicio = '2020-01-01',
+                                          int $id = 1, float $limite_inferior = 0.01, float $limite_superior = 99999,
+                                          float $porcentaje_excedente = 1.92): array|\stdClass
     {
 
-        $alta = (new \gamboamartin\cat_sat\tests\base_test())->alta_cat_sat_subsidio($link);
+        $alta = (new \gamboamartin\cat_sat\tests\base_test())->alta_cat_sat_subsidio(link: $link,
+            alias: $alias, cat_sat_periodicidad_pago_nom_id: $cat_sat_periodicidad_pago_nom_id, codigo: $codigo,
+            codigo_bis: $codigo_bis, cuota_fija: $cuota_fija, descripcion: $descripcion,
+            descripcion_select: $descripcion_select, fecha_fin: $fecha_fin, fecha_inicio: $fecha_inicio, id: $id,
+            limite_inferior: $limite_inferior, limite_superior: $limite_superior,
+            porcentaje_excedente: $porcentaje_excedente);
         if(errores::$error){
             return (new errores())->error('Error al dar de alta', $alta);
         }
@@ -421,8 +441,11 @@ class base_test{
         return $alta;
     }
 
-    public function alta_nom_nomina(PDO $link, int $em_empleado_id = 1, int $im_uma_id = 1,
-                                    int $nom_conf_empleado_id = 1, string $nom_percepcion_aplica_subsidio = 'activo',
+    public function alta_nom_nomina(PDO $link, float $cat_sat_isr_cuota_fija =0,
+                                    float $cat_sat_isr_limite_inferior = 0.01, $cat_sat_isr_porcentaje_excedente = 1.92,
+                                    float $cat_sat_subsidio_porcentaje_excedente = 1.92, int $em_empleado_id = 1,
+                                    int $im_uma_id = 1, int $nom_conf_empleado_id = 1,
+                                    string $nom_percepcion_aplica_subsidio = 'activo',
                                     string $nom_percepcion_codigo = '1', string $nom_percepcion_codigo_bis = '1',
                                     string $nom_percepcion_descripcion = '1', int $nom_percepcion_id = 1,
                                     int $nom_periodo_id = 1, int $nom_rel_empleado_sucursal_id = 1,
@@ -511,6 +534,34 @@ class base_test{
             $alta = $this->alta_nom_percepcion(link: $link, aplica_subsidio: $nom_percepcion_aplica_subsidio,
                 codigo: $nom_percepcion_codigo, codigo_bis: $nom_percepcion_codigo_bis,
                 descripcion: $nom_percepcion_descripcion, id: $nom_percepcion_id);
+            if (errores::$error) {
+                return (new errores())->error('Error al dar de alta', $alta);
+
+            }
+        }
+
+
+        $existe = (new cat_sat_isr($link))->existe_by_id(registro_id: 1);
+        if(errores::$error){
+            return (new errores())->error('Error al verificar si existe', $existe);
+
+        }
+        if(!$existe) {
+            $alta = $this->alta_cat_sat_isr(link: $link, cuota_fija: $cat_sat_isr_cuota_fija,
+                limite_inferior: $cat_sat_isr_limite_inferior, porcentaje_excedente: $cat_sat_isr_porcentaje_excedente);
+            if (errores::$error) {
+                return (new errores())->error('Error al dar de alta', $alta);
+
+            }
+        }
+
+        $existe = (new cat_sat_subsidio($link))->existe_by_id(registro_id: 1);
+        if(errores::$error){
+            return (new errores())->error('Error al verificar si existe', $existe);
+
+        }
+        if(!$existe) {
+            $alta = $this->alta_cat_sat_subsidio(link: $link, porcentaje_excedente: $cat_sat_subsidio_porcentaje_excedente);
             if (errores::$error) {
                 return (new errores())->error('Error al dar de alta', $alta);
 
@@ -830,6 +881,12 @@ class base_test{
         }
 
         $del = (new base_test())->del_nom_rel_empleado_sucursal($link);
+        if(errores::$error){
+            return (new errores())->error('Error al eliminar', $del);
+
+        }
+
+        $del = (new base_test())->del_nom_incidencia($link);
         if(errores::$error){
             return (new errores())->error('Error al eliminar', $del);
 

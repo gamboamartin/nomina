@@ -90,6 +90,21 @@ class nominasTest extends test {
             exit;
         }
 
+        $del = (new base_test())->del_cat_sat_isr(link: $this->link);
+        if(errores::$error){
+            $error = (new errores())->error('Error al eliminar', $del);
+            print_r($error);
+            exit;
+        }
+
+        $alta = (new base_test())->alta_cat_sat_isr(link: $this->link, cuota_fija:10.57, fecha_fin: '9999-01-01',
+            fecha_inicio: '1900-01-01', limite_inferior:179.97, limite_superior:316.27, porcentaje_excedente:10.88);
+        if(errores::$error){
+            $error = (new errores())->error('Error al insertar', $alta);
+            print_r($error);
+            exit;
+        }
+
         $alta = (new base_test())->alta_nom_nomina(link: $this->link,
             nom_percepcion_descripcion: 'Sueldos, Salarios Rayas y Jornales');
         if(errores::$error){
@@ -98,6 +113,21 @@ class nominasTest extends test {
             exit;
         }
 
+
+        $del = (new base_test())->del_cat_sat_isr(link: $this->link);
+        if(errores::$error){
+            $error = (new errores())->error('Error al eliminar', $del);
+            print_r($error);
+            exit;
+        }
+
+        $alta = (new base_test())->alta_cat_sat_isr(link: $this->link, cuota_fija:25.4, fecha_fin: '9999-01-01',
+            fecha_inicio: '1900-01-01', limite_inferior:316.28, limite_superior:367.65, porcentaje_excedente:16);
+        if(errores::$error){
+            $error = (new errores())->error('Error al insertar', $alta);
+            print_r($error);
+            exit;
+        }
 
         $nom_par_percepcion = array();
         $nom_par_percepcion['id'] = 1;

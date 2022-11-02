@@ -80,8 +80,7 @@ class calcula_nomina{
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al obtener impuestos', data: $impuestos);
         }
-
-
+        
         $data = $this->calcula_montos_isr_sub(monto_isr: round($impuestos->isr,2),
             monto_subsidio: round($impuestos->subsidio,2));
         if (errores::$error) {
