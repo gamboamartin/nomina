@@ -23,7 +23,7 @@ class controlador_nom_percepcion extends system {
                                 stdClass $paths_conf = new stdClass()){
         $modelo = new nom_percepcion(link: $link);
         $html_ = new nom_percepcion_html(html: $html);
-        $obj_link = new link_nom_percepcion($this->registro_id);
+        $obj_link = new link_nom_percepcion(link: $link,registro_id:$this->registro_id);
         $this->rows_lista[] = 'aplica_subsidio';
         parent::__construct(html:$html_, link: $link,modelo:  $modelo, obj_link: $obj_link, paths_conf: $paths_conf);
 
