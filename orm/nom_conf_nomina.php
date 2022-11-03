@@ -1,6 +1,8 @@
 <?php
 namespace models;
 use base\orm\modelo;
+use gamboamartin\cat_sat\models\cat_sat_periodicidad_pago_nom;
+use gamboamartin\cat_sat\models\cat_sat_tipo_nomina;
 use gamboamartin\errores\errores;
 use PDO;
 use stdClass;
@@ -9,14 +11,22 @@ class nom_conf_nomina extends modelo{
 
     public function __construct(PDO $link){
         $tabla = __CLASS__;
-        $columnas = array($tabla=>false, 'nom_conf_factura' => $tabla, 'cat_sat_periodicidad_pago_nom' => $tabla);
+
+        $columnas = array($tabla=>false, 'nom_conf_factura' => $tabla, 'cat_sat_periodicidad_pago_nom' => $tabla,
+            'cat_sat_tipo_nomina' => $tabla);
+
         $campos_obligatorios = array('cat_sat_periodicidad_pago_nom_id','cat_sat_tipo_nomina_id',
-            'nom_conf_factura_id','descripcion_select','aplica_septimo_dia','aplica_prima_dominical');
-        $campos_view = array("nom_conf_nomina_id" => array("type" => "selects", "model" => $this),
-            "nom_percepcion_id" => array("type" => "selects", "model" => new nom_percepcion(link: $link)));
+            'nom_conf_factura_id','descripcion_select');
+
+        $campos_view['nom_conf_factura_id'] = array('type' => 'selects', 'model' => new nom_conf_factura($link));
+        $campos_view['cat_sat_periodicidad_pago_nom_id'] = array('type' => 'selects', 'model' => new cat_sat_periodicidad_pago_nom($link));
+        $campos_view['cat_sat_tipo_nomina_id'] = array('type' => 'selects', 'model' => new cat_sat_tipo_nomina($link));
+        $campos_view['codigo'] = array('type' => 'inputs');
 
         parent::__construct(link: $link,tabla:  $tabla, campos_obligatorios: $campos_obligatorios,
             columnas: $columnas,campos_view: $campos_view);
+
+        $this->NAMESPACE = __NAMESPACE__;
     }
 
     public function alta_bd(): array|stdClass
