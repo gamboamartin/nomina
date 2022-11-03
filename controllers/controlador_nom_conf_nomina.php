@@ -25,7 +25,7 @@ use Throwable;
 class controlador_nom_conf_nomina extends system {
 
     public array $keys_selects = array();
-    public controlador_nom_percepcion $controlador_nom_percepcion;
+    public controlador_nom_conf_percepcion $controlador_nom_conf_percepcion;
 
     public string $link_nom_conf_percepcion_alta_bd = '';
     public stdClass $percepciones;
@@ -55,7 +55,7 @@ class controlador_nom_conf_nomina extends system {
 
         $this->titulo_lista = 'Configuracion Nomina';
 
-        //$this->controlador_nom_percepcion = new controlador_nom_percepcion(link:$this->link, paths_conf: $paths_conf);
+        $this->controlador_nom_conf_percepcion = new controlador_nom_conf_percepcion(link:$this->link, paths_conf: $paths_conf);
 
         $links = $this->inicializa_links();
         if(errores::$error){
@@ -109,17 +109,17 @@ class controlador_nom_conf_nomina extends system {
 
     public function asigna_percepcion(bool $header, bool $ws = false): array|stdClass
     {
-        $alta = $this->controlador_nom_percepcion->alta(header: false);
+        $alta = $this->controlador_nom_conf_percepcion->alta(header: false);
         if (errores::$error) {
             return $this->retorno_error(mensaje: 'Error al generar template', data: $alta, header: $header, ws: $ws);
         }
 
-        $this->controlador_nom_percepcion->asignar_propiedad(identificador: 'fc_factura_id',
+        $this->controlador_nom_conf_percepcion->asignar_propiedad(identificador: 'fc_factura_id',
             propiedades: ["id_selected" => $this->registro_id, "disabled" => true,
                 "filtro" => array('fc_factura.id' => $this->registro_id)]);
 
-        $this->inputs = $this->controlador_nom_percepcion->genera_inputs(
-            keys_selects:  $this->controlador_nom_percepcion->keys_selects);
+        $this->inputs = $this->controlador_nom_conf_percepcion->genera_inputs(
+            keys_selects:  $this->controlador_nom_conf_percepcion->keys_selects);
         if (errores::$error) {
             $error = $this->errores->error(mensaje: 'Error al generar inputs', data: $this->inputs);
             print_r($error);
@@ -229,6 +229,8 @@ class controlador_nom_conf_nomina extends system {
 
         return $base->template;
     }
+
+
 
     public function asigna_percepcion_alta_bd(bool $header, bool $ws = false): array|stdClass
     {
