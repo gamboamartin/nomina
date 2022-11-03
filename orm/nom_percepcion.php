@@ -1,6 +1,7 @@
 <?php
 namespace models;
 
+use gamboamartin\cat_sat\models\cat_sat_tipo_percepcion_nom;
 use gamboamartin\errores\errores;
 use PDO;
 use stdClass;
@@ -9,11 +10,19 @@ class nom_percepcion extends nominas_confs {
 
     public function __construct(PDO $link){
         $tabla = __CLASS__;
+
         $columnas = array($tabla=>false,'cat_sat_tipo_percepcion_nom'=>$tabla);
+
         $campos_obligatorios = array('cat_sat_tipo_percepcion_nom_id');
 
+        $campos_view['cat_sat_tipo_percepcion_nom_id'] = array('type' => 'selects', 'model' => new cat_sat_tipo_percepcion_nom($link));
+        $campos_view['codigo'] = array('type' => 'inputs');
+        $campos_view['codigo_bis'] = array('type' => 'inputs');
+
         parent::__construct(link: $link,tabla:  $tabla, campos_obligatorios: $campos_obligatorios,
-            columnas: $columnas);
+            columnas: $columnas,campos_view: $campos_view);
+
+        $this->NAMESPACE = __NAMESPACE__;
     }
 
     public function registro_estado_subsidio(): array|stdClass
