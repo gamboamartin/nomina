@@ -109,14 +109,33 @@ class controlador_nom_conf_nomina extends system {
 
     public function asigna_percepcion(bool $header, bool $ws = false): array|stdClass
     {
+        $columns["nom_conf_percepcion_id"]["titulo"] = "Id";
+        $columns["nom_conf_nomina_descripcion"]["titulo"] = "Conf. Nomina";
+        $columns["nom_percepcion_descripcion"]["titulo"] = "Percepcion";
+        $columns["nom_conf_percepcion_importe_gravado"]["titulo"] = "Importe Gravado";
+        $columns["nom_conf_percepcion_importe_exento"]["titulo"] = "Importe Exento";
+        $columns["nom_conf_percepcion_fecha_inicio"]["titulo"] = "Fecha Inicio";
+        $columns["nom_conf_percepcion_fecha_fin"]["titulo"] = "Fecha Fin";
+        $columns["modifica"]["titulo"] = "Acciones";
+        $columns["modifica"]["type"] = "button";
+        $columns["modifica"]["campos"] = array("elimina_bd");
+
+        $colums_rs =$this->datatable_init(columns: $columns,identificador: "#nom_conf_percepcion",
+            data: array("nom_conf_nomina.id" => $this->registro_id));
+        if (errores::$error) {
+            $error = $this->errores->error(mensaje: 'Error al inicializar links', data: $colums_rs);
+            print_r($error);
+            die('Error');
+        }
+
         $alta = $this->controlador_nom_conf_percepcion->alta(header: false);
         if (errores::$error) {
             return $this->retorno_error(mensaje: 'Error al generar template', data: $alta, header: $header, ws: $ws);
         }
 
-        $this->controlador_nom_conf_percepcion->asignar_propiedad(identificador: 'fc_factura_id',
+        $this->controlador_nom_conf_percepcion->asignar_propiedad(identificador: 'nom_conf_nomina_id',
             propiedades: ["id_selected" => $this->registro_id, "disabled" => true,
-                "filtro" => array('fc_factura.id' => $this->registro_id)]);
+                "filtro" => array('nom_conf_nomina.id' => $this->registro_id)]);
 
         $this->inputs = $this->controlador_nom_conf_percepcion->genera_inputs(
             keys_selects:  $this->controlador_nom_conf_percepcion->keys_selects);
@@ -127,6 +146,46 @@ class controlador_nom_conf_nomina extends system {
         }
 
         return $this->inputs;
+    }
+
+    public function asigna_percepcion_alta_bd(bool $header, bool $ws = false): array|stdClass
+    {
+        $this->link->beginTransaction();
+
+        $siguiente_view = (new actions())->init_alta_bd();
+        if (errores::$error) {
+            $this->link->rollBack();
+            return $this->retorno_error(mensaje: 'Error al obtener siguiente view', data: $siguiente_view,
+                header: $header, ws: $ws);
+        }
+
+        if (isset($_POST['btn_action_next'])) {
+            unset($_POST['btn_action_next']);
+        }
+        $_POST['nom_conf_nomina_id'] = $this->registro_id;
+
+        $alta = (new nom_conf_percepcion($this->link))->alta_registro(registro: $_POST);
+        if (errores::$error) {
+            $this->link->rollBack();
+            return $this->retorno_error(mensaje: 'Error al dar de alta percepcion', data: $alta,
+                header: $header, ws: $ws);
+        }
+
+
+        $this->link->commit();
+
+        if ($header) {
+            $this->retorno_base(registro_id:$this->registro_id, result: $alta,
+                siguiente_view: $siguiente_view, ws:  $ws);
+        }
+        if ($ws) {
+            header('Content-Type: application/json');
+            echo json_encode($alta, JSON_THROW_ON_ERROR);
+            exit;
+        }
+        $alta->siguiente_view = $siguiente_view;
+
+        return $alta;
     }
 
     private function base(): array|stdClass
@@ -232,45 +291,6 @@ class controlador_nom_conf_nomina extends system {
 
 
 
-    public function asigna_percepcion_alta_bd(bool $header, bool $ws = false): array|stdClass
-    {
-        $this->link->beginTransaction();
-
-        $siguiente_view = (new actions())->init_alta_bd();
-        if (errores::$error) {
-            $this->link->rollBack();
-            return $this->retorno_error(mensaje: 'Error al obtener siguiente view', data: $siguiente_view,
-                header: $header, ws: $ws);
-        }
-
-        if (isset($_POST['btn_action_next'])) {
-            unset($_POST['btn_action_next']);
-        }
-        $_POST['nom_conf_nomina_id'] = $this->registro_id;
-
-        $alta = (new nom_conf_percepcion($this->link))->alta_registro(registro: $_POST);
-        if (errores::$error) {
-            $this->link->rollBack();
-            return $this->retorno_error(mensaje: 'Error al dar de alta percepcion', data: $alta,
-                header: $header, ws: $ws);
-        }
-
-
-        $this->link->commit();
-
-        if ($header) {
-            $this->retorno_base(registro_id:$this->registro_id, result: $alta,
-                siguiente_view: $siguiente_view, ws:  $ws);
-        }
-        if ($ws) {
-            header('Content-Type: application/json');
-            echo json_encode($alta, JSON_THROW_ON_ERROR);
-            exit;
-        }
-        $alta->siguiente_view = $siguiente_view;
-
-        return $alta;
-    }
 
     public function asigna_percepcion_elimina_bd(bool $header, bool $ws = false): array|stdClass
     {
@@ -308,10 +328,6 @@ class controlador_nom_conf_nomina extends system {
 
         return $r_modifica;
     }
-
-
-
-
 
     private function data_percepcion_btn(array $percepcion): array
     {

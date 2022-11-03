@@ -29,52 +29,22 @@
             </div>
 
         </div>
+    </div>
+
+    <div class="container">
         <div class="row">
-            <div class="col-lg-12">
+            <div class="col-md-12">
+
                 <div class="widget widget-box box-container widget-mylistings">
+                    <div class="widget-header" style="display: flex;justify-content: space-between;align-items: center;">
+                        <h2>Percepciones Asignadas</h2>
+                    </div>
                     <div class="">
-                        <div class="widget-header">
-                            <h2>Percepciones Asignadas</h2>
-                        </div>
-                        <table class="table table-striped footable-sort" data-sorting="true">
-                                        <thead>
-                                        <tr>
-                                            <th data-breakpoints="xs sm md" data-type="html">Id</th>
-                                            <th data-breakpoints="xs sm md" data-type="html">Codigo </th>
-
-                                            <th data-breakpoints="xs sm md"  data-type="html">Codigo Bis</th>
-                                            <th data-breakpoints="xs sm md"  data-type="html">Descripcion</th>
-                                            <th data-breakpoints="xs sm md"  data-type="html">Descripcion Select</th>
-                                            <th data-breakpoints="xs sm md"  data-type="html">Alias</th>
-
-                                            <th data-breakpoints="xs md" class="control"  data-type="html">Modifica</th>
-                                            <th data-breakpoints="xs md" class="control"  data-type="html">Elimina</th>
-                                        </tr>
-                                        </thead>
-                                        <tbody>
-
-                                        <?php foreach ($controlador->percepciones->registros as $percepcion){?>
-                                            <tr>
-                                                <td><?php echo $percepcion['nom_conf_percepcion_id']; ?></td>
-                                                <td><?php echo $percepcion['nom_conf_percepcion_codigo']; ?></td>
-                                                <td><?php echo $percepcion['nom_conf_percepcion_codigo_bis']; ?></td>
-                                                <td><?php echo $percepcion['nom_conf_percepcion_descripcion']; ?></td>
-                                                <td><?php echo $percepcion['nom_conf_percepcion_descripcion_select']; ?></td>
-                                                <td><?php echo $percepcion['nom_conf_percepcion_alias']; ?></td>
-                                                <td><?php echo $percepcion['link_modifica']; ?></td>
-                                                <td><?php echo $percepcion['link_elimina']; ?></td>
-                                            </tr>
-                                        <?php } ?>
-                                        </tbody>
-                                    </table>
-                                    <div class="box-body">
-                                        * Total registros: <?php echo $controlador->percepciones->n_registros; ?><br />
-                                        * Fecha Hora: <?php echo $controlador->fecha_hoy; ?>
-                                    </div>
-                                </div>
-                            </div> <!-- /. widget-table-->
-                        </div><!-- /.center-content -->
-
+                        <table id="nom_conf_percepcion" class="table table-striped" >
+                        </table>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
