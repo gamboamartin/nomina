@@ -167,7 +167,8 @@ class calculo_subsidio{
             return $this->error->error(mensaje: 'Error al obtener filtro', data: $filtro_especial);
         }
 
-        $r_isr = (new cat_sat_subsidio($link))->filtro_and(filtro: $filtro, filtro_especial: $filtro_especial);
+        $r_isr = (new cat_sat_subsidio($link))->filtro_and(
+            columnas: array(), filtro: $filtro, filtro_especial: $filtro_especial);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al obtener isr', data: $r_isr);
         }
