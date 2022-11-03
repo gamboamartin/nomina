@@ -1,6 +1,8 @@
 <?php
 namespace models;
 use base\orm\modelo;
+use gamboamartin\empleado\models\em_cuenta_bancaria;
+use gamboamartin\empleado\models\em_empleado;
 use gamboamartin\errores\errores;
 use PDO;
 use stdClass;
@@ -14,8 +16,16 @@ class nom_conf_empleado extends modelo{
             'cat_sat_periodicidad_pago_nom'=>'nom_conf_nomina', 'im_registro_patronal'=>'em_empleado');
         $campos_obligatorios = array('em_cuenta_bancaria_id','nom_conf_nomina_id','codigo','descripcion');
 
+        $campos_view['em_cuenta_bancaria_id'] = array('type' => 'selects', 'model' => new em_cuenta_bancaria($link));
+        $campos_view['nom_conf_nomina_id'] = array('type' => 'selects', 'model' => new nom_conf_nomina($link));
+        $campos_view['em_empleado_id'] = array('type' => 'selects', 'model' => new em_empleado($link));
+        $campos_view['codigo'] = array('type' => 'inputs');
+        $campos_view['codigo_bis'] = array('type' => 'inputs');
+
         parent::__construct(link: $link,tabla:  $tabla, campos_obligatorios: $campos_obligatorios,
-            columnas: $columnas);
+            columnas: $columnas,campos_view: $campos_view);
+
+        $this->NAMESPACE = __NAMESPACE__;
     }
 
     public function alta_bd(): array|stdClass
