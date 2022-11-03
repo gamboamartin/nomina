@@ -794,7 +794,8 @@ class nom_nomina extends modelo
         $dias->dias_septimo_dia = 0;
         $dias->dias_pagados_periodo = $this->registro['num_dias_pagados'];
         if($nom_conf_empleado->nom_conf_nomina_aplica_septimo_dia === 'activo'){
-            $this->registro['num_dias_pagados'] -= 1;
+            $res = $this->registro['num_dias_pagados'] / 7;
+            $this->registro['num_dias_pagados'] -= round($res);
             $dias->dias_septimo_dia = $this->registro['num_dias_pagados'];
         }
 
