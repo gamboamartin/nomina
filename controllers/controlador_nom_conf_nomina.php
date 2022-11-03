@@ -37,7 +37,7 @@ class controlador_nom_conf_nomina extends system {
 
         $this->titulo_lista = 'Configuracion Nomina';
 
-        $link_nom_conf_percepcion_alta_bd = $obj_link->link_con_id(accion: 'asigna_percepcion_alta_bd',
+        $link_nom_conf_percepcion_alta_bd = $obj_link->link_con_id(accion: 'asigna_percepcion_alta_bd',link: $link,
             registro_id: $this->registro_id, seccion: $this->seccion);
         if (errores::$error) {
             $error = $this->errores->error(mensaje: 'Error al generar link', data: $link_nom_conf_percepcion_alta_bd);
