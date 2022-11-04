@@ -1978,6 +1978,25 @@ class nom_nomina extends modelo
         return $tipos_deducciones;
     }
 
+    public function obten_conceptos_otros_pagos(array $nominas): array
+    {
+        $tipos_otros_pagos = array();
+        foreach ($nominas as $nomina) {
+            $otros_pagos_nom = (new nom_par_otro_pago($this->link))->otros_pagos_by_nomina(nom_nomina_id: $nomina['nom_nomina_id']);
+            if (errores::$error) {
+                return $this->error->error(mensaje: 'Error al obtener nominas del periodo', data: $otros_pagos_nom);
+            }
+
+            foreach ($otros_pagos_nom->registros as $otro_pago_nom){;
+                if(!in_array($otro_pago_nom['nom_otro_pago_id'], $tipos_otros_pagos)){
+                    $tipos_otros_pagos[$otro_pago_nom['nom_otro_pago_id']] = $otro_pago_nom['nom_otro_pago_descripcion'];
+                }
+            }
+        }
+
+        return $tipos_otros_pagos;
+    }
+
     private function obtener_percepciones_por_configuracion(int $nom_conf_nomina_id): array |stdClass
     {
         $filtro['nom_conf_percepcion.nom_conf_nomina_id']  = $nom_conf_nomina_id;
