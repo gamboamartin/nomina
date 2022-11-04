@@ -1940,7 +1940,8 @@ class nom_nomina extends modelo
         return $nom_par_otro_pago_ins;
     }
 
-    public function obten_conceptos_percepciones(array $nominas){
+    public function obten_conceptos_percepciones(array $nominas): array
+    {
         $tipos_percepciones = array();
         foreach ($nominas as $nomina) {
             $percepciones_nom = (new nom_par_percepcion($this->link))->percepciones_by_nomina(nom_nomina_id: $nomina['nom_nomina_id']);
@@ -1956,6 +1957,25 @@ class nom_nomina extends modelo
         }
 
         return $tipos_percepciones;
+    }
+
+    public function obten_conceptos_deducciones(array $nominas): array
+    {
+        $tipos_deducciones = array();
+        foreach ($nominas as $nomina) {
+            $deducciones_nom = (new nom_par_deduccion($this->link))->deducciones_by_nomina(nom_nomina_id: $nomina['nom_nomina_id']);
+            if (errores::$error) {
+                return $this->error->error(mensaje: 'Error al obtener nominas del periodo', data: $deducciones_nom);
+            }
+
+            foreach ($deducciones_nom->registros as $deduccion_nom){;
+                if(!in_array($deduccion_nom['nom_deduccion_id'], $tipos_deducciones)){
+                    $tipos_deducciones[$deduccion_nom['nom_deduccion_id']] = $deduccion_nom['nom_deduccion_descripcion'];
+                }
+            }
+        }
+
+        return $tipos_deducciones;
     }
 
     private function obtener_percepciones_por_configuracion(int $nom_conf_nomina_id): array |stdClass
