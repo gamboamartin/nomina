@@ -1940,6 +1940,24 @@ class nom_nomina extends modelo
         return $nom_par_otro_pago_ins;
     }
 
+    public function obten_conceptos_percepciones(array $nominas){
+        $tipos_percepciones = array();
+        foreach ($nominas as $nomina) {
+            $percepciones_nom = (new nom_par_percepcion($this->link))->percepciones_by_nomina(nom_nomina_id: $nomina['nom_nomina_id']);
+            if (errores::$error) {
+                return $this->error->error(mensaje: 'Error al obtener nominas del periodo', data: $percepciones_nom);
+            }
+
+            foreach ($percepciones_nom->registros as $percepcion_nom){;
+                if(!in_array($percepcion_nom['nom_percepcion_id'], $tipos_percepciones)){
+                    $tipos_percepciones[$percepcion_nom['nom_percepcion_id']] = $percepcion_nom['nom_percepcion_descripcion'];
+                }
+            }
+        }
+
+        return $tipos_percepciones;
+    }
+
     private function obtener_percepciones_por_configuracion(int $nom_conf_nomina_id): array |stdClass
     {
         $filtro['nom_conf_percepcion.nom_conf_nomina_id']  = $nom_conf_nomina_id;
