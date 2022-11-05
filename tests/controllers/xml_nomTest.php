@@ -186,8 +186,31 @@ class xml_nomTest extends test {
             exit;
         }
 
+        $del = (new base_test())->del_cat_sat_isr($this->link);
+        if(errores::$error){
+            $error = (new errores())->error('Error al eliminar', $del);
+            print_r($error);
+            exit;
+        }
 
-        $alta = (new base_test())->alta_nom_nomina(link: $this->link, nom_percepcion_codigo: 3, nom_percepcion_codigo_bis: '3', nom_percepcion_descripcion: 3, nom_percepcion_id: 3);
+        $del = (new base_test())->del_cat_sat_subsidio($this->link);
+        if(errores::$error){
+            $error = (new errores())->error('Error al eliminar', $del);
+            print_r($error);
+            exit;
+        }
+
+        $alta = (new base_test())->alta_cat_sat_subsidio($this->link);
+        if(errores::$error){
+            $error = (new errores())->error('Error al insertar', $alta);
+            print_r($error);
+            exit;
+        }
+
+
+
+        $alta = (new base_test())->alta_nom_nomina(link: $this->link, nom_percepcion_codigo: 3,
+            nom_percepcion_codigo_bis: '3', nom_percepcion_descripcion: 3, nom_percepcion_id: 3);
         if(errores::$error){
             $error = (new errores())->error('Error al dar de alta', $alta);
             print_r($error);

@@ -794,7 +794,8 @@ class nom_nomina extends modelo
         $dias->dias_septimo_dia = 0;
         $dias->dias_pagados_periodo = $this->registro['num_dias_pagados'];
         if($nom_conf_empleado->nom_conf_nomina_aplica_septimo_dia === 'activo'){
-            $this->registro['num_dias_pagados'] -= 1;
+            $res = $this->registro['num_dias_pagados'] / 7;
+            $this->registro['num_dias_pagados'] -= round($res);
             $dias->dias_septimo_dia = $this->registro['num_dias_pagados'];
         }
 
@@ -1742,6 +1743,12 @@ class nom_nomina extends modelo
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al obtener vacaciones',
                 data: $vacaciones);
+        }        
+        
+        $compensacion = $this->total_percepciones_compensacion_activo(nom_nomina_id: $nom_nomina_id);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al obtener compensacion',
+                data: $compensacion);
         }
 
         $dias_descanso = $this->total_percepciones_dias_descanso_laborados(nom_nomina_id: $nom_nomina_id);
@@ -1814,7 +1821,7 @@ class nom_nomina extends modelo
         $datos['prima_dominical'] = $prima_dominical;
         $datos['vacaciones'] = $vacaciones;
         $datos['septimo_dia'] = $septimo_dia;
-        $datos['compensacion'] = 0.0;
+        $datos['compensacion'] = $compensacion;
         $datos['despensa'] = $despensa; //
         $datos['otros_ingresos'] = 0.0;
         $datos['devolucion_infonavit'] = 0.0;
@@ -1931,6 +1938,63 @@ class nom_nomina extends modelo
         $nom_par_otro_pago_ins['importe_exento'] = 0;
 
         return $nom_par_otro_pago_ins;
+    }
+
+    public function obten_conceptos_percepciones(array $nominas): array
+    {
+        $tipos_percepciones = array();
+        foreach ($nominas as $nomina) {
+            $percepciones_nom = (new nom_par_percepcion($this->link))->percepciones_by_nomina(nom_nomina_id: $nomina['nom_nomina_id']);
+            if (errores::$error) {
+                return $this->error->error(mensaje: 'Error al obtener nominas del periodo', data: $percepciones_nom);
+            }
+
+            foreach ($percepciones_nom->registros as $percepcion_nom){;
+                if(!in_array($percepcion_nom['nom_percepcion_id'], $tipos_percepciones)){
+                    $tipos_percepciones[$percepcion_nom['nom_percepcion_id']] = $percepcion_nom['nom_percepcion_descripcion'];
+                }
+            }
+        }
+
+        return $tipos_percepciones;
+    }
+
+    public function obten_conceptos_deducciones(array $nominas): array
+    {
+        $tipos_deducciones = array();
+        foreach ($nominas as $nomina) {
+            $deducciones_nom = (new nom_par_deduccion($this->link))->deducciones_by_nomina(nom_nomina_id: $nomina['nom_nomina_id']);
+            if (errores::$error) {
+                return $this->error->error(mensaje: 'Error al obtener nominas del periodo', data: $deducciones_nom);
+            }
+
+            foreach ($deducciones_nom->registros as $deduccion_nom){;
+                if(!in_array($deduccion_nom['nom_deduccion_id'], $tipos_deducciones)){
+                    $tipos_deducciones[$deduccion_nom['nom_deduccion_id']] = $deduccion_nom['nom_deduccion_descripcion'];
+                }
+            }
+        }
+
+        return $tipos_deducciones;
+    }
+
+    public function obten_conceptos_otros_pagos(array $nominas): array
+    {
+        $tipos_otros_pagos = array();
+        foreach ($nominas as $nomina) {
+            $otros_pagos_nom = (new nom_par_otro_pago($this->link))->otros_pagos_by_nomina(nom_nomina_id: $nomina['nom_nomina_id']);
+            if (errores::$error) {
+                return $this->error->error(mensaje: 'Error al obtener nominas del periodo', data: $otros_pagos_nom);
+            }
+
+            foreach ($otros_pagos_nom->registros as $otro_pago_nom){;
+                if(!in_array($otro_pago_nom['nom_otro_pago_id'], $tipos_otros_pagos)){
+                    $tipos_otros_pagos[$otro_pago_nom['nom_otro_pago_id']] = $otro_pago_nom['nom_otro_pago_descripcion'];
+                }
+            }
+        }
+
+        return $tipos_otros_pagos;
     }
 
     private function obtener_percepciones_por_configuracion(int $nom_conf_nomina_id): array |stdClass
@@ -2475,6 +2539,28 @@ class nom_nomina extends modelo
     {
         $filtro['nom_nomina.id']  = $nom_nomina_id;
         $filtro['nom_percepcion.aplica_vacaciones']  = 'activo';
+        $r_nom_par_percepcion = (new nom_par_percepcion($this->link))->filtro_and(filtro: $filtro);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al obtener percepcion',data:  $r_nom_par_percepcion);
+        }
+
+        $total = 0.0;
+
+        if ($r_nom_par_percepcion->n_registros == 0){
+            return $total;
+        }
+
+        foreach ($r_nom_par_percepcion->registros as $registro){
+            $total += ($registro['nom_par_percepcion_importe_gravado'] + $registro['nom_par_percepcion_importe_exento']);
+        }
+
+        return round($total,2);
+    }  
+    
+    public function total_percepciones_compensacion_activo(int $nom_nomina_id): float|array
+    {
+        $filtro['nom_nomina.id']  = $nom_nomina_id;
+        $filtro['nom_percepcion.aplica_compensacion']  = 'activo';
         $r_nom_par_percepcion = (new nom_par_percepcion($this->link))->filtro_and(filtro: $filtro);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al obtener percepcion',data:  $r_nom_par_percepcion);

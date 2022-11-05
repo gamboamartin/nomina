@@ -124,6 +124,50 @@ class nom_nominaTest extends test {
             exit;
         }
 
+        $del = (new base_test())->del_cat_sat_isr(link: $this->link);
+        if(errores::$error){
+            $error = (new errores())->error('Error al eliminar', $del);
+            print_r($error);
+            exit;
+        }
+
+        $alta = (new base_test())->alta_cat_sat_isr(link: $this->link, cuota_fija: 262.52, fecha_fin: '9999-01-01',
+            fecha_inicio: '1900-01-01', limite_inferior: 1399.27, limite_superior: 2671.42, porcentaje_excedente: 30);
+        if(errores::$error){
+            $error = (new errores())->error('Error al insertar', $alta);
+            print_r($error);
+            exit;
+        }
+
+        $del = (new base_test())->del_cat_sat_subsidio(link: $this->link);
+        if(errores::$error){
+            $error = (new errores())->error('Error al eliminar', $del);
+            print_r($error);
+            exit;
+        }
+
+        $alta = (new base_test())->alta_cat_sat_subsidio(link: $this->link, cuota_fija:0, fecha_fin: '9999-01-01',
+            fecha_inicio: '1900-01-01', limite_inferior: .01, limite_superior: 999999, porcentaje_excedente: 1.92);
+        if(errores::$error){
+            $error = (new errores())->error('Error al insertar', $alta);
+            print_r($error);
+            exit;
+        }
+
+        $del = (new base_test())->del_im_uma(link: $this->link);
+        if(errores::$error){
+            $error = (new errores())->error('Error al eliminar', $del);
+            print_r($error);
+            exit;
+        }
+
+        $alta = (new base_test())->alta_im_uma(link: $this->link, fecha_fin: '9999-01-01', fecha_inicio: '1900-01-01', monto: 96.22);
+        if(errores::$error){
+            $error = (new errores())->error('Error al insertar', $alta);
+            print_r($error);
+            exit;
+        }
+
         $nom_nomina_ins = array();
         $nom_nomina_ins['id'] = 1;
         $nom_nomina_ins['im_registro_patronal_id'] = 1;
@@ -192,6 +236,21 @@ class nom_nominaTest extends test {
             exit;
         }
 
+        $del = (new base_test())->del_cat_sat_isr(link: $this->link);
+        if(errores::$error){
+            $error = (new errores())->error('Error al eliminar', $del);
+            print_r($error);
+            exit;
+        }
+
+        $alta = (new base_test())->alta_cat_sat_isr(link: $this->link, cuota_fija: 10.57, fecha_fin: '9999-01-01',
+            fecha_inicio: '1900-01-01', limite_inferior: 179.97, limite_superior: 316.27, porcentaje_excedente: 10.88);
+        if(errores::$error){
+            $error = (new errores())->error('Error al insertar', $alta);
+            print_r($error);
+            exit;
+        }
+
         $alta = (new base_test())->alta_nom_nomina($this->link);
         if(errores::$error){
             $error = (new errores())->error('Error al insertar', $alta);
@@ -215,6 +274,24 @@ class nom_nominaTest extends test {
         $this->assertNotTrue($resultado);
 
         errores::$error = false;
+
+
+        $del = (new base_test())->del_cat_sat_isr(link: $this->link);
+        if(errores::$error){
+            $error = (new errores())->error('Error al eliminar', $del);
+            print_r($error);
+            exit;
+        }
+
+        $alta = (new base_test())->alta_cat_sat_isr(link: $this->link, cuota_fija:142.22, fecha_fin: '9999-01-01',
+            fecha_inicio: '1900-01-01', limite_inferior:887.79, limite_superior: 1399.26, porcentaje_excedente: 23.52);
+        if(errores::$error){
+            $error = (new errores())->error('Error al insertar', $alta);
+            print_r($error);
+            exit;
+        }
+
+
         $nom_par_percepcion = array();
         $nom_par_percepcion['id'] = 1;
         $nom_par_percepcion['nom_nomina_id'] = 1;
@@ -594,6 +671,21 @@ class nom_nominaTest extends test {
             exit;
         }
 
+        $del = (new base_test())->del_cat_sat_isr(link: $this->link);
+        if(errores::$error){
+            $error = (new errores())->error('Error al eliminar', $del);
+            print_r($error);
+            exit;
+        }
+
+        $alta = (new base_test())->alta_cat_sat_isr(link: $this->link, cuota_fija:10.57, fecha_fin: '9999-01-01',
+            fecha_inicio: '1900-01-01', limite_inferior:179.97, limite_superior: 316.27, porcentaje_excedente: 10.88);
+        if(errores::$error){
+            $error = (new errores())->error('Error al insertar', $alta);
+            print_r($error);
+            exit;
+        }
+
         $alta = (new base_test())->alta_nom_nomina($this->link);
         if(errores::$error){
             $error = (new errores())->error(mensaje: 'Error al insertar', data: $alta);
@@ -608,6 +700,21 @@ class nom_nominaTest extends test {
         $del_nom_par_percepcion = $nom_par_percepcion_modelo->elimina_todo();
         if(errores::$error){
             $error = (new errores())->error(mensaje: 'Error al eliminar nom_par_percepcion', data: $del_nom_par_percepcion);
+            print_r($error);
+            exit;
+        }
+
+        $del = (new base_test())->del_cat_sat_isr(link: $this->link);
+        if(errores::$error){
+            $error = (new errores())->error('Error al eliminar', $del);
+            print_r($error);
+            exit;
+        }
+
+        $alta = (new base_test())->alta_cat_sat_isr(link: $this->link, cuota_fija:.41, fecha_fin: '9999-01-01',
+            fecha_inicio: '1900-01-01', limite_inferior:21.21, limite_superior: 179.96, porcentaje_excedente: 6.4);
+        if(errores::$error){
+            $error = (new errores())->error('Error al insertar', $alta);
             print_r($error);
             exit;
         }
@@ -636,7 +743,20 @@ class nom_nominaTest extends test {
         errores::$error = false;
 
 
+        $del = (new base_test())->del_cat_sat_isr(link: $this->link);
+        if(errores::$error){
+            $error = (new errores())->error('Error al eliminar', $del);
+            print_r($error);
+            exit;
+        }
 
+        $alta = (new base_test())->alta_cat_sat_isr(link: $this->link, cuota_fija:46.62, fecha_fin: '9999-01-01',
+            fecha_inicio: '1900-01-01', limite_inferior:440.19, limite_superior: 887.78, porcentaje_excedente:21.36);
+        if(errores::$error){
+            $error = (new errores())->error('Error al insertar', $alta);
+            print_r($error);
+            exit;
+        }
 
         $nom_par_percepcion = array();
         $nom_par_percepcion['id'] = 2;
@@ -663,6 +783,21 @@ class nom_nominaTest extends test {
         $del = (new nom_par_percepcion($this->link))->elimina_todo();
         if(errores::$error){
             $error = (new errores())->error(mensaje: 'Error al eliminar', data: $del);
+            print_r($error);
+            exit;
+        }
+
+        $del = (new base_test())->del_cat_sat_isr(link: $this->link);
+        if(errores::$error){
+            $error = (new errores())->error('Error al eliminar', $del);
+            print_r($error);
+            exit;
+        }
+
+        $alta = (new base_test())->alta_cat_sat_isr(link: $this->link, cuota_fija:644.17, fecha_fin: '9999-01-01',
+            fecha_inicio: '1900-01-01', limite_inferior:2671.43, limite_superior: 3561.9, porcentaje_excedente:32);
+        if(errores::$error){
+            $error = (new errores())->error('Error al insertar', $alta);
             print_r($error);
             exit;
         }
@@ -703,6 +838,20 @@ class nom_nominaTest extends test {
             exit;
         }
 
+        $del = (new base_test())->del_cat_sat_isr(link: $this->link);
+        if(errores::$error){
+            $error = (new errores())->error('Error al eliminar', $del);
+            print_r($error);
+            exit;
+        }
+
+        $alta = (new base_test())->alta_cat_sat_isr(link: $this->link, cuota_fija:10.57, fecha_fin: '9999-01-01',
+            fecha_inicio: '1900-01-01', limite_inferior:179.97, limite_superior: 316.27, porcentaje_excedente:10.88);
+        if(errores::$error){
+            $error = (new errores())->error('Error al insertar', $alta);
+            print_r($error);
+            exit;
+        }
 
         $alta = (new base_test())->alta_nom_nomina($this->link);
         if(errores::$error){

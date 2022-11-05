@@ -259,7 +259,9 @@ class calculo_isr{
             return $this->error->error(mensaje: 'Error al obtener filtro', data: $filtro_especial);
         }
 
-        $r_isr = (new cat_sat_isr($link))->filtro_and(filtro: $filtro, filtro_especial: $filtro_especial);
+
+        $r_isr = (new cat_sat_isr($link))->filtro_and(columnas: array(), filtro: $filtro,
+            filtro_especial: $filtro_especial);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al obtener isr', data: $r_isr);
         }
@@ -270,7 +272,6 @@ class calculo_isr{
         if($r_isr->n_registros>1){
             return $this->error->error(mensaje: 'Error existe mas de un registro de isr', data: $r_isr);
         }
-
 
         return $r_isr->registros_obj[0];
     }
@@ -303,6 +304,7 @@ class calculo_isr{
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al obtener isr', data: $row_isr);
         }
+
 
         $isr = $this->genera_isr(monto: $monto, row_isr: $row_isr);
         if(errores::$error){

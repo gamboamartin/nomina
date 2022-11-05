@@ -9,13 +9,24 @@ class nom_conf_percepcion extends modelo{
 
     public function __construct(PDO $link){
         $tabla = __CLASS__;
+
         $columnas = array($tabla=>false , "nom_percepcion" => $tabla,"nom_conf_nomina" => $tabla);
+
         $campos_obligatorios = array('codigo_bis','descripcion_select','alias','nom_conf_nomina_id','nom_percepcion_id');
-        $campos_view = array("nom_conf_nomina_id" => array("type" => "selects", "model" => new nom_conf_nomina(link: $link)),
-            "nom_percepcion_id" => array("type" => "selects", "model" => new nom_percepcion(link: $link)));
+
+        $campos_view['nom_conf_nomina_id'] = array('type' => 'selects', 'model' => new nom_conf_nomina($link));
+        $campos_view['nom_percepcion_id'] = array('type' => 'selects', 'model' => new nom_percepcion($link));
+        $campos_view['importe_gravado'] = array('type' => 'inputs');
+        $campos_view['importe_exento'] = array('type' => 'inputs');
+        $campos_view['fecha_inicio'] = array('type' => 'dates');
+        $campos_view['fecha_fin'] = array('type' => 'dates');
+        $campos_view['codigo'] = array('type' => 'inputs');
+        $campos_view['codigo_bis'] = array('type' => 'inputs');
 
         parent::__construct(link: $link,tabla:  $tabla, campos_obligatorios: $campos_obligatorios,
             columnas: $columnas,campos_view: $campos_view);
+
+        $this->NAMESPACE = __NAMESPACE__;
     }
 
     public function alta_bd(): array|stdClass

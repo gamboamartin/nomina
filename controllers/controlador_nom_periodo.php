@@ -47,12 +47,12 @@ class controlador_nom_periodo extends system {
                                 stdClass $paths_conf = new stdClass()){
         $modelo = new nom_periodo(link: $link);
         $html_ = new nom_periodo_html(html: $html);
-        $obj_link = new links_menu($this->registro_id);
+        $obj_link = new links_menu(link: $link, registro_id: $this->registro_id);
         parent::__construct(html:$html_, link: $link,modelo:  $modelo, obj_link: $obj_link, paths_conf: $paths_conf);
 
         $this->titulo_lista = 'Periodos';
 
-        $link_lee_archivo = $obj_link->link_con_id(accion: 'lee_archivo',
+        $link_lee_archivo = $obj_link->link_con_id(accion: 'lee_archivo',link: $link,
             registro_id: $this->registro_id, seccion: $this->seccion);
         if (errores::$error) {
             $error = $this->errores->error(mensaje: 'Error al generar link', data: $link_lee_archivo);
@@ -96,7 +96,8 @@ class controlador_nom_periodo extends system {
             return $this->errores->error(mensaje: 'Error al validar row',data:  $valida);
         }
 
-        $link_periodo_nominas = $this->obj_link->link_con_id(accion:'nominas',registro_id:  $row->nom_periodo_id,
+        $link_periodo_nominas = $this->obj_link->link_con_id(accion:'nominas',link: $this->link,
+            registro_id:  $row->nom_periodo_id,
             seccion:  $this->tabla);
         if(errores::$error){
             return $this->errores->error(mensaje: 'Error al genera link',data:  $link_periodo_nominas);
@@ -116,7 +117,8 @@ class controlador_nom_periodo extends system {
             return $this->errores->error(mensaje: 'Error al validar row',data:  $valida);
         }
 
-        $link_sube_archivo = $this->obj_link->link_con_id(accion:'sube_archivo',registro_id:  $row->nom_periodo_id,
+        $link_sube_archivo = $this->obj_link->link_con_id(accion:'sube_archivo',link: $this->link,
+            registro_id:  $row->nom_periodo_id,
             seccion:  $this->tabla);
         if(errores::$error){
             return $this->errores->error(mensaje: 'Error al genera link',data:  $link_sube_archivo);
@@ -136,8 +138,8 @@ class controlador_nom_periodo extends system {
             return $this->errores->error(mensaje: 'Error al validar row',data:  $valida);
         }
 
-        $link_procesa_nomina = $this->obj_link->link_con_id(accion:'procesa_nomina',registro_id:  $row->nom_periodo_id,
-            seccion:  $this->tabla);
+        $link_procesa_nomina = $this->obj_link->link_con_id(accion:'procesa_nomina',link:$this->link,
+            registro_id:  $row->nom_periodo_id, seccion:  $this->tabla);
         if(errores::$error){
             return $this->errores->error(mensaje: 'Error al genera link',data:  $link_procesa_nomina);
         }

@@ -112,7 +112,23 @@ class calcula_nominaTest extends test {
             exit;
         }
 
-        $alta = (new base_test())->alta_nom_nomina($this->link);
+        $del = (new base_test())->del_cat_sat_subsidio($this->link);
+        if(errores::$error){
+            $error = (new errores())->error('Error al eliminar', $del);
+            print_r($error);
+            exit;
+        }
+
+        $del = (new base_test())->del_cat_sat_isr($this->link);
+        if(errores::$error){
+            $error = (new errores())->error('Error al eliminar', $del);
+            print_r($error);
+            exit;
+        }
+
+        $alta = (new base_test())->alta_nom_nomina(
+            link: $this->link, cat_sat_isr_cuota_fija:10.57 , cat_sat_isr_limite_inferior: 179.97,
+            cat_sat_isr_porcentaje_excedente: 10.89);
         if(errores::$error){
             $error = (new errores())->error('Error al dar de alta', $alta);
             print_r($error);
@@ -124,7 +140,7 @@ class calcula_nominaTest extends test {
 
         $this->assertIsObject($resultado);
         $this->assertNotTrue(errores::$error);
-        $this->assertEquals(18.19,$resultado->isr_neto);
+        $this->assertEquals(18.20,$resultado->isr_neto);
         $this->assertEquals(0,$resultado->subsidio_neto);
 
         errores::$error = false;
@@ -174,7 +190,7 @@ class calcula_nominaTest extends test {
             exit;
         }
 
-        $alta = (new base_test())->alta_im_uma($link,1);
+        $alta = (new base_test())->alta_im_uma(link: $link, fecha_fin: '9999-01-01', fecha_inicio: '1900-01-01', monto: 1);
         if(errores::$error){
             $error = (new errores())->error('Error al insertar uma', $alta);
             print_r($error);
@@ -240,6 +256,35 @@ class calcula_nominaTest extends test {
 
         $link = $this->link;
 
+        $del = (new base_test())->del_cat_sat_isr($link);
+        if(errores::$error){
+            $error = (new errores())->error('Error al eliminar', $del);
+            print_r($error);
+            exit;
+        }
+        $del = (new base_test())->del_cat_sat_subsidio($link);
+        if(errores::$error){
+            $error = (new errores())->error('Error al eliminar', $del);
+            print_r($error);
+            exit;
+        }
+
+        $alta = (new base_test())->alta_cat_sat_isr(link: $link, cat_sat_periodicidad_pago_nom_id: 3,
+            cuota_fija: 6.15, fecha_fin: '2022-12-31', fecha_inicio: '2022-01-01', limite_inferior: 318.01,
+            limite_superior: 2699.4, porcentaje_excedente: 6.40 );
+        if(errores::$error){
+            $error = (new errores())->error('Error al insertar', $alta);
+            print_r($error);
+            exit;
+        }
+
+        $alta = (new base_test())->alta_cat_sat_subsidio(link: $link, cat_sat_periodicidad_pago_nom_id: 3,
+            cuota_fija: 160.35, fecha_fin: '2022-12-31', fecha_inicio: '2022-01-01', porcentaje_excedente: 0);
+        if(errores::$error){
+            $error = (new errores())->error('Error al insertar', $alta);
+            print_r($error);
+            exit;
+        }
         
         $cat_sat_periodicidad_pago_nom_id = 3;
         $em_salario_diario = 172.87;
@@ -251,6 +296,7 @@ class calcula_nominaTest extends test {
         $resultado = $calculo->nomina_descuentos($cat_sat_periodicidad_pago_nom_id, $em_salario_diario,
             $em_empleado_salario_diario_integrado, $link, $nom_nomina_fecha_final_pago, $nom_nomina_num_dias_pagados,
             $total_gravado);
+
 
 
         $this->assertIsFloat($resultado);
@@ -295,6 +341,40 @@ class calcula_nominaTest extends test {
 
         $link = $this->link;
 
+        $del = (new base_test())->del_cat_sat_isr($link);
+        if(errores::$error){
+            $error = (new errores())->error('Error al eliminar', $del);
+            print_r($error);
+            exit;
+        }
+
+        $del = (new base_test())->del_cat_sat_subsidio($link);
+        if(errores::$error){
+            $error = (new errores())->error('Error al eliminar', $del);
+            print_r($error);
+            exit;
+        }
+
+
+
+        $alta = (new base_test())->alta_cat_sat_isr(link: $link, cat_sat_periodicidad_pago_nom_id: 3,
+            cuota_fija: 6.15, fecha_fin: '2022-12-31', fecha_inicio: '2022-01-01', limite_inferior: 318.01,
+            limite_superior: 2699.4, porcentaje_excedente: 6.4 );
+        if(errores::$error){
+            $error = (new errores())->error('Error al insertar', $alta);
+            print_r($error);
+            exit;
+        }
+
+        $alta = (new base_test())->alta_cat_sat_subsidio(link: $link, cat_sat_periodicidad_pago_nom_id: 3,
+            cuota_fija: 160.35, fecha_fin: '2022-12-31', fecha_inicio: '2022-01-01', limite_inferior: 2327.56,
+            limite_superior: 2632.65 );
+        if(errores::$error){
+            $error = (new errores())->error('Error al insertar', $alta);
+            print_r($error);
+            exit;
+        }
+
         $cat_sat_periodicidad_pago_nom_id = 3;
         $em_salario_diario = 172.87;
         $em_empleado_salario_diario_integrado = 180.69;
@@ -306,12 +386,57 @@ class calcula_nominaTest extends test {
             $em_empleado_salario_diario_integrado, $link, $nom_nomina_fecha_final_pago, $nom_nomina_num_dias_pagados,
             $total_gravado);
 
+
         $this->assertIsFloat($resultado);
         $this->assertNotTrue(errores::$error);
         $this->assertEquals(2593.05,$resultado);
 
         errores::$error = false;
         $link = $this->link;
+
+        $del = (new base_test())->del_cat_sat_isr($link);
+        if(errores::$error){
+            $error = (new errores())->error('Error al eliminar', $del);
+            print_r($error);
+            exit;
+        }
+
+        $del = (new base_test())->del_cat_sat_subsidio($link);
+        if(errores::$error){
+            $error = (new errores())->error('Error al eliminar', $del);
+            print_r($error);
+            exit;
+        }
+
+
+
+        $alta = (new base_test())->alta_cat_sat_isr(link: $link, cat_sat_periodicidad_pago_nom_id: 3,
+            cuota_fija: 158.55, fecha_fin: '2022-12-31', fecha_inicio: '2022-01-01', limite_inferior: 2699.41,
+            limite_superior: 4744.05, porcentaje_excedente: 10.88 );
+        if(errores::$error){
+            $error = (new errores())->error('Error al insertar', $alta);
+            print_r($error);
+            exit;
+        }
+
+        $alta = (new base_test())->alta_cat_sat_subsidio(link: $link, cat_sat_periodicidad_pago_nom_id: 3,
+            cuota_fija: 107.4, fecha_fin: '2022-12-31', fecha_inicio: '2022-01-01', limite_inferior: 3510.16,
+            limite_superior: 3642.60 );
+        if(errores::$error){
+            $error = (new errores())->error('Error al insertar', $alta);
+            print_r($error);
+            exit;
+        }
+
+        $alta = (new base_test())->alta_cat_sat_subsidio(link: $link, alias: 2, cat_sat_periodicidad_pago_nom_id: 3,
+            codigo: 2, codigo_bis: 2, cuota_fija: 0, descripcion: 2, descripcion_select: 2, fecha_fin: '2022-12-31',
+            fecha_inicio: '2022-01-01', id: 2, limite_inferior: 3642.61, limite_superior: 999999,
+            porcentaje_excedente: 0);
+        if(errores::$error){
+            $error = (new errores())->error('Error al insertar', $alta);
+            print_r($error);
+            exit;
+        }
 
 
         $cat_sat_periodicidad_pago_nom_id = 3;
@@ -324,6 +449,7 @@ class calcula_nominaTest extends test {
        $resultado = $calculo->nomina_neto($cat_sat_periodicidad_pago_nom_id, $em_salario_diario,
             $em_empleado_salario_diario_integrado, $link, $nom_nomina_fecha_final_pago, $nom_nomina_num_dias_pagados,
             $total_gravado);
+
 
         $this->assertIsFloat($resultado);
         $this->assertNotTrue(errores::$error);
