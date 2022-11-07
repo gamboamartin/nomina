@@ -1,10 +1,12 @@
 <?php
 namespace models;
 use base\orm\modelo;
+
 use gamboamartin\comercial\models\com_sucursal;
 use gamboamartin\empleado\models\em_empleado;
 use gamboamartin\errores\errores;
 use PDO;
+use stdClass;
 
 class nom_rel_empleado_sucursal extends modelo{
 
@@ -17,7 +19,7 @@ class nom_rel_empleado_sucursal extends modelo{
             columnas: $columnas);
     }
 
-    public function alta_bd(): array
+    public function alta_bd(): array|stdClass
     {
 
         $em_empleado = (new em_empleado($this->link))->registro(
