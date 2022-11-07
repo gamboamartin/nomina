@@ -41,7 +41,7 @@
       "ext-fileinfo": "*",
       "tomsgu/pdf-merger": "^0.3.0",
       "spatie/dropbox-api": "^1.19",
-      "gamboa.martin/administrador": "^1.0.0",
+      "gamboa.martin/administrador": "^2.0.0",
       "gamboa.martin/base_modelos": "dev-main",
       "gamboa.martin/calculo": "dev-main",
       "gamboa.martin/errores": "^1.0.0",
