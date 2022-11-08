@@ -62,6 +62,14 @@ class nom_nomina_html extends base_nominas
         return $controler->inputs;
     }
 
+    private function asigna_inputs_selecciona_percepcion(controlador_nom_nomina $controler, stdClass $inputs): array|stdClass
+    {
+        $controler->inputs->select = new stdClass();
+        $controler->inputs->select->nom_nomina_id = $inputs->selects->nom_percepcion_id;
+        $controler->inputs->importe_gravado = $inputs->texts->importe_excedente;
+        return $controler->inputs;
+    }
+
     private function asigna_inputs_crea_nomina(controlador_nom_nomina $controler, stdClass $inputs): array|stdClass
     {
 
@@ -217,6 +225,22 @@ class nom_nomina_html extends base_nominas
         return $inputs_asignados;
     }
 
+    public function genera_inputs_selecciona_percepcion(controlador_nom_nomina $controler, PDO $link,
+                                              stdClass $params = new stdClass()): array|stdClass
+    {
+        $inputs = $this->init_alta_selecciona_percepcion(link: $link, params: $params);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al generar inputs', data: $inputs);
+
+        }
+        $inputs_asignados = $this->asigna_inputs_selecciona_percepcion(controler: $controler, inputs: $inputs);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al asignar inputs', data: $inputs_asignados);
+        }
+
+        return $inputs_asignados;
+    }
+
     private function genera_inputs_modifica(controlador_nom_nomina $controler, PDO $link,
                                             stdClass               $params = new stdClass()): array|stdClass
     {
@@ -260,6 +284,25 @@ class nom_nomina_html extends base_nominas
         }
 
         $texts = $this->texts_alta_crea_nomina(row_upd: new stdClass(), value_vacio: true);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al generar texts', data: $texts);
+        }
+
+        $alta_inputs = new stdClass();
+        $alta_inputs->selects = $selects;
+        $alta_inputs->texts = $texts;
+
+        return $alta_inputs;
+    }
+
+    private function init_alta_selecciona_percepcion(PDO $link, stdClass $params = new stdClass()): array|stdClass
+    {
+        $selects = $this->selects_alta_selecciona_percepcion(link: $link, params: $params);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al generar selects', data: $selects);
+        }
+
+        $texts = $this->texts_alta_selecciona_percepcion(row_upd: new stdClass(), value_vacio: true);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al generar texts', data: $texts);
         }
