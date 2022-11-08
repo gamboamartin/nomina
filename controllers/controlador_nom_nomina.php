@@ -52,6 +52,7 @@ class controlador_nom_nomina extends base_nom
     public stdClass $otros_pagos;
     public stdClass $cuotas_obrero_patronales;
     public float $cuota_total = 0.0;
+    public float $excedente = 0.0;
 
     protected stdClass $params_actions;
 
@@ -353,6 +354,9 @@ class controlador_nom_nomina extends base_nom
 
         $params = $this->params_actions->selecciona_percepcion ?? new stdClass();
 
+        if(isset($_GET['excedente'])){
+            $this->row_upd->importe_excedente = $_GET['excedente'];
+        }
         $inputs = (new nom_nomina_html(html: $this->html_base))->genera_inputs_selecciona_percepcion(controler: $this,
             link: $this->link, params: $params);
         if (errores::$error) {
@@ -1083,10 +1087,16 @@ class controlador_nom_nomina extends base_nom
                 header: $header, ws: $ws);
         }
 
-        $_POST['bruto'] = $monto;
+        $nomina = (new nom_nomina($this->link))->registro(registro_id: $this->registro_id);
+        if (errores::$error) {
+            return $this->retorno_error(mensaje: 'Error al calcular bruto sobre neto', data: $nomina,
+                header: $header, ws: $ws);
+        }
+
+        $excedente = $monto - $nomina['nom_nomina_total_percepcion_gravado'];
 
         $link = "./index.php?seccion=nom_nomina&accion=selecciona_percepcion&registro_id=".$this->registro_id;
-        $link.="&session_id=$this->session_id";
+        $link.="&session_id=$this->session_id".'&excedente='.$excedente;
         header('Location:' . $link);
         exit;
     }

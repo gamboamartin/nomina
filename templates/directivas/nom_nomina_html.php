@@ -228,7 +228,7 @@ class nom_nomina_html extends base_nominas
     public function genera_inputs_selecciona_percepcion(controlador_nom_nomina $controler, PDO $link,
                                               stdClass $params = new stdClass()): array|stdClass
     {
-        $inputs = $this->init_alta_selecciona_percepcion(link: $link, params: $params);
+        $inputs = $this->init_alta_selecciona_percepcion(link: $link, row_upd: $controler->row_upd,params: $params);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al generar inputs', data: $inputs);
 
@@ -295,14 +295,14 @@ class nom_nomina_html extends base_nominas
         return $alta_inputs;
     }
 
-    private function init_alta_selecciona_percepcion(PDO $link, stdClass $params = new stdClass()): array|stdClass
+    private function init_alta_selecciona_percepcion(PDO $link, stdClass $row_upd, stdClass $params = new stdClass()): array|stdClass
     {
         $selects = $this->selects_alta_selecciona_percepcion(link: $link, params: $params);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al generar selects', data: $selects);
         }
 
-        $texts = $this->texts_alta_selecciona_percepcion(row_upd: new stdClass(), value_vacio: true);
+        $texts = $this->texts_alta_selecciona_percepcion(row_upd: $row_upd);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al generar texts', data: $texts);
         }
@@ -940,12 +940,12 @@ class nom_nomina_html extends base_nominas
         return $texts;
     }
 
-    private function texts_alta_selecciona_percepcion(stdClass $row_upd, bool $value_vacio, stdClass $params = new stdClass()):
+    private function texts_alta_selecciona_percepcion(stdClass $row_upd, stdClass $params = new stdClass()):
     array|stdClass
     {
         $texts = new stdClass();
 
-        $in_importe_excedente = $this->input_importe_excedente(cols: 6, row_upd: $row_upd, value_vacio: $value_vacio);
+        $in_importe_excedente = $this->input_importe_excedente(cols: 6, row_upd: $row_upd, value_vacio: false);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al generar input', data: $in_importe_excedente);
         }
