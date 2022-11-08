@@ -9,7 +9,7 @@
                     <?php include (new views())->ruta_templates."head/title.php"; ?>
                     <?php include (new views())->ruta_templates."head/subtitulo.php"; ?>
                     <?php include (new views())->ruta_templates."mensajes.php"; ?>
-                    <form method="post" action="<?php echo $controlador->link_percepcion_neto_alta; ?>" class="form-additional">
+                    <form method="post" action="<?php echo $controlador->link_percepcion_neto_alta_bd; ?>" class="form-additional">
                         <?php echo $controlador->inputs->select->nom_percepcion_id; ?>
                         <?php echo $controlador->inputs->importe_excedente; ?>
                         <div class="control-group btn-alta">
