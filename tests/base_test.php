@@ -138,6 +138,18 @@ class base_test{
         return $alta;
     }
 
+    public function alta_fc_csd(PDO $link): array|\stdClass
+    {
+
+        $alta = (new \gamboamartin\facturacion\tests\base_test())->alta_fc_csd($link);
+        if(errores::$error){
+            return (new errores())->error('Error al dar de alta', $alta);
+
+        }
+
+        return $alta;
+    }
+
     public function alta_im_registro_patronal(PDO $link, int $fc_csd_id = 1, int $id = 1): array|\stdClass
     {
 

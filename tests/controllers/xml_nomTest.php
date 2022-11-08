@@ -118,6 +118,20 @@ class xml_nomTest extends test {
             exit;
         }
 
+        $del = (new base_test())->del_org_empresa($this->link);
+        if(errores::$error){
+            $error = (new errores())->error('Error al eliminar', $del);
+            print_r($error);
+            exit;
+        }
+
+        $alta = (new base_test())->alta_fc_csd($this->link);
+        if(errores::$error){
+            $error = (new errores())->error('Error al dar de alta', $alta);
+            print_r($error);
+            exit;
+        }
+
         $alta = (new base_test())->alta_fc_partida($this->link);
         if(errores::$error){
             $error = (new errores())->error('Error al dar de alta', $alta);
@@ -194,6 +208,13 @@ class xml_nomTest extends test {
         }
 
         $del = (new base_test())->del_cat_sat_subsidio($this->link);
+        if(errores::$error){
+            $error = (new errores())->error('Error al eliminar', $del);
+            print_r($error);
+            exit;
+        }
+
+        $del = (new base_test())->del_nom_percepcion($this->link);
         if(errores::$error){
             $error = (new errores())->error('Error al eliminar', $del);
             print_r($error);
