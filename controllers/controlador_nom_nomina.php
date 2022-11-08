@@ -351,7 +351,7 @@ class controlador_nom_nomina extends base_nom
             return $this->retorno_error(mensaje: 'Error al generar template', data: $r_alta, header: $header, ws: $ws);
         }
 
-        $params = $this->params_actions->crea_nomina ?? new stdClass();
+        $params = $this->params_actions->selecciona_percepcion ?? new stdClass();
 
         $inputs = (new nom_nomina_html(html: $this->html_base))->genera_inputs_selecciona_percepcion(controler: $this,
             link: $this->link, params: $params);

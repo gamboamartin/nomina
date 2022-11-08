@@ -65,8 +65,8 @@ class nom_nomina_html extends base_nominas
     private function asigna_inputs_selecciona_percepcion(controlador_nom_nomina $controler, stdClass $inputs): array|stdClass
     {
         $controler->inputs->select = new stdClass();
-        $controler->inputs->select->nom_nomina_id = $inputs->selects->nom_percepcion_id;
-        $controler->inputs->importe_gravado = $inputs->texts->importe_excedente;
+        $controler->inputs->select->nom_percepcion_id = $inputs->selects->nom_percepcion_id;
+        $controler->inputs->importe_excedente = $inputs->texts->importe_excedente;
         return $controler->inputs;
     }
 
@@ -392,6 +392,28 @@ class nom_nomina_html extends base_nominas
         return $div;
     }
 
+    private function input_importe_excedente(int $cols, stdClass $row_upd, bool $value_vacio,
+                                           bool $disabled = false): array|string
+    {
+        $valida = $this->directivas->valida_cols(cols: $cols);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al validar columnas', data: $valida);
+        }
+
+        $html = $this->directivas->input_text_required(disabled: $disabled, name: 'importe_excedente',
+            place_holder: 'Importe excedente', row_upd: $row_upd, value_vacio: $value_vacio);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al generar input', data: $html);
+        }
+
+        $div = $this->directivas->html->div_group(cols: $cols, html: $html);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al integrar div', data: $div);
+        }
+
+        return $div;
+    }
+
     public function input_fecha_inicial_pago(int $cols, stdClass $row_upd, bool $value_vacio, bool $disabled = false):
     array|string
     {
@@ -540,6 +562,21 @@ class nom_nomina_html extends base_nominas
 
 
 
+        return $selects;
+    }
+
+    private function selects_alta_selecciona_percepcion(PDO $link,stdClass $params = new stdClass()): array|stdClass
+    {
+        $selects = new stdClass();
+        $cols_nom_percepcion_id = $params->nom_percepcion_id->cols ?? 6;
+        $select = (new nom_percepcion_html(html: $this->html_base))->select_nom_percepcion_id(
+            cols: $cols_nom_percepcion_id, con_registros: true,
+            id_selected: -1, link: $link);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al generar select', data: $select);
+        }
+        $selects->nom_percepcion_id = $select;
+        
         return $selects;
     }
 
@@ -899,6 +936,20 @@ class nom_nomina_html extends base_nominas
             return $this->error->error(mensaje: 'Error al generar input', data: $in_total);
         }
         $texts->total = $in_total;
+
+        return $texts;
+    }
+
+    private function texts_alta_selecciona_percepcion(stdClass $row_upd, bool $value_vacio, stdClass $params = new stdClass()):
+    array|stdClass
+    {
+        $texts = new stdClass();
+
+        $in_importe_excedente = $this->input_importe_excedente(cols: 6, row_upd: $row_upd, value_vacio: $value_vacio);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al generar input', data: $in_importe_excedente);
+        }
+        $texts->importe_excedente = $in_importe_excedente;
 
         return $texts;
     }
