@@ -1940,6 +1940,30 @@ class nom_nomina extends modelo
         return $nom_par_otro_pago_ins;
     }
 
+    public function obten_conceptos_nominas(array $nominas){
+        $conc_percepciones = (new nom_nomina($this->link))->obten_conceptos_percepciones(nominas: $nominas);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al obtener nominas del periodo', data: $conc_percepciones);
+        }
+
+        $conc_deducciones = (new nom_nomina($this->link))->obten_conceptos_deducciones(nominas: $nominas);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al obtener nominas del periodo', data: $conc_deducciones);
+        }
+
+        $conc_otros_pagos = (new nom_nomina($this->link))->obten_conceptos_otros_pagos(nominas: $nominas);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al obtener nominas del periodo', data: $conc_otros_pagos);
+        }
+
+        $conceptos = new stdClass();
+        $conceptos->percepciones = $conc_percepciones;
+        $conceptos->deducciones = $conc_deducciones;
+        $conceptos->otros_pagos = $conc_otros_pagos;
+
+        return $conceptos;
+    }
+
     public function obten_conceptos_percepciones(array $nominas): array
     {
         $tipos_percepciones = array();
