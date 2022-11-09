@@ -1706,7 +1706,7 @@ class nom_nomina extends modelo
         return $registro_concepto_imss;
     }
 
-    public function maqueta_registros_excel(int $nom_nomina_id){
+    public function maqueta_registros_excel(int $nom_nomina_id, stdClass $conceptos_nomina){
 
         $registro = $this->registro(registro_id: $nom_nomina_id);
         if (errores::$error) {
