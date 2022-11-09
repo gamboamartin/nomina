@@ -43,6 +43,17 @@ class nom_par_percepcion extends nominas{
         return $r_alta_bd;
     }
 
+    public function get_by_percepcion(int $nom_nomina_id, int $nom_percepcion_id){
+        $filtro['nom_nomina.id'] = $nom_nomina_id;
+        $filtro['nom_percepcion.id'] = $nom_percepcion_id;
+
+        $percepciones = $this->filtro_and(filtro: $filtro);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al obtener percepciones', data: $percepciones);
+        }
+        return $percepciones;
+    }
+
     public function modifica_bd(array $registro, int $id, bool $reactiva = false): array|stdClass
     {
         $r_modifica_bd = $this->modifica_bd_percepcion(registro: $registro,id:  $id);

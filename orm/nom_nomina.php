@@ -1816,8 +1816,9 @@ class nom_nomina extends modelo
         $datos['sd'] = $registro['em_empleado_salario_diario'];
         $datos['fi'] = $fi;
         $datos['sdi'] = $registro['em_empleado_salario_diario_integrado'];
+
+        /*Percepciones*/
         $datos['sueldo'] = $registro['nom_nomina_num_dias_pagados'] * $registro['em_empleado_salario_diario'];
-        $datos['subsidio'] = $subsidio;
         $datos['prima_dominical'] = $prima_dominical;
         $datos['vacaciones'] = $vacaciones;
         $datos['septimo_dia'] = $septimo_dia;
@@ -1841,16 +1842,26 @@ class nom_nomina extends modelo
         $datos['ptu_exento'] = 0.0;
         $datos['indemnizacion'] = 0.0;
         $datos['prima_antiguedad'] = 0.0;
+        /*Percepciones*/
         $datos['suma_percepcion'] = $suma_percepcion;
+
+        /*Otros pagos*/
+        $datos['subsidio'] = $subsidio;
+        /*Otros pagos*/
+
         $datos['base_gravable'] = $suma_base_gravable;
+
+        /*Deducciones*/
         $datos['retencion_isr'] = $retencion_isr;
         $datos['retencion_imss'] = $retencion_imss;
-        $datos['infonavit'] = 0.0; //
-        $datos['fonacot'] = 0.0; //
-        $datos['pension_alimencia'] = 0.0; //
-        $datos['otros_descuentos'] = 0.0; //
-        $datos['descuento_comedor'] = 0.0; //
-        $datos['descuento_p_personal'] = 0.0; //
+        $datos['infonavit'] = 0.0;
+        $datos['fonacot'] = 0.0;
+        $datos['pension_alimencia'] = 0.0;
+        $datos['otros_descuentos'] = 0.0;
+        $datos['descuento_comedor'] = 0.0;
+        $datos['descuento_p_personal'] = 0.0;
+        /*Deducciones*/
+
         $datos['suma_deduccion'] = $suma_deduccion;
         $datos['neto_a_pagar'] = $suma_percepcion - $suma_deduccion;
         $datos['cuenta'] = $registro['em_cuenta_bancaria_num_cuenta'];
