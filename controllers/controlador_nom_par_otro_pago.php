@@ -72,7 +72,7 @@ class controlador_nom_par_otro_pago extends system
     }
 
     public function modifica(bool $header, bool $ws = false, string $breadcrumbs = '', bool $aplica_form = true,
-                             bool $muestra_btn = true): array|string
+                             bool $muestra_btn = true): array|string|stdClass
     {
         $base = $this->base();
         if(errores::$error){
