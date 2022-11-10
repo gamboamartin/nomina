@@ -1840,6 +1840,12 @@ class nom_nomina extends modelo
             return $this->error->error(mensaje: 'Error al obtener la suma de deducciones',
                 data: $registro);
         }
+        
+        $retencion_infonavit = $this->total_deducciones_infonavit_activo(nom_nomina_id: $nom_nomina_id);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al obtener la suma de deducciones',
+                data: $registro);
+        }
 
         $dias_incapacidad = (new nom_incidencia($this->link))->get_incidencias_incapacidad(
             em_empleado_id: $registro['em_empleado_id'], nom_periodo_id: $registro['nom_periodo_id']);
@@ -1904,7 +1910,7 @@ class nom_nomina extends modelo
         /*Deducciones*/
         $datos['retencion_isr'] = $retencion_isr;
         $datos['retencion_imss'] = $retencion_imss;
-        $datos['infonavit'] = 0.0;
+        $datos['infonavit'] = $retencion_infonavit;
         $datos['fonacot'] = 0.0;
         $datos['pension_alimencia'] = 0.0;
         $datos['otros_descuentos'] = 0.0;
@@ -2225,6 +2231,28 @@ class nom_nomina extends modelo
     {
         $filtro['nom_nomina.id']  = $nom_nomina_id;
         $filtro['nom_deduccion.es_imss']  = 'activo';
+        $r_nom_par_deduccion = (new nom_par_deduccion($this->link))->filtro_and(filtro: $filtro);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al obtener deduccion',data:  $r_nom_par_deduccion);
+        }
+
+        $total = 0.0;
+
+        if ($r_nom_par_deduccion->n_registros == 0){
+            return $total;
+        }
+
+        foreach ($r_nom_par_deduccion->registros as $registro){
+            $total += ($registro['nom_par_deduccion_importe_gravado'] + $registro['nom_par_deduccion_importe_exento']);
+        }
+
+        return round($total,2);
+    }
+
+    public function total_deducciones_infonavit_activo(int $nom_nomina_id): float|array
+    {
+        $filtro['nom_nomina.id']  = $nom_nomina_id;
+        $filtro['nom_deduccion.es_infonavit']  = 'activo';
         $r_nom_par_deduccion = (new nom_par_deduccion($this->link))->filtro_and(filtro: $filtro);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al obtener deduccion',data:  $r_nom_par_deduccion);
