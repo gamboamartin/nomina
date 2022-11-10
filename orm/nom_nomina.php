@@ -1805,6 +1805,7 @@ class nom_nomina extends modelo
             return $this->error->error(mensaje: 'Error al obtener las incidencias', data: $dias_incapacidad);
         }
 
+        
         $datos = array();
         $datos['id_rem'] = $registro['em_empleado_codigo'];
         $datos['nss'] = $registro['em_empleado_nss'];
