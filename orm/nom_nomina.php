@@ -2728,7 +2728,7 @@ class nom_nomina extends modelo
     public function total_percepciones_ayuda_transporte_activo(int $nom_nomina_id)
     {
         $filtro['nom_nomina.id']  = $nom_nomina_id;
-        $filtro['nom_percepcion.id']  = 16;
+        $filtro['nom_percepcion.id']  = 17;
         $r_nom_par_percepcion = (new nom_par_percepcion($this->link))->filtro_and(filtro: $filtro);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al obtener percepcion',data:  $r_nom_par_percepcion);
