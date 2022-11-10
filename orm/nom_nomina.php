@@ -1751,6 +1751,48 @@ class nom_nomina extends modelo
                 data: $compensacion);
         }
 
+        $prima_vacacional = $this->total_percepciones_prima_vacacional_activo(nom_nomina_id: $nom_nomina_id);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al obtener $prima_vacacional',
+                data: $prima_vacacional);
+        }
+
+        $gratificacion = $this->total_percepciones_gratificacion_activo(nom_nomina_id: $nom_nomina_id);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al obtener $gratificacion',
+                data: $gratificacion);
+        }
+        
+        $gratificacion_especial = $this->total_percepciones_gratificacion_especial_activo(nom_nomina_id: $nom_nomina_id);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al obtener $gratificacion_especial',
+                data: $gratificacion_especial);
+        }      
+        
+        $premio_puntualidad = $this->total_percepciones_premio_puntualidad_activo(nom_nomina_id: $nom_nomina_id);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al obtener $premio_puntualidad',
+                data: $premio_puntualidad);
+        }
+                
+        $premio_asistencia = $this->total_percepciones_premio_asistencia_activo(nom_nomina_id: $nom_nomina_id);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al obtener $premio_asistencia',
+                data: $premio_asistencia);
+        }
+                        
+        $ayuda_transporte = $this->total_percepciones_ayuda_transporte_activo(nom_nomina_id: $nom_nomina_id);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al obtener $ayuda_transporte',
+                data: $ayuda_transporte);
+        }
+        
+        $horas_extras = $this->total_percepciones_horas_extras_activo(nom_nomina_id: $nom_nomina_id);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al obtener $horas_extras',
+                data: $horas_extras);
+        }
+
         $dias_descanso = $this->total_percepciones_dias_descanso_laborados(nom_nomina_id: $nom_nomina_id);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al obtener montos de dias de descanso',
@@ -1805,7 +1847,6 @@ class nom_nomina extends modelo
             return $this->error->error(mensaje: 'Error al obtener las incidencias', data: $dias_incapacidad);
         }
 
-        
         $datos = array();
         $datos['id_rem'] = $registro['em_empleado_codigo'];
         $datos['nss'] = $registro['em_empleado_nss'];
@@ -1827,18 +1868,26 @@ class nom_nomina extends modelo
         $datos['despensa'] = $despensa; //
         $datos['otros_ingresos'] = 0.0;
         $datos['devolucion_infonavit'] = 0.0;
-        $datos['prima_vacacional_gravado'] = 0.0;
-        $datos['prima_vacacional_exento'] = 0.0;
-        $datos['gratificacion_gravado'] = 0.0;
-        $datos['gratificacion_exento'] = 0.0;
+        $datos['prima_vacacional_gravado'] = $prima_vacacional->gravado;
+        $datos['prima_vacacional_exento'] = $prima_vacacional->exento;
+        $datos['gratificacion_gravado'] = $gratificacion->gravado;
+        $datos['gratificacion_exento'] = $gratificacion->exento;
+        $datos['gratificacion_especial_gravado'] = $gratificacion_especial->gravado;
+        $datos['gratificacion_especial_exento'] = $gratificacion_especial->exento;
         $datos['aguinaldo_gravado'] = 0.0;
         $datos['aguinaldo_exento'] = 0.0;
         $datos['dias_festivos_gravado'] = 0.0;
         $datos['dias_festivos_exento'] = 0.0;
         $datos['descanso_laborado_gravado'] = $dias_descanso->gravado;
         $datos['descanso_laborado_exento'] = $dias_descanso->exento;
-        $datos['horas_extras_gravado'] = 0.0;
-        $datos['horas_extras_exento'] = 0.0;
+        $datos['horas_extras_gravado'] = $horas_extras->gravado;
+        $datos['horas_extras_exento'] = $horas_extras->exento;
+        $datos['premio_puntualidad_gravado'] = $premio_puntualidad->gravado;
+        $datos['premio_puntualidad_exento'] = $premio_puntualidad->exento;
+        $datos['premio_asistencia_gravado'] = $premio_asistencia->gravado;
+        $datos['premio_asistencia_exento'] = $premio_asistencia->exento; 
+        $datos['ayuda_transporte_gravado'] = $ayuda_transporte->gravado;
+        $datos['ayuda_transporte_exento'] = $ayuda_transporte->exento;
         $datos['ptu_gravado'] = 0.0;
         $datos['ptu_exento'] = 0.0;
         $datos['indemnizacion'] = 0.0;
@@ -2570,7 +2619,154 @@ class nom_nomina extends modelo
 
         return $montos;
     }
+
+    public function total_percepciones_prima_vacacional_activo(int $nom_nomina_id)
+    {
+        $filtro['nom_nomina.id']  = $nom_nomina_id;
+        $filtro['nom_percepcion.id']  = 12;
+        $r_nom_par_percepcion = (new nom_par_percepcion($this->link))->filtro_and(filtro: $filtro);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al obtener percepcion',data:  $r_nom_par_percepcion);
+        }
+
+        $montos = new stdClass();
+        $montos->gravado = 0.0;
+        $montos->exento = 0.0;
+
+        foreach ($r_nom_par_percepcion->registros as $registro){
+            $montos->gravado = round($registro['nom_par_percepcion_importe_gravado'],2);
+            $montos->exento = round($registro['nom_par_percepcion_importe_exento'],2);
+        }
+
+        return $montos;
+    }
+
+    public function total_percepciones_gratificacion_activo(int $nom_nomina_id)
+    {
+        $filtro['nom_nomina.id']  = $nom_nomina_id;
+        $filtro['nom_percepcion.id']  = 18;
+        $r_nom_par_percepcion = (new nom_par_percepcion($this->link))->filtro_and(filtro: $filtro);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al obtener percepcion',data:  $r_nom_par_percepcion);
+        }
+
+        $montos = new stdClass();
+        $montos->gravado = 0.0;
+        $montos->exento = 0.0;
+
+        foreach ($r_nom_par_percepcion->registros as $registro){
+            $montos->gravado = round($registro['nom_par_percepcion_importe_gravado'],2);
+            $montos->exento = round($registro['nom_par_percepcion_importe_exento'],2);
+        }
+
+        return $montos;
+    }
+
+    public function total_percepciones_gratificacion_especial_activo(int $nom_nomina_id)
+    {
+        $filtro['nom_nomina.id']  = $nom_nomina_id;
+        $filtro['nom_percepcion.id']  = 14;
+        $r_nom_par_percepcion = (new nom_par_percepcion($this->link))->filtro_and(filtro: $filtro);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al obtener percepcion',data:  $r_nom_par_percepcion);
+        }
+
+        $montos = new stdClass();
+        $montos->gravado = 0.0;
+        $montos->exento = 0.0;
+
+        foreach ($r_nom_par_percepcion->registros as $registro){
+            $montos->gravado = round($registro['nom_par_percepcion_importe_gravado'],2);
+            $montos->exento = round($registro['nom_par_percepcion_importe_exento'],2);
+        }
+
+        return $montos;
+    }
     
+    public function total_percepciones_premio_puntualidad_activo(int $nom_nomina_id)
+    {
+        $filtro['nom_nomina.id']  = $nom_nomina_id;
+        $filtro['nom_percepcion.id']  = 15;
+        $r_nom_par_percepcion = (new nom_par_percepcion($this->link))->filtro_and(filtro: $filtro);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al obtener percepcion',data:  $r_nom_par_percepcion);
+        }
+
+        $montos = new stdClass();
+        $montos->gravado = 0.0;
+        $montos->exento = 0.0;
+
+        foreach ($r_nom_par_percepcion->registros as $registro){
+            $montos->gravado = round($registro['nom_par_percepcion_importe_gravado'],2);
+            $montos->exento = round($registro['nom_par_percepcion_importe_exento'],2);
+        }
+
+        return $montos;
+    }
+    
+    public function total_percepciones_premio_asistencia_activo(int $nom_nomina_id)
+    {
+        $filtro['nom_nomina.id']  = $nom_nomina_id;
+        $filtro['nom_percepcion.id']  = 16;
+        $r_nom_par_percepcion = (new nom_par_percepcion($this->link))->filtro_and(filtro: $filtro);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al obtener percepcion',data:  $r_nom_par_percepcion);
+        }
+
+        $montos = new stdClass();
+        $montos->gravado = 0.0;
+        $montos->exento = 0.0;
+
+        foreach ($r_nom_par_percepcion->registros as $registro){
+            $montos->gravado = round($registro['nom_par_percepcion_importe_gravado'],2);
+            $montos->exento = round($registro['nom_par_percepcion_importe_exento'],2);
+        }
+
+        return $montos;
+    }
+    
+    public function total_percepciones_ayuda_transporte_activo(int $nom_nomina_id)
+    {
+        $filtro['nom_nomina.id']  = $nom_nomina_id;
+        $filtro['nom_percepcion.id']  = 16;
+        $r_nom_par_percepcion = (new nom_par_percepcion($this->link))->filtro_and(filtro: $filtro);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al obtener percepcion',data:  $r_nom_par_percepcion);
+        }
+
+        $montos = new stdClass();
+        $montos->gravado = 0.0;
+        $montos->exento = 0.0;
+
+        foreach ($r_nom_par_percepcion->registros as $registro){
+            $montos->gravado = round($registro['nom_par_percepcion_importe_gravado'],2);
+            $montos->exento = round($registro['nom_par_percepcion_importe_exento'],2);
+        }
+
+        return $montos;
+    }
+
+    public function total_percepciones_horas_extras_activo(int $nom_nomina_id)
+    {
+        $filtro['nom_nomina.id']  = $nom_nomina_id;
+        $filtro['nom_percepcion.id']  = 13;
+        $r_nom_par_percepcion = (new nom_par_percepcion($this->link))->filtro_and(filtro: $filtro);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al obtener percepcion',data:  $r_nom_par_percepcion);
+        }
+
+        $montos = new stdClass();
+        $montos->gravado = 0.0;
+        $montos->exento = 0.0;
+
+        foreach ($r_nom_par_percepcion->registros as $registro){
+            $montos->gravado = round($registro['nom_par_percepcion_importe_gravado'],2);
+            $montos->exento = round($registro['nom_par_percepcion_importe_exento'],2);
+        }
+
+        return $montos;
+    }
+
     public function total_percepciones_vacaciones_activo(int $nom_nomina_id): float|array
     {
         $filtro['nom_nomina.id']  = $nom_nomina_id;
