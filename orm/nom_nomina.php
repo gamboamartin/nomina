@@ -1889,7 +1889,23 @@ class nom_nomina extends modelo
         $datos['suma_percepcion'] = $suma_percepcion;
 
         /*Otros pagos*/
-        $datos['subsidio'] = $subsidio;
+        foreach ($conceptos_nomina->otros_pagos as $nom_otro_pago_id => $descripcion) {
+            $otro_pago_nom = (new nom_par_otro_pago($this->link))->get_by_otro_pago(nom_nomina_id: $nom_nomina_id,
+                nom_otro_pago_id: $nom_otro_pago_id);
+            if (errores::$error) {
+                return $this->error->error(mensaje: 'Error al obtener percpcion', data: $otro_pago_nom);
+            }
+
+            $descripcion_grav = $descripcion . ' Importe Gravado';
+            $descripcion_exe = $descripcion . ' Importe Exento';
+
+            $datos[$descripcion_grav] = 0;
+            $datos[$descripcion_exe] = 0;
+            if ($otro_pago_nom->n_registros > 0) {
+                $datos[$descripcion_grav] = $otro_pago_nom->registros[0]['nom_par_otro_pago_importe_gravado'];
+                $datos[$descripcion_exe] = $otro_pago_nom->registros[0]['nom_par_otro_pago_importe_exento'];
+            }
+        }
         /*Otros pagos*/
 
         $datos['base_gravable'] = $suma_base_gravable;

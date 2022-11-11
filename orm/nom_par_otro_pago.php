@@ -112,6 +112,17 @@ class nom_par_otro_pago extends nominas
         return $otros_pagos;
     }
 
+    public function get_by_otro_pago(int $nom_nomina_id, int $nom_otro_pago_id){
+        $filtro['nom_nomina.id'] = $nom_nomina_id;
+        $filtro['nom_otro_pago.id'] = $nom_otro_pago_id;
+
+        $percepciones = $this->filtro_and(filtro: $filtro);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al obtener percepciones', data: $percepciones);
+        }
+        return $percepciones;
+    }
+
 
 
 
