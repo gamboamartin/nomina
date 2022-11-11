@@ -143,6 +143,16 @@ class nom_par_deduccion extends nominas{
 
     }
 
+    public function get_by_deduccion(int $nom_nomina_id, int $nom_deduccion_id){
+        $filtro['nom_nomina.id'] = $nom_nomina_id;
+        $filtro['nom_deduccion.id'] = $nom_deduccion_id;
+
+        $percepciones = $this->filtro_and(filtro: $filtro);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al obtener percepciones', data: $percepciones);
+        }
+        return $percepciones;
+    }
 
 
 
