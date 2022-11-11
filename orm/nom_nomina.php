@@ -1911,14 +1911,24 @@ class nom_nomina extends modelo
         $datos['base_gravable'] = $suma_base_gravable;
 
         /*Deducciones*/
-        $datos['retencion_isr'] = $retencion_isr;
-        $datos['retencion_imss'] = $retencion_imss;
-        $datos['infonavit'] = $retencion_infonavit;
-        $datos['fonacot'] = 0.0;
-        $datos['pension_alimencia'] = 0.0;
-        $datos['otros_descuentos'] = 0.0;
-        $datos['descuento_comedor'] = 0.0;
-        $datos['descuento_p_personal'] = 0.0;
+        foreach ($conceptos_nomina->deducciones as $nom_deduccion_id => $descripcion) {
+            $deduccion_nom = (new nom_par_deduccion($this->link))->get_by_deduccion(nom_nomina_id: $nom_nomina_id,
+                nom_deduccion_id: $nom_deduccion_id);
+            if (errores::$error) {
+                return $this->error->error(mensaje: 'Error al obtener percpcion', data: $deduccion_nom);
+            }
+
+            $descripcion_grav = $descripcion . ' Importe Gravado';
+            $descripcion_exe = $descripcion . ' Importe Exento';
+
+            $datos[$descripcion_grav] = 0;
+            $datos[$descripcion_exe] = 0;
+            if ($deduccion_nom->n_registros > 0) {
+                $datos[$descripcion_grav] = $deduccion_nom->registros[0]['nom_par_deduccion_importe_gravado'];
+                $datos[$descripcion_exe] = $deduccion_nom->registros[0]['nom_par_deduccion_importe_exento'];
+            }
+        }
+
         /*Deducciones*/
 
         $datos['suma_deduccion'] = $suma_deduccion;
