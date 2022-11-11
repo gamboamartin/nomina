@@ -1866,38 +1866,25 @@ class nom_nomina extends modelo
         $datos['sdi'] = $registro['em_empleado_salario_diario_integrado'];
 
         /*Percepciones*/
-        $datos['sueldo'] = $registro['nom_nomina_num_dias_pagados'] * $registro['em_empleado_salario_diario'];
-        $datos['prima_dominical'] = $prima_dominical;
-        $datos['vacaciones'] = $vacaciones;
-        $datos['septimo_dia'] = $septimo_dia;
-        $datos['compensacion'] = $compensacion;
-        $datos['despensa'] = $despensa; //
-        $datos['otros_ingresos'] = 0.0;
-        $datos['devolucion_infonavit'] = 0.0;
-        $datos['prima_vacacional_gravado'] = $prima_vacacional->gravado;
-        $datos['prima_vacacional_exento'] = $prima_vacacional->exento;
-        $datos['gratificacion_gravado'] = $gratificacion->gravado;
-        $datos['gratificacion_exento'] = $gratificacion->exento;
-        $datos['gratificacion_especial_gravado'] = $gratificacion_especial->gravado;
-        $datos['gratificacion_especial_exento'] = $gratificacion_especial->exento;
-        $datos['aguinaldo_gravado'] = 0.0;
-        $datos['aguinaldo_exento'] = 0.0;
-        $datos['dias_festivos_gravado'] = 0.0;
-        $datos['dias_festivos_exento'] = 0.0;
-        $datos['descanso_laborado_gravado'] = $dias_descanso->gravado;
-        $datos['descanso_laborado_exento'] = $dias_descanso->exento;
-        $datos['horas_extras_gravado'] = $horas_extras->gravado;
-        $datos['horas_extras_exento'] = $horas_extras->exento;
-        $datos['premio_puntualidad_gravado'] = $premio_puntualidad->gravado;
-        $datos['premio_puntualidad_exento'] = $premio_puntualidad->exento;
-        $datos['premio_asistencia_gravado'] = $premio_asistencia->gravado;
-        $datos['premio_asistencia_exento'] = $premio_asistencia->exento; 
-        $datos['ayuda_transporte_gravado'] = $ayuda_transporte->gravado;
-        $datos['ayuda_transporte_exento'] = $ayuda_transporte->exento;
-        $datos['ptu_gravado'] = 0.0;
-        $datos['ptu_exento'] = 0.0;
-        $datos['indemnizacion'] = 0.0;
-        $datos['prima_antiguedad'] = 0.0;
+
+        foreach ($conceptos_nomina->percepciones as $nom_percepcion_id => $descripcion) {
+            $percepcion_nom = (new nom_par_percepcion($this->link))->get_by_percepcion(nom_nomina_id: $nom_nomina_id,
+                nom_percepcion_id: $nom_percepcion_id);
+            if (errores::$error) {
+                return $this->error->error(mensaje: 'Error al obtener percpcion', data: $percepcion_nom);
+            }
+
+            $descripcion_grav = $descripcion . ' Importe Gravado';
+            $descripcion_exe = $descripcion . ' Importe Exento';
+
+            $datos[$descripcion_grav] = 0;
+            $datos[$descripcion_exe] = 0;
+            if ($percepcion_nom->n_registros > 0) {
+                $datos[$descripcion_grav] = $percepcion_nom->registros[0]['nom_par_percepcion_importe_gravado'];
+                $datos[$descripcion_exe] = $percepcion_nom->registros[0]['nom_par_percepcion_importe_exento'];
+            }
+        }
+        
         /*Percepciones*/
         $datos['suma_percepcion'] = $suma_percepcion;
 
