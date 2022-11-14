@@ -12,8 +12,10 @@ use gamboamartin\facturacion\models\fc_factura;
 use gamboamartin\facturacion\models\fc_partida;
 use gamboamartin\organigrama\models\org_sucursal;
 use models\base\limpieza;
+use Mpdf\Mpdf;
 use PDO;
 use stdClass;
+use Throwable;
 
 class nom_nomina extends modelo
 {
@@ -979,6 +981,237 @@ class nom_nomina extends modelo
             $dels[] = $del;
         }
         return $dels;
+    }
+
+    public function descarga_recibo_nomina(int $nom_nomina_id): bool|array
+    {
+        $nomina = $this->registro(registro_id: $nom_nomina_id);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al obtener registro de nomina', data: $nomina);
+        }
+
+        $percepciones = (new nom_par_percepcion($this->link))->get_by_nomina(nom_nomina_id: $nom_nomina_id);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al obtener registro percepciones', data: $percepciones);
+        }
+
+        $otros_pagos = (new nom_par_otro_pago($this->link))->get_by_nomina(nom_nomina_id: $nom_nomina_id);
+        if(errores::$error) {
+            return $this->error->error('Error al obtener registros de otros pagos', $otros_pagos);
+        }
+
+        $deducciones = (new nom_par_deduccion($this->link))->get_by_nomina(nom_nomina_id: $nom_nomina_id);
+        if(errores::$error) {
+            return $this->error->error('Error al obtener registros de deducciones', $deducciones);
+        }
+
+
+        try {
+            $temporales = PATH_BASE . "archivos/temporales/";
+            $pdf = new Mpdf(['tempDir' => $temporales]);
+        }
+        catch (Throwable $e){
+            return $this->error->error('Error al generar objeto de pdf', $deducciones);
+        }
+        $pdf->AddPage();
+        $pdf->SetFont('Arial');
+        $pdf->setSourceFile(PATH_BASE.'plantillas_cfdi/nomina.pdf'); // Sin extensión
+        $template = $pdf->importPage(1);
+        $pdf->useTemplate($template);
+
+        $pdf->SetXY( 18.7,14);
+        $pdf->Cell(0,0, $nomina['emisor_nombre']);
+
+        $pdf->SetXY( 165,14);
+        $pdf->Cell(0,0, explode(' ', $nomina['sat_cfdi_fecha'])[0]);
+
+        $pdf->SetXY( 26,19);
+        $pdf->Cell(0,0, $nomina['emisor_rfc']);
+
+        $pdf->SetXY( 77,19);
+        $pdf->Cell(0,0, $nomina['nomina_registro_patronal']);
+
+        $pdf->SetXY( 165,17.5);
+        $pdf->Cell(0,0, explode(' ', $nomina['sat_cfdi_fecha'])[1]);
+
+        $pdf->SetXY( 35,22.6);
+        $pdf->Cell(0,0, $nomina['regimen_fiscal_descripcion']);
+
+        $pdf->SetXY( 47,27.5);
+        $pdf->Cell(0,0, $nomina['cp_codigo_postal']);
+
+        $pdf->SetXY( 18,40);
+        $pdf->Cell(0,0, $nomina['sat_receptor_nombre']);
+
+        $pdf->SetXY( 25,44);
+        $pdf->Cell(0,0, $nomina['sat_receptor_rfc']);
+
+        $pdf->SetXY( 27,47.5);
+        $pdf->Cell(0,0, $nomina['sat_receptor_curp']);
+
+        $pdf->SetXY( 49,52.5);
+        $pdf->Cell(0,0, $nomina['nomina_fecha_inicio_rel_laboral']);
+
+        $pdf->SetXY( 49,52.5);
+        $pdf->Cell(0,0, $nomina['nomina_fecha_inicio_rel_laboral']);
+
+        $pdf->SetXY( 31,57);
+        $pdf->Cell(0,0, $nomina['sat_nomina_tipo_jornada_descripcion']);
+
+        $pdf->SetXY( 25,61);
+        $pdf->Cell(0,0, $nomina['sat_receptor_numero_seguridad_social']);
+
+        $pdf->SetXY( 127,39.5);
+        $pdf->Cell(0,0, explode('-',$nomina['nomina_fecha_inicial'])[0]);
+
+        $pdf->SetXY( 125,44.5);
+        $pdf->Cell(0,0, $nomina['sat_nomina_periodicidad_pago_descripcion']);
+
+        $pdf->SetXY( 148,44.5);
+        $pdf->Cell(0,0, $nomina['nomina_fecha_inicial']);
+
+        $pdf->SetXY( 169,44.5);
+        $pdf->Cell(0,0, 'A');
+
+        $pdf->SetXY( 172,44.5);
+        $pdf->Cell(0,0, $nomina['nomina_fecha_final']);
+
+
+        $pdf->SetXY( 131,48.5);
+        $pdf->Cell(0,0, $nomina['nomina_n_dias_pago']);
+
+        $pdf->SetXY( 131,48.5);
+        $pdf->Cell(0,0, $nomina['nomina_n_dias_pago']);
+
+        $pdf->SetXY( 129,52.5);
+        $pdf->Cell(0,0, $nomina['nomina_fecha_pago']);
+
+        $pdf->SetXY( 125,57);
+        $pdf->Cell(0,0, $nomina['puesto_descripcion']);
+
+        $pdf->SetXY( 125,61);
+        $pdf->Cell(0,0, $nomina['departamento_descripcion']);
+
+        $pdf->SetXY( 125,65);
+        $pdf->Cell(0,0, "$".number_format($nomina['nomina_sdi'],2));
+
+        $pdf->SetFont('Arial','',8);
+
+        $y = 87;
+        foreach($percepciones as $percepcion){
+            // print_r($percepcion);exit;
+            $pdf->SetXY( 18,$y);
+            $pdf->Cell(0,0, $percepcion['sat_nomina_percepcion_codigo']);
+
+
+            $pdf->SetXY( 30,$y);
+            //$pdf->Cell(0,0, $percepcion['nomina_percepcion_descripcion']);
+
+            $y-=1;
+            $pdf->SetXY( 30,$y);
+            $pdf->MultiCell(w:50,h:2.5, txt: $percepcion['nomina_percepcion_descripcion'],maxrows: 10);
+
+            $y++;
+
+            $pdf->SetXY( 75,$y);
+            $pdf->Cell(0,0, "$".number_format($percepcion['nomina_percepcion_gravable'],2));
+
+            $pdf->SetXY( 95,$y);
+            $pdf->Cell(0,0, "$".number_format($percepcion['nomina_percepcion_exento'],2));
+
+            $pdf->SetXY( 110,$y);
+            $pdf->Cell(0,0, "$".number_format($percepcion['nomina_percepcion_total'],2));
+
+            $y+=9;
+        }
+
+        foreach($otros_pagos as $otros_pago){
+            // print_r($percepcion);exit;
+            $pdf->SetXY( 18,$y);
+            $pdf->Cell(0,0, $otros_pago['sat_nomina_otro_pago_codigo']);
+
+            $y-=1;
+            $pdf->SetXY( 30,$y);
+            $pdf->MultiCell(w:50,h:2.5, txt: $otros_pago['sat_nomina_otro_pago_descripcion'],maxrows: 10);
+
+            $y++;
+
+            $pdf->SetXY( 75,$y);
+            $pdf->Cell(0,0, "$".number_format($otros_pago['nomina_otro_pago_gravable'],2));
+
+            $pdf->SetXY( 95,$y);
+            $pdf->Cell(0,0, "$".number_format($otros_pago['nomina_otro_pago_exento'],2));
+
+            $pdf->SetXY( 110,$y);
+            $pdf->Cell(0,0, "$".number_format($otros_pago['nomina_otro_pago_total'],2));
+
+
+
+            $y+=9;
+        }
+
+        $y = 87;
+        foreach($deducciones as $deduccion){
+            // print_r($percepcion);exit;
+            $pdf->SetXY( 130,$y);
+            $pdf->Cell(0,0, $deduccion['sat_nomina_deduccion_codigo']);
+
+
+            $y-=1;
+            $pdf->SetXY( 150,$y);
+            $pdf->MultiCell(w:40,h:2.5, txt: $deduccion['nomina_deduccion_descripcion'],maxrows: 5);
+
+            $y++;
+
+            $pdf->SetXY( 188,$y);
+            $pdf->Cell(0,0,"$". number_format( $deduccion['nomina_deduccion_monto'],2));
+
+
+            $y+=11;
+        }
+
+
+        $pdf->SetXY( 185,134.5);
+        $pdf->Cell(0,0,"$". number_format($nomina['sat_cfdi_sub_total'],2));
+
+        $pdf->SetXY( 185,138.5);
+        $pdf->Cell(0,0,"$". number_format($nomina['nomina_deduccion_total_otras_deducciones'],2));
+
+        $pdf->SetXY( 185,142.3);
+        $pdf->Cell(0,0,"$". number_format($nomina['nomina_total_impuestos_retenidos'],2));
+
+        $pdf->SetXY( 185,146);
+        $pdf->Cell(0,0,"$". number_format($nomina['sat_cfdi_total'],2));
+
+        $pdf->SetXY( 110,134.5);
+        $pdf->Cell(0,0,"$". number_format($nomina['sat_cfdi_sub_total'],2));
+
+        $total = $nomina['sat_cfdi_total'];
+
+        //$total_letra = (new numero_texto())->to_word($total,'MXN');
+
+        //$pdf->SetFont('Arial','',6);
+        //$pdf->SetXY( 130,155);
+        //$pdf->Cell(0,0,$total_letra);
+
+
+        $pdf->SetFont('Arial','',8);
+        $pdf->SetXY( 115,177);
+        $pdf->Cell(0,0,'99 Por Definir');
+
+        $pdf->SetFont('Arial','',8);
+        $pdf->SetXY( 145,205);
+        $pdf->Cell(0,0,$nomina['sat_cfdi_no_certificado']);
+
+        $pdf->SetXY( 145,208);
+        $pdf->Cell(0,0,$nomina['sat_cfdi_uuid']);
+
+        $pdf->SetXY( 145,212);
+        $pdf->Cell(0,0,$nomina['sat_cfdi_no_certificado_sat']);
+
+        $pdf->Output($nomina['sat_receptor_nombre'].'-'.$nomina['nomina_fecha_final'].'.pdf','D');
+
+        return true;
     }
 
     private function descripcion_nomina(int $em_empleado_id, array $registro): array|string
