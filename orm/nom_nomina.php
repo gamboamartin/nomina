@@ -3,6 +3,7 @@
 namespace models;
 
 use base\orm\modelo;
+use config\generales;
 use gamboamartin\empleado\models\em_abono_anticipo;
 use gamboamartin\empleado\models\em_anticipo;
 use gamboamartin\empleado\models\em_empleado;
@@ -26,9 +27,9 @@ class nom_nomina extends modelo
             'dp_colonia_postal' => 'dp_calle_pertenece', 'dp_colonia' => 'dp_colonia_postal',
             'dp_cp' => 'dp_colonia_postal', 'dp_municipio' => 'dp_cp', 'dp_estado' => 'dp_municipio',
             'dp_pais' => 'dp_estado', 'em_empleado' => $tabla, 'fc_factura' => $tabla,'fc_csd' =>'fc_factura',
-            'org_sucursal' => 'fc_csd','org_empresa'=> 'org_sucursal', 'cat_sat_periodicidad_pago_nom'=>$tabla,
-            'im_registro_patronal'=>$tabla,'cat_sat_tipo_contrato_nom'=>$tabla, 'nom_periodo'=>$tabla,
-            'cat_sat_tipo_nomina'=>$tabla,'cat_sat_tipo_jornada_nom'=>$tabla,
+            'org_sucursal' => 'fc_csd','org_empresa'=> 'org_sucursal', 'cat_sat_regimen_fiscal'=>'fc_factura',
+            'cat_sat_periodicidad_pago_nom'=>$tabla, 'im_registro_patronal'=>$tabla,'cat_sat_tipo_contrato_nom'=>$tabla,
+            'nom_periodo'=>$tabla, 'cat_sat_tipo_nomina'=>$tabla,'cat_sat_tipo_jornada_nom'=>$tabla,
             'cat_sat_tipo_regimen_nom'=>'em_empleado','org_departamento'=>$tabla,'org_puesto'=>$tabla,
             'im_clase_riesgo'=>'im_registro_patronal','em_cuenta_bancaria'=>$tabla,
             'bn_sucursal'=>'em_cuenta_bancaria','bn_banco'=>'bn_sucursal');
@@ -1005,56 +1006,55 @@ class nom_nomina extends modelo
             return $this->error->error('Error al obtener registros de deducciones', $deducciones);
         }
 
-
         try {
-            $temporales = PATH_BASE . "archivos/temporales/";
+            $temporales = (new generales())->path_base . "archivos/tmp/";
             $pdf = new Mpdf(['tempDir' => $temporales]);
         }
         catch (Throwable $e){
-            return $this->error->error('Error al generar objeto de pdf', $deducciones);
+            return $this->error->error('Error al generar objeto de pdf', $e);
         }
         $pdf->AddPage();
         $pdf->SetFont('Arial');
-        $pdf->setSourceFile(PATH_BASE.'plantillas_cfdi/nomina.pdf'); // Sin extensión
+        $pdf->setSourceFile((new generales())->path_base.'archivos/plantillas/nomina.pdf'); // Sin extensión
         $template = $pdf->importPage(1);
         $pdf->useTemplate($template);
 
+
         $pdf->SetXY( 18.7,14);
-        $pdf->Cell(0,0, $nomina['emisor_nombre']);
+        $pdf->Cell(0,0, $nomina['org_empresa_razon_social']);
 
         $pdf->SetXY( 165,14);
-        $pdf->Cell(0,0, explode(' ', $nomina['sat_cfdi_fecha'])[0]);
+        $pdf->Cell(0,0, explode(' ', $nomina['nom_nomina_fecha_pago'])[0]);
 
         $pdf->SetXY( 26,19);
-        $pdf->Cell(0,0, $nomina['emisor_rfc']);
+        $pdf->Cell(0,0, $nomina['org_empresa_rfc']);
 
         $pdf->SetXY( 77,19);
-        $pdf->Cell(0,0, $nomina['nomina_registro_patronal']);
+        $pdf->Cell(0,0, $nomina['im_registro_patronal_descripcion']);
 
         $pdf->SetXY( 165,17.5);
-        $pdf->Cell(0,0, explode(' ', $nomina['sat_cfdi_fecha'])[1]);
+        $pdf->Cell(0,0, date('h:i:s'));
 
         $pdf->SetXY( 35,22.6);
-        $pdf->Cell(0,0, $nomina['regimen_fiscal_descripcion']);
+        $pdf->Cell(0,0, $nomina['cat_sat_regimen_fiscal_descripcion']);
 
         $pdf->SetXY( 47,27.5);
-        $pdf->Cell(0,0, $nomina['cp_codigo_postal']);
+        $pdf->Cell(0,0, $nomina['dp_cp_descripcion']);
+
+        $nombre_receptor = $nomina['em_empleado_nombre'].' '.$nomina['em_empleado_ap'].' '.$nomina['em_empleado_am'];
 
         $pdf->SetXY( 18,40);
-        $pdf->Cell(0,0, $nomina['sat_receptor_nombre']);
+        $pdf->Cell(0,0, $nombre_receptor);
 
         $pdf->SetXY( 25,44);
-        $pdf->Cell(0,0, $nomina['sat_receptor_rfc']);
+        $pdf->Cell(0,0, $nomina['em_empleado_rfc']);
 
         $pdf->SetXY( 27,47.5);
-        $pdf->Cell(0,0, $nomina['sat_receptor_curp']);
+        $pdf->Cell(0,0, $nomina['em_empleado_curp']);
 
         $pdf->SetXY( 49,52.5);
         $pdf->Cell(0,0, $nomina['nomina_fecha_inicio_rel_laboral']);
-
-        $pdf->SetXY( 49,52.5);
-        $pdf->Cell(0,0, $nomina['nomina_fecha_inicio_rel_laboral']);
-
+/*
         $pdf->SetXY( 31,57);
         $pdf->Cell(0,0, $nomina['sat_nomina_tipo_jornada_descripcion']);
 
@@ -1207,9 +1207,9 @@ class nom_nomina extends modelo
         $pdf->Cell(0,0,$nomina['sat_cfdi_uuid']);
 
         $pdf->SetXY( 145,212);
-        $pdf->Cell(0,0,$nomina['sat_cfdi_no_certificado_sat']);
+        $pdf->Cell(0,0,$nomina['sat_cfdi_no_certificado_sat']);*/
 
-        $pdf->Output($nomina['sat_receptor_nombre'].'-'.$nomina['nomina_fecha_final'].'.pdf','D');
+        $pdf->Output($nombre_emisor.'-'.$nomina['nom_nomina_fecha_final_pago'].'.pdf','D');
 
         return true;
     }
