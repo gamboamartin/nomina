@@ -2,6 +2,7 @@
 
 namespace models;
 
+use base\numero_texto;
 use base\orm\modelo;
 use config\generales;
 use gamboamartin\empleado\models\em_abono_anticipo;
@@ -1085,7 +1086,7 @@ class nom_nomina extends modelo
         $pdf->SetXY( 125,65);
         $pdf->Cell(0,0, "$".number_format($nomina['em_empleado_salario_diario'],2));
 
-        $pdf->SetFont('Arial','',8);
+        $pdf->SetFont('Arial','',7);
 
         $y = 87;
         foreach($percepciones as $percepcion){
@@ -1110,63 +1111,64 @@ class nom_nomina extends modelo
             $pdf->SetXY( 110,$y);
             $pdf->Cell(0,0, "$".number_format($total,2));
 
-            $y+=9;
+            $y+=7;
         }
-/*
+
         foreach($otros_pagos as $otros_pago){
-            // print_r($percepcion);exit;
             $pdf->SetXY( 18,$y);
-            $pdf->Cell(0,0, $otros_pago['sat_nomina_otro_pago_codigo']);
+            $pdf->Cell(0,0, $otros_pago['cat_sat_tipo_otro_pago_nom_codigo']);
 
             $y-=1;
             $pdf->SetXY( 30,$y);
-            $pdf->MultiCell(w:50,h:2.5, txt: $otros_pago['sat_nomina_otro_pago_descripcion'],maxrows: 10);
+            $pdf->MultiCell(w:50,h:2.5, txt: $otros_pago['nom_otro_pago_descripcion'],maxrows: 10);
 
             $y++;
 
             $pdf->SetXY( 75,$y);
-            $pdf->Cell(0,0, "$".number_format($otros_pago['nomina_otro_pago_gravable'],2));
+            $pdf->Cell(0,0, "$".number_format($otros_pago['nom_par_otro_pago_importe_gravado'],2));
 
             $pdf->SetXY( 95,$y);
-            $pdf->Cell(0,0, "$".number_format($otros_pago['nomina_otro_pago_exento'],2));
+            $pdf->Cell(0,0, "$".number_format($otros_pago['nom_par_otro_pago_importe_exento'],2));
+
+            $total = $otros_pago['nom_par_otro_pago_importe_gravado'] +
+                $otros_pago['nom_par_otro_pago_importe_exento'];
 
             $pdf->SetXY( 110,$y);
-            $pdf->Cell(0,0, "$".number_format($otros_pago['nomina_otro_pago_total'],2));
+            $pdf->Cell(0,0, "$".number_format($total,2));
 
-
-
-            $y+=9;
+            $y+=7;
         }
 
         $y = 87;
         foreach($deducciones as $deduccion){
             // print_r($percepcion);exit;
             $pdf->SetXY( 130,$y);
-            $pdf->Cell(0,0, $deduccion['sat_nomina_deduccion_codigo']);
+            $pdf->Cell(0,0, $deduccion['cat_sat_tipo_deduccion_nom_codigo']);
 
 
             $y-=1;
             $pdf->SetXY( 150,$y);
-            $pdf->MultiCell(w:40,h:2.5, txt: $deduccion['nomina_deduccion_descripcion'],maxrows: 5);
+            $pdf->MultiCell(w:40,h:2.5, txt: $deduccion['nom_deduccion_descripcion'],maxrows: 5);
 
             $y++;
 
+            $total_deduccion = $deduccion['nom_par_deduccion_importe_gravado'] +
+                $deduccion['nom_par_deduccion_importe_exento'];
+
             $pdf->SetXY( 188,$y);
-            $pdf->Cell(0,0,"$". number_format( $deduccion['nomina_deduccion_monto'],2));
+            $pdf->Cell(0,0,"$". number_format($total_deduccion,2));
 
-
-            $y+=11;
+            $y+=7;
         }
 
-
         $pdf->SetXY( 185,134.5);
-        $pdf->Cell(0,0,"$". number_format($nomina['sat_cfdi_sub_total'],2));
+        $pdf->Cell(0,0,"$". number_format($nomina['nom_nomina_total_percepcion_total'],2));
 
         $pdf->SetXY( 185,138.5);
-        $pdf->Cell(0,0,"$". number_format($nomina['nomina_deduccion_total_otras_deducciones'],2));
+        $pdf->Cell(0,0,"$". number_format($nomina['nom_nomina_total_deduccion_total'],2));
 
         $pdf->SetXY( 185,142.3);
-        $pdf->Cell(0,0,"$". number_format($nomina['nomina_total_impuestos_retenidos'],2));
+        $pdf->Cell(0,0,"$". number_format($nomina['nom_nomina_total_deduccion_total'],2));
 
         $pdf->SetXY( 185,146);
         $pdf->Cell(0,0,"$". number_format($nomina['sat_cfdi_total'],2));
@@ -1176,26 +1178,12 @@ class nom_nomina extends modelo
 
         $total = $nomina['sat_cfdi_total'];
 
-        //$total_letra = (new numero_texto())->to_word($total,'MXN');
+        $total_letra = $total . ' MXN';
 
-        //$pdf->SetFont('Arial','',6);
-        //$pdf->SetXY( 130,155);
-        //$pdf->Cell(0,0,$total_letra);
+        $pdf->SetFont('Arial','',6);
+        $pdf->SetXY( 130,155);
+        $pdf->Cell(0,0,$total_letra);
 
-
-        $pdf->SetFont('Arial','',8);
-        $pdf->SetXY( 115,177);
-        $pdf->Cell(0,0,'99 Por Definir');
-
-        $pdf->SetFont('Arial','',8);
-        $pdf->SetXY( 145,205);
-        $pdf->Cell(0,0,$nomina['sat_cfdi_no_certificado']);
-
-        $pdf->SetXY( 145,208);
-        $pdf->Cell(0,0,$nomina['sat_cfdi_uuid']);
-
-        $pdf->SetXY( 145,212);
-        $pdf->Cell(0,0,$nomina['sat_cfdi_no_certificado_sat']);*/
 
         $pdf->Output($nombre_receptor.'-'.$nomina['nom_nomina_fecha_final_pago'].'.pdf','D');
 
