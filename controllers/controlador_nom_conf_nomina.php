@@ -190,7 +190,7 @@ class controlador_nom_conf_nomina extends system {
 
     private function base(): array|stdClass
     {
-        $r_modifica =  parent::modifica(header: false,aplica_form:  false);
+        $r_modifica =  parent::modifica(header: false, ws: false);
         if(errores::$error){
             return $this->errores->error(mensaje: 'Error al generar template',data:  $r_modifica);
         }
@@ -313,7 +313,7 @@ class controlador_nom_conf_nomina extends system {
         $controlador = new controlador_nom_conf_percepcion($this->link);
         $controlador->registro_id = $this->nom_conf_percepcion_id;
 
-        $r_modifica = $controlador->modifica(header: false, aplica_form: false);
+        $r_modifica = $controlador->modifica(header: false, ws: false);
         if (errores::$error) {
             return $this->errores->error(mensaje: 'Error al generar template', data: $r_modifica);
         }
