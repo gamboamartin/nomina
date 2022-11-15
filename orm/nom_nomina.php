@@ -2,7 +2,6 @@
 
 namespace models;
 
-use base\numero_texto;
 use base\orm\modelo;
 use config\generales;
 use gamboamartin\empleado\models\em_abono_anticipo;
@@ -1171,19 +1170,23 @@ class nom_nomina extends modelo
         $pdf->Cell(0,0,"$". number_format($nomina['nom_nomina_total_deduccion_total'],2));
 
         $pdf->SetXY( 185,146);
-        $pdf->Cell(0,0,"$". number_format($nomina['sat_cfdi_total'],2));
+        $pdf->Cell(0,0,"$". number_format($nomina['nom_nomina_total'],2));
 
         $pdf->SetXY( 110,134.5);
-        $pdf->Cell(0,0,"$". number_format($nomina['sat_cfdi_sub_total'],2));
+        $pdf->Cell(0,0,"$". number_format($nomina['nom_nomina_total_percepcion_total'],2));
 
-        $total = $nomina['sat_cfdi_total'];
+        $total = $nomina['nom_nomina_total'];
 
-        $total_letra = $total . ' MXN';
+        $total_letra = (new numero_texto())->to_word($total,'MXN');
 
         $pdf->SetFont('Arial','',6);
         $pdf->SetXY( 130,155);
         $pdf->Cell(0,0,$total_letra);
 
+
+        $pdf->SetFont('Arial','',8);
+        $pdf->SetXY( 115,177);
+        $pdf->Cell(0,0,'99 Por Definir');
 
         $pdf->Output($nombre_receptor.'-'.$nomina['nom_nomina_fecha_final_pago'].'.pdf','D');
 
