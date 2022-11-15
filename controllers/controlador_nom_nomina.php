@@ -643,8 +643,7 @@ class controlador_nom_nomina extends base_nom
         return $registros;
     }
 
-    public function modifica(bool $header, bool $ws = false, string $breadcrumbs = '', bool $aplica_form = true,
-                             bool $muestra_btn = true): array|string|stdClass
+    public function modifica(bool $header, bool $ws = false): array|stdClass
     {
         $params = $this->params_actions->modifica ?? new stdClass();
         $base = $this->base(params: $params);

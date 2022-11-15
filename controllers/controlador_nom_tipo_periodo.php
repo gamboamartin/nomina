@@ -49,8 +49,7 @@ class controlador_nom_tipo_periodo extends system {
         return $r_alta;
     }
 
-    public function modifica(bool $header, bool $ws = false, string $breadcrumbs = '', bool $aplica_form = true,
-                             bool $muestra_btn = true): array|string
+    public function modifica(bool $header, bool $ws = false): array|stdClass
     {
         $base = $this->base();
         if(errores::$error){

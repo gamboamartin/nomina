@@ -70,8 +70,7 @@ class controlador_nom_par_isn extends system {
         return $data;
     }
 
-    public function modifica(bool $header, bool $ws = false, string $breadcrumbs = '', bool $aplica_form = true,
-                             bool $muestra_btn = true): array|string
+    public function modifica(bool $header, bool $ws = false): array|stdClass
     {
         $base = $this->base();
         if(errores::$error){
