@@ -1053,78 +1053,66 @@ class nom_nomina extends modelo
         $pdf->Cell(0,0, $nomina['em_empleado_curp']);
 
         $pdf->SetXY( 49,52.5);
-        $pdf->Cell(0,0, $nomina['nomina_fecha_inicio_rel_laboral']);
-/*
+        $pdf->Cell(0,0, $nomina['em_empleado_fecha_inicio_rel_laboral']);
+
         $pdf->SetXY( 31,57);
-        $pdf->Cell(0,0, $nomina['sat_nomina_tipo_jornada_descripcion']);
+        $pdf->Cell(0,0, $nomina['cat_sat_tipo_jornada_nom_descripcion']);
 
         $pdf->SetXY( 25,61);
-        $pdf->Cell(0,0, $nomina['sat_receptor_numero_seguridad_social']);
+        $pdf->Cell(0,0, $nomina['em_empleado_nss']);
 
         $pdf->SetXY( 127,39.5);
-        $pdf->Cell(0,0, explode('-',$nomina['nomina_fecha_inicial'])[0]);
+        $pdf->Cell(0,0, explode('-',$nomina['nom_nomina_fecha_final_pago'])[0]);
+
+        $periodo = $nomina['cat_sat_periodicidad_pago_nom_descripcion'].' '.$nomina['nom_nomina_fecha_inicial_pago'];
+        $periodo .= ' a '.$nomina['nom_nomina_fecha_final_pago'];
 
         $pdf->SetXY( 125,44.5);
-        $pdf->Cell(0,0, $nomina['sat_nomina_periodicidad_pago_descripcion']);
-
-        $pdf->SetXY( 148,44.5);
-        $pdf->Cell(0,0, $nomina['nomina_fecha_inicial']);
-
-        $pdf->SetXY( 169,44.5);
-        $pdf->Cell(0,0, 'A');
-
-        $pdf->SetXY( 172,44.5);
-        $pdf->Cell(0,0, $nomina['nomina_fecha_final']);
-
+        $pdf->Cell(0,0, $periodo);
 
         $pdf->SetXY( 131,48.5);
-        $pdf->Cell(0,0, $nomina['nomina_n_dias_pago']);
-
-        $pdf->SetXY( 131,48.5);
-        $pdf->Cell(0,0, $nomina['nomina_n_dias_pago']);
+        $pdf->Cell(0,0, $nomina['nom_nomina_num_dias_pagados']);
 
         $pdf->SetXY( 129,52.5);
-        $pdf->Cell(0,0, $nomina['nomina_fecha_pago']);
+        $pdf->Cell(0,0, $nomina['nom_nomina_fecha_pago']);
 
         $pdf->SetXY( 125,57);
-        $pdf->Cell(0,0, $nomina['puesto_descripcion']);
+        $pdf->Cell(0,0, $nomina['org_puesto_descripcion']);
 
         $pdf->SetXY( 125,61);
-        $pdf->Cell(0,0, $nomina['departamento_descripcion']);
+        $pdf->Cell(0,0, $nomina['org_departamento_descripcion']);
 
         $pdf->SetXY( 125,65);
-        $pdf->Cell(0,0, "$".number_format($nomina['nomina_sdi'],2));
+        $pdf->Cell(0,0, "$".number_format($nomina['em_empleado_salario_diario'],2));
 
         $pdf->SetFont('Arial','',8);
 
         $y = 87;
         foreach($percepciones as $percepcion){
-            // print_r($percepcion);exit;
             $pdf->SetXY( 18,$y);
-            $pdf->Cell(0,0, $percepcion['sat_nomina_percepcion_codigo']);
-
-
-            $pdf->SetXY( 30,$y);
-            //$pdf->Cell(0,0, $percepcion['nomina_percepcion_descripcion']);
+            $pdf->Cell(0,0, $percepcion['cat_sat_tipo_percepcion_nom_codigo']);
 
             $y-=1;
             $pdf->SetXY( 30,$y);
-            $pdf->MultiCell(w:50,h:2.5, txt: $percepcion['nomina_percepcion_descripcion'],maxrows: 10);
+            $pdf->MultiCell(w:45,h:2.5, txt: $percepcion['nom_percepcion_descripcion'],maxrows: 9);
 
             $y++;
 
             $pdf->SetXY( 75,$y);
-            $pdf->Cell(0,0, "$".number_format($percepcion['nomina_percepcion_gravable'],2));
+            $pdf->Cell(0,0, "$".number_format($percepcion['nom_par_percepcion_importe_gravado'],2));
 
             $pdf->SetXY( 95,$y);
-            $pdf->Cell(0,0, "$".number_format($percepcion['nomina_percepcion_exento'],2));
+            $pdf->Cell(0,0, "$".number_format($percepcion['nom_par_percepcion_importe_exento'],2));
+
+            $total = $percepcion['nom_par_percepcion_importe_gravado'] +
+                $percepcion['nom_par_percepcion_importe_exento'];
 
             $pdf->SetXY( 110,$y);
-            $pdf->Cell(0,0, "$".number_format($percepcion['nomina_percepcion_total'],2));
+            $pdf->Cell(0,0, "$".number_format($total,2));
 
             $y+=9;
         }
-
+/*
         foreach($otros_pagos as $otros_pago){
             // print_r($percepcion);exit;
             $pdf->SetXY( 18,$y);
@@ -1209,7 +1197,7 @@ class nom_nomina extends modelo
         $pdf->SetXY( 145,212);
         $pdf->Cell(0,0,$nomina['sat_cfdi_no_certificado_sat']);*/
 
-        $pdf->Output($nombre_emisor.'-'.$nomina['nom_nomina_fecha_final_pago'].'.pdf','D');
+        $pdf->Output($nombre_receptor.'-'.$nomina['nom_nomina_fecha_final_pago'].'.pdf','D');
 
         return true;
     }
