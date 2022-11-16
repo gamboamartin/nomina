@@ -75,22 +75,26 @@ class nom_nomina extends modelo
 
         $columnas_extra['nom_nomina_total_deduccion_retenido_gravado'] =
             "IFNULL ((SELECT SUM(nom_par_deduccion.importe_gravado) FROM  nom_par_deduccion 
-            INNER JOIN nom_deduccion ON nom_par_deduccion.nom_deduccion_id = nom_deduccion.id AND nom_deduccion.es_impuesto_retenido = 'activo'), 0)";
+            INNER JOIN nom_deduccion ON nom_par_deduccion.nom_deduccion_id = nom_deduccion.id 
+            AND nom_deduccion.es_impuesto_retenido = 'activo' AND nom_par_deduccion.nom_nomina_id = nom_nomina.id), 0)";
 
         $columnas_extra['nom_nomina_total_deduccion_retenido_exento'] =
             "IFNULL ((SELECT SUM(nom_par_deduccion.importe_exento) FROM  nom_par_deduccion 
-            INNER JOIN nom_deduccion ON nom_par_deduccion.nom_deduccion_id = nom_deduccion.id AND nom_deduccion.es_impuesto_retenido = 'activo'), 0)";
+            INNER JOIN nom_deduccion ON nom_par_deduccion.nom_deduccion_id = nom_deduccion.id 
+            AND nom_deduccion.es_impuesto_retenido = 'activo' AND nom_par_deduccion.nom_nomina_id = nom_nomina.id), 0)";
 
         $columnas_extra['nom_nomina_total_deduccion_retenido'] =
             "IFNULL($columnas_extra[nom_nomina_total_deduccion_retenido_gravado] + $columnas_extra[nom_nomina_total_deduccion_retenido_exento] ,0)";
 
         $columnas_extra['nom_nomina_total_deduccion_descuento_gravado'] =
             "IFNULL ((SELECT SUM(nom_par_deduccion.importe_gravado) FROM  nom_par_deduccion 
-            INNER JOIN nom_deduccion ON nom_par_deduccion.nom_deduccion_id = nom_deduccion.id AND nom_deduccion.es_otra_deduccion = 'activo'), 0)";
+            INNER JOIN nom_deduccion ON nom_par_deduccion.nom_deduccion_id = nom_deduccion.id 
+            AND nom_deduccion.es_otra_deduccion = 'activo' AND nom_par_deduccion.nom_nomina_id = nom_nomina.id), 0)";
 
         $columnas_extra['nom_nomina_total_deduccion_descuento_exento'] =
             "IFNULL ((SELECT SUM(nom_par_deduccion.importe_exento) FROM  nom_par_deduccion 
-            INNER JOIN nom_deduccion ON nom_par_deduccion.nom_deduccion_id = nom_deduccion.id AND nom_deduccion.es_otra_deduccion = 'activo'), 0)";
+            INNER JOIN nom_deduccion ON nom_par_deduccion.nom_deduccion_id = nom_deduccion.id 
+            AND nom_deduccion.es_otra_deduccion = 'activo' AND nom_par_deduccion.nom_nomina_id = nom_nomina.id), 0)";
 
         $columnas_extra['nom_nomina_total_deduccion_descuento'] =
             "IFNULL($columnas_extra[nom_nomina_total_deduccion_descuento_gravado] + $columnas_extra[nom_nomina_total_deduccion_descuento_exento] ,0)";
