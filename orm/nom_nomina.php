@@ -73,6 +73,27 @@ class nom_nomina extends modelo
         $columnas_extra['nom_nomina_total_deduccion_total'] =
             "IFNULL($columnas_extra[nom_nomina_total_deduccion_exento] + $columnas_extra[nom_nomina_total_deduccion_gravado] ,0)";
 
+        $columnas_extra['nom_nomina_total_deduccion_retenido_gravado'] =
+            "IFNULL ((SELECT SUM(nom_par_deduccion.importe_gravado) FROM  nom_par_deduccion 
+            INNER JOIN nom_deduccion ON nom_par_deduccion.nom_deduccion_id = nom_deduccion.id AND nom_deduccion.es_impuesto_retenido = 'activo'), 0)";
+
+        $columnas_extra['nom_nomina_total_deduccion_retenido_exento'] =
+            "IFNULL ((SELECT SUM(nom_par_deduccion.importe_exento) FROM  nom_par_deduccion 
+            INNER JOIN nom_deduccion ON nom_par_deduccion.nom_deduccion_id = nom_deduccion.id AND nom_deduccion.es_impuesto_retenido = 'activo'), 0)";
+
+        $columnas_extra['nom_nomina_total_deduccion_retenido'] =
+            "IFNULL($columnas_extra[nom_nomina_total_deduccion_retenido_gravado] + $columnas_extra[nom_nomina_total_deduccion_retenido_exento] ,0)";
+
+        $columnas_extra['nom_nomina_total_deduccion_descuento_gravado'] =
+            "IFNULL ((SELECT SUM(nom_par_deduccion.importe_gravado) FROM  nom_par_deduccion 
+            INNER JOIN nom_deduccion ON nom_par_deduccion.nom_deduccion_id = nom_deduccion.id AND nom_deduccion.es_otra_deduccion = 'activo'), 0)";
+
+        $columnas_extra['nom_nomina_total_deduccion_descuento_exento'] =
+            "IFNULL ((SELECT SUM(nom_par_deduccion.importe_exento) FROM  nom_par_deduccion 
+            INNER JOIN nom_deduccion ON nom_par_deduccion.nom_deduccion_id = nom_deduccion.id AND nom_deduccion.es_otra_deduccion = 'activo'), 0)";
+
+        $columnas_extra['nom_nomina_total_deduccion_descuento'] =
+            "IFNULL($columnas_extra[nom_nomina_total_deduccion_descuento_gravado] + $columnas_extra[nom_nomina_total_deduccion_descuento_exento] ,0)";
 
         $columnas_extra['nom_nomina_total'] =
             "IFNULL($columnas_extra[nom_nomina_total_percepcion_total] + $columnas_extra[nom_nomina_total_otro_pago_total]- $columnas_extra[nom_nomina_total_deduccion_total],0)";
@@ -1164,10 +1185,10 @@ class nom_nomina extends modelo
         $pdf->Cell(0,0,"$". number_format($nomina['nom_nomina_total_percepcion_total'],2));
 
         $pdf->SetXY( 185,138.5);
-        $pdf->Cell(0,0,"$". number_format($nomina['nom_nomina_total_deduccion_total'],2));
+        $pdf->Cell(0,0,"$". number_format($nomina['nom_nomina_total_deduccion_descuento'],2));
 
         $pdf->SetXY( 185,142.3);
-        $pdf->Cell(0,0,"$". number_format($nomina['nom_nomina_total_deduccion_total'],2));
+        $pdf->Cell(0,0,"$". number_format($nomina['nom_nomina_total_deduccion_retenido'],2));
 
         $pdf->SetXY( 185,146);
         $pdf->Cell(0,0,"$". number_format($nomina['nom_nomina_total'],2));
