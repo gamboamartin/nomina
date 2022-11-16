@@ -1106,7 +1106,7 @@ class nom_nomina extends modelo
         $pdf->SetXY( 125,65);
         $pdf->Cell(0,0, "$".number_format($nomina['em_empleado_salario_diario'],2));
 
-        $pdf->SetFont('Arial','',7);
+        $pdf->SetFont('Arial','',6);
 
         $y = 87;
         foreach($percepciones as $percepcion){
@@ -1131,7 +1131,7 @@ class nom_nomina extends modelo
             $pdf->SetXY( 110,$y);
             $pdf->Cell(0,0, "$".number_format($total,2));
 
-            $y+=7;
+            $y+=4;
         }
 
         foreach($otros_pagos as $otros_pago){
@@ -1156,7 +1156,7 @@ class nom_nomina extends modelo
             $pdf->SetXY( 110,$y);
             $pdf->Cell(0,0, "$".number_format($total,2));
 
-            $y+=7;
+            $y+=4;
         }
 
         $y = 87;
@@ -1178,7 +1178,7 @@ class nom_nomina extends modelo
             $pdf->SetXY( 188,$y);
             $pdf->Cell(0,0,"$". number_format($total_deduccion,2));
 
-            $y+=7;
+            $y+=5;
         }
 
         $pdf->SetXY( 185,134.5);
