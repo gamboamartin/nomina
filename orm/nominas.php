@@ -159,7 +159,7 @@ class nominas extends modelo {
             return $this->error->error(mensaje: 'Error al asignar codigo', data: $registro);
         }
 
-        $registro = $this->campos_base(modelo: $modelo,registro:  $registro);
+        $registro = $this->campos_base( data:  $registro, modelo: $modelo);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al asignar descripcion_select', data: $registro);
         }
@@ -197,33 +197,33 @@ class nominas extends modelo {
         return $nom_par_percepcion;
     }
 
-    private function campos_base(modelo $modelo, array $registro): array
+    protected function campos_base(array $data, modelo $modelo, int $id = -1): array
     {
-        $valida = $this->valida_registro_modelo(modelo: $modelo,registro:  $registro);
+        $valida = $this->valida_registro_modelo(modelo: $modelo,registro:  $data);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al validar registro', data: $valida);
         }
-        $registro = $this->asigna_descripcion(modelo: $modelo, registro: $registro);
+        $data = $this->asigna_descripcion(modelo: $modelo, registro: $data);
         if(errores::$error){
-            return $this->error->error(mensaje: 'Error al asignar descripcion', data: $registro);
+            return $this->error->error(mensaje: 'Error al asignar descripcion', data: $data);
         }
 
-        $registro = $this->asigna_descripcion_select(registro: $registro);
+        $data = $this->asigna_descripcion_select(registro: $data);
         if(errores::$error){
-            return $this->error->error(mensaje: 'Error al asignar descripcion_select', data: $registro);
+            return $this->error->error(mensaje: 'Error al asignar descripcion_select', data: $data);
         }
 
-        $registro = $this->asigna_alias(registro: $registro);
+        $data = $this->asigna_alias(registro: $data);
         if(errores::$error){
-            return $this->error->error(mensaje: 'Error al asignar descripcion_select', data: $registro);
+            return $this->error->error(mensaje: 'Error al asignar descripcion_select', data: $data);
         }
 
-        $registro = $this->asigna_codigo_bis(registro: $registro);
+        $data = $this->asigna_codigo_bis(registro: $data);
         if(errores::$error){
-            return $this->error->error(mensaje: 'Error al asignar descripcion_select', data: $registro);
+            return $this->error->error(mensaje: 'Error al asignar descripcion_select', data: $data);
         }
 
-        return $registro;
+        return $data;
     }
 
     /**
