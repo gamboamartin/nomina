@@ -2,6 +2,7 @@
 namespace models;
 use base\orm\modelo;
 
+use gamboamartin\administrador\models\adm_campo;
 use gamboamartin\empleado\models\em_tipo_abono_anticipo;
 use gamboamartin\empleado\models\em_tipo_anticipo;
 use gamboamartin\errores\errores;
