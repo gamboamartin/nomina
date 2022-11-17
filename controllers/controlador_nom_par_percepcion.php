@@ -65,7 +65,7 @@ class controlador_nom_par_percepcion extends system {
         return $r_alta;
     }
 
-    public function modifica(bool $header, bool $ws = false): array|stdClass|stdClass
+    public function modifica(bool $header, bool $ws = false): array|stdClass
     {
         $base = $this->base();
         if(errores::$error){
