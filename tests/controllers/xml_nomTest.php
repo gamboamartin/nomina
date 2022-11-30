@@ -43,6 +43,13 @@ class xml_nomTest extends test {
 
 
         $del = (new base_test())->del_cat_sat_moneda($link);
+        if(errores::$error) {
+            $error = (new errores())->error('Error al eliminar', $del);
+            print_r($error);
+            exit;
+        }
+
+        $del = (new base_test())->del_cat_sat_tipo_de_comprobante($link);
         if(errores::$error){
             $error = (new errores())->error('Error al eliminar', $del);
             print_r($error);

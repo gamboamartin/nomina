@@ -197,7 +197,7 @@ class nominas extends modelo {
         return $nom_par_percepcion;
     }
 
-    protected function campos_base(array $data, modelo $modelo, int $id = -1): array
+    protected function campos_base(array $data, modelo $modelo, int $id = -1, array $keys_integra_ds = array()): array
     {
         $valida = $this->valida_registro_modelo(modelo: $modelo,registro:  $data);
         if(errores::$error){

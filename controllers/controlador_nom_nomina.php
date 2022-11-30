@@ -550,10 +550,7 @@ class controlador_nom_nomina extends base_nom
 
         $documento = array();
         $file = array();
-
-
         $file_xml_st = $ruta_archivos_tmp.'/'.$this->registro_id.'.st.xml';
-
         file_put_contents($file_xml_st, $xml);
 
 
@@ -570,9 +567,6 @@ class controlador_nom_nomina extends base_nom
         echo trim(file_get_contents($documento->registro['doc_documento_ruta_absoluta']));
         header('Content-Type: text/xml');
         exit;
-
-
-        return $nom_nomina;
     }
 
     private function init_partidas_ids(): array

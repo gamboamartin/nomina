@@ -755,6 +755,16 @@ class base_test{
         return $del;
     }
 
+    public function del_cat_sat_tipo_de_comprobante(PDO $link): array
+    {
+        $del = (new \gamboamartin\cat_sat\tests\base_test())->del_cat_sat_tipo_de_comprobante($link);
+        if(errores::$error){
+            return (new errores())->error('Error al eliminar', $del);
+        }
+
+        return $del;
+    }
+
     public function del_cat_sat_tipo_nomina(PDO $link): array
     {
 
