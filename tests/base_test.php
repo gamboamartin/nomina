@@ -768,8 +768,6 @@ class base_test{
 
     public function del_cat_sat_moneda(PDO $link): array
     {
-
-
         $del = $this->del_com_tipo_cambio($link);
         if(errores::$error){
             return (new errores())->error(mensaje: 'Error al eliminar ', data: $del);
@@ -1072,9 +1070,8 @@ class base_test{
 
         $del = (new base_test())->del_nom_conf_nomina($link);
         if(errores::$error){
-            $error = (new errores())->error('Error al eliminar', $del);
-            print_r($error);
-            exit;
+            return (new errores())->error('Error al eliminar', $del);
+
         }
 
         $del = $this->del($link, 'models\\nom_conf_factura');
@@ -1087,18 +1084,16 @@ class base_test{
     public function del_nom_conf_nomina(PDO $link): array
     {
 
+
         $del = (new base_test())->del_nom_conf_percepcion($link);
         if(errores::$error){
-            $error = (new errores())->error('Error al eliminar', $del);
-            print_r($error);
-            exit;
+            return (new errores())->error('Error al eliminar', $del);
         }
 
         $del = (new base_test())->del_nom_conf_empleado($link);
         if(errores::$error){
-            $error = (new errores())->error('Error al eliminar', $del);
-            print_r($error);
-            exit;
+            return (new errores())->error('Error al eliminar', $del);
+
         }
 
         $del = $this->del($link, 'models\\nom_conf_nomina');
@@ -1110,6 +1105,7 @@ class base_test{
 
     public function del_nom_conf_percepcion(PDO $link): array
     {
+
         $del = $this->del($link, 'models\\nom_conf_percepcion');
         if(errores::$error){
             return (new errores())->error('Error al eliminar', $del);

@@ -56,7 +56,7 @@
       "gamboa.martin/services": "dev-main",
       "gamboa.martin/organigrama": "dev-main",
       "gamboa.martin/direccion_postal": "^1.0.0",
-      "gamboa.martin/cat_sat": "dev-main",
+      "gamboa.martin/cat_sat": "^1.0.0",
       "gamboa.martin/js_base": "dev-master",
       "gamboa.martin/im_registro_patronal": "dev-main",
       "gamboa.martin/facturacion": "dev-main",
