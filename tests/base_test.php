@@ -5,6 +5,7 @@ use gamboamartin\cat_sat\models\cat_sat_isr;
 use gamboamartin\cat_sat\models\cat_sat_metodo_pago;
 use gamboamartin\cat_sat\models\cat_sat_moneda;
 use gamboamartin\cat_sat\models\cat_sat_subsidio;
+use gamboamartin\cat_sat\models\cat_sat_tipo_de_comprobante;
 use gamboamartin\cat_sat\models\cat_sat_tipo_nomina;
 use gamboamartin\comercial\models\com_producto;
 use gamboamartin\comercial\models\com_sucursal;
@@ -461,8 +462,22 @@ class base_test{
                                     string $nom_percepcion_codigo = '1', string $nom_percepcion_codigo_bis = '1',
                                     string $nom_percepcion_descripcion = '1', int $nom_percepcion_id = 1,
                                     int $nom_periodo_id = 1, int $nom_rel_empleado_sucursal_id = 1,
-                                    float $salario_diario = 250, float $salario_diario_integrado = 250): array|stdClass
+                                    float $salario_diario = 250, float $salario_diario_integrado = 250,
+                                    int $cat_sat_tipo_de_comprobante_id = 1): array|stdClass
     {
+        $existe = (new cat_sat_tipo_de_comprobante($link))->existe_by_id(registro_id: 1);
+        if(errores::$error){
+            return (new errores())->error('Error al verificar si existe', $existe);
+
+        }
+        if(!$existe) {
+            $alta = $this->alta_cat_sat_tipo_de_comprobante(link: $link,
+                id: $cat_sat_tipo_de_comprobante_id);
+            if (errores::$error) {
+                return (new errores())->error('Error al dar de alta', $alta);
+
+            }
+        }
 
 
         $existe = (new em_empleado($link))->existe_by_id(registro_id: $em_empleado_id);
@@ -580,7 +595,6 @@ class base_test{
             }
         }
 
-
         $registro = array();
         $registro['id'] = $nom_periodo_id;
         $registro['im_registro_patronal_id'] = 1;
@@ -664,7 +678,27 @@ class base_test{
         }
         return $alta;
     }
-    
+
+    public function alta_cat_sat_tipo_de_comprobante(PDO $link, int $id = 1): array|\stdClass
+    {
+        $cat_sat_tipo_de_comprobante = array();
+        $cat_sat_tipo_de_comprobante['id'] = $id;
+        $cat_sat_tipo_de_comprobante['codigo'] = 1;
+        $cat_sat_tipo_de_comprobante['descripcion'] = 1;
+        $cat_sat_tipo_de_comprobante['descripcion_select'] = 1;
+        $cat_sat_tipo_de_comprobante['alias'] = 1;
+        $cat_sat_tipo_de_comprobante['codigo_bis'] = 1;
+
+
+        $alta = (new cat_sat_tipo_de_comprobante($link))->alta_registro($cat_sat_tipo_de_comprobante);
+        if(errores::$error){
+            return (new errores())->error(mensaje: 'Error al insertar periodo', data: $alta);
+
+        }
+        return $alta;
+    }
+
+
     public function alta_nom_rel_empleado_sucursal(PDO $link, int $com_sucursal_id = 1, int $id = 1): array|\stdClass
     {
 

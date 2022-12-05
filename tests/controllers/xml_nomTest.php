@@ -422,7 +422,35 @@ class xml_nomTest extends test {
         errores::$error = false;
     }
 
+    public function test_xml(){
 
+        errores::$error = false;
+
+        $_GET['seccion'] = 'nom_nomina';
+        $_GET['accion'] = 'lista';
+        $_SESSION['grupo_id'] = 1;
+        $_SESSION['usuario_id'] = 2;
+        $_GET['session_id'] = '1';
+        $xml_nom = new xml_nom();
+        //$xml_nom = new liberator($xml_nom);
+        $nom_nomina = new stdClass();
+
+        $alta = (new base_test())->alta_nom_nomina($this->link);
+        if(errores::$error){
+            $error = (new errores())->error('Error al insertar', $alta);
+            print_r($error);
+            exit;
+        }
+
+        $nom_nomina->fc_factura_id = 1;
+
+        $link = $this->link;
+        $resultado = $xml_nom->xml(link: $link, nom_nomina: $nom_nomina);
+        print_r($resultado);exit;
+        $this->assertIsObject($resultado);
+        $this->assertNotTrue(errores::$error);
+        errores::$error = false;
+    }
 
 
 }
