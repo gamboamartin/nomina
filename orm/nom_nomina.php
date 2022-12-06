@@ -15,6 +15,8 @@ use gamboamartin\organigrama\models\org_sucursal;
 use models\base\limpieza;
 use Mpdf\Mpdf;
 use PDO;
+use SoapClient;
+use SoapFault;
 use stdClass;
 use Throwable;
 
@@ -2454,6 +2456,95 @@ class nom_nomina extends modelo
         }
         return $r_nom_par_percepcion->registros;
     }
+
+    public function timbra(string $contenido_xml, string $ejecucion = 'TimbraCFDI', string $id_comprobante = ''){
+        $contenido_xml = trim($contenido_xml);
+        if($contenido_xml === ''){
+            return $this->error->error('xml no puede venir vacio',$contenido_xml);
+        }
+
+        $empresa = new generales();
+        $datos_empresa = $empresa->ruta_pac;
+
+        if($id_comprobante === ''){
+            $id_comprobante = (string)time();
+        }
+        $ws = $datos_empresa['ruta_pac'];
+        $usuario_int = $datos_empresa['usuario_integrador'];
+        $base64Comprobante = base64_encode($contenido_xml);
+        try {
+            $params = array();
+            $params['usuarioIntegrador'] = $usuario_int;
+            $params['xmlComprobanteBase64'] = $base64Comprobante;
+            $params['idComprobante'] = $id_comprobante;
+
+            $client = new SoapClient($ws,$params);
+            $response = $client->__soapCall($ejecucion, array('parameters' => $params));
+
+
+            if((int)$response->TimbraCFDIResult->anyType[6]===25){
+                $data = explode(':',$response->TimbraCFDIResult->anyType[7]);
+                $uuid = trim($data[1]);
+                $data_response = $this->obten_xml($uuid);
+
+                if(errores::$error){
+                    return $this->error->error('Error al obtener xml',$data_response);
+                }
+
+                $data_retorno = new stdClass();
+                $data_retorno->TimbraCFDIResult = $data_response->ObtieneCFDIResult;
+
+                return $data_retorno;
+            }
+
+            if((int)$response->TimbraCFDIResult->anyType[6]>0){
+                return $this->error->error('Error al timbrar',array($response,htmlentities($contenido_xml)));
+            }
+        }
+        catch (SoapFault $fault) {
+            return $this->error->error('Error de conexion PAC',$fault);
+
+        }
+        $data_folio = json_decode($response->TimbraCFDIResult->anyType[8],true);
+        $uuid = $data_folio[0]['Value'];
+        $response->uuid = $uuid;
+        return $response;
+    }
+
+    public function obten_xml(string $uuid): array|SoapClient|stdClass
+    {
+        if($uuid === ''){
+            return $this->error->error('$uuid no puede venir vacio',$uuid);
+        }
+
+        $generales = new generales();
+        $datos_ruta_pac= $generales->ruta_pac;
+        $datos_usuario = $generales->usuario_integrador;
+        $datos_rfc = $generales->rfc;
+
+        $ws = $datos_ruta_pac;
+        $usuario_int = $datos_usuario;
+        $rfc_emisor = $datos_rfc;
+
+        try {
+            $params = array();
+            $params['usuarioIntegrador'] = $usuario_int;
+            $params['folioUUID'] = $uuid;
+            $params['rfcEmisor'] = $rfc_emisor;
+
+            $client = new SoapClient($ws,$params);
+            $response = $client->__soapCall('ObtieneCFDI', array('parameters' => $params));
+            if((int)$response->ObtieneCFDIResult->anyType[6]>0){
+                return $this->error->error('Error al obtener',$response);
+            }
+
+        }
+        catch (SoapFault $fault) {
+            return $this->error->error('Error de conexion PAC',$fault);
+        }
+        return $response;
+    }
+
 
     public function total_deducciones_isr_activo(int $nom_nomina_id): float|array
     {

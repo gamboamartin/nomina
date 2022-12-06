@@ -1212,6 +1212,7 @@ class controlador_nom_nomina extends base_nom
         }
 
 
+
         print_r($nom_nomina);exit;
 
         return $nom_nomina;
