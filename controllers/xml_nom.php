@@ -92,6 +92,11 @@ class xml_nom{
 
     private function data_cfdi_base_nomina(stdClass $data_cfdi, PDO $link, stdClass $nom_nomina): array|stdClass
     {
+        $valida = $this->valida_data_nomina(nom_nomina: $nom_nomina);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al valida nom_nomina', data: $valida);
+        }
+
         $deducciones = (new nom_nomina($link))->deducciones(nom_nomina_id: $nom_nomina->nom_nomina_id);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al obtener deducciones', data: $deducciones);
@@ -449,6 +454,12 @@ class xml_nom{
 
     private function nomina_base(PDO $link, stdClass $nom_nomina): array|stdClass
     {
+
+        $valida = $this->valida_data_nomina(nom_nomina: $nom_nomina);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al valida nom_nomina', data: $valida);
+        }
+
         $nomina = new stdClass();
 
         $nomina->tipo_nomina = $nom_nomina->cat_sat_tipo_nomina_codigo;
@@ -477,6 +488,12 @@ class xml_nom{
 
     private function nomina_emisor(stdClass $emisor, stdClass $nom_nomina, stdClass $nomina): stdClass
     {
+        $keys = array('im_registro_patronal_descripcion');
+        $valida = $this->validacion->valida_existencia_keys(keys: $keys,registro:  $nom_nomina);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al valida nom_nomina', data: $valida);
+        }
+
         $nomina->emisor = new stdClass();
         $nomina->emisor->registro_patronal = $nom_nomina->im_registro_patronal_descripcion;
         $nomina->emisor->rfc_patron_origen =  $emisor->rfc;
@@ -485,10 +502,17 @@ class xml_nom{
 
     private function nomina_header(stdClass $emisor, PDO $link, stdClass $nom_nomina): array|stdClass
     {
+
+        $valida = $this->valida_data_nomina(nom_nomina: $nom_nomina);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al valida nom_nomina', data: $valida);
+        }
+
         $nomina = $this->nomina_base(link: $link, nom_nomina: $nom_nomina);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al obtener nomina base', data: $nomina);
         }
+
 
         $nomina = $this->nomina_emisor(emisor: $emisor,nom_nomina: $nom_nomina, nomina: $nomina);
         if (errores::$error) {
@@ -504,6 +528,18 @@ class xml_nom{
     
     private function nomina_receptor(stdClass $nom_nomina, stdClass $nomina): array|stdClass
     {
+
+        $keys = array('em_empleado_curp','em_empleado_nss','em_empleado_fecha_inicio_rel_laboral',
+            'nom_nomina_fecha_final_pago','cat_sat_tipo_contrato_nom_codigo','cat_sat_tipo_jornada_nom_codigo',
+            'cat_sat_tipo_regimen_nom_codigo','em_empleado_codigo','org_departamento_descripcion',
+            'org_puesto_descripcion','im_clase_riesgo_codigo','cat_sat_periodicidad_pago_nom_codigo',
+            'em_cuenta_bancaria_clabe','bn_banco_codigo','em_empleado_salario_diario_integrado',
+            'em_empleado_salario_diario_integrado','dp_estado_codigo');
+        $valida = $this->validacion->valida_existencia_keys(keys: $keys,registro:  $nom_nomina);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al validar nom_nomina', data: $valida);
+        }
+
         $nomina->receptor = new stdClass();
         $nomina->receptor->curp = $nom_nomina->em_empleado_curp;
         $nomina->receptor->num_seguridad_social = $nom_nomina->em_empleado_nss;
@@ -649,8 +685,44 @@ class xml_nom{
         return $receptor;
     }
 
+    private function valida_data_nomina(stdClass|array $nom_nomina): bool|array
+    {
+        $keys = array('cat_sat_tipo_nomina_codigo','nom_nomina_fecha_pago','nom_nomina_fecha_inicial_pago',
+            'nom_nomina_fecha_final_pago','nom_nomina_num_dias_pagados','nom_nomina_id',
+            'im_registro_patronal_descripcion','em_empleado_curp','em_empleado_nss',
+            'em_empleado_fecha_inicio_rel_laboral');
+        $valida = $this->validacion->valida_existencia_keys(keys: $keys, registro: $nom_nomina);
+        if (errores::$error) {
+            return $this->error->error(
+                mensaje: 'Error al valida nom_nomina', data: $valida);
+        }
+
+        $keys = array('nom_nomina_fecha_pago','nom_nomina_fecha_inicial_pago',
+            'nom_nomina_fecha_final_pago','em_empleado_fecha_inicio_rel_laboral');
+        $valida = $this->validacion->fechas_in_array(data: $nom_nomina, keys: $keys);
+        if (errores::$error) {
+            return $this->error->error(
+                mensaje: 'Error al valida nom_nomina', data: $valida);
+        }
+
+        $keys = array('nom_nomina_id','nom_nomina_num_dias_pagados');
+        $valida = $this->validacion->valida_ids(keys: $keys, registro: $nom_nomina);
+        if (errores::$error) {
+            return $this->error->error(
+                mensaje: 'Error al valida nom_nomina', data: $valida);
+        }
+
+
+        return true;
+    }
+
     public function xml(PDO $link, stdClass $nom_nomina): bool|array|string
     {
+        $valida = $this->valida_data_nomina(nom_nomina: $nom_nomina);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al valida nom_nomina', data: $valida);
+        }
+
         $data_cfdi = $this->data_cfdi_base(fc_factura_id:  $nom_nomina->fc_factura_id,link: $link);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al obtener data cfdi', data: $data_cfdi);
@@ -669,4 +741,6 @@ class xml_nom{
         }
         return $xml;
     }
+
+
 }

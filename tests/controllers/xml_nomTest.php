@@ -9,6 +9,7 @@ use gamboamartin\test\liberator;
 use gamboamartin\test\test;
 
 
+use models\nom_nomina;
 use stdClass;
 use tests\base_test;
 
@@ -435,6 +436,13 @@ class xml_nomTest extends test {
         //$xml_nom = new liberator($xml_nom);
         $nom_nomina = new stdClass();
 
+        $del = (new base_test())->del_fc_factura($this->link);
+        if(errores::$error){
+            $error = (new errores())->error('Error al eliminar', $del);
+            print_r($error);
+            exit;
+        }
+
         $alta = (new base_test())->alta_nom_nomina($this->link);
         if(errores::$error){
             $error = (new errores())->error('Error al insertar', $alta);
@@ -442,12 +450,41 @@ class xml_nomTest extends test {
             exit;
         }
 
-        $nom_nomina->fc_factura_id = 1;
+        $nom_nomina_rs = (new nom_nomina($this->link))->registro($alta->registro_id);
+        if(errores::$error){
+            $error = (new errores())->error('Error al obtener', $nom_nomina_rs);
+            print_r($error);
+            exit;
+        }
+
+        $nom_nomina->fc_factura_id = $nom_nomina_rs['fc_factura_id'];
+        $nom_nomina->nom_nomina_id = 1;
+        $nom_nomina->cat_sat_tipo_nomina_codigo = 1;
+        $nom_nomina->nom_nomina_fecha_pago = '2022-01-01';
+        $nom_nomina->nom_nomina_fecha_inicial_pago = '2022-01-01';
+        $nom_nomina->nom_nomina_fecha_final_pago = '2022-01-01';
+        $nom_nomina->em_empleado_fecha_inicio_rel_laboral = '2022-01-01';
+        $nom_nomina->nom_nomina_num_dias_pagados = '1';
+        $nom_nomina->im_registro_patronal_descripcion = '1';
+        $nom_nomina->em_empleado_nss = '1';
+        $nom_nomina->em_empleado_curp = '1';
+        $nom_nomina->cat_sat_tipo_contrato_nom_codigo = '1';
+        $nom_nomina->cat_sat_tipo_jornada_nom_codigo = '1';
+        $nom_nomina->cat_sat_tipo_regimen_nom_codigo = '1';
+        $nom_nomina->em_empleado_codigo = '1';
+        $nom_nomina->org_departamento_descripcion = '1';
+        $nom_nomina->org_puesto_descripcion = '1';
+        $nom_nomina->im_clase_riesgo_codigo = '1';
+        $nom_nomina->cat_sat_periodicidad_pago_nom_codigo = '1';
+        $nom_nomina->em_cuenta_bancaria_clabe = '1';
+        $nom_nomina->bn_banco_codigo = '1';
+        $nom_nomina->em_empleado_salario_diario_integrado = '1';
+        $nom_nomina->dp_estado_codigo = '1';
 
         $link = $this->link;
         $resultado = $xml_nom->xml(link: $link, nom_nomina: $nom_nomina);
-        print_r($resultado);exit;
-        $this->assertIsObject($resultado);
+        //print_r($resultado);exit;
+        $this->assertIsString($resultado);
         $this->assertNotTrue(errores::$error);
         errores::$error = false;
     }

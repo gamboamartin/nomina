@@ -20,7 +20,6 @@ use html\nom_par_deduccion_html;
 use html\nom_par_otro_pago_html;
 use html\nom_par_percepcion_html;
 use JsonException;
-use models\adm_accion_grupo;
 use models\doc_documento;
 use models\nom_concepto_imss;
 use models\nom_nomina;
@@ -1210,6 +1209,10 @@ class controlador_nom_nomina extends base_nom
         if (errores::$error) {
             return $this->retorno_error(mensaje: 'Error al obtener nomina', data: $nom_nomina, header: $header, ws: $ws);
         }
+
+
+
+
 
 
 
