@@ -2457,7 +2457,7 @@ class nom_nomina extends modelo
         return $r_nom_par_percepcion->registros;
     }
 
-    public function timbra(string $contenido_xml, string $ejecucion = 'TimbraCFDI', string $id_comprobante = ''){
+    public function timbra(string $contenido_xml){
         $contenido_xml = trim($contenido_xml);
         if($contenido_xml === ''){
             return $this->error->error('xml no puede venir vacio',$contenido_xml);
@@ -2469,8 +2469,8 @@ class nom_nomina extends modelo
         if($id_comprobante === ''){
             $id_comprobante = (string)time();
         }
-        $ws = $datos_empresa['ruta_pac'];
-        $usuario_int = $datos_empresa['usuario_integrador'];
+        $ws= $generales->ruta_pac;
+        $usuario_int = $generales->usuario_integrador;
         $base64Comprobante = base64_encode($contenido_xml);
         try {
             $params = array();
