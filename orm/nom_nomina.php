@@ -3248,6 +3248,42 @@ class nom_nomina extends modelo
         return round($total_sueldos,2);
     }
 
+    public function montos_aguinaldo(int $em_empleado_id, int $nom_periodo_id){
+        $bruto_aguinaldo = $this->bruto_aguinaldo(em_empleado_id: $em_empleado_id,nom_periodo_id: $nom_periodo_id);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al obtener total gravado', data: $bruto_aguinaldo);
+        }
+
+        $im_uma = (new im_uma($this->link))->get_uma(fecha: date('Y-m-d'));
+        if(errores::$error){
+            return $this->error->error('Error al obtener registros de UMA', $im_uma);
+        }
+        if($im_uma->n_registros <= 0){
+            return $this->error->error('Error no exsite registro de UMA', $im_uma);
+        }
+        if(!isset($im_uma->registros[0]['im_uma_monto'])){
+            return $this->error->error('Error el uma no tiene monto asignado', $im_uma);
+        }
+        if(is_null($im_uma->registros[0]['im_uma_monto'])){
+            return $this->error->error('Error el uma no tiene monto asignado', $im_uma);
+        }
+
+        $monto_uma = $im_uma->registros[0]['im_uma_monto'];
+
+        $monto_umas_mensual = round($monto_uma * 30, 2);
+
+        $nom_par_percepcion['importe_exento'] = round($bruto_aguinaldo,2);
+        $nom_par_percepcion['importe_gravado'] = 0;
+
+        if((float)$monto_umas_mensual < (float)$bruto_aguinaldo){
+            $res = $bruto_aguinaldo - $monto_umas_mensual;
+            $nom_par_percepcion['importe_exento'] = round($monto_umas_mensual,2);
+            $nom_par_percepcion['importe_gravado'] = round($res,2);
+        }
+
+        return $nom_par_percepcion;
+    }
+
     public function bruto_aguinaldo(int $em_empleado_id, int $nom_periodo_id){
         $em_empleado = (new em_empleado($this->link))->registro(registro_id: $em_empleado_id);
         if(errores::$error){
