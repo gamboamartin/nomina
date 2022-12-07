@@ -3248,6 +3248,62 @@ class nom_nomina extends modelo
         return round($total_sueldos,2);
     }
 
+    public function isr_aguinaldo(int $nom_nomina_id){
+        $nom_nomina = (new nom_nomina($this->link))->registro(registro_id: $nom_nomina_id);
+        if(errores::$error){
+            return $this->error->error('Error al obtener sat receptor', $nom_nomina);
+        }
+
+        $em_empleado = (new em_empleado($this->link))->registro(registro_id: $nom_nomina->em_empleado_id);
+        if(errores::$error){
+            return $this->error->error('Error al obtener sat receptor', $em_empleado);
+        }
+
+        $montos_aguinaldo = $this->montos_aguinaldo(em_empleado_id: $nom_nomina->em_empleado_id,
+            nom_periodo_id: $nom_nomina->nom_periodo_id);
+        if(errores::$error){
+            return $this->error->error('Error al obtener montos aguinaldo', $montos_aguinaldo);
+        }
+
+        $ingreso_ordinario = $em_empleado->salario_diario * 30.4;
+
+        $isr = (new calculo_isr())->isr(
+            cat_sat_periodicidad_pago_nom_id: $nom_nomina->cat_sat_periodicidad_pago_nom_id, link: $this->link,
+            monto: $ingreso_ordinario, fecha: $nom_nomina->fecha_final_pago);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al obtener isr', data: $isr);
+        }
+
+        $subsidio = (new calculo_subsidio())->subsidio(
+            cat_sat_periodicidad_pago_nom_id: $nom_nomina->cat_sat_periodicidad_pago_nom_id, link: $this->link, monto: $ingreso_ordinario,
+            fecha: $nom_nomina->fecha_final_pago);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al obtener $subsidio', data: $subsidio);
+        }
+
+        $isr_ingreso_ordinario = round($isr - $subsidio, 2);
+
+        $total_ingreso_ordinario_gravado = $ingreso_ordinario + $montos_aguinaldo['importe_gravado'];
+
+        $isr = (new calculo_isr())->isr(
+            cat_sat_periodicidad_pago_nom_id: $nom_nomina->cat_sat_periodicidad_pago_nom_id, link: $this->link,
+            monto: $total_ingreso_ordinario_gravado, fecha: $nom_nomina->fecha_final_pago);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al obtener isr', data: $isr);
+        }
+
+        $subsidio = (new calculo_subsidio())->subsidio(
+            cat_sat_periodicidad_pago_nom_id: $nom_nomina->cat_sat_periodicidad_pago_nom_id, link: $this->link,
+            monto: $total_ingreso_ordinario_gravado, fecha: $nom_nomina->fecha_final_pago);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al obtener $subsidio', data: $subsidio);
+        }
+
+        $isr_total_ingreso_ordinario = round($isr - $subsidio, 2);
+
+        return round($isr_total_ingreso_ordinario - $isr_ingreso_ordinario, 2);
+    }
+
     public function montos_aguinaldo(int $em_empleado_id, int $nom_periodo_id){
         $bruto_aguinaldo = $this->bruto_aguinaldo(em_empleado_id: $em_empleado_id,nom_periodo_id: $nom_periodo_id);
         if (errores::$error) {
