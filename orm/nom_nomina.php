@@ -39,7 +39,8 @@ class nom_nomina extends modelo
         $campos_obligatorios = array('cat_sat_periodicidad_pago_nom_id', 'cat_sat_tipo_contrato_nom_id',
             'cat_sat_tipo_jornada_nom_id','cat_sat_tipo_nomina_id','dp_calle_pertenece_id', 'em_cuenta_bancaria_id',
             'fecha_inicial_pago', 'fecha_final_pago', 'im_registro_patronal_id', 'em_empleado_id','nom_periodo_id',
-            'num_dias_pagados','org_departamento_id','org_puesto_id','im_clase_riesgo_id','em_cuenta_bancaria_id');
+            'num_dias_pagados','org_departamento_id','org_puesto_id','im_clase_riesgo_id','em_cuenta_bancaria_id',
+            'fecha_pago');
 
         $columnas_extra = array();
         $columnas_extra['nom_nomina_total_percepcion_gravado'] =
@@ -108,8 +109,10 @@ class nom_nomina extends modelo
             "IFNULL ((SELECT SUM(nom_concepto_imss.monto) 
             FROM  nom_concepto_imss WHERE nom_concepto_imss.nom_nomina_id = nom_nomina.id),0)";
 
+        $tipo_campos['fecha_pago'] = 'fecha';
+
         parent::__construct(link: $link, tabla: $tabla, campos_obligatorios: $campos_obligatorios,
-            columnas: $columnas, columnas_extra: $columnas_extra);
+            columnas: $columnas, columnas_extra: $columnas_extra, tipo_campos: $tipo_campos);
 
         $this->NAMESPACE = __NAMESPACE__;
     }
