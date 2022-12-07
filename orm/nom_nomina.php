@@ -4,6 +4,7 @@ namespace models;
 
 use base\orm\modelo;
 use config\generales;
+use DateTime;
 use gamboamartin\empleado\models\em_abono_anticipo;
 use gamboamartin\empleado\models\em_anticipo;
 use gamboamartin\empleado\models\em_empleado;
@@ -3247,7 +3248,151 @@ class nom_nomina extends modelo
         return round($total_sueldos,2);
     }
 
+    private function dias_proporcionales_aguinaldo(int $em_empleado_id, int $nom_periodo_id): float|array
+    {
+        if($em_empleado_id<=0){
+            return $this->error->error('Error sat_receptor_id debe ser mayor a 0', $em_empleado_id);
+        }
+        if($nom_periodo_id<=0){
+            return $this->error->error('Error $sat_nomina_periodo_pago_id debe ser mayor a 0', $nom_periodo_id);
+        }
 
+        $dias_aplicables = $this->dias_aplicables_aguinaldo($em_empleado_id, $nom_periodo_id);
+        if(errores::$error){
+            return $this->error->error('Error al obtener dias', $dias_aplicables);
+        }
+        $dias_anio = 365;
+        $dias_total_aguinaldo = 15;
+        $dias_proporcionales = $dias_aplicables * $dias_total_aguinaldo / $dias_anio;
 
+        return round($dias_proporcionales);
+    }
 
+    private function dias_aplicables_aguinaldo(int $em_empleado_id, int $nom_periodo_id): array|int
+    {
+        if($em_empleado_id<=0){
+            return $this->error->error('Error sat_receptor_id debe ser mayor a 0', $em_empleado_id);
+        }
+        if($nom_periodo_id<=0){
+            return $this->error->error('Error $sat_nomina_periodo_pago_id debe ser mayor a 0', $nom_periodo_id);
+        }
+
+        $data = $this->fechas_aguinaldo( em_empleado_id: $em_empleado_id, nom_periodo_id: $nom_periodo_id);
+        if(errores::$error){
+            return $this->error->error('Error al obtener datos', $data);
+        }
+
+        $dias_aplicables = $this->calcula_dias_aguinaldo($data->fecha_fin_periodo_pago, $data->fecha_inicio_receptor);
+        if(errores::$error){
+            return $this->error->error('Error al obtener dias', $dias_aplicables);
+        }
+
+        return $dias_aplicables;
+    }
+
+    private function fechas_aguinaldo(int $em_empleado_id, int $nom_periodo_id){
+        $em_empleado = (new em_empleado($this->link))->registro(registro_id: $em_empleado_id);
+        if(errores::$error){
+            return $this->error->error('Error al obtener sat receptor', $em_empleado);
+        }
+        $nom_periodo = (new nom_periodo($this->link))->registro(registro_id: $nom_periodo_id);
+        if(errores::$error){
+            return $this->error->error('Error al obtener sat nomina periodo pago', $nom_periodo);
+        }
+
+        $data = new stdClass();
+        $data->fecha_fin_periodo_pago = $em_empleado;
+        $data->fecha_inicio_receptor = $nom_periodo;
+
+        return $data;
+    }
+
+    private function calcula_dias_aguinaldo(string $fecha_final_periodo, string $fecha_inicio_rel_laboral): int|array
+    {
+        $valida = $this->validacion->valida_fecha(fecha: $fecha_final_periodo);
+        if(errores::$error){
+            return $this->error->error('Error al validar $fecha_final_periodo '.$fecha_final_periodo, $valida);
+        }
+        $valida = $this->validacion->valida_fecha(fecha: $fecha_inicio_rel_laboral);
+        if(errores::$error){
+            return $this->error->error('Error al validar $fecha_inicio_rel_laboral '.$fecha_inicio_rel_laboral, $valida);
+        }
+
+        $fecha_fin_anio = $this->fecha_fin_year(fecha: $fecha_final_periodo);
+        if(errores::$error){
+            return $this->error->error('Error al fecha fin', $fecha_fin_anio);
+        }
+
+        $diferencia_dias = $this->n_dias_entre_fechas(fecha_inicio: $fecha_inicio_rel_laboral,
+            fecha_fin: $fecha_fin_anio);
+        if(errores::$error){
+            return $this->error->error('Error al obtener dias', $diferencia_dias);
+        }
+
+        $dias_aplicables = $this->calculo_dias_para_calculo_aguinaldo(diferencia_dias: $diferencia_dias);
+        if(errores::$error){
+            return $this->error->error('Error al obtener dias', $diferencia_dias);
+        }
+
+        return $dias_aplicables;
+    }
+
+    private function calculo_dias_para_calculo_aguinaldo(int $diferencia_dias): int
+    {
+        $dias_aplicables = $diferencia_dias;
+        if($diferencia_dias>=365){
+            $dias_aplicables = 365;
+        }
+        return $dias_aplicables;
+    }
+
+    private function fecha_fin_year(string $fecha): array|string
+    {
+        $valida = $this->validacion->valida_fecha(fecha: $fecha);
+        if(errores::$error){
+            return $this->error->error('Error al validar fecha', $valida);
+        }
+        $year = $this->year(fecha: $fecha);
+        if(errores::$error){
+            return $this->error->error('Error al obtener year', $year);
+        }
+        return $year.'-12-31';
+    }
+
+    public function n_dias_entre_fechas(string $fecha_inicio, string $fecha_fin): int|array
+    {
+        $valida = $this->validacion->valida_fecha(fecha: $fecha_inicio);
+        if(errores::$error){
+            return $this->error->error('$fecha_inicio invalida '.$fecha_inicio, $valida);
+        }
+        $valida = $this->validacion->valida_fecha(fecha: $fecha_fin);
+        if(errores::$error){
+            return $this->error->error('$fecha_fin invalida '.$fecha_fin, $valida);
+        }
+        try {
+            $fecha_inicio_date = new DateTime($fecha_inicio);
+            $fecha_fin_base = new DateTime($fecha_fin);
+            $diff = $fecha_inicio_date->diff($fecha_fin_base);
+        }
+        catch (Throwable $e){
+            $data = new stdClass();
+            $data->parametros = new stdClass();
+            $data->e = $e;
+            $data->parametros->fecha_inicio = $fecha_inicio;
+            $data->parametros->fecha_fin = $fecha_fin;
+            return $this->error->error("Error al calcular diferencia de fechas", $data);
+        }
+        return (int)$diff->days + 1;
+    }
+
+    private function year(string $fecha): int|array
+    {
+        $valida = $this->validacion->valida_fecha($fecha);
+        if(errores::$error){
+            return $this->error->error('Error al validar fecha', $valida);
+        }
+
+        $fecha_int = strtotime($fecha);
+        return (int)date("Y", $fecha_int);
+    }
 }
