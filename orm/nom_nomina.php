@@ -3248,6 +3248,41 @@ class nom_nomina extends modelo
         return round($total_sueldos,2);
     }
 
+    public function bruto_aguinaldo(int $em_empleado_id, int $nom_periodo_id){
+        $em_empleado = (new em_empleado($this->link))->registro(registro_id: $em_empleado_id);
+        if(errores::$error){
+            return $this->error->error('Error al obtener sat receptor', $em_empleado);
+        }
+
+        $dias_proporcionales = $this->dias_proporcionales_aguinaldo(em_empleado_id: $em_empleado_id,
+            nom_periodo_id: $nom_periodo_id);
+        if(errores::$error){
+            return $this->error->error('Error al obtener sat receptor', $dias_proporcionales);
+        }
+
+
+        $monto_bruto = $this->monto_bruto_aguinaldo(dias_proporcionales: $dias_proporcionales,
+            salario_diario: $em_empleado->salario_diario);
+        if(errores::$error){
+            return $this->error->error('Error al obtener sat receptor', $monto_bruto);
+        }
+
+        return $monto_bruto;
+    }
+
+    public function monto_bruto_aguinaldo(float $dias_proporcionales, float $salario_diario){
+        if($dias_proporcionales<=0){
+            return $this->error->error('Error $dias_proporcionales debe ser menor a 0', $dias_proporcionales);
+        }
+
+        if($salario_diario<=0){
+            return $this->error->error('Error $salario_diario debe ser menor a 0', $salario_diario);
+        }
+
+        $monto_bruto_aguinaldo = $dias_proporcionales * $salario_diario;
+        return round($monto_bruto_aguinaldo,2);
+    }
+
     private function dias_proporcionales_aguinaldo(int $em_empleado_id, int $nom_periodo_id): float|array
     {
         if($em_empleado_id<=0){
