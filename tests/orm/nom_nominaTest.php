@@ -180,6 +180,7 @@ class nom_nominaTest extends test {
         $nom_nomina_ins['em_cuenta_bancaria_id'] = '1';
         $nom_nomina_ins['fecha_inicial_pago'] = '2022-01-01';
         $nom_nomina_ins['fecha_final_pago'] = '2022-01-01';
+        $nom_nomina_ins['fecha_pago'] = '2022-01-01';
         $nom_nomina_ins['nom_periodo_id'] = 1;
         $nom_nomina_ins['nom_conf_empleado_id'] = 1;
         $nom_nomina_ins['cat_sat_tipo_jornada_nom_id'] = 1;

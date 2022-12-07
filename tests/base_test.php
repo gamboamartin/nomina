@@ -605,6 +605,7 @@ class base_test{
         $registro['em_cuenta_bancaria_id'] = 1;
         $registro['fecha_inicial_pago'] = '2020-01-01';
         $registro['fecha_final_pago'] = '2020-01-01';
+        $registro['fecha_pago'] = '2020-01-01';
         $registro['num_dias_pagados'] = '1';
         $registro['descuento'] = '0';
         $registro['nom_periodo_id'] = 1;
