@@ -4,6 +4,7 @@ namespace models;
 
 use base\orm\modelo;
 use config\generales;
+use DateTime;
 use gamboamartin\empleado\models\em_abono_anticipo;
 use gamboamartin\empleado\models\em_anticipo;
 use gamboamartin\empleado\models\em_empleado;
@@ -3250,7 +3251,278 @@ class nom_nomina extends modelo
         return round($total_sueldos,2);
     }
 
+    public function isr_aguinaldo(int $nom_nomina_id){
+        $nom_nomina = (new nom_nomina($this->link))->registro(registro_id: $nom_nomina_id);
+        if(errores::$error){
+            return $this->error->error('Error al obtener sat receptor', $nom_nomina);
+        }
+
+        $em_empleado = (new em_empleado($this->link))->registro(registro_id: $nom_nomina->em_empleado_id);
+        if(errores::$error){
+            return $this->error->error('Error al obtener sat receptor', $em_empleado);
+        }
+
+        $montos_aguinaldo = $this->montos_aguinaldo(em_empleado_id: $nom_nomina->em_empleado_id,
+            nom_periodo_id: $nom_nomina->nom_periodo_id);
+        if(errores::$error){
+            return $this->error->error('Error al obtener montos aguinaldo', $montos_aguinaldo);
+        }
+
+        $ingreso_ordinario = $em_empleado->salario_diario * 30.4;
+
+        $isr = (new calculo_isr())->isr(
+            cat_sat_periodicidad_pago_nom_id: $nom_nomina->cat_sat_periodicidad_pago_nom_id, link: $this->link,
+            monto: $ingreso_ordinario, fecha: $nom_nomina->fecha_final_pago);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al obtener isr', data: $isr);
+        }
+
+        $subsidio = (new calculo_subsidio())->subsidio(
+            cat_sat_periodicidad_pago_nom_id: $nom_nomina->cat_sat_periodicidad_pago_nom_id, link: $this->link, monto: $ingreso_ordinario,
+            fecha: $nom_nomina->fecha_final_pago);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al obtener $subsidio', data: $subsidio);
+        }
+
+        $isr_ingreso_ordinario = round($isr - $subsidio, 2);
+
+        $total_ingreso_ordinario_gravado = $ingreso_ordinario + $montos_aguinaldo['importe_gravado'];
+
+        $isr = (new calculo_isr())->isr(
+            cat_sat_periodicidad_pago_nom_id: $nom_nomina->cat_sat_periodicidad_pago_nom_id, link: $this->link,
+            monto: $total_ingreso_ordinario_gravado, fecha: $nom_nomina->fecha_final_pago);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al obtener isr', data: $isr);
+        }
+
+        $subsidio = (new calculo_subsidio())->subsidio(
+            cat_sat_periodicidad_pago_nom_id: $nom_nomina->cat_sat_periodicidad_pago_nom_id, link: $this->link,
+            monto: $total_ingreso_ordinario_gravado, fecha: $nom_nomina->fecha_final_pago);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al obtener $subsidio', data: $subsidio);
+        }
+
+        $isr_total_ingreso_ordinario = round($isr - $subsidio, 2);
+
+        return round($isr_total_ingreso_ordinario - $isr_ingreso_ordinario, 2);
+    }
+
+    public function montos_aguinaldo(int $em_empleado_id, int $nom_periodo_id){
+        $bruto_aguinaldo = $this->bruto_aguinaldo(em_empleado_id: $em_empleado_id,nom_periodo_id: $nom_periodo_id);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al obtener total gravado', data: $bruto_aguinaldo);
+        }
+
+        $im_uma = (new im_uma($this->link))->get_uma(fecha: date('Y-m-d'));
+        if(errores::$error){
+            return $this->error->error('Error al obtener registros de UMA', $im_uma);
+        }
+        if($im_uma->n_registros <= 0){
+            return $this->error->error('Error no exsite registro de UMA', $im_uma);
+        }
+        if(!isset($im_uma->registros[0]['im_uma_monto'])){
+            return $this->error->error('Error el uma no tiene monto asignado', $im_uma);
+        }
+        if(is_null($im_uma->registros[0]['im_uma_monto'])){
+            return $this->error->error('Error el uma no tiene monto asignado', $im_uma);
+        }
+
+        $monto_uma = $im_uma->registros[0]['im_uma_monto'];
+
+        $monto_umas_mensual = round($monto_uma * 30, 2);
+
+        $nom_par_percepcion['importe_exento'] = round($bruto_aguinaldo,2);
+        $nom_par_percepcion['importe_gravado'] = 0;
+
+        if((float)$monto_umas_mensual < (float)$bruto_aguinaldo){
+            $res = $bruto_aguinaldo - $monto_umas_mensual;
+            $nom_par_percepcion['importe_exento'] = round($monto_umas_mensual,2);
+            $nom_par_percepcion['importe_gravado'] = round($res,2);
+        }
+
+        return $nom_par_percepcion;
+    }
+
+    public function bruto_aguinaldo(int $em_empleado_id, int $nom_periodo_id){
+        $em_empleado = (new em_empleado($this->link))->registro(registro_id: $em_empleado_id);
+        if(errores::$error){
+            return $this->error->error('Error al obtener sat receptor', $em_empleado);
+        }
+
+        $dias_proporcionales = $this->dias_proporcionales_aguinaldo(em_empleado_id: $em_empleado_id,
+            nom_periodo_id: $nom_periodo_id);
+        if(errores::$error){
+            return $this->error->error('Error al obtener sat receptor', $dias_proporcionales);
+        }
 
 
+        $monto_bruto = $this->monto_bruto_aguinaldo(dias_proporcionales: $dias_proporcionales,
+            salario_diario: $em_empleado->salario_diario);
+        if(errores::$error){
+            return $this->error->error('Error al obtener sat receptor', $monto_bruto);
+        }
 
+        return $monto_bruto;
+    }
+
+    public function monto_bruto_aguinaldo(float $dias_proporcionales, float $salario_diario){
+        if($dias_proporcionales<=0){
+            return $this->error->error('Error $dias_proporcionales debe ser menor a 0', $dias_proporcionales);
+        }
+
+        if($salario_diario<=0){
+            return $this->error->error('Error $salario_diario debe ser menor a 0', $salario_diario);
+        }
+
+        $monto_bruto_aguinaldo = $dias_proporcionales * $salario_diario;
+        return round($monto_bruto_aguinaldo,2);
+    }
+
+    private function dias_proporcionales_aguinaldo(int $em_empleado_id, int $nom_periodo_id): float|array
+    {
+        if($em_empleado_id<=0){
+            return $this->error->error('Error sat_receptor_id debe ser mayor a 0', $em_empleado_id);
+        }
+        if($nom_periodo_id<=0){
+            return $this->error->error('Error $sat_nomina_periodo_pago_id debe ser mayor a 0', $nom_periodo_id);
+        }
+
+        $dias_aplicables = $this->dias_aplicables_aguinaldo($em_empleado_id, $nom_periodo_id);
+        if(errores::$error){
+            return $this->error->error('Error al obtener dias', $dias_aplicables);
+        }
+        $dias_anio = 365;
+        $dias_total_aguinaldo = 15;
+        $dias_proporcionales = $dias_aplicables * $dias_total_aguinaldo / $dias_anio;
+
+        return round($dias_proporcionales);
+    }
+
+    private function dias_aplicables_aguinaldo(int $em_empleado_id, int $nom_periodo_id): array|int
+    {
+        if($em_empleado_id<=0){
+            return $this->error->error('Error sat_receptor_id debe ser mayor a 0', $em_empleado_id);
+        }
+        if($nom_periodo_id<=0){
+            return $this->error->error('Error $sat_nomina_periodo_pago_id debe ser mayor a 0', $nom_periodo_id);
+        }
+
+        $data = $this->fechas_aguinaldo( em_empleado_id: $em_empleado_id, nom_periodo_id: $nom_periodo_id);
+        if(errores::$error){
+            return $this->error->error('Error al obtener datos', $data);
+        }
+
+        $dias_aplicables = $this->calcula_dias_aguinaldo($data->fecha_fin_periodo_pago, $data->fecha_inicio_receptor);
+        if(errores::$error){
+            return $this->error->error('Error al obtener dias', $dias_aplicables);
+        }
+
+        return $dias_aplicables;
+    }
+
+    private function fechas_aguinaldo(int $em_empleado_id, int $nom_periodo_id){
+        $em_empleado = (new em_empleado($this->link))->registro(registro_id: $em_empleado_id);
+        if(errores::$error){
+            return $this->error->error('Error al obtener sat receptor', $em_empleado);
+        }
+        $nom_periodo = (new nom_periodo($this->link))->registro(registro_id: $nom_periodo_id);
+        if(errores::$error){
+            return $this->error->error('Error al obtener sat nomina periodo pago', $nom_periodo);
+        }
+
+        $data = new stdClass();
+        $data->fecha_fin_periodo_pago = $em_empleado;
+        $data->fecha_inicio_receptor = $nom_periodo;
+
+        return $data;
+    }
+
+    private function calcula_dias_aguinaldo(string $fecha_final_periodo, string $fecha_inicio_rel_laboral): int|array
+    {
+        $valida = $this->validacion->valida_fecha(fecha: $fecha_final_periodo);
+        if(errores::$error){
+            return $this->error->error('Error al validar $fecha_final_periodo '.$fecha_final_periodo, $valida);
+        }
+        $valida = $this->validacion->valida_fecha(fecha: $fecha_inicio_rel_laboral);
+        if(errores::$error){
+            return $this->error->error('Error al validar $fecha_inicio_rel_laboral '.$fecha_inicio_rel_laboral, $valida);
+        }
+
+        $fecha_fin_anio = $this->fecha_fin_year(fecha: $fecha_final_periodo);
+        if(errores::$error){
+            return $this->error->error('Error al fecha fin', $fecha_fin_anio);
+        }
+
+        $diferencia_dias = $this->n_dias_entre_fechas(fecha_inicio: $fecha_inicio_rel_laboral,
+            fecha_fin: $fecha_fin_anio);
+        if(errores::$error){
+            return $this->error->error('Error al obtener dias', $diferencia_dias);
+        }
+
+        $dias_aplicables = $this->calculo_dias_para_calculo_aguinaldo(diferencia_dias: $diferencia_dias);
+        if(errores::$error){
+            return $this->error->error('Error al obtener dias', $diferencia_dias);
+        }
+
+        return $dias_aplicables;
+    }
+
+    private function calculo_dias_para_calculo_aguinaldo(int $diferencia_dias): int
+    {
+        $dias_aplicables = $diferencia_dias;
+        if($diferencia_dias>=365){
+            $dias_aplicables = 365;
+        }
+        return $dias_aplicables;
+    }
+
+    private function fecha_fin_year(string $fecha): array|string
+    {
+        $valida = $this->validacion->valida_fecha(fecha: $fecha);
+        if(errores::$error){
+            return $this->error->error('Error al validar fecha', $valida);
+        }
+        $year = $this->year(fecha: $fecha);
+        if(errores::$error){
+            return $this->error->error('Error al obtener year', $year);
+        }
+        return $year.'-12-31';
+    }
+
+    public function n_dias_entre_fechas(string $fecha_inicio, string $fecha_fin): int|array
+    {
+        $valida = $this->validacion->valida_fecha(fecha: $fecha_inicio);
+        if(errores::$error){
+            return $this->error->error('$fecha_inicio invalida '.$fecha_inicio, $valida);
+        }
+        $valida = $this->validacion->valida_fecha(fecha: $fecha_fin);
+        if(errores::$error){
+            return $this->error->error('$fecha_fin invalida '.$fecha_fin, $valida);
+        }
+        try {
+            $fecha_inicio_date = new DateTime($fecha_inicio);
+            $fecha_fin_base = new DateTime($fecha_fin);
+            $diff = $fecha_inicio_date->diff($fecha_fin_base);
+        }
+        catch (Throwable $e){
+            $data = new stdClass();
+            $data->parametros = new stdClass();
+            $data->e = $e;
+            $data->parametros->fecha_inicio = $fecha_inicio;
+            $data->parametros->fecha_fin = $fecha_fin;
+            return $this->error->error("Error al calcular diferencia de fechas", $data);
+        }
+        return (int)$diff->days + 1;
+    }
+
+    private function year(string $fecha): int|array
+    {
+        $valida = $this->validacion->valida_fecha($fecha);
+        if(errores::$error){
+            return $this->error->error('Error al validar fecha', $valida);
+        }
+
+        $fecha_int = strtotime($fecha);
+        return (int)date("Y", $fecha_int);
+    }
 }
