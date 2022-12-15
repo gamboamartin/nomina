@@ -9,12 +9,14 @@
 
 namespace gamboamartin\nomina\controllers;
 
+use base\orm\modelo;
 use config\generales;
 use gamboamartin\errores\errores;
 use gamboamartin\system\actions;
 use gamboamartin\system\links_menu;
 use gamboamartin\template\html;
 use gamboamartin\validacion\validacion;
+use gamboamartin\xml_cfdi_4\timbra;
 use html\nom_nomina_html;
 use html\nom_par_deduccion_html;
 use html\nom_par_otro_pago_html;
@@ -540,12 +542,10 @@ class controlador_nom_nomina extends base_nom
             return $this->retorno_error(mensaje: 'Error al generar xml', data: $xml, header: $header, ws: $ws);
         }
 
-
         $ruta_archivos_tmp = $this->genera_ruta_archivo_tmp();
         if (errores::$error) {
             return $this->retorno_error(mensaje: 'Error al generar ruta de archivos', data: $ruta_archivos_tmp, header: $header, ws: $ws);
         }
-
 
         $documento = array();
         $file = array();
@@ -1210,15 +1210,21 @@ class controlador_nom_nomina extends base_nom
             return $this->retorno_error(mensaje: 'Error al obtener nomina', data: $nom_nomina, header: $header, ws: $ws);
         }
 
+        $filtro['nom_nomina.id'] = $nom_nomina->nom_nomina_id;
+        $registro_relacion = (new modelo($this->link,''))->filtro_and(filtro: $filtro);
+        if (errores::$error) {
+            return $this->retorno_error(mensaje: 'Error al obtener nomina', data: $registro_relacion, header: $header, ws: $ws);
+        }
 
+        $registro_relacion = file_get_contents($registro_relacion['ruta_absoluta']);
 
+        $timbra = new timbra();
+        $xml_timbrado = $timbra->timbra(contenido_xml: $registro_relacion);
+        if (errores::$error) {
+            return $this->retorno_error(mensaje: 'Error al obtener nomina', data: $xml_timbrado, header: $header, ws: $ws);
+        }
 
-
-
-
-        print_r($nom_nomina);exit;
-
-        return $nom_nomina;
+        return $xml_timbrado;
     }
 
 
