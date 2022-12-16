@@ -1563,6 +1563,7 @@ class nom_nomina extends modelo
         $serie = $registros->fc_csd_serie;
         $fecha = $this->registro['fecha'];
         $fc_csd_id = $registros->fc_csd_id;
+        $exportacion = '01';
         $com_sucursal_id = $empleado_sucursal['com_sucursal_id'];
         $cat_sat_forma_pago_id = $cat_sat->nom_conf_factura_cat_sat_forma_pago_id;
         $cat_sat_metodo_pago_id = $cat_sat->nom_conf_factura_cat_sat_metodo_pago_id;
@@ -1572,7 +1573,7 @@ class nom_nomina extends modelo
         $cat_sat_tipo_de_comprobante_id = $cat_sat->nom_conf_factura_cat_sat_tipo_de_comprobante_id;
         $dp_calle_pertenece_id = $im_registro_patronal->dp_calle_pertenece_id;
 
-        return array('folio' => $folio, 'serie' => $serie, 'fecha' => $fecha, 'fc_csd_id' => $fc_csd_id,
+        return array('exportacion'=>$exportacion,'folio' => $folio, 'serie' => $serie, 'fecha' => $fecha, 'fc_csd_id' => $fc_csd_id,
             'com_sucursal_id' => $com_sucursal_id, 'cat_sat_forma_pago_id' => $cat_sat_forma_pago_id,
             'cat_sat_metodo_pago_id' => $cat_sat_metodo_pago_id, 'cat_sat_moneda_id' => $cat_sat_moneda_id,
             'com_tipo_cambio_id' => $com_tipo_cambio_id, 'dp_calle_pertenece_id'=>$dp_calle_pertenece_id,
