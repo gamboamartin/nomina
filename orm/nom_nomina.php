@@ -868,7 +868,7 @@ class nom_nomina extends modelo
 
         $this->registro['num_dias_pagados'] -= $dias_incidencia;
         $dias->dias_pagados_periodo -= $dias_incidencia;
-        $dias->dias_pagados_reales = $this->registro['num_dias_pagados'];
+        $dias->dias_pagados_reales = $this->registro['num_dias_pagados'] + $dias_vacaciones;
 
         return $dias;
     }
