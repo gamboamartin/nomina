@@ -68,7 +68,6 @@ class controlador_nom_nomina extends base_nom
 
         $columns = array();
         $columns['nom_nomina_id']['titulo'] = 'Id';
-        $columns['em_empleado_codigo']['titulo'] = 'Codigo';
 
         $columns['em_empleado_rfc']['titulo'] = 'RFC';
 
@@ -80,7 +79,6 @@ class controlador_nom_nomina extends base_nom
         $columns['nom_nomina_fecha_inicial_pago']['titulo'] = 'F Ini';
         $columns['nom_nomina_fecha_final_pago']['titulo'] = 'F Ini';
         $columns['nom_nomina_fecha_pago']['titulo'] = 'F Pago';
-        $columns['nom_periodo_codigo']['titulo'] = 'Periodo Cod';
         $columns['nom_nomina_total_percepcion_total']['titulo'] = 'Percepcion Total';
         $columns['nom_nomina_total_otro_pago_total']['titulo'] = 'Otro Pago Total';
         $columns['nom_nomina_total_deduccion_total']['titulo'] = 'Deduccion Total';
