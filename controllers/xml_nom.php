@@ -162,22 +162,22 @@ class xml_nom{
             return $this->error->error(mensaje: 'Error al obtener total', data: $total);
         }
 
-        $comprobante->total = $total;
+        $comprobante->total = number_format((float)$total, 2, '.', '');
 
         $sub_total = (new fc_factura($link))->sub_total(fc_factura_id:$fc_factura->fc_factura_id );
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al obtener sub_total', data: $sub_total);
         }
 
-        $comprobante->sub_total = $sub_total;
+        $comprobante->sub_total = number_format((float)$sub_total, 2, '.', '');
 
         $descuento = (
-            new fc_factura($link))->get_factura_descuento(fc_factura_id:$fc_factura->fc_factura_id );
+        new fc_factura($link))->get_factura_descuento(fc_factura_id:$fc_factura->fc_factura_id );
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al obtener descuento', data: $descuento);
         }
 
-        $comprobante->descuento = $descuento;
+        $comprobante->descuento = number_format((float)$descuento, 2, '.', '');
         return $comprobante;
     }
 
