@@ -12,7 +12,9 @@ use gamboamartin\errores\errores;
 use gamboamartin\facturacion\models\fc_csd;
 use gamboamartin\facturacion\models\fc_factura;
 use gamboamartin\facturacion\models\fc_partida;
+use gamboamartin\nomina\controllers\xml_nom;
 use gamboamartin\organigrama\models\org_sucursal;
+use gamboamartin\validacion\validacion;
 use models\base\limpieza;
 use Mpdf\Mpdf;
 use PDO;
@@ -1543,6 +1545,155 @@ class nom_nomina extends modelo
             'fc_csd' => $fc_csd_id, 'nom_rel_empleado_sucursal' => $nom_rel_empleado_sucursal,
             'nom_conf_empleado' => $nom_conf_empleado);
     }
+
+    private function genera_ruta_archivo_tmp(): array|string
+    {
+        $ruta_archivos = $this->ruta_archivos();
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al generar ruta de archivos', data: $ruta_archivos);
+        }
+
+        $ruta_archivos_tmp = $this->ruta_archivos_tmp(ruta_archivos: $ruta_archivos);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al generar ruta de archivos', data: $ruta_archivos_tmp);
+        }
+        return $ruta_archivos_tmp;
+    }
+
+    private function ruta_archivos(): array|string
+    {
+        $ruta_archivos = (new generales())->path_base.'archivos';
+        if(!file_exists($ruta_archivos)){
+            mkdir($ruta_archivos,0777,true);
+        }
+        if(!file_exists($ruta_archivos)){
+            return $this->error->error(mensaje: 'Error no existe '.$ruta_archivos, data: $ruta_archivos);
+        }
+        return $ruta_archivos;
+    }
+
+    private function ruta_archivos_tmp(string $ruta_archivos): array|string
+    {
+        $ruta_archivos_tmp = $ruta_archivos.'/tmp';
+
+        if(!file_exists($ruta_archivos_tmp)){
+            mkdir($ruta_archivos_tmp,0777,true);
+        }
+        if(!file_exists($ruta_archivos_tmp)){
+            return $this->error->error(mensaje: 'Error no existe '.$ruta_archivos_tmp, data: $ruta_archivos_tmp);
+        }
+        return $ruta_archivos_tmp;
+    }
+    public function genera_xml(int $nom_nomina_id){
+
+        $nom_nomina = $this->registro(registro_id: $nom_nomina_id, retorno_obj: true);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al obtener nomina', data: $nom_nomina);
+        }
+
+        $xml = (new xml_nom())->xml(link: $this->link, nom_nomina: $nom_nomina);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al generar xml', data: $xml);
+        }
+
+        $ruta_archivos_tmp = $this->genera_ruta_archivo_tmp();
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al generar ruta de archivos', data: $ruta_archivos_tmp);
+        }
+
+        $documento = array();
+        $file = array();
+        $file_xml_st = $ruta_archivos_tmp.'/'.$this->registro_id.'.nom.xml';
+        file_put_contents($file_xml_st, $xml);
+
+        $existe = (new nom_nomina_documento(link: $this->link))->existe(array('nom_nomina.id' => $this->registro_id));
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al validar si existe documento', data: $existe);
+        }
+
+        $doc_tipo_documento_id = $this->doc_tipo_documento_id(extension: "xml");
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al validar extension del documento', data: $doc_tipo_documento_id);
+        }
+
+        if (!$existe) {
+
+            $file['name'] = $file_xml_st;
+            $file['tmp_name'] = $file_xml_st;
+
+            $documento['doc_tipo_documento_id'] = $doc_tipo_documento_id;
+            $documento['descripcion'] = $ruta_archivos_tmp;
+
+            $documento = (new doc_documento(link: $this->link))->alta_registro(registro: $documento, file: $file);
+            if (errores::$error) {
+                return $this->error->error(mensaje: 'Error al guardar xml', data: $documento);
+            }
+
+            $nom_nomina_documento = array();
+            $nom_nomina_documento['nom_nomina_id'] = $this->registro_id;
+            $nom_nomina_documento['doc_documento_id'] = $documento->registro_id;
+
+            $nom_nomina_documento = (new nom_nomina_documento(link: $this->link))->alta_registro(registro: $nom_nomina_documento);
+            if (errores::$error) {
+                return $this->error->error(mensaje: 'Error al dar de alta factura documento', data: $nom_nomina_documento);
+            }
+        } else {
+            $r_nom_nomina_documento = (new nom_nomina_documento(link: $this->link))->filtro_and(
+                filtro: array('nom_nomina.id' => $this->registro_id));
+            if (errores::$error) {
+                return $this->error->error(mensaje: 'Error al obtener factura documento', data: $r_nom_nomina_documento);
+            }
+
+            if ($r_nom_nomina_documento->n_registros > 1) {
+                return $this->error->error(mensaje: 'Error solo debe existir una factura_documento', data: $r_nom_nomina_documento);
+            }
+            if ($r_nom_nomina_documento->n_registros === 0) {
+                return $this->error->error(mensaje: 'Error  debe existir al menos una factura_documento', data: $r_nom_nomina_documento);
+            }
+            $nom_nomina_documento = $r_nom_nomina_documento->registros[0];
+
+            $doc_documento_id = $nom_nomina_documento['doc_documento_id'];
+
+            $registro['descripcion'] = $ruta_archivos_tmp;
+            $registro['doc_tipo_documento_id'] = $doc_tipo_documento_id;
+            $_FILES['name'] = $file_xml_st;
+            $_FILES['tmp_name'] = $file_xml_st;
+
+            $documento = (new doc_documento(link: $this->link))->modifica_bd(registro: $registro, id: $doc_documento_id);
+            if (errores::$error) {
+                return $this->error->error(mensaje: 'Error  al modificar documento', data: $r_nom_nomina_documento);
+            }
+
+            $documento->registro = (new doc_documento(link: $this->link))->registro(registro_id: $documento->registro_id);
+            if (errores::$error) {
+                return $this->error->error(mensaje: 'Error  al obtener documento', data: $documento);
+            }
+        }
+
+        $rutas = new stdClass();
+        $rutas->file_xml_st = $file_xml_st;
+        $rutas->doc_documento_ruta_absoluta = $documento->registro['doc_documento_ruta_absoluta'];
+
+        return $rutas;
+    }
+    public function doc_tipo_documento_id(string $extension)
+    {
+        $filtro['doc_extension.descripcion'] = $extension;
+        $existe_extension = (new doc_extension_permitido($this->link))->existe(filtro: $filtro);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al validar extension del documento', data: $existe_extension);
+        }
+        if (!$existe_extension) {
+            return $this->error->error(mensaje: "Error la extension: $extension no esta permitida", data: $existe_extension);
+        }
+
+        $r_doc_extension_permitido = (new doc_extension_permitido($this->link))->filtro_and(filtro: $filtro, limit: 1);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al validar extension del documento', data: $r_doc_extension_permitido);
+        }
+        return $r_doc_extension_permitido->registros[0]['doc_tipo_documento_id'];
+    }
+
 
     private function genera_registro_factura(mixed $registros, mixed $empleado_sucursal, mixed $cat_sat,
                                              stdClass $im_registro_patronal): array

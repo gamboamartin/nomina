@@ -510,60 +510,16 @@ class controlador_nom_nomina extends base_nom
         return $r_elimina;
     }
 
-    private function genera_ruta_archivo_tmp(): array|string
-    {
-        $ruta_archivos = $this->ruta_archivos();
-        if (errores::$error) {
-            return $this->errores->error(mensaje: 'Error al generar ruta de archivos', data: $ruta_archivos);
-        }
-
-        $ruta_archivos_tmp = $this->ruta_archivos_tmp(ruta_archivos: $ruta_archivos);
-        if (errores::$error) {
-            return $this->errores->error(mensaje: 'Error al generar ruta de archivos', data: $ruta_archivos_tmp);
-        }
-        return $ruta_archivos_tmp;
-    }
-
     public function genera_xml(bool $header, bool $ws = false): array|stdClass
     {
-        $nom_nomina = $this->modelo->registro(registro_id: $this->registro_id, retorno_obj: true);
-        if (errores::$error) {
-            return $this->retorno_error(mensaje: 'Error al obtener nomina', data: $nom_nomina, header: $header, ws: $ws);
+        $xml = (new nom_nomina(link: $this->link))->genera_xml(nom_nomina_id: $this->registro_id);
+        if(errores::$error){
+            return $this->retorno_error(mensaje: 'Error al generar XML',data:  $xml, header: $header,ws:$ws);
         }
 
-        $keys = array('fc_factura_id');
-        $valida = (new validacion())->valida_ids(keys: $keys, registro: $nom_nomina);
-        if (errores::$error) {
-            return $this->retorno_error(mensaje: 'Error al validar nomina', data: $valida, header: $header, ws: $ws);
-        }
-
-        $xml = (new xml_nom())->xml(link: $this->link, nom_nomina: $nom_nomina);
-        if (errores::$error) {
-            return $this->retorno_error(mensaje: 'Error al generar xml', data: $xml, header: $header, ws: $ws);
-        }
-
-        $ruta_archivos_tmp = $this->genera_ruta_archivo_tmp();
-        if (errores::$error) {
-            return $this->retorno_error(mensaje: 'Error al generar ruta de archivos', data: $ruta_archivos_tmp, header: $header, ws: $ws);
-        }
-
-        $documento = array();
-        $file = array();
-        $file_xml_st = $ruta_archivos_tmp.'/'.$this->registro_id.'.st.xml';
-        file_put_contents($file_xml_st, $xml);
-
-
-        $file['name'] = $file_xml_st;
-        $file['tmp_name'] = $file_xml_st;
-        $documento['doc_tipo_documento_id'] = 1;
-
-        $documento = (new doc_documento(link: $this->link))->alta_registro(registro: $documento, file: $file);
-        if (errores::$error) {
-            return $this->retorno_error(mensaje: 'Error al guardar xml', data: $documento, header: $header, ws: $ws);
-        }
-        unlink($file_xml_st);
+        unlink($xml->file_xml_st);
         ob_clean();
-        echo trim(file_get_contents($documento->registro['doc_documento_ruta_absoluta']));
+        echo trim(file_get_contents($xml->doc_documento_ruta_absoluta));
         header('Content-Type: text/xml');
         exit;
     }
@@ -1177,32 +1133,6 @@ class controlador_nom_nomina extends base_nom
         }
         return $result;
     }
-
-    private function ruta_archivos(): array|string
-    {
-        $ruta_archivos = (new generales())->path_base.'archivos';
-        if(!file_exists($ruta_archivos)){
-            mkdir($ruta_archivos,0777,true);
-        }
-        if(!file_exists($ruta_archivos)){
-            return $this->errores->error(mensaje: 'Error no existe '.$ruta_archivos, data: $ruta_archivos);
-        }
-        return $ruta_archivos;
-    }
-
-    private function ruta_archivos_tmp(string $ruta_archivos): array|string
-    {
-        $ruta_archivos_tmp = $ruta_archivos.'/tmp';
-
-        if(!file_exists($ruta_archivos_tmp)){
-            mkdir($ruta_archivos_tmp,0777,true);
-        }
-        if(!file_exists($ruta_archivos_tmp)){
-            return $this->errores->error(mensaje: 'Error no existe '.$ruta_archivos_tmp, data: $ruta_archivos_tmp);
-        }
-        return $ruta_archivos_tmp;
-    }
-
     public function timbra(bool $header, bool $ws = false): array|stdClass
     {
         $nom_nomina = $this->modelo->registro(registro_id: $this->registro_id, retorno_obj: true);
