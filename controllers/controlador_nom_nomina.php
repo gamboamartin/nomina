@@ -519,8 +519,8 @@ class controlador_nom_nomina extends base_nom
 
         unlink($xml->file_xml_st);
         ob_clean();
-        echo trim(file_get_contents($xml->doc_documento_ruta_absoluta));
-        header('Content-Type: text/xml');
+        $retorno = $_SERVER['HTTP_REFERER'];
+        header('Location:'.$retorno);
         exit;
     }
 
