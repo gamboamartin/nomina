@@ -484,6 +484,14 @@ class xml_nom{
                 data: $nomina->total_deducciones);
         }
 
+        $nomina->total_otros_pagos = (new nom_nomina(link: $link))->total_otros_pagos_monto(
+            nom_nomina_id: $nom_nomina->nom_nomina_id);
+
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al obtener total otros pagos xml',
+                data: $nomina->total_deducciones);
+        }
+
         return $nomina;
     }
 
