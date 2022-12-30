@@ -3399,7 +3399,7 @@ class nom_nomina extends modelo
             return $this->error->error(mensaje: 'Error al obtener total gravado', data: $total_sueldos_exento);
         }
 
-        $total_sueldos = $total_sueldos_gravado + $total_sueldos_gravado;
+        $total_sueldos = $total_sueldos_gravado + $total_sueldos_exento;
         return round($total_sueldos,2);
     }
 
