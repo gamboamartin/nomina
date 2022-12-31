@@ -468,29 +468,33 @@ class xml_nom{
         $nomina->fecha_inicial_pago = $nom_nomina->nom_nomina_fecha_inicial_pago;
         $nomina->fecha_final_pago = $nom_nomina->nom_nomina_fecha_final_pago;
         $nomina->num_dias_pagados = $nom_nomina->nom_nomina_num_dias_pagados;
-        $nomina->total_percepciones = (new nom_nomina(link: $link))->total_percepciones_monto(
-            nom_nomina_id: $nom_nomina->nom_nomina_id);
 
+        $total_percepciones = (new nom_nomina(link: $link))->total_percepciones_monto(
+            nom_nomina_id: $nom_nomina->nom_nomina_id);
         if (errores::$error) {
             return $this->error->error(
                 mensaje: 'Error al obtener total percepciones xml', data: $nomina->total_percepciones);
         }
+        $nomina->total_percepciones = number_format((float)$total_percepciones, 2, '.',
+            '');
 
-        $nomina->total_deducciones = (new nom_nomina(link: $link))->total_deducciones_monto(
+        $total_deducciones = (new nom_nomina(link: $link))->total_deducciones_monto(
             nom_nomina_id: $nom_nomina->nom_nomina_id);
-
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al obtener total deducciones xml',
                 data: $nomina->total_deducciones);
         }
+        $nomina->total_deducciones = number_format((float)$total_deducciones, 2, '.',
+            '');
 
-        $nomina->total_otros_pagos = (new nom_nomina(link: $link))->total_otros_pagos_monto(
+        $total_otros_pagos = (new nom_nomina(link: $link))->total_otros_pagos_monto(
             nom_nomina_id: $nom_nomina->nom_nomina_id);
-
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al obtener total otros pagos xml',
                 data: $nomina->total_deducciones);
         }
+        $nomina->total_otros_pagos = number_format((float)$total_otros_pagos, 2, '.',
+            '');
 
         return $nomina;
     }
