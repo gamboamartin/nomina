@@ -1131,28 +1131,40 @@ class controlador_nom_nomina extends base_nom
         }
         return $result;
     }
-    public function timbra(bool $header, bool $ws = false): array|stdClass
+    public function timbra_xml(bool $header, bool $ws = false): array|stdClass
     {
-        $nom_nomina = $this->modelo->registro(registro_id: $this->registro_id, retorno_obj: true);
-        if (errores::$error) {
-            return $this->retorno_error(mensaje: 'Error al obtener nomina', data: $nom_nomina, header: $header, ws: $ws);
+        $timbre = (new nom_nomina(link: $this->link))->timbra_xml(nom_nomina_id: $this->registro_id);
+        if(errores::$error){
+            return $this->retorno_error(mensaje: 'Error al timbrar XML',data:  $timbre, header: $header,ws:$ws);
         }
 
-        $filtro['nom_nomina.id'] = $nom_nomina->nom_nomina_id;
-        $registro_relacion = (new modelo($this->link,''))->filtro_and(filtro: $filtro);
-        if (errores::$error) {
-            return $this->retorno_error(mensaje: 'Error al obtener nomina', data: $registro_relacion, header: $header, ws: $ws);
+        $this->link->beginTransaction();
+
+        $siguiente_view = (new actions())->init_alta_bd();
+        if(errores::$error){
+            $this->link->rollBack();
+            return $this->retorno_error(mensaje: 'Error al obtener siguiente view', data: $siguiente_view,
+                header:  $header, ws: $ws);
         }
 
-        $registro_relacion = file_get_contents($registro_relacion['ruta_absoluta']);
+        if($header){
 
-        $timbra = new timbra();
-        $xml_timbrado = $timbra->timbra(contenido_xml: $registro_relacion);
-        if (errores::$error) {
-            return $this->retorno_error(mensaje: 'Error al obtener nomina', data: $xml_timbrado, header: $header, ws: $ws);
+            $retorno = (new actions())->retorno_alta_bd(link: $this->link, registro_id: $this->registro_id,
+                seccion: $this->tabla, siguiente_view: "lista");
+            if(errores::$error){
+                return $this->retorno_error(mensaje: 'Error cambiar de view', data: $retorno,
+                    header:  true, ws: $ws);
+            }
+            header('Location:'.$retorno);
+            exit;
+        }
+        if($ws){
+            header('Content-Type: application/json');
+            echo json_encode($timbre, JSON_THROW_ON_ERROR);
+            exit;
         }
 
-        return $xml_timbrado;
+        return $timbre;
     }
 
 
