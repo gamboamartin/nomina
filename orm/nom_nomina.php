@@ -9,6 +9,8 @@ use gamboamartin\empleado\models\em_abono_anticipo;
 use gamboamartin\empleado\models\em_anticipo;
 use gamboamartin\empleado\models\em_empleado;
 use gamboamartin\errores\errores;
+use gamboamartin\facturacion\models\fc_cfdi;
+use gamboamartin\facturacion\models\fc_cfdi_sellado;
 use gamboamartin\facturacion\models\fc_csd;
 use gamboamartin\facturacion\models\fc_factura;
 use gamboamartin\facturacion\models\fc_partida;
@@ -2616,7 +2618,13 @@ class nom_nomina extends modelo
 
     public function timbra_xml(int $nom_nomina_id): array|stdClass
     {
-        $timbrada = (new fc_cfdi($this->link))->existe(filtro: array('fc_cfdi.id' => $nom_nomina_id));
+        $nom_nomina = $this->registro(registro_id: $nom_nomina_id);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al obtener nomina', data: $nom_nomina);
+        }
+
+        $timbrada = (new fc_cfdi_sellado($this->link))->existe(filtro:
+            array('fc_factura.id' => $nom_nomina->fc_factura_id));
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al validar si la factura esta timbrado', data: $timbrada);
         }
@@ -2659,8 +2667,8 @@ class nom_nomina extends modelo
             return $this->error->error(mensaje: 'Error al obtener datos del XML', data: $datos_xml);
         }
 
-        $cfdi_sellado = (new fc_cfdi($this->link))->maqueta_datos(codigo: $datos_xml['cfdi_comprobante']['NoCertificado'],
-            descripcion: $datos_xml['cfdi_comprobante']['NoCertificado'], fc_factura_id: $nom_nomina_id,
+        $cfdi_sellado = (new fc_cfdi_sellado($this->link))->maqueta_datos(codigo: $datos_xml['cfdi_comprobante']['NoCertificado'],
+            descripcion: $datos_xml['cfdi_comprobante']['NoCertificado'], fc_factura_id: $nom_nomina->fc_factura_id,
             comprobante_sello: $datos_xml['cfdi_comprobante']['Sello'], comprobante_certificado: $datos_xml['cfdi_comprobante']['Certificado'],
             comprobante_no_certificado: $datos_xml['cfdi_comprobante']['NoCertificado'], complemento_tfd_sl: "",
             complemento_tfd_fecha_timbrado: $datos_xml['tfd']['FechaTimbrado'],
@@ -2671,7 +2679,7 @@ class nom_nomina extends modelo
             return $this->error->error(mensaje: 'Error al maquetar datos para cfdi sellado', data: $cfdi_sellado);
         }
 
-        $alta = (new fc_cfdi($this->link))->alta_registro(registro: $cfdi_sellado);
+        $alta = (new fc_cfdi_sellado($this->link))->alta_registro(registro: $cfdi_sellado);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al dar de alta cfdi sellado', data: $alta);
         }
