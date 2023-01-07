@@ -2112,12 +2112,12 @@ class nom_nomina extends modelo
                 data: $registro);
         }
 
-        $fi = (new em_empleado($this->link))->obten_factor(em_empleado_id: $registro['em_empleado_id'],
+        /*$fi = (new em_empleado($this->link))->obten_factor(em_empleado_id: $registro['em_empleado_id'],
             fecha_inicio_rel: $registro['em_empleado_fecha_inicio_rel_laboral']);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al obtener FI',
                 data: $registro);
-        }
+        }*/
 
         $subsidio = $this->total_otros_pagos_activo(nom_nomina_id: $nom_nomina_id);
         if (errores::$error) {
@@ -2260,7 +2260,7 @@ class nom_nomina extends modelo
         $datos['dias_laborados'] = $registro['nom_nomina_num_dias_pagados'];
         $datos['dias_x_incapacidad'] = 0.0;
         $datos['sd'] = $registro['em_empleado_salario_diario'];
-        $datos['fi'] = $fi;
+        //$datos['fi'] = $fi;
         $datos['sdi'] = $registro['em_empleado_salario_diario_integrado'];
 
         /*Percepciones*/
