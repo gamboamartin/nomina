@@ -14,7 +14,7 @@ class calcula_imss{
     public float $porc_invalidez_vida = .00625;
     public float $porc_cesantia = .01125;
     public float $porc_exc = .004;
-    public array $salario_minimo = array(2020=>123.22,2021=>141.70,2022=>172.87);
+    public array $salario_minimo = array(2020=>123.22,2021=>141.70,2022=>172.87,2023=>172.87);
     public array $uma = array(2020=>86.88,2021=>89.62,2022=>96.22,2023=>96.22);
     public string $year = '';
     public float $monto_uma = 0.0;
