@@ -1,5 +1,5 @@
 <?php
-namespace models;
+namespace gamboamartin\nomina\models;
 use gamboamartin\empleado\models\em_empleado;
 use gamboamartin\errores\errores;
 use PDO;
@@ -8,7 +8,7 @@ use stdClass;
 class nom_periodo extends nominas_confs {
 
     public function __construct(PDO $link){
-        $tabla = __CLASS__;
+        $tabla = 'nom_periodo';
         $columnas = array($tabla=>false, 'cat_sat_periodicidad_pago_nom'=>$tabla);
         $campos_obligatorios = array('cat_sat_periodicidad_pago_nom_id','im_registro_patronal_id','nom_tipo_periodo_id',
             'descripcion','descripcion_select');

@@ -1,6 +1,6 @@
 <?php
 
-namespace models;
+namespace gamboamartin\nomina\models;
 
 use gamboamartin\errores\errores;
 use PDO;
@@ -11,7 +11,7 @@ class nom_otro_pago extends nominas_confs
 
     public function __construct(PDO $link)
     {
-        $tabla = __CLASS__;
+        $tabla = 'nom_otro_pago';
         $columnas = array($tabla => false,'cat_sat_tipo_otro_pago_nom'=>$tabla);
         $campos_obligatorios = array();
 

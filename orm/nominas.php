@@ -1,5 +1,5 @@
 <?php
-namespace models;
+namespace gamboamartin\nomina\models;
 use base\orm\modelo;
 use gamboamartin\errores\errores;
 use html\fc_partida_html;

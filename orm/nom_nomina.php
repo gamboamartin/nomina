@@ -1,10 +1,12 @@
 <?php
 
-namespace models;
+namespace gamboamartin\nomina\models;
 
 use base\orm\modelo;
 use config\generales;
 use DateTime;
+use gamboamartin\documento\models\doc_documento;
+use gamboamartin\documento\models\doc_extension_permitido;
 use gamboamartin\empleado\models\em_abono_anticipo;
 use gamboamartin\empleado\models\em_anticipo;
 use gamboamartin\empleado\models\em_empleado;
@@ -19,7 +21,10 @@ use gamboamartin\organigrama\models\org_sucursal;
 use gamboamartin\plugins\files;
 use gamboamartin\validacion\validacion;
 use gamboamartin\xml_cfdi_4\timbra;
-use models\base\limpieza;
+use gamboamartin\nomina\models\base\limpieza;
+use models\calcula_cuota_obrero_patronal;
+use models\im_registro_patronal;
+use models\im_uma;
 use Mpdf\Mpdf;
 use PDO;
 use SoapClient;
@@ -31,7 +36,7 @@ class nom_nomina extends modelo
 {
     public function __construct(PDO $link)
     {
-        $tabla = __CLASS__;
+        $tabla = 'nom_nomina';
         $columnas = array($tabla => false, 'dp_calle_pertenece' => $tabla, 'dp_calle' => 'dp_calle_pertenece',
             'dp_colonia_postal' => 'dp_calle_pertenece', 'dp_colonia' => 'dp_colonia_postal',
             'dp_cp' => 'dp_colonia_postal', 'dp_municipio' => 'dp_cp', 'dp_estado' => 'dp_municipio',

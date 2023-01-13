@@ -8,7 +8,7 @@ use gamboamartin\system\system;
 use gamboamartin\template\html;
 use html\nom_incidencia_html;
 use html\nom_tipo_incidencia_html;
-use models\nom_tipo_incidencia;
+use gamboamartin\nomina\models\nom_tipo_incidencia;
 use PDO;
 use stdClass;
 

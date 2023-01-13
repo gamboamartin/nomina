@@ -5,8 +5,8 @@ use base\orm\modelo;
 use gamboamartin\errores\errores;
 use gamboamartin\nomina\controllers\controlador_nom_detalle_layout;
 use gamboamartin\system\html_controler;
-use models\nom_detalle_layout;
-use models\nom_nomina;
+use gamboamartin\nomina\models\nom_detalle_layout;
+use gamboamartin\nomina\models\nom_nomina;
 use PDO;
 use stdClass;
 

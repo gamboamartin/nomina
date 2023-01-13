@@ -1,6 +1,6 @@
 <?php
 
-namespace models;
+namespace gamboamartin\nomina\models;
 use DateTime;
 use gamboamartin\errores\errores;
 use gamboamartin\validacion\validacion;

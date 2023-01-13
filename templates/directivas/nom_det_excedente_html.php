@@ -5,9 +5,9 @@ use base\orm\modelo;
 use gamboamartin\errores\errores;
 use gamboamartin\nomina\controllers\controlador_nom_det_excedente;
 use gamboamartin\system\html_controler;
-use models\nom_det_excedente;
-use models\nom_per_excedente;
-use models\nom_percepcion;
+use gamboamartin\nomina\models\nom_det_excedente;
+use gamboamartin\nomina\models\nom_per_excedente;
+use gamboamartin\nomina\models\nom_percepcion;
 use PDO;
 use stdClass;
 

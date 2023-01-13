@@ -15,7 +15,7 @@ use gamboamartin\system\system;
 
 use gamboamartin\template_1\html;
 use html\nom_nomina_etapa_html;
-use models\nom_nomina_etapa;
+use gamboamartin\nomina\models\nom_nomina_etapa;
 use PDO;
 use stdClass;
 

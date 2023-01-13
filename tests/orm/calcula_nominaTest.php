@@ -1,12 +1,12 @@
 <?php
-namespace tests\controllers;
+namespace gamboamartin\nomina\tests\orm;
 
 use gamboamartin\errores\errores;
 use gamboamartin\test\test;
-use models\calcula_nomina;
-use models\nom_par_percepcion;
+use gamboamartin\nomina\models\calcula_nomina;
+use gamboamartin\nomina\models\nom_par_percepcion;
 use stdClass;
-use tests\base_test;
+use gamboamartin\nomina\tests\base_test;
 
 
 class calcula_nominaTest extends test {

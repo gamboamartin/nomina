@@ -1,8 +1,8 @@
 <?php
-namespace models;
+namespace gamboamartin\nomina\models;
 use gamboamartin\errores\errores;
 use JsonException;
-use models\base\limpieza;
+use gamboamartin\nomina\models\base\limpieza;
 use PDO;
 use stdClass;
 
@@ -11,7 +11,7 @@ class nom_par_deduccion extends nominas{
 
 
     public function __construct(PDO $link){
-        $tabla = __CLASS__;
+        $tabla = 'nom_par_deduccion';
         $columnas = array($tabla=>false, 'nom_nomina'=>$tabla, 'nom_deduccion'=>$tabla,'fc_factura'=>'nom_nomina',
             'cat_sat_tipo_deduccion_nom'=>'nom_deduccion');
         $campos_obligatorios = array('nom_deduccion_id','importe_gravado','importe_exento');

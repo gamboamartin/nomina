@@ -7,7 +7,7 @@ use gamboamartin\system\links_menu;
 use gamboamartin\system\system;
 use gamboamartin\template\html;
 use html\nom_incidencia_html;
-use models\nom_incidencia;
+use gamboamartin\nomina\models\nom_incidencia;
 use PDO;
 use stdClass;
 

@@ -4,7 +4,7 @@ namespace html;
 use gamboamartin\errores\errores;
 use gamboamartin\nomina\controllers\controlador_nom_concepto_imss;
 use gamboamartin\system\html_controler;
-use models\nom_concepto_imss;
+use gamboamartin\nomina\models\nom_concepto_imss;
 use PDO;
 use stdClass;
 

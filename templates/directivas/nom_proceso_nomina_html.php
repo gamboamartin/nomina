@@ -8,7 +8,7 @@ use gamboamartin\nomina\controllers\controlador_nom_deduccion;
 
 use gamboamartin\nomina\controllers\controlador_nom_proceso_nomina;
 use gamboamartin\system\html_controler;
-use models\nom_deduccion;
+use gamboamartin\nomina\models\nom_deduccion;
 use PDO;
 use stdClass;
 

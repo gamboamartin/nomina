@@ -1,6 +1,6 @@
 <?php
 
-namespace models;
+namespace gamboamartin\nomina\models;
 
 use gamboamartin\errores\errores;
 use JsonException;
@@ -12,7 +12,7 @@ class nom_par_otro_pago extends nominas
 
     public function __construct(PDO $link)
     {
-        $tabla = __CLASS__;
+        $tabla = 'nom_par_otro_pago';
         $columnas = array($tabla => false,'nom_nomina'=>$tabla, 'nom_otro_pago'=>$tabla,
             'cat_sat_tipo_otro_pago_nom'=>'nom_otro_pago','cat_sat_periodicidad_pago_nom'=>'nom_nomina',
             'em_empleado'=>'nom_nomina');

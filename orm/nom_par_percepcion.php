@@ -1,5 +1,5 @@
 <?php
-namespace models;
+namespace gamboamartin\nomina\models;
 use gamboamartin\errores\errores;
 use JsonException;
 use PDO;
@@ -9,7 +9,7 @@ use stdClass;
 class nom_par_percepcion extends nominas{
 
     public function __construct(PDO $link){
-        $tabla = __CLASS__;
+        $tabla = 'nom_par_percepcion';
         $columnas = array($tabla=>false, 'nom_nomina'=>$tabla, 'nom_percepcion'=>$tabla,
             'cat_sat_tipo_percepcion_nom'=>'nom_percepcion','cat_sat_periodicidad_pago_nom'=>'nom_nomina',
             'em_empleado'=>'nom_nomina');

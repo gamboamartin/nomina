@@ -4,7 +4,7 @@ namespace html;
 use gamboamartin\errores\errores;
 use gamboamartin\nomina\controllers\controlador_nom_par_deduccion;
 use gamboamartin\system\html_controler;
-use models\nom_par_deduccion;
+use gamboamartin\nomina\models\nom_par_deduccion;
 use PDO;
 use stdClass;
 

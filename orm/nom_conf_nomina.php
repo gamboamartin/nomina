@@ -1,5 +1,5 @@
 <?php
-namespace models;
+namespace gamboamartin\nomina\models;
 use base\orm\modelo;
 use gamboamartin\cat_sat\models\cat_sat_periodicidad_pago_nom;
 use gamboamartin\cat_sat\models\cat_sat_tipo_nomina;
@@ -10,7 +10,7 @@ use stdClass;
 class nom_conf_nomina extends modelo{
 
     public function __construct(PDO $link){
-        $tabla = __CLASS__;
+        $tabla = 'nom_conf_nomina';
 
         $columnas = array($tabla=>false, 'nom_conf_factura' => $tabla, 'cat_sat_periodicidad_pago_nom' => $tabla,
             'cat_sat_tipo_nomina' => $tabla);

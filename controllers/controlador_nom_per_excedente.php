@@ -9,8 +9,8 @@ use gamboamartin\template\html;
 use html\cat_sat_isn_html;
 use html\nom_per_excedente_html;
 use html\nom_tipo_incidencia_html;
-use models\nom_per_excedente;
-use models\nom_tipo_incidencia;
+use gamboamartin\nomina\models\nom_per_excedente;
+use gamboamartin\nomina\models\nom_tipo_incidencia;
 use PDO;
 use stdClass;
 

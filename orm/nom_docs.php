@@ -1,6 +1,7 @@
 <?php
-namespace models;
+namespace gamboamartin\nomina\models;
 use base\orm\modelo;
+use gamboamartin\documento\models\doc_documento;
 use gamboamartin\errores\errores;
 use PDO;
 use stdClass;

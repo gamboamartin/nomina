@@ -4,7 +4,7 @@ namespace html;
 use gamboamartin\errores\errores;
 use gamboamartin\nomina\controllers\controlador_nom_conf_abono;
 use gamboamartin\template\directivas;
-use models\nom_conf_abono;
+use gamboamartin\nomina\models\nom_conf_abono;
 use PDO;
 use stdClass;
 

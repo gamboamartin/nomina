@@ -1,19 +1,19 @@
 <?php
-namespace tests\controllers;
+namespace gamboamartin\nomina\tests\orm;
 
 use controllers\controlador_cat_sat_tipo_persona;
 use gamboamartin\errores\errores;
 use gamboamartin\test\liberator;
 use gamboamartin\test\test;
 use JsonException;
-use models\calcula_imss;
-use models\fc_cfd_partida;
-use models\fc_factura;
-use models\nom_nomina;
-use models\nom_par_deduccion;
-use models\nom_par_percepcion;
-use models\nominas;
-use models\transaccion_fc;
+use gamboamartin\nomina\models\calcula_imss;
+use gamboamartin\nomina\models\fc_cfd_partida;
+use gamboamartin\nomina\models\fc_factura;
+use gamboamartin\nomina\models\nom_nomina;
+use gamboamartin\nomina\models\nom_par_deduccion;
+use gamboamartin\nomina\models\nom_par_percepcion;
+use gamboamartin\nomina\models\nominas;
+use gamboamartin\nomina\models\transaccion_fc;
 use stdClass;
 
 

@@ -15,7 +15,7 @@ use gamboamartin\system\system;
 use gamboamartin\template\html;
 use html\em_anticipo_html;
 use html\nom_conf_abono_html;
-use models\nom_conf_abono;
+use gamboamartin\nomina\models\nom_conf_abono;
 use PDO;
 use stdClass;
 

@@ -12,11 +12,11 @@ use html\com_producto_html;
 use html\com_sucursal_html;
 use html\em_empleado_html;
 use html\nom_tipo_periodo_html;
-use models\com_cliente;
-use models\com_producto;
-use models\com_sucursal;
-use models\em_empleado;
-use models\nom_tipo_periodo;
+use gamboamartin\nomina\models\com_cliente;
+use gamboamartin\nomina\models\com_producto;
+use gamboamartin\nomina\models\com_sucursal;
+use gamboamartin\nomina\models\em_empleado;
+use gamboamartin\nomina\models\nom_tipo_periodo;
 use PDO;
 use stdClass;
 

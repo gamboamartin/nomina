@@ -14,7 +14,7 @@ use gamboamartin\system\system;
 use gamboamartin\template\html;
 use html\nom_percepcion_html;
 use links\secciones\link_nom_percepcion;
-use models\nom_percepcion;
+use gamboamartin\nomina\models\nom_percepcion;
 use PDO;
 use stdClass;
 

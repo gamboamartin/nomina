@@ -19,12 +19,12 @@ use html\com_sucursal_html;
 use html\em_empleado_html;
 use html\nom_conf_factura_html;
 use html\nom_percepcion_html;
-use models\com_cliente;
-use models\com_producto;
-use models\com_sucursal;
-use models\em_empleado;
-use models\nom_conf_factura;
-use models\nom_percepcion;
+use gamboamartin\nomina\models\com_cliente;
+use gamboamartin\nomina\models\com_producto;
+use gamboamartin\nomina\models\com_sucursal;
+use gamboamartin\nomina\models\em_empleado;
+use gamboamartin\nomina\models\nom_conf_factura;
+use gamboamartin\nomina\models\nom_percepcion;
 use PDO;
 use stdClass;
 

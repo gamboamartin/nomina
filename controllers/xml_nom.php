@@ -5,9 +5,9 @@ use gamboamartin\errores\errores;
 use gamboamartin\facturacion\models\fc_factura;
 use gamboamartin\validacion\validacion;
 use gamboamartin\xml_cfdi_4\cfdis;
-use models\calcula_nomina;
-use models\nom_data_subsidio;
-use models\nom_nomina;
+use gamboamartin\nomina\models\calcula_nomina;
+use gamboamartin\nomina\models\nom_data_subsidio;
+use gamboamartin\nomina\models\nom_nomina;
 use PDO;
 use stdClass;
 

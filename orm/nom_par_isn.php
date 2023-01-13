@@ -1,5 +1,5 @@
 <?php
-namespace models;
+namespace gamboamartin\nomina\models;
 use base\orm\modelo;
 use gamboamartin\cat_sat\models\cat_sat_isn;
 use PDO;
@@ -7,7 +7,7 @@ use PDO;
 class nom_par_isn extends modelo{
 
     public function __construct(PDO $link){
-        $tabla = __CLASS__;
+        $tabla = 'nom_par_isn';
         $columnas = array($tabla=>false);
         $campos_obligatorios = array();
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace models;
+namespace gamboamartin\nomina\models;
 use gamboamartin\errores\errores;
 use gamboamartin\validacion\validacion;
 use JsonException;

@@ -7,7 +7,7 @@ use gamboamartin\errores\errores;
 use gamboamartin\facturacion\models\fc_factura;
 use gamboamartin\nomina\controllers\controlador_nom_nomina;
 use gamboamartin\validacion\validacion;
-use models\nom_nomina;
+use gamboamartin\nomina\models\nom_nomina;
 use PDO;
 use stdClass;
 

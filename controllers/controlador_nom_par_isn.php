@@ -7,7 +7,7 @@ use gamboamartin\system\links_menu;
 use gamboamartin\system\system;
 use gamboamartin\template\html;
 use html\nom_par_isn_html;
-use models\nom_par_isn;
+use gamboamartin\nomina\models\nom_par_isn;
 use PDO;
 use stdClass;
 

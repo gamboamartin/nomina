@@ -1,5 +1,5 @@
 <?php
-namespace models;
+namespace gamboamartin\nomina\models;
 use base\orm\modelo;
 use gamboamartin\errores\errores;
 use PDO;
@@ -8,7 +8,7 @@ use stdClass;
 class nom_conf_percepcion extends modelo{
 
     public function __construct(PDO $link){
-        $tabla = __CLASS__;
+        $tabla = 'nom_conf_percepcion';
 
         $columnas = array($tabla=>false , "nom_percepcion" => $tabla,"nom_conf_nomina" => $tabla);
 

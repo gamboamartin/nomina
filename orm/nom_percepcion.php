@@ -1,5 +1,5 @@
 <?php
-namespace models;
+namespace gamboamartin\nomina\models;
 
 use gamboamartin\cat_sat\models\cat_sat_tipo_percepcion_nom;
 use gamboamartin\errores\errores;
@@ -9,7 +9,7 @@ use stdClass;
 class nom_percepcion extends nominas_confs {
 
     public function __construct(PDO $link){
-        $tabla = __CLASS__;
+        $tabla = 'nom_percepcion';
 
         $columnas = array($tabla=>false,'cat_sat_tipo_percepcion_nom'=>$tabla);
 

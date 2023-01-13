@@ -7,7 +7,7 @@ use gamboamartin\system\links_menu;
 use gamboamartin\system\system;
 use gamboamartin\template\html;
 use html\nom_detalle_layout_html;
-use models\nom_detalle_layout;
+use gamboamartin\nomina\models\nom_detalle_layout;
 use PDO;
 use stdClass;
 

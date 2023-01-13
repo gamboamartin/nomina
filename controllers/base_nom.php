@@ -2,9 +2,9 @@
 namespace gamboamartin\nomina\controllers;
 use gamboamartin\errores\errores;
 use gamboamartin\system\system;
-use models\nom_par_deduccion;
-use models\nom_par_otro_pago;
-use models\nom_par_percepcion;
+use gamboamartin\nomina\models\nom_par_deduccion;
+use gamboamartin\nomina\models\nom_par_otro_pago;
+use gamboamartin\nomina\models\nom_par_percepcion;
 use stdClass;
 
 class base_nom extends system {

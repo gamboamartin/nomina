@@ -15,8 +15,8 @@ use gamboamartin\template\html;
 use html\nom_conf_deduccion_html;
 use html\nom_conf_nomina_html;
 use html\nom_deduccion_html;
-use models\nom_conf_deduccion;
-use models\nom_conf_nomina;
+use gamboamartin\nomina\models\nom_conf_deduccion;
+use gamboamartin\nomina\models\nom_conf_nomina;
 use PDO;
 use stdClass;
 

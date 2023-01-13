@@ -1,12 +1,13 @@
 <?php
-namespace models;
+namespace gamboamartin\nomina\models;
 use base\orm\modelo;
+use gamboamartin\banco\models\bn_sucursal;
 use PDO;
 
 class nom_layout extends modelo{
 
     public function __construct(PDO $link){
-        $tabla = __CLASS__;
+        $tabla = 'nom_layout';
         $columnas = array($tabla=>false);
         $campos_obligatorios = array();
 

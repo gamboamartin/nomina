@@ -13,9 +13,9 @@ use gamboamartin\errores\errores;
 use gamboamartin\system\links_menu;
 use gamboamartin\template\html;
 use html\nom_otro_pago_html;
-use models\nom_otro_pago;
-use models\nom_par_deduccion;
-use models\nom_par_percepcion;
+use gamboamartin\nomina\models\nom_otro_pago;
+use gamboamartin\nomina\models\nom_par_deduccion;
+use gamboamartin\nomina\models\nom_par_percepcion;
 use PDO;
 use stdClass;
 

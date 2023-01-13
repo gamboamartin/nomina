@@ -7,7 +7,7 @@ use gamboamartin\nomina\controllers\controlador_nom_conf_factura;
 
 use gamboamartin\system\html_controler;
 
-use models\nom_conf_factura;
+use gamboamartin\nomina\models\nom_conf_factura;
 
 use PDO;
 use stdClass;

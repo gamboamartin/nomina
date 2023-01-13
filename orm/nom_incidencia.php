@@ -1,5 +1,5 @@
 <?php
-namespace models;
+namespace gamboamartin\nomina\models;
 use base\orm\modelo;
 use gamboamartin\errores\errores;
 use PDO;
@@ -10,7 +10,7 @@ class nom_incidencia extends modelo
 
     public function __construct(PDO $link)
     {
-        $tabla = __CLASS__;
+        $tabla = 'nom_incidencia';
         $columnas = array($tabla => false, 'nom_tipo_incidencia' => $tabla, 'em_empleado' => $tabla);
         $campos_obligatorios = array();
 

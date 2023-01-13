@@ -15,7 +15,7 @@ use gamboamartin\template\html;
 
 
 use html\nom_data_subsidio_html;
-use models\nom_data_subsidio;
+use gamboamartin\nomina\models\nom_data_subsidio;
 
 
 use PDO;

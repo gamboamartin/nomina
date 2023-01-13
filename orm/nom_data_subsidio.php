@@ -1,6 +1,6 @@
 <?php
 
-namespace models;
+namespace gamboamartin\nomina\models;
 
 use gamboamartin\errores\errores;
 use PDO;
@@ -12,7 +12,7 @@ class nom_data_subsidio extends nominas_confs
 
     public function __construct(PDO $link)
     {
-        $tabla = __CLASS__;
+        $tabla = 'nom_data_subsidio';
         $columnas = array($tabla => false,'nom_par_deduccion'=>$tabla, 'nom_par_otro_pago'=>$tabla);
         $campos_obligatorios = array('descripcion','codigo','alias','codigo_bis','nom_par_deduccion_id',
             'nom_par_otro_pago_id','monto_isr_bruto','monto_subsidio_bruto');

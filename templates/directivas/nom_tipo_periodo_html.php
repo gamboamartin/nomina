@@ -4,7 +4,7 @@ namespace html;
 use gamboamartin\errores\errores;
 use gamboamartin\nomina\controllers\controlador_nom_tipo_periodo;
 use gamboamartin\system\html_controler;
-use models\nom_tipo_periodo;
+use gamboamartin\nomina\models\nom_tipo_periodo;
 use PDO;
 use stdClass;
 

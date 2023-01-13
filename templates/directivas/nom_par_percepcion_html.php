@@ -5,7 +5,7 @@ namespace html;
 use gamboamartin\errores\errores;
 use gamboamartin\nomina\controllers\controlador_nom_par_percepcion;
 use gamboamartin\system\html_controler;
-use models\nom_par_percepcion;
+use gamboamartin\nomina\models\nom_par_percepcion;
 use PDO;
 use stdClass;
 

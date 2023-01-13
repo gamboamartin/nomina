@@ -7,7 +7,7 @@ use gamboamartin\errores\errores;
 use gamboamartin\nomina\controllers\controlador_nom_conf_empleado;
 use gamboamartin\system\html_controler;
 use gamboamartin\template\directivas;
-use models\nom_conf_empleado;
+use gamboamartin\nomina\models\nom_conf_empleado;
 use PDO;
 use stdClass;
 

@@ -1,8 +1,10 @@
 <?php
-namespace models;
+namespace gamboamartin\nomina\models;
 use gamboamartin\cat_sat\models\cat_sat_subsidio;
 use gamboamartin\errores\errores;
 use gamboamartin\validacion\validacion;
+use gamboamartin\nomina\models\nom_nomina;
+use gamboamartin\nomina\models\nominas;
 use PDO;
 use stdClass;
 

@@ -5,8 +5,8 @@ use base\orm\modelo;
 use gamboamartin\errores\errores;
 use gamboamartin\nomina\controllers\controlador_nom_per_excedente;
 use gamboamartin\system\html_controler;
-use models\nom_conf_nomina;
-use models\nom_per_excedente;
+use gamboamartin\nomina\models\nom_conf_nomina;
+use gamboamartin\nomina\models\nom_per_excedente;
 use PDO;
 use stdClass;
 

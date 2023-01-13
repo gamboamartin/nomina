@@ -1,17 +1,15 @@
 <?php
-namespace tests\controllers;
-
+namespace gamboamartin\nomina\tests\controllers;
 
 use gamboamartin\errores\errores;
-use gamboamartin\nomina\controllers\controlador_nom_nomina;
 use gamboamartin\nomina\controllers\xml_nom;
 use gamboamartin\test\liberator;
 use gamboamartin\test\test;
 
 
-use models\nom_nomina;
+use gamboamartin\nomina\models\nom_nomina;
 use stdClass;
-use tests\base_test;
+use gamboamartin\nomina\tests\base_test;
 
 
 class xml_nomTest extends test {

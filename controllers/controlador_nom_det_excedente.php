@@ -7,7 +7,7 @@ use gamboamartin\system\links_menu;
 use gamboamartin\system\system;
 use gamboamartin\template\html;
 use html\nom_det_excedente_html;
-use models\nom_det_excedente;
+use gamboamartin\nomina\models\nom_det_excedente;
 use PDO;
 use stdClass;
 

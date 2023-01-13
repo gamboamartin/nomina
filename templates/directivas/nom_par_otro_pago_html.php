@@ -6,7 +6,7 @@ use gamboamartin\errores\errores;
 
 use gamboamartin\nomina\controllers\controlador_nom_par_otro_pago;
 use gamboamartin\system\html_controler;
-use models\nom_par_otro_pago;
+use gamboamartin\nomina\models\nom_par_otro_pago;
 use PDO;
 use stdClass;
 

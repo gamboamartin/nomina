@@ -1,5 +1,5 @@
 <?php
-namespace models;
+namespace gamboamartin\nomina\models;
 use gamboamartin\cat_sat\models\cat_sat_isr;
 use gamboamartin\errores\errores;
 use gamboamartin\validacion\validacion;

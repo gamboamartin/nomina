@@ -1,5 +1,5 @@
 <?php
-namespace models;
+namespace gamboamartin\nomina\models;
 class numero_texto
 {
     private $UNIDADES = array(

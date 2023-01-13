@@ -3,7 +3,7 @@ namespace html;
 
 use gamboamartin\errores\errores;
 use gamboamartin\system\html_controler;
-use models\nom_incidencia;
+use gamboamartin\nomina\models\nom_incidencia;
 use PDO;
 use stdClass;
 

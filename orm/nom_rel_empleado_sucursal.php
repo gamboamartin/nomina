@@ -1,5 +1,5 @@
 <?php
-namespace models;
+namespace gamboamartin\nomina\models;
 use base\orm\modelo;
 
 use gamboamartin\comercial\models\com_sucursal;
@@ -11,7 +11,7 @@ use stdClass;
 class nom_rel_empleado_sucursal extends modelo{
 
     public function __construct(PDO $link){
-        $tabla = __CLASS__;
+        $tabla = 'nom_rel_empleado_sucursal';
         $columnas = array($tabla=>false,'em_empleado'=>$tabla,'com_sucursal'=>$tabla);
         $campos_obligatorios = array('em_empleado_id','com_sucursal_id');
 

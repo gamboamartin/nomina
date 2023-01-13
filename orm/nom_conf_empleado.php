@@ -1,5 +1,5 @@
 <?php
-namespace models;
+namespace gamboamartin\nomina\models;
 use base\orm\modelo;
 use gamboamartin\empleado\models\em_cuenta_bancaria;
 use gamboamartin\empleado\models\em_empleado;
@@ -10,7 +10,7 @@ use stdClass;
 class nom_conf_empleado extends modelo{
 
     public function __construct(PDO $link){
-        $tabla = __CLASS__;
+        $tabla = 'nom_conf_empleado';
         $columnas = array($tabla=>false,'em_cuenta_bancaria' => $tabla,'em_empleado'=>'em_cuenta_bancaria',
             'nom_conf_nomina' => $tabla,'nom_conf_factura' => 'nom_conf_nomina',
             'cat_sat_periodicidad_pago_nom'=>'nom_conf_nomina', 'im_registro_patronal'=>'em_empleado');

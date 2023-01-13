@@ -1,11 +1,12 @@
 <?php
 
-namespace models;
+namespace gamboamartin\nomina\models;
 use gamboamartin\errores\errores;
 use gamboamartin\facturacion\models\fc_factura;
 use gamboamartin\facturacion\models\fc_partida;
 use gamboamartin\validacion\validacion;
 use JsonException;
+use gamboamartin\nomina\models\nom_par_deduccion;
 use PDO;
 use stdClass;
 

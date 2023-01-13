@@ -14,8 +14,8 @@
         "psr-4": {
           "gamboamartin\\nomina\\controllers\\": "controllers",
           "config\\": "config/",
-          "models\\": "orm",
-          "tests\\": "tests/",
+          "gamboamartin\\nomina\\models\\": "orm",
+          "gamboamartin\\nomina\\tests\\": "tests",
           "links\\": "links/",
           "html\\": "templates/directivas/"
 

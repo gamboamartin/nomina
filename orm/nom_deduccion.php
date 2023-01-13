@@ -1,5 +1,5 @@
 <?php
-namespace models;
+namespace gamboamartin\nomina\models;
 use base\orm\modelo;
 use gamboamartin\errores\errores;
 use PDO;
@@ -7,7 +7,7 @@ use PDO;
 class nom_deduccion extends nominas_confs {
 
     public function __construct(PDO $link){
-        $tabla = __CLASS__;
+        $tabla = 'nom_deduccion';
         $columnas = array($tabla=>false);
         $campos_obligatorios = array();
 

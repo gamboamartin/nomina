@@ -1,5 +1,5 @@
 <?php
-namespace models;
+namespace gamboamartin\nomina\models;
 use base\orm\modelo;
 use gamboamartin\cat_sat\models\cat_sat_forma_pago;
 use gamboamartin\cat_sat\models\cat_sat_metodo_pago;
@@ -13,7 +13,7 @@ use PDO;
 class nom_conf_factura extends modelo{
 
     public function __construct(PDO $link){
-        $tabla = __CLASS__;
+        $tabla = 'nom_conf_factura';
         $columnas = array($tabla => false, "cat_sat_forma_pago" => $tabla, "cat_sat_metodo_pago" => $tabla,
             "cat_sat_moneda" => $tabla, "com_tipo_cambio" => $tabla, "cat_sat_uso_cfdi" => $tabla,
             "cat_sat_tipo_de_comprobante" => $tabla, "com_producto" => $tabla);

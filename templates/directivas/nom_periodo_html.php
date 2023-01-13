@@ -10,8 +10,8 @@ use gamboamartin\nomina\controllers\controlador_nom_periodo;
 use gamboamartin\system\html_controler;
 use gamboamartin\template\directivas;
 use gamboamartin\validacion\validacion;
-use models\nom_deduccion;
-use models\nom_periodo;
+use gamboamartin\nomina\models\nom_deduccion;
+use gamboamartin\nomina\models\nom_periodo;
 use PDO;
 use stdClass;
 

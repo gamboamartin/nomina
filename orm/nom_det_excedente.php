@@ -1,12 +1,12 @@
 <?php
-namespace models;
+namespace gamboamartin\nomina\models;
 use base\orm\modelo;
 use PDO;
 
 class nom_det_excedente extends modelo{
 
     public function __construct(PDO $link){
-        $tabla = __CLASS__;
+        $tabla = 'nom_det_excedente';
         $columnas = array($tabla=>false);
         $campos_obligatorios = array();
         $campos_view = array();

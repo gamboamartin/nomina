@@ -1,25 +1,25 @@
 <?php
-namespace tests\controllers;
+namespace gamboamartin\nomina\tests\orm;
 
 use controllers\controlador_cat_sat_tipo_persona;
 use gamboamartin\errores\errores;
 use gamboamartin\test\liberator;
 use gamboamartin\test\test;
 use JsonException;
-use models\adm_dia;
-use models\calcula_imss;
-use models\calculo_isr;
-use models\fc_cfd_partida;
-use models\fc_factura;
-use models\fc_partida;
-use models\nom_data_subsidio;
-use models\nom_nomina;
-use models\nom_par_deduccion;
-use models\nom_par_otro_pago;
-use models\nom_par_percepcion;
-use models\nom_periodo;
+use gamboamartin\nomina\models\adm_dia;
+use gamboamartin\nomina\models\calcula_imss;
+use gamboamartin\nomina\models\calculo_isr;
+use gamboamartin\nomina\models\fc_cfd_partida;
+use gamboamartin\nomina\models\fc_factura;
+use gamboamartin\nomina\models\fc_partida;
+use gamboamartin\nomina\models\nom_data_subsidio;
+use gamboamartin\nomina\models\nom_nomina;
+use gamboamartin\nomina\models\nom_par_deduccion;
+use gamboamartin\nomina\models\nom_par_otro_pago;
+use gamboamartin\nomina\models\nom_par_percepcion;
+use gamboamartin\nomina\models\nom_periodo;
 use stdClass;
-use tests\base_test;
+use gamboamartin\nomina\tests\base_test;
 
 
 class calculo_isrTest extends test {

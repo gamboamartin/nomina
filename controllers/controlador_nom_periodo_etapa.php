@@ -15,7 +15,7 @@ use gamboamartin\system\system;
 
 use gamboamartin\template_1\html;
 use html\nom_periodo_etapa_html;
-use models\nom_periodo_etapa;
+use gamboamartin\nomina\models\nom_periodo_etapa;
 use PDO;
 use stdClass;
 
