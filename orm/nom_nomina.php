@@ -1582,7 +1582,7 @@ class nom_nomina extends modelo
     }
     private function ruta_archivos_tmp(string $ruta_archivos): array|string
     {
-        $ruta_archivos_tmp = $ruta_archivos.'/tmp';
+        $ruta_archivos_tmp = $ruta_archivos.'tmp';
 
         if(!file_exists($ruta_archivos_tmp)){
             mkdir($ruta_archivos_tmp,0777,true);
@@ -2623,13 +2623,13 @@ class nom_nomina extends modelo
 
     public function timbra_xml(int $nom_nomina_id): array|stdClass
     {
-        $nom_nomina = $this->registro(registro_id: $nom_nomina_id);
+        $nom_nomina = $this->registro(registro_id: $nom_nomina_id,retorno_obj: true);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al obtener nomina', data: $nom_nomina);
         }
 
-        $timbrada = (new fc_cfdi_sellado($this->link))->existe(filtro:
-            array('fc_factura.id' => $nom_nomina->fc_factura_id));
+        $filtro['fc_factura.id'] = $nom_nomina->fc_factura_id;
+        $timbrada = (new fc_cfdi_sellado($this->link))->existe(filtro: $filtro);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al validar si la factura esta timbrado', data: $timbrada);
         }
