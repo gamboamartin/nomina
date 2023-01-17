@@ -140,7 +140,7 @@ class xml_nom{
     private function data_comprobante(stdClass $fc_factura, PDO $link): array|stdClass
     {
 
-        $keys = array('dp_cp_descripcion','fc_factura_folio','fc_factura_id');
+        $keys = array('dp_cp_descripcion','fc_factura_folio','fc_factura_id','cat_sat_metodo_pago_codigo');
         $valida = $this->validacion->valida_existencia_keys(keys:$keys ,registro:  $fc_factura);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al validar fc_factura', data: $valida);

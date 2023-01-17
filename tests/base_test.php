@@ -614,6 +614,7 @@ class base_test{
         $registro['dp_calle_pertenece_id'] = 1;
         $registro['cat_sat_tipo_nomina_id'] = 1;
 
+
         $alta = (new nom_nomina($link))->alta_registro($registro);
         if(errores::$error){
             return (new errores())->error(mensaje: 'Error al insertar', data: $alta);

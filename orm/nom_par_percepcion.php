@@ -1,7 +1,7 @@
 <?php
 namespace gamboamartin\nomina\models;
 use gamboamartin\errores\errores;
-use JsonException;
+
 use PDO;
 use stdClass;
 

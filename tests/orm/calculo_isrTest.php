@@ -121,6 +121,13 @@ class calculo_isrTest extends test {
             exit;
         }
 
+        $del = (new base_test())->del_nom_percepcion($this->link);
+        if(errores::$error){
+            $error = (new errores())->error('Error al eliminar', $del);
+            print_r($error);
+            exit;
+        }
+
         $alta = (new base_test())->alta_cat_sat_isr(link: $this->link);
         if(errores::$error){
             $error = (new errores())->error('Error al insertar', $alta);
@@ -142,7 +149,7 @@ class calculo_isrTest extends test {
             print_r($error);
             exit;
         }
-        $del = (new base_test())->del($this->link, 'models\\nom_par_percepcion');
+        $del = (new base_test())->del($this->link, 'gamboamartin\\nomina\\models\\nom_par_percepcion');
         if(errores::$error){
             $error = (new errores())->error(mensaje: 'Error al eliminar', data: $del);
             print_r($error);

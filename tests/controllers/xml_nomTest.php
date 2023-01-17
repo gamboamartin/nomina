@@ -248,9 +248,12 @@ class xml_nomTest extends test {
         $fc_factura = new stdClass();
         $fc_factura->dp_cp_descripcion = 'a';
         $fc_factura->fc_factura_folio = 'a';
+        $fc_factura->cat_sat_metodo_pago_codigo = 'a';
         $fc_factura->fc_factura_id = $alta->registro['fc_factura_id'];
 
         $resultado = $xml_nom->data_comprobante($fc_factura, $this->link);
+
+
 
         $this->assertIsObject($resultado);
         $this->assertNotTrue(errores::$error);
@@ -363,8 +366,8 @@ class xml_nomTest extends test {
         $resultado = $xml_nom->emisor($fc_factura_id, $link);
         $this->assertIsObject($resultado);
         $this->assertNotTrue(errores::$error);
-        $this->assertEquals('AAA010101ABC', $resultado->rfc);
-        $this->assertEquals('1', $resultado->nombre);
+        $this->assertEquals('EKU9003173C9', $resultado->rfc);
+        $this->assertEquals('ESCUELA KEMPER URGATE', $resultado->nombre);
         $this->assertEquals('021', $resultado->regimen_fiscal);
         errores::$error = false;
     }
@@ -414,9 +417,9 @@ class xml_nomTest extends test {
         $resultado = $xml_nom->receptor($com_sucursal_id, $fc_factura_id, $this->link);
         $this->assertIsObject($resultado);
         $this->assertNotTrue(errores::$error);
-        $this->assertEquals('AAA010101ABC', $resultado->rfc);
-        $this->assertEquals('1', $resultado->nombre);
-        $this->assertEquals('021', $resultado->regimen_fiscal_receptor);
+        $this->assertEquals('MOFY900516NL1', $resultado->rfc);
+        $this->assertEquals('YADIRA MAGALY MONTAÑEZ FELIX', $resultado->nombre);
+        $this->assertEquals('601', $resultado->regimen_fiscal_receptor);
         $this->assertEquals('44520', $resultado->domicilio_fiscal_receptor);
         errores::$error = false;
     }
