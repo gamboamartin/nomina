@@ -889,6 +889,34 @@ class nom_nominaTest extends test {
         $this->assertEquals(0, $resultado);
         errores::$error = false;
     }
+    public function test_total_sueldos_exento(): void
+    {
+        errores::$error = false;
+
+        $nomina = new nom_nomina($this->link);
+        $nomina = new liberator($nomina);
+
+        $nom_nomina_id = 0;
+
+        $resultado = $nomina->total_sueldos_exento(nom_nomina_id: $nom_nomina_id);
+        $this->assertIsArray($resultado);
+        $this->assertTrue(errores::$error);
+        $this->assertStringContainsStringIgnoringCase('Error nomina id debe se ser mayor a 0',
+            $resultado['mensaje']);
+
+        errores::$error = false;
+
+        $nom_nomina_id = 1;
+
+        $resultado = $nomina->total_sueldos_exento(nom_nomina_id: $nom_nomina_id);
+
+        $this->assertIsFloat($resultado);
+        $this->assertNotTrue(errores::$error);
+        $this->assertEquals(0, $resultado);
+
+        errores::$error = false;
+    }
+
     public function test_total_sueldos_gravado(): void
     {
         errores::$error = false;

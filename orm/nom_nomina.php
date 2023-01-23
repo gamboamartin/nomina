@@ -3449,6 +3449,10 @@ class nom_nomina extends modelo
 
     private function total_sueldos_exento(int $nom_nomina_id): float|array
     {
+        if($nom_nomina_id <= 0){
+            return $this->error->error(mensaje: 'Error nomina id debe se ser mayor a 0', data: $nom_nomina_id);
+        }
+
         $campos = array();
         $campos['total_sueldos_exento'] = 'nom_par_percepcion.importe_exento';
         $filtro['nom_nomina.id'] = $nom_nomina_id;
