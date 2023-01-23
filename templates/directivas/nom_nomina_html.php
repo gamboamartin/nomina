@@ -6,6 +6,7 @@ use gamboamartin\empleado\models\em_empleado;
 use gamboamartin\errores\errores;
 use gamboamartin\facturacion\models\fc_factura;
 use gamboamartin\nomina\controllers\controlador_nom_nomina;
+use gamboamartin\organigrama\html\org_puesto_html;
 use gamboamartin\validacion\validacion;
 use gamboamartin\nomina\models\nom_nomina;
 use PDO;

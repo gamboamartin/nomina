@@ -3464,6 +3464,10 @@ class nom_nomina extends modelo
 
     private function total_sueldos_gravado(int $nom_nomina_id): float|array
     {
+        if($nom_nomina_id <= 0){
+            return $this->error->error(mensaje: 'Error nomina id debe se ser mayor a 0', data: $nom_nomina_id);
+        }
+
         $campos = array();
         $campos['total_sueldos_gravado'] = 'nom_par_percepcion.importe_gravado';
         $filtro['nom_nomina.id'] = $nom_nomina_id;
@@ -3756,6 +3760,10 @@ class nom_nomina extends modelo
         return (int)$diff->days + 1;
     }
 
+    /**
+     * @param string $fecha
+     * @return int|array
+     */
     private function year(string $fecha): int|array
     {
         $valida = $this->validacion->valida_fecha($fecha);

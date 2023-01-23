@@ -889,6 +889,69 @@ class nom_nominaTest extends test {
         $this->assertEquals(0, $resultado);
         errores::$error = false;
     }
+    public function test_total_sueldos_gravado(): void
+    {
+        errores::$error = false;
+
+        $nomina = new nom_nomina($this->link);
+        $nomina = new liberator($nomina);
+
+        $nom_nomina_id = 0;
+
+        $resultado = $nomina->total_sueldos_gravado(nom_nomina_id: $nom_nomina_id);
+        $this->assertIsArray($resultado);
+        $this->assertTrue(errores::$error);
+        $this->assertStringContainsStringIgnoringCase('Error nomina id debe se ser mayor a 0',
+            $resultado['mensaje']);
+
+        errores::$error = false;
+
+        $nom_nomina_id = 1;
+
+        $resultado = $nomina->total_sueldos_gravado(nom_nomina_id: $nom_nomina_id);
+
+        $this->assertIsFloat($resultado);
+        $this->assertNotTrue(errores::$error);
+        $this->assertEquals(0, $resultado);
+
+        errores::$error = false;
+    }
+
+
+    public function test_year(): void
+    {
+        errores::$error = false;
+
+        $nomina = new nom_nomina($this->link);
+        $nomina = new liberator($nomina);
+
+        $fecha = '';
+
+        $resultado = $nomina->year(fecha: $fecha);
+        $this->assertIsArray($resultado);
+        $this->assertTrue(errores::$error);
+        $this->assertStringContainsStringIgnoringCase('Error al validar fecha',$resultado['mensaje']);
+
+        errores::$error = false;
+
+        $fecha = 'a';
+
+        $resultado = $nomina->year(fecha: $fecha);
+        $this->assertIsArray($resultado);
+        $this->assertTrue(errores::$error);
+        $this->assertStringContainsStringIgnoringCase('Error al validar fecha',$resultado['mensaje']);
+
+        errores::$error = false;
+
+        $fecha = '2023-01-01';
+
+        $resultado = $nomina->year(fecha: $fecha);
+        $this->assertIsInt($resultado);
+        $this->assertNotTrue(errores::$error);
+        $this->assertEquals(2023, $resultado);
+
+        errores::$error = false;
+    }
 
 
 
