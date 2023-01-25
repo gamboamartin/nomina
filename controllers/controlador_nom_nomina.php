@@ -891,11 +891,11 @@ class controlador_nom_nomina extends base_nom
         $keys_selects['nom_nomina']->cols = 12;
         $keys_selects['nom_nomina']->disabled = true;
         $keys_selects['nom_nomina']->filtro = array('nom_nomina.id' => $this->registro_id);
-        $keys_selects['nom_nomina']->name_model = 'gamboamartin\\models\\nom_nomina';
+        $keys_selects['nom_nomina']->name_model = 'gamboamartin\\nomina\\models\\nom_nomina';
 
         $keys_selects['nom_percepcion'] = new stdClass();
         $keys_selects['nom_percepcion']->cols = 12;
-        $keys_selects['nom_percepcion']->name_model = 'gamboamartin\\models\\nom_percepcion';
+        $keys_selects['nom_percepcion']->name_model = 'gamboamartin\\nomina\\models\\nom_percepcion';
 
 
 
