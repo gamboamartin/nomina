@@ -824,11 +824,11 @@ class controlador_nom_nomina extends base_nom
         $keys_selects['nom_nomina']->cols = 12;
         $keys_selects['nom_nomina']->disabled = true;
         $keys_selects['nom_nomina']->filtro = array('nom_nomina.id' => $this->registro_id);
-        $keys_selects['nom_percepcion']->namespace_model = 'gamboamartin\\nomina\\models';
+        $keys_selects['nom_nomina']->namespace_model = 'gamboamartin\\nomina\\models';
 
         $keys_selects['nom_deduccion'] = new stdClass();
         $keys_selects['nom_deduccion']->cols = 12;
-        $keys_selects['nom_percepcion']->namespace_model = 'gamboamartin\\nomina\\models';
+        $keys_selects['nom_deduccion']->namespace_model = 'gamboamartin\\nomina\\models';
 
 
         $inputs = (new nom_nomina_html(html: $this->html_base))->genera_inputs_nueva_deduccion(
@@ -891,7 +891,7 @@ class controlador_nom_nomina extends base_nom
         $keys_selects['nom_nomina']->cols = 12;
         $keys_selects['nom_nomina']->disabled = true;
         $keys_selects['nom_nomina']->filtro = array('nom_nomina.id' => $this->registro_id);
-        $keys_selects['nom_percepcion']->namespace_model = 'gamboamartin\\nomina\\models';
+        $keys_selects['nom_nomina']->namespace_model = 'gamboamartin\\nomina\\models';
 
         $keys_selects['nom_percepcion'] = new stdClass();
         $keys_selects['nom_percepcion']->cols = 12;
