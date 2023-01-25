@@ -824,9 +824,11 @@ class controlador_nom_nomina extends base_nom
         $keys_selects['nom_nomina']->cols = 12;
         $keys_selects['nom_nomina']->disabled = true;
         $keys_selects['nom_nomina']->filtro = array('nom_nomina.id' => $this->registro_id);
+        $keys_selects['nom_nomina']->name_model = 'tglobally\\tg_nomina\\models\\nom_nomina';
 
         $keys_selects['nom_deduccion'] = new stdClass();
         $keys_selects['nom_deduccion']->cols = 12;
+        $keys_selects['nom_deduccion']->name_model = 'tglobally\\tg_nomina\\models\\nom_deduccion';
 
 
         $inputs = (new nom_nomina_html(html: $this->html_base))->genera_inputs_nueva_deduccion(
@@ -889,9 +891,11 @@ class controlador_nom_nomina extends base_nom
         $keys_selects['nom_nomina']->cols = 12;
         $keys_selects['nom_nomina']->disabled = true;
         $keys_selects['nom_nomina']->filtro = array('nom_nomina.id' => $this->registro_id);
+        $keys_selects['nom_nomina']->name_model = 'tglobally\\tg_nomina\\models\\nom_nomina';
 
         $keys_selects['nom_percepcion'] = new stdClass();
         $keys_selects['nom_percepcion']->cols = 12;
+        $keys_selects['nom_percepcion']->name_model = 'tglobally\\tg_nomina\\models\\nom_percepcion';
 
 
 
