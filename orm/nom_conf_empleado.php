@@ -64,6 +64,21 @@ class nom_conf_empleado extends modelo{
         return $registro;
     }
 
+    public function get_configuraciones_empleado(int $em_cuenta_bancaria_id): array|stdClass
+    {
+        if($em_cuenta_bancaria_id <=0){
+            return $this->error->error(mensaje: 'Error $em_cuenta_bancaria debe ser mayor a 0', data: $em_cuenta_bancaria_id);
+        }
+
+        $filtro['em_cuenta_bancaria.id'] = $em_cuenta_bancaria_id;
+        $registros = $this->filtro_and(filtro: $filtro);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al obtener abonos', data: $registros);
+        }
+
+        return $registros;
+    }
+
     public function nom_conf_empleado(int $em_empleado_id, int $nom_conf_nomina_id){
         $filtro['em_empleado.id'] = $em_empleado_id;
         $filtro['nom_conf_nomina.id'] = $nom_conf_nomina_id;

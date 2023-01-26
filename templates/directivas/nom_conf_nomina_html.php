@@ -68,7 +68,7 @@ class nom_conf_nomina_html extends html_controler {
     public function genera_inputs_asigna_percepcion(controlador_nom_conf_nomina $controler, array $keys_selects, PDO $link): array|stdClass
     {
         $inputs = (new nom_conf_percepcion_html(html: $this->html_base))->init_alta2(row_upd:$controler->row_upd,
-            modelo: $controler->modelo,link: $link,keys_selects: $keys_selects);
+            modelo: $controler->modelo,keys_selects: $keys_selects);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al generar inputs', data: $inputs);
 
