@@ -8,377 +8,256 @@
  */
 namespace gamboamartin\nomina\controllers;
 
+use base\controller\controler;
 use gamboamartin\errores\errores;
-use gamboamartin\system\actions;
+use gamboamartin\system\_ctl_base;
 use gamboamartin\system\links_menu;
-use gamboamartin\system\system;
 use gamboamartin\template\html;
 use html\nom_conf_nomina_html;
-use html\nom_conf_percepcion_html;
-use html\nom_deduccion_html;
 use gamboamartin\nomina\models\nom_conf_nomina;
-use gamboamartin\nomina\models\nom_conf_percepcion;
 use PDO;
 use stdClass;
 use Throwable;
 
-class controlador_nom_conf_nomina extends system {
+class controlador_nom_conf_nomina extends _ctl_base {
 
-    public array $keys_selects = array();
     public controlador_nom_conf_percepcion $controlador_nom_conf_percepcion;
-
     public string $link_nom_conf_percepcion_alta_bd = '';
-    public stdClass $percepciones;
-    public int $nom_conf_percepcion_id = -1;
 
-    public function __construct(PDO $link, html $html = new \gamboamartin\template_1\html(),
-                                stdClass $paths_conf = new stdClass()){
+    public function __construct(PDO      $link, html $html = new \gamboamartin\template_1\html(),
+                                stdClass $paths_conf = new stdClass())
+    {
         $modelo = new nom_conf_nomina(link: $link);
         $html_ = new nom_conf_nomina_html(html: $html);
         $obj_link = new links_menu(link: $link, registro_id: $this->registro_id);
 
-        $columns["nom_conf_nomina_id"]["titulo"] = "Id";
-        $columns["nom_conf_nomina_codigo"]["titulo"] = "Codigo";
-        $columns["nom_conf_factura_descripcion"]["titulo"] = "Conf. Factura";
-        $columns["cat_sat_periodicidad_pago_nom_descripcion"]["titulo"] = "Periodicidad Pago";
-        $columns["cat_sat_tipo_nomina_descripcion"]["titulo"] = "Tipo Nomina";
+        $datatables = $this->init_datatable();
+        if (errores::$error) {
+            $error = $this->errores->error(mensaje: 'Error al inicializar datatable', data: $datatables);
+            print_r($error);
+            die('Error');
+        }
 
-        $filtro = array("nom_conf_nomina.id","nom_conf_nomina.codigo", "nom_conf_factura.descripcion",
-            "cat_sat_periodicidad_pago_nom.descripcion","cat_sat_tipo_nomina.descripcion");
-
-        $datatables = new stdClass();
-        $datatables->columns = $columns;
-        $datatables->filtro = $filtro;
-
-        parent::__construct(html:$html_, link: $link,modelo:  $modelo, obj_link: $obj_link, datatables: $datatables,
+        parent::__construct(html: $html_, link: $link, modelo: $modelo, obj_link: $obj_link, datatables: $datatables,
             paths_conf: $paths_conf);
 
-        $this->titulo_lista = 'Configuracion Nomina';
-
-        $this->controlador_nom_conf_percepcion = new controlador_nom_conf_percepcion(link:$this->link, paths_conf: $paths_conf);
-
-        $links = $this->inicializa_links();
-        if(errores::$error){
-            $error = $this->errores->error(mensaje: 'Error al inicializar links',data:  $links);
+        $configuraciones = $this->init_configuraciones();
+        if (errores::$error) {
+            $error = $this->errores->error(mensaje: 'Error al inicializar configuraciones', data: $configuraciones);
             print_r($error);
             die('Error');
         }
 
-        $propiedades = $this->inicializa_propiedades();
-        if(errores::$error){
-            $error = $this->errores->error(mensaje: 'Error al inicializar propiedades',data:  $propiedades);
+        $init_controladores = $this->init_controladores(paths_conf: $paths_conf);
+        if (errores::$error) {
+            $error = $this->errores->error(mensaje: 'Error al inicializar controladores', data: $init_controladores);
             print_r($error);
             die('Error');
         }
 
-        $ids = $this->inicializa_ids();
-        if(errores::$error){
-            $error = $this->errores->error(mensaje: 'Error al inicializar ids',data:  $ids);
+        $init_links = $this->init_links();
+        if (errores::$error) {
+            $error = $this->errores->error(mensaje: 'Error al inicializar links', data: $init_links);
             print_r($error);
             die('Error');
         }
+
     }
 
     public function alta(bool $header, bool $ws = false): array|string
     {
-        $r_alta =  parent::alta(header: false);
-        if(errores::$error){
-            return $this->retorno_error(mensaje: 'Error al generar template',data:  $r_alta, header: $header,ws:$ws);
+        $r_alta = $this->init_alta();
+        if (errores::$error) {
+            return $this->retorno_error(mensaje: 'Error al inicializar alta', data: $r_alta, header: $header, ws: $ws);
         }
 
-        $inputs = $this->genera_inputs(keys_selects:  $this->keys_selects);
-        if(errores::$error){
-            $error = $this->errores->error(mensaje: 'Error al generar inputs',data:  $inputs);
-            print_r($error);
-            die('Error');
+        $keys_selects = $this->init_selects_inputs();
+        if (errores::$error) {
+            return $this->retorno_error(mensaje: 'Error al inicializar selects', data: $keys_selects, header: $header,
+                ws: $ws);
+        }
+
+        $inputs = $this->inputs(keys_selects: $keys_selects);
+        if (errores::$error) {
+            return $this->retorno_error(
+                mensaje: 'Error al obtener inputs', data: $inputs, header: $header, ws: $ws);
         }
 
         return $r_alta;
     }
 
-    public function asignar_propiedad(string $identificador, mixed $propiedades)
+    protected function campos_view(): array
     {
-        if (!array_key_exists($identificador,$this->keys_selects)){
-            $this->keys_selects[$identificador] = new stdClass();
+        $keys = new stdClass();
+        $keys->inputs = array('codigo', 'descripcion');
+        $keys->selects = array();
+
+        $init_data = array();
+        $init_data['nom_conf_factura'] = "gamboamartin\\nomina";
+        $init_data['cat_sat_periodicidad_pago_nom'] = "gamboamartin\\cat_sat";
+        $init_data['cat_sat_tipo_nomina'] = "gamboamartin\\cat_sat";
+        $init_data['cat_sat_tipo_producto'] = "gamboamartin\\cat_sat";
+
+        $campos_view = $this->campos_view_base(init_data: $init_data, keys: $keys);
+        if (errores::$error) {
+            return $this->errores->error(mensaje: 'Error al inicializar campo view', data: $campos_view);
         }
 
-        foreach ($propiedades as $key => $value){
-            $this->keys_selects[$identificador]->$key = $value;
-        }
+        return $campos_view;
     }
 
-    public function asigna_percepcion(bool $header, bool $ws = false): array|stdClass
+    public function conf_percepciones(bool $header = true, bool $ws = false, array $not_actions = array()): array|string
     {
-        $columns["nom_conf_percepcion_id"]["titulo"] = "Id";
-        $columns["nom_conf_nomina_descripcion"]["titulo"] = "Conf. Nomina";
-        $columns["nom_percepcion_descripcion"]["titulo"] = "Percepcion";
-        $columns["nom_conf_percepcion_importe_gravado"]["titulo"] = "Importe Gravado";
-        $columns["nom_conf_percepcion_importe_exento"]["titulo"] = "Importe Exento";
-        $columns["nom_conf_percepcion_fecha_inicio"]["titulo"] = "Fecha Inicio";
-        $columns["nom_conf_percepcion_fecha_fin"]["titulo"] = "Fecha Fin";
-        $columns["modifica"]["titulo"] = "Acciones";
-        $columns["modifica"]["type"] = "button";
-        $columns["modifica"]["campos"] = array("elimina_bd");
+        $seccion = "nom_conf_percepcion";
 
-        $colums_rs =$this->datatable_init(columns: $columns,identificador: "#nom_conf_percepcion",
-            data: array("nom_conf_nomina.id" => $this->registro_id));
+        $data_view = new stdClass();
+        $data_view->names = array('Id', 'Conf. Percepción', 'Importe Gravado','Importe Exento','Fecha Inicio',
+            'Fecha Fin', 'Acciones');
+        $data_view->keys_data = array($seccion . "_id", $seccion . '_descripcion', $seccion . '_importe_gravado',
+            $seccion . '_importe_exento', $seccion . '_fecha_inicio', $seccion . '_fecha_fin');
+        $data_view->key_actions = 'acciones';
+        $data_view->namespace_model = 'gamboamartin\\nomina\\models';
+        $data_view->name_model_children = $seccion;
+
+        $contenido_table = $this->contenido_children(data_view: $data_view, next_accion: __FUNCTION__,
+            not_actions: $not_actions);
         if (errores::$error) {
-            $error = $this->errores->error(mensaje: 'Error al inicializar links', data: $colums_rs);
+            return $this->retorno_error(
+                mensaje: 'Error al obtener tbody', data: $contenido_table, header: $header, ws: $ws);
+        }
+
+        return $contenido_table;
+    }
+
+    private function init_configuraciones(): controler
+    {
+        $this->seccion_titulo = 'Configuración de Nominas';
+        $this->titulo_lista = 'Registros de configuraciones de Nomina';
+
+        return $this;
+    }
+
+    private function init_controladores(stdClass $paths_conf): controler
+    {
+        $this->controlador_nom_conf_percepcion = new controlador_nom_conf_percepcion(link: $this->link,
+            paths_conf: $paths_conf);
+
+        return $this;
+    }
+
+    private function init_datatable(): stdClass
+    {
+        $columns["nom_conf_nomina_id"]["titulo"] = "Id";
+        $columns["nom_conf_factura_descripcion"]["titulo"] = "Conf. Factura";
+        $columns["cat_sat_periodicidad_pago_nom_descripcion"]["titulo"] = "Periodicidad Pago";
+        $columns["cat_sat_tipo_nomina_descripcion"]["titulo"] = "Tipo Nomina";
+        $columns["nom_conf_nomina_n_conf_percepciones"]["titulo"] = "Conf. Percepciones";
+
+        $filtro = array("nom_conf_nomina.id", "nom_conf_factura.descripcion",
+            "cat_sat_periodicidad_pago_nom.descripcion", "cat_sat_tipo_nomina.descripcion");
+
+        $datatables = new stdClass();
+        $datatables->columns = $columns;
+        $datatables->filtro = $filtro;
+
+        return $datatables;
+    }
+
+    private function init_links(): array|string
+    {
+        $this->link_nom_conf_percepcion_alta_bd = $this->obj_link->link_alta_bd(link: $this->link,
+            seccion: 'nom_conf_percepcion');
+        if (errores::$error) {
+            $error = $this->errores->error(mensaje: 'Error al obtener link',
+                data: $this->link_nom_conf_percepcion_alta_bd);
             print_r($error);
-            die('Error');
+            exit;
         }
 
-        $alta = $this->controlador_nom_conf_percepcion->alta(header: false);
+        return $this->link_nom_conf_percepcion_alta_bd;
+    }
+
+    private function init_selects(array $keys_selects, string $key, string $label, int $id_selected = -1, int $cols = 6,
+                                  bool  $con_registros = true, array $filtro = array()): array
+    {
+        $keys_selects = $this->key_select(cols: $cols, con_registros: $con_registros, filtro: $filtro, key: $key,
+            keys_selects: $keys_selects, id_selected: $id_selected, label: $label);
         if (errores::$error) {
-            return $this->retorno_error(mensaje: 'Error al generar template', data: $alta, header: $header, ws: $ws);
+            return $this->errores->error(mensaje: 'Error al maquetar key_selects', data: $keys_selects);
         }
 
-        $this->controlador_nom_conf_percepcion->asignar_propiedad(identificador: 'nom_conf_nomina_id',
-            propiedades: ["id_selected" => $this->registro_id, "disabled" => true,
-                "filtro" => array('nom_conf_nomina.id' => $this->registro_id)]);
+        return $keys_selects;
+    }
 
-        $this->inputs = $this->controlador_nom_conf_percepcion->genera_inputs(
-            keys_selects:  $this->controlador_nom_conf_percepcion->keys_selects);
+    public function init_selects_inputs(): array
+    {
+        $keys_selects = $this->init_selects(keys_selects: array(), key: "nom_conf_factura_id", label: "Conf. Factura",
+            cols: 12);
+        $keys_selects = $this->init_selects(keys_selects: $keys_selects, key: "cat_sat_periodicidad_pago_nom_id",
+            label: "Periodicidad Pago");
+        return $this->init_selects(keys_selects: $keys_selects, key: "cat_sat_tipo_nomina_id", label: "Tipo Nomina");
+    }
+
+    protected function inputs_children(stdClass $registro): array|stdClass
+    {
+        $r_template = $this->controlador_nom_conf_percepcion->alta(header: false);
         if (errores::$error) {
-            $error = $this->errores->error(mensaje: 'Error al generar inputs', data: $this->inputs);
-            print_r($error);
-            die('Error');
+            return $this->errores->error(mensaje: 'Error al obtener template', data: $r_template);
         }
+
+        $keys_selects = $this->controlador_nom_conf_percepcion->init_selects_inputs();
+        if (errores::$error) {
+            return $this->errores->error(mensaje: 'Error al inicializar selects', data: $keys_selects);
+        }
+
+        $keys_selects['nom_conf_nomina_id']->id_selected = $this->registro_id;
+        $keys_selects['nom_conf_nomina_id']->filtro = array("nom_conf_nomina.id" => $this->registro_id);
+        $keys_selects['nom_conf_nomina_id']->disabled = true;
+
+        $inputs = $this->controlador_nom_conf_percepcion->inputs(keys_selects: $keys_selects);
+        if (errores::$error) {
+            return $this->errores->error(mensaje: 'Error al obtener inputs', data: $inputs);
+        }
+
+        $this->inputs = $inputs;
 
         return $this->inputs;
     }
 
-    public function asigna_percepcion_alta_bd(bool $header, bool $ws = false): array|stdClass
+    protected function key_selects_txt(array $keys_selects): array
     {
-        $this->link->beginTransaction();
-
-        $siguiente_view = (new actions())->init_alta_bd();
+        $keys_selects = (new \base\controller\init())->key_select_txt(cols: 12, key: 'descripcion',
+            keys_selects: $keys_selects, place_holder: 'Descripción');
         if (errores::$error) {
-            $this->link->rollBack();
-            return $this->retorno_error(mensaje: 'Error al obtener siguiente view', data: $siguiente_view,
-                header: $header, ws: $ws);
+            return $this->errores->error(mensaje: 'Error al maquetar key_selects', data: $keys_selects);
         }
 
-        if (isset($_POST['btn_action_next'])) {
-            unset($_POST['btn_action_next']);
-        }
-        $_POST['nom_conf_nomina_id'] = $this->registro_id;
-
-        $alta = (new nom_conf_percepcion($this->link))->alta_registro(registro: $_POST);
-        if (errores::$error) {
-            $this->link->rollBack();
-            return $this->retorno_error(mensaje: 'Error al dar de alta percepcion', data: $alta,
-                header: $header, ws: $ws);
-        }
-
-
-        $this->link->commit();
-
-        if ($header) {
-            $this->retorno_base(registro_id:$this->registro_id, result: $alta,
-                siguiente_view: $siguiente_view, ws:  $ws);
-        }
-        if ($ws) {
-            header('Content-Type: application/json');
-            echo json_encode($alta, JSON_THROW_ON_ERROR);
-            exit;
-        }
-        $alta->siguiente_view = $siguiente_view;
-
-        return $alta;
-    }
-
-    private function base(): array|stdClass
-    {
-        $r_modifica =  parent::modifica(header: false, ws: false);
-        if(errores::$error){
-            return $this->errores->error(mensaje: 'Error al generar template',data:  $r_modifica);
-        }
-
-        $this->asignar_propiedad(identificador:'nom_conf_factura_id',
-            propiedades: ["id_selected"=>$this->row_upd->nom_conf_factura_id]);
-        if (errores::$error) {
-            $error = $this->errores->error(mensaje: 'Error al asignar propiedad', data: $this);
-            print_r($error);
-            die('Error');
-        }
-
-        $this->asignar_propiedad(identificador:'cat_sat_periodicidad_pago_nom_id',
-            propiedades: ["id_selected"=>$this->row_upd->cat_sat_periodicidad_pago_nom_id]);
-        if (errores::$error) {
-            $error = $this->errores->error(mensaje: 'Error al asignar propiedad', data: $this);
-            print_r($error);
-            die('Error');
-        }
-
-        $this->asignar_propiedad(identificador:'cat_sat_tipo_nomina_id',
-            propiedades: ["id_selected"=>$this->row_upd->cat_sat_tipo_nomina_id]);
-        if (errores::$error) {
-            $error = $this->errores->error(mensaje: 'Error al asignar propiedad', data: $this);
-            print_r($error);
-            die('Error');
-        }
-
-        $inputs = $this->genera_inputs(keys_selects:  $this->keys_selects);
-        if(errores::$error){
-            return $this->errores->error(mensaje: 'Error al inicializar inputs',data:  $inputs);
-        }
-
-        $data = new stdClass();
-        $data->template = $r_modifica;
-        $data->inputs = $inputs;
-
-        return $data;
-    }
-
-    private function inicializa_ids(): array
-    {
-        if (isset($_GET['nom_conf_percepcion_id'])){
-            $this->nom_conf_percepcion_id = $_GET['nom_conf_percepcion_id'];
-        }
-
-        return $_GET;
-    }
-
-    private function inicializa_links(): array|string
-    {
-        $this->obj_link->genera_links($this);
-        if(errores::$error){
-            return $this->errores->error(mensaje: 'Error al generar links para conf. nomina',data:  $this->obj_link);
-        }
-
-        $link = $this->obj_link->get_link($this->seccion,"asigna_percepcion_alta_bd");
-        if(errores::$error){
-            return $this->errores->error(mensaje: 'Error al obtener link partida conf_percepcion_alta_bd',data:  $link);
-        }
-        $this->link_nom_conf_percepcion_alta_bd = $link;
-
-        return $link;
-    }
-
-    private function inicializa_propiedades(): array
-    {
-        $identificador = "nom_conf_factura_id";
-        $propiedades = array("label" => "Conf. Factura");
-        $this->asignar_propiedad(identificador:$identificador, propiedades: $propiedades);
-
-        $identificador = "cat_sat_periodicidad_pago_nom_id";
-        $propiedades = array("label" => "Periodicidad Pago");
-        $this->asignar_propiedad(identificador:$identificador, propiedades: $propiedades);
-
-        $identificador = "cat_sat_tipo_nomina_id";
-        $propiedades = array("label" => "Tipo Nomina");
-        $this->asignar_propiedad(identificador:$identificador, propiedades: $propiedades);
-
-        $identificador = "codigo";
-        $propiedades = array("place_holder" => "Codigo");
-        $this->asignar_propiedad(identificador:$identificador, propiedades: $propiedades);
-
-        return $this->keys_selects;
+        return $keys_selects;
     }
 
     public function modifica(bool $header, bool $ws = false): array|stdClass
     {
-        $base = $this->base();
-        if(errores::$error){
-            return $this->retorno_error(mensaje: 'Error al maquetar datos',data:  $base,
-                header: $header,ws:$ws);
+        $r_modifica = $this->init_modifica();
+        if (errores::$error) {
+            return $this->retorno_error(
+                mensaje: 'Error al generar salida de template', data: $r_modifica, header: $header, ws: $ws);
         }
 
-        return $base->template;
-    }
-
-
-
-
-    public function asigna_percepcion_elimina_bd(bool $header, bool $ws = false): array|stdClass
-    {
-        $this->link->beginTransaction();
-        $r_elimina = (new nom_conf_percepcion($this->link))->elimina_bd(id: $this->nom_conf_percepcion_id);
+        $keys_selects = $this->init_selects_inputs();
         if (errores::$error) {
-            $this->link->rollBack();
-            return $this->retorno_error(mensaje: 'Error al eliminar otro pago', data: $r_elimina, header: $header,
+            return $this->retorno_error(mensaje: 'Error al inicializar selects', data: $keys_selects, header: $header,
                 ws: $ws);
         }
-        $this->link->commit();
 
-        $this->out(header: $header,result:  $r_elimina,siguiente_view:  'asigna_percepcion',ws:  $ws);
-        $r_elimina->siguiente_view = 'asigna_percepcion';
+        $keys_selects['nom_conf_factura_id']->id_selected = $this->registro['nom_conf_factura_id'];
+        $keys_selects['cat_sat_periodicidad_pago_nom_id']->id_selected = $this->registro['cat_sat_periodicidad_pago_nom_id'];
+        $keys_selects['cat_sat_tipo_nomina_id']->id_selected = $this->registro['cat_sat_tipo_nomina_id'];
 
-        return $r_elimina;
-    }
-
-    public function asigna_percepcion_modifica(bool $header, bool $ws = false): array|stdClass|string
-    {
-        $controlador = new controlador_nom_conf_percepcion($this->link);
-        $controlador->registro_id = $this->nom_conf_percepcion_id;
-
-        $r_modifica = $controlador->modifica(header: false, ws: false);
+        $base = $this->base_upd(keys_selects: $keys_selects, params: array(), params_ajustados: array());
         if (errores::$error) {
-            return $this->errores->error(mensaje: 'Error al generar template', data: $r_modifica);
+            return $this->retorno_error(mensaje: 'Error al integrar base', data: $base, header: $header, ws: $ws);
         }
-
-        $inputs = (new nom_conf_percepcion_html(html: $this->html_base))->inputs_nom_conf_percepcion(
-            controlador: $controlador);
-        if(errores::$error){
-            return $this->errores->error(mensaje: 'Error al inicializar inputs',data:  $inputs);
-        }
-        $this->inputs = $inputs;
 
         return $r_modifica;
-    }
-
-    private function data_percepcion_btn(array $percepcion): array
-    {
-        $params['nom_conf_percepcion_id'] = $percepcion['nom_conf_percepcion_id'];
-
-        $btn_elimina = $this->html_base->button_href(accion: 'asigna_percepcion_elimina_bd', etiqueta: 'Elimina',
-            registro_id: $this->registro_id, seccion: 'nom_conf_nomina', style: 'danger', params: $params);
-        if (errores::$error) {
-            return $this->errores->error(mensaje: 'Error al generar btn', data: $btn_elimina);
-        }
-        $percepcion['link_elimina'] = $btn_elimina;
-
-        $btn_modifica = $this->html_base->button_href(accion: 'asigna_percepcion_modifica', etiqueta: 'Modifica',
-            registro_id: $this->registro_id, seccion: 'nom_conf_nomina', style: 'warning', params: $params);
-        if (errores::$error) {
-            return $this->errores->error(mensaje: 'Error al generar btn', data: $btn_modifica);
-        }
-        $percepcion['link_modifica'] = $btn_modifica;
-
-        return $percepcion;
-    }
-
-
-
-    private function limpia_btn(): array
-    {
-        if (isset($_POST['btn_action_next'])) {
-            unset($_POST['btn_action_next']);
-        }
-        return $_POST;
-    }
-
-
-
-
-
-    private function out(bool $header, mixed $result, string $siguiente_view, bool $ws){
-        if ($header) {
-            $this->retorno_base(registro_id:$this->registro_id, result: $result,
-                siguiente_view: $siguiente_view, ws:  $ws);
-        }
-        if ($ws) {
-            header('Content-Type: application/json');
-            try {
-                echo json_encode($result, JSON_THROW_ON_ERROR);
-            }
-            catch (Throwable $e){
-                $error = $this->errores->error(mensaje: 'Error en json', data: $e);
-                print_r($error);
-            }
-            exit;
-        }
-        return $result;
     }
 }
