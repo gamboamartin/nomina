@@ -2262,6 +2262,8 @@ class nom_nomina extends modelo
         $datos['nombre_completo'] = $registro['em_empleado_nombre'].' ';
         $datos['nombre_completo'] .= $registro['em_empleado_ap'].' ';
         $datos['nombre_completo'] .= $registro['em_empleado_am'];
+        $datos['puesto'] = $registro['org_puesto_descripcion'];
+        $datos['departamento'] = $registro['org_departamento_descripcion'];
         $datos['dias_laborados'] = $registro['nom_nomina_num_dias_pagados'];
         $datos['dias_x_incapacidad'] = 0.0;
         $datos['sd'] = $registro['em_empleado_salario_diario'];
