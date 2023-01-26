@@ -1,16 +1,11 @@
 <?php
 namespace gamboamartin\nomina\models;
-use base\orm\modelo;
-use gamboamartin\cat_sat\models\cat_sat_forma_pago;
-use gamboamartin\cat_sat\models\cat_sat_metodo_pago;
-use gamboamartin\cat_sat\models\cat_sat_moneda;
-use gamboamartin\cat_sat\models\cat_sat_tipo_de_comprobante;
-use gamboamartin\cat_sat\models\cat_sat_uso_cfdi;
-use gamboamartin\comercial\models\com_producto;
-use gamboamartin\comercial\models\com_tipo_cambio;
+use base\orm\_modelo_parent;
+use gamboamartin\errores\errores;
 use PDO;
+use stdClass;
 
-class nom_conf_factura extends modelo{
+class nom_conf_factura extends _modelo_parent{
 
     public function __construct(PDO $link){
         $tabla = 'nom_conf_factura';
@@ -20,19 +15,45 @@ class nom_conf_factura extends modelo{
         $campos_obligatorios = array('cat_sat_forma_pago_id','cat_sat_metodo_pago_id','cat_sat_moneda_id',
             'com_tipo_cambio_id','cat_sat_uso_cfdi_id','cat_sat_tipo_de_comprobante_id','com_producto_id');
 
-        $campos_view['cat_sat_forma_pago_id'] = array('type' => 'selects', 'model' => new cat_sat_forma_pago($link));
-        $campos_view['cat_sat_metodo_pago_id'] = array('type' => 'selects', 'model' => new cat_sat_metodo_pago($link));
-        $campos_view['cat_sat_moneda_id'] = array('type' => 'selects', 'model' => new cat_sat_moneda($link));
-        $campos_view['com_tipo_cambio_id'] = array('type' => 'selects', 'model' => new com_tipo_cambio($link));
-        $campos_view['cat_sat_uso_cfdi_id'] = array('type' => 'selects', 'model' => new cat_sat_uso_cfdi($link));
-        $campos_view['cat_sat_tipo_de_comprobante_id'] = array('type' => 'selects', 'model' => new cat_sat_tipo_de_comprobante($link));
-        $campos_view['com_producto_id'] = array('type' => 'selects', 'model' => new com_producto($link));
-        $campos_view['codigo'] = array('type' => 'inputs');
-        $campos_view['codigo_bis'] = array('type' => 'inputs');
 
         parent::__construct(link: $link,tabla:  $tabla, campos_obligatorios: $campos_obligatorios,
-            columnas: $columnas,campos_view: $campos_view);
+            columnas: $columnas);
 
         $this->NAMESPACE = __NAMESPACE__;
+    }
+
+    public function alta_bd(array $keys_integra_ds = array('codigo', 'descripcion')): array|stdClass
+    {
+        if(!isset($this->registro['codigo'])){
+            $this->registro['codigo'] =  $this->get_codigo_aleatorio();
+            if(errores::$error){
+                return $this->error->error(mensaje: 'Error al generar codigo aleatorio',data:  $this->registro);
+            }
+        }
+
+        $this->registro = $this->campos_base(data: $this->registro,modelo: $this);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al inicializar campos base',data: $this->registro);
+        }
+
+        $r_alta_bd =  parent::alta_bd();
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error registrar conf. factura', data: $r_alta_bd);
+        }
+
+        return $r_alta_bd;
+    }
+
+    public function get_codigo_aleatorio(int $longitud = 6): string
+    {
+        $chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        $random_string = '';
+
+        for($i = 0; $i < $longitud; $i++) {
+            $random_character = $chars[mt_rand(0, strlen($chars) - 1)];
+            $random_string .= $random_character;
+        }
+
+        return $random_string;
     }
 }
