@@ -54,7 +54,86 @@ class nom_periodoTest extends test {
 
     }
 
+    public function test_genera_registro_nomina_empleado(){
+        errores::$error = false;
 
+        $_GET['seccion'] = 'cat_sat_tipo_persona';
+        $_GET['accion'] = 'lista';
+        $_SESSION['grupo_id'] = 1;
+        $_SESSION['usuario_id'] = 2;
+        $_GET['session_id'] = '1';
+        $modelo = new nom_periodo($this->link);
+        $periodo = new liberator($modelo);
+
+        $em_empleado = array();
+        $nom_periodo = array();
+        $nom_conf_empleado = array();
+        $resultado = $periodo->genera_registro_nomina_empleado(em_empleado: $em_empleado, nom_periodo: $nom_periodo,
+            nom_conf_empleado: $nom_conf_empleado);
+        $this->assertIsArray($resultado);
+        $this->assertTrue(errores::$error);
+        $this->assertStringContainsStringIgnoringCase('Error al validar em_empleado',
+            $resultado['mensaje']);
+
+        errores::$error = false;
+
+        $em_empleado['im_registro_patronal_id'] = 1;
+        $em_empleado['em_empleado_id'] = 1;
+
+        $nom_periodo = array();
+
+        $nom_conf_empleado = array();
+
+        $resultado = $periodo->genera_registro_nomina_empleado(em_empleado: $em_empleado, nom_periodo: $nom_periodo,
+            nom_conf_empleado: $nom_conf_empleado);
+        $this->assertIsArray($resultado);
+        $this->assertTrue(errores::$error);
+        $this->assertStringContainsStringIgnoringCase('Error al validar nom_periodo',
+            $resultado['mensaje']);
+
+        errores::$error = false;
+
+        $em_empleado['im_registro_patronal_id'] = 1;
+        $em_empleado['em_empleado_id'] = 1;
+
+        $nom_periodo['nom_periodo_fecha_pago'] = 1;
+        $nom_periodo['nom_periodo_cat_sat_periodicidad_pago_nom_id'] = 'a';
+        $nom_periodo['nom_periodo_fecha_inicial_pago'] = 'a';
+        $nom_periodo['nom_periodo_fecha_final_pago'] = 'a';
+        $nom_periodo['cat_sat_periodicidad_pago_nom_n_dias'] = 1;
+        $nom_periodo['nom_periodo_id'] = 1;
+
+        $nom_conf_empleado = array();
+
+        $resultado = $periodo->genera_registro_nomina_empleado(em_empleado: $em_empleado, nom_periodo: $nom_periodo,
+            nom_conf_empleado: $nom_conf_empleado);
+        $this->assertIsArray($resultado);
+        $this->assertTrue(errores::$error);
+        $this->assertStringContainsStringIgnoringCase('Error al validar nom_conf_empleado',
+            $resultado['mensaje']);
+
+        errores::$error = false;
+
+        $em_empleado['im_registro_patronal_id'] = 1;
+        $em_empleado['em_empleado_id'] = 1;
+
+        $nom_periodo['nom_periodo_fecha_pago'] = 1;
+        $nom_periodo['nom_periodo_cat_sat_periodicidad_pago_nom_id'] = 'a';
+        $nom_periodo['nom_periodo_fecha_inicial_pago'] = 'a';
+        $nom_periodo['nom_periodo_fecha_final_pago'] = 'a';
+        $nom_periodo['cat_sat_periodicidad_pago_nom_n_dias'] = 1;
+        $nom_periodo['nom_periodo_id'] = 1;
+
+        $nom_conf_empleado['nom_conf_empleado_id'] = 1;
+        $nom_conf_empleado['em_cuenta_bancaria_id'] = 1;
+
+        $resultado = $periodo->genera_registro_nomina_empleado(em_empleado: $em_empleado, nom_periodo: $nom_periodo,
+            nom_conf_empleado: $nom_conf_empleado);
+        $this->assertIsArray($resultado);
+        $this->assertNotTrue(errores::$error);
+
+        errores::$error = false;
+    }
 
 }
 

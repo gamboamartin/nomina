@@ -248,6 +248,26 @@ class nom_periodo extends nominas_confs {
     }
 
     private function genera_registro_nomina_empleado(mixed $em_empleado, mixed $nom_periodo, mixed $nom_conf_empleado) : array{
+        $keys = array('im_registro_patronal_id','em_empleado_id');
+        $valida = $this->validacion->valida_existencia_keys(keys:$keys ,registro:  $em_empleado);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al validar em_empleado', data: $valida);
+        }
+
+        $keys = array('nom_periodo_fecha_pago','nom_periodo_cat_sat_periodicidad_pago_nom_id',
+            'nom_periodo_fecha_inicial_pago','nom_periodo_fecha_final_pago','cat_sat_periodicidad_pago_nom_n_dias',
+            'nom_periodo_id');
+        $valida = $this->validacion->valida_existencia_keys(keys:$keys ,registro:  $nom_periodo);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al validar nom_periodo', data: $valida);
+        }
+
+        $keys = array('nom_conf_empleado_id','em_cuenta_bancaria_id');
+        $valida = $this->validacion->valida_existencia_keys(keys:$keys ,registro:  $nom_conf_empleado);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al validar nom_conf_empleado', data: $valida);
+        }
+
 
         $registros['im_registro_patronal_id'] = $em_empleado['im_registro_patronal_id'];
         $registros['em_empleado_id'] = $em_empleado['em_empleado_id'];
