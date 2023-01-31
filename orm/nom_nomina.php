@@ -2338,8 +2338,8 @@ class nom_nomina extends modelo
 
         $datos['suma_deduccion'] = $suma_deduccion;
         $datos['neto_a_pagar'] = $suma_percepcion - $suma_deduccion;
-        $datos['cuenta'] = $registro['em_cuenta_bancaria_num_cuenta'];
-        $datos['clabe'] = $registro['em_cuenta_bancaria_clabe'];
+        $datos['cuenta'] = "'".$registro['em_cuenta_bancaria_num_cuenta'];
+        $datos['clabe'] = "'".$registro['em_cuenta_bancaria_clabe'];
         $datos['banco'] = $registro['bn_banco_descripcion'];
 
         if ($dias_incapacidad->n_registros > 0){
