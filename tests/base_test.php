@@ -21,8 +21,8 @@ use gamboamartin\nomina\models\nom_nomina;
 use gamboamartin\nomina\models\nom_percepcion;
 use gamboamartin\nomina\models\nom_periodo;
 use gamboamartin\nomina\models\nom_rel_empleado_sucursal;
-use models\im_registro_patronal;
-use models\im_uma;
+use gamboamartin\im_registro_patronal\models\im_registro_patronal;
+use gamboamartin\im_registro_patronal\models\im_uma;
 use PDO;
 use stdClass;
 

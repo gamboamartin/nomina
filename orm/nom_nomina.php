@@ -11,7 +11,6 @@ use gamboamartin\empleado\models\em_abono_anticipo;
 use gamboamartin\empleado\models\em_anticipo;
 use gamboamartin\empleado\models\em_empleado;
 use gamboamartin\errores\errores;
-use gamboamartin\facturacion\models\fc_cfdi;
 use gamboamartin\facturacion\models\fc_cfdi_sellado;
 use gamboamartin\facturacion\models\fc_csd;
 use gamboamartin\facturacion\models\fc_factura;
@@ -19,12 +18,11 @@ use gamboamartin\facturacion\models\fc_partida;
 use gamboamartin\nomina\controllers\xml_nom;
 use gamboamartin\organigrama\models\org_sucursal;
 use gamboamartin\plugins\files;
-use gamboamartin\validacion\validacion;
 use gamboamartin\xml_cfdi_4\timbra;
 use gamboamartin\nomina\models\base\limpieza;
 use models\calcula_cuota_obrero_patronal;
-use models\im_registro_patronal;
-use models\im_uma;
+use gamboamartin\im_registro_patronal\models\im_registro_patronal;
+use gamboamartin\im_registro_patronal\models\im_uma;
 use Mpdf\Mpdf;
 use PDO;
 use SoapClient;
@@ -205,7 +203,7 @@ class nom_nomina extends modelo
         $nom_par_percepcion['importe_exento'] = round($monto_dfl,2);
         $nom_par_percepcion['importe_gravado'] = round($monto_dfl,2);
 
-        if((float)$uma_5 < (float)$monto_dfl){
+        if($uma_5 < $monto_dfl){
             $res = $monto_dfl - $uma_5;
             $nom_par_percepcion['importe_gravado'] = round($res + $monto_dfl,2);
             $nom_par_percepcion['importe_exento'] = round($monto_dfl,2);
@@ -247,7 +245,7 @@ class nom_nomina extends modelo
         $nom_par_percepcion['importe_exento'] = round($monto_dfl,2);
         $nom_par_percepcion['importe_gravado'] = round($monto_dfl,2);
 
-        if((float)$uma_5 < (float)$monto_dfl){
+        if($uma_5 < $monto_dfl){
             $res = $monto_dfl - $uma_5;
             $nom_par_percepcion['importe_gravado'] = round($res + $monto_dfl,2);
             $nom_par_percepcion['importe_exento'] = round($monto_dfl,2);
@@ -288,7 +286,7 @@ class nom_nomina extends modelo
 
         $nom_par_percepcion['importe_exento'] = round($prima_dominical,2);
 
-        if((float)$monto_uma < (float)$prima_dominical){
+        if((float)$monto_uma < $prima_dominical){
             $res = $prima_dominical - $monto_uma;
             $nom_par_percepcion['importe_gravado'] = round($res,2);
             $nom_par_percepcion['importe_exento'] = round($monto_uma,2);
@@ -1626,13 +1624,15 @@ class nom_nomina extends modelo
 
         if (!$existe) {
 
+            $doc_documento_modelo = new doc_documento(link: $this->link);
+
             $file['name'] = $file_xml_st;
             $file['tmp_name'] = $file_xml_st;
 
-            $documento['doc_tipo_documento_id'] = $doc_tipo_documento_id;
-            $documento['descripcion'] = $ruta_archivos_tmp;
+            $doc_documento_modelo->registro['doc_tipo_documento_id'] = $doc_tipo_documento_id;
+            $doc_documento_modelo->registro['descripcion'] = $ruta_archivos_tmp;
 
-            $documento = (new doc_documento(link: $this->link))->alta_registro(registro: $documento, file: $file);
+            $documento = $doc_documento_modelo->alta_bd(file: $file);
             if (errores::$error) {
                 return $this->error->error(mensaje: 'Error al guardar xml', data: $documento);
             }
@@ -2338,8 +2338,8 @@ class nom_nomina extends modelo
 
         $datos['suma_deduccion'] = $suma_deduccion;
         $datos['neto_a_pagar'] = $suma_percepcion - $suma_deduccion;
-        $datos['cuenta'] = "'".$registro['em_cuenta_bancaria_num_cuenta'];
-        $datos['clabe'] = "'".$registro['em_cuenta_bancaria_clabe'];
+        $datos['cuenta'] = $registro['em_cuenta_bancaria_num_cuenta'];
+        $datos['clabe'] = $registro['em_cuenta_bancaria_clabe'];
         $datos['banco'] = $registro['bn_banco_descripcion'];
 
         if ($dias_incapacidad->n_registros > 0){
@@ -2743,14 +2743,16 @@ class nom_nomina extends modelo
             return $this->error->error(mensaje: 'Error al validar extension del documento', data: $tipo_documento);
         }
 
+        $doc_documento_modelo = new doc_documento(link: $this->link);
+
         $file['name'] = $guarda_archivo;
         $file['tmp_name'] = $guarda_archivo;
 
-        $documento['doc_tipo_documento_id'] = $tipo_documento;
-        $documento['descripcion'] = "$this->registro_id.$extension";
-        $documento['descripcion_select'] = "$this->registro_id.$extension";
+        $doc_documento_modelo->registro['doc_tipo_documento_id'] = $tipo_documento;
+        $doc_documento_modelo->registro['descripcion'] = "$this->registro_id.$extension";
+        $doc_documento_modelo->registro['descripcion_select'] = "$this->registro_id.$extension";
 
-        $documento = (new doc_documento(link: $this->link))->alta_registro(registro: $documento, file: $file);
+        $documento = $doc_documento_modelo->alta_bd(file: $file);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al guardar jpg', data: $documento);
         }
