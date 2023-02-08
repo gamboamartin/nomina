@@ -58,7 +58,7 @@
       "gamboa.martin/direccion_postal": "^9.0.0",
       "gamboa.martin/cat_sat": "^7.0.0",
       "gamboa.martin/js_base": "^2.0.0",
-      "gamboa.martin/im_registro_patronal": "^1.0.0",
+      "gamboa.martin/im_registro_patronal": "dev-main",
       "gamboa.martin/facturacion": "^4.0.0",
       "gamboa.martin/banco": "^2.0.0",
       "gamboa.martin/empleado": "dev-main",
