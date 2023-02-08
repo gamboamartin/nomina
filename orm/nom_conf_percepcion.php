@@ -74,17 +74,4 @@ class nom_conf_percepcion extends _modelo_parent{
 
         return $existe;
     }
-
-    public function get_codigo_aleatorio(int $longitud = 6): string
-    {
-        $chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-        $random_string = '';
-
-        for($i = 0; $i < $longitud; $i++) {
-            $random_character = $chars[mt_rand(0, strlen($chars) - 1)];
-            $random_string .= $random_character;
-        }
-
-        return $random_string;
-    }
 }
