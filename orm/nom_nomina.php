@@ -2124,6 +2124,24 @@ class nom_nomina extends modelo
                 data: $registro);
         }*/
 
+        $suma_imss = $this->obten_sumatoria_imss(nom_nomina_id: $nom_nomina_id);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al obtener la suma de imss',
+                data: $registro);
+        }
+
+        $suma_infonavit = $this->obten_infonavit(nom_nomina_id: $nom_nomina_id);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al obtener infonavit',
+                data: $registro);
+        }
+
+        $suma_rcv = $this->obten_rcv(nom_nomina_id: $nom_nomina_id);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al obtener la suma de rcv',
+                data: $registro);
+        }
+
         $subsidio = $this->total_otros_pagos_activo(nom_nomina_id: $nom_nomina_id);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al obtener la suma de otros pagos',
@@ -2177,7 +2195,7 @@ class nom_nomina extends modelo
             return $this->error->error(mensaje: 'Error al obtener $premio_puntualidad',
                 data: $premio_puntualidad);
         }
-                
+
         $premio_asistencia = $this->total_percepciones_premio_asistencia_activo(nom_nomina_id: $nom_nomina_id);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al obtener $premio_asistencia',
@@ -2340,6 +2358,9 @@ class nom_nomina extends modelo
 
         $datos['suma_deduccion'] = $suma_deduccion;
         $datos['neto_a_pagar'] = $suma_percepcion - $suma_deduccion;
+        $datos['imss'] = $suma_imss;
+        $datos['rcv'] = $suma_rcv;
+        $datos['infonavit'] = $suma_infonavit;
         $datos['cuenta'] = $registro['em_cuenta_bancaria_num_cuenta'];
         $datos['clabe'] = $registro['em_cuenta_bancaria_clabe'];
         $datos['banco'] = $registro['bn_banco_descripcion'];
@@ -2517,6 +2538,51 @@ class nom_nomina extends modelo
         }
 
         return $nom_conf_percepcion;
+    }
+
+    private function obten_infonavit(int $nom_nomina_id){
+        $campos = array();
+        $campos['total_infonavit'] = 'nom_concepto_imss.monto';
+        $filtro['nom_nomina.id'] = $nom_nomina_id;
+        $filtro['nom_tipo_concepto_imss.aplica_infonavit'] = 'activo';
+
+        $r_nom_concepto_imss = (new nom_concepto_imss($this->link))->suma(campos: $campos,filtro: $filtro);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al obtener infonavit', data: $r_nom_concepto_imss);
+        }
+
+        return round($r_nom_concepto_imss['total_infonavit'],2);
+
+    }
+
+    private function obten_rcv(int $nom_nomina_id){
+        $campos = array();
+        $campos['total_rcv'] = 'nom_concepto_imss.monto';
+        $filtro['nom_nomina.id'] = $nom_nomina_id;
+        $filtro['nom_tipo_concepto_imss.aplica_rcv'] = 'activo';
+
+        $r_nom_concepto_imss = (new nom_concepto_imss($this->link))->suma(campos: $campos,filtro: $filtro);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al obtener sumatoria rcv', data: $r_nom_concepto_imss);
+        }
+
+        return round($r_nom_concepto_imss['total_rcv'],2);
+
+    }
+
+    private function obten_sumatoria_imss(int $nom_nomina_id){
+        $campos = array();
+        $campos['total_imss'] = 'nom_concepto_imss.monto';
+        $filtro['nom_nomina.id'] = $nom_nomina_id;
+        $filtro['nom_tipo_concepto_imss.aplica_sumatoria_imss'] = 'activo';
+
+        $r_nom_concepto_imss = (new nom_concepto_imss($this->link))->suma(campos: $campos,filtro: $filtro);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al obtener sumatoria imss', data: $r_nom_concepto_imss);
+        }
+
+        return round($r_nom_concepto_imss['total_imss'],2);
+
     }
 
     private function otro_pago_subsidio(int $nom_nomina_id){
