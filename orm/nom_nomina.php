@@ -43,13 +43,13 @@ class nom_nomina extends modelo
             'cat_sat_periodicidad_pago_nom'=>$tabla, 'im_registro_patronal'=>$tabla,'cat_sat_tipo_contrato_nom'=>$tabla,
             'nom_periodo'=>$tabla, 'cat_sat_tipo_nomina'=>$tabla,'cat_sat_tipo_jornada_nom'=>$tabla,
             'cat_sat_tipo_regimen_nom'=>'em_empleado','org_departamento'=>$tabla,'org_puesto'=>$tabla,
-            'im_clase_riesgo'=>'im_registro_patronal','em_cuenta_bancaria'=>$tabla,
-            'bn_sucursal'=>'em_cuenta_bancaria','bn_banco'=>'bn_sucursal');
+            'em_clase_riesgo'=>'im_registro_patronal','em_cuenta_bancaria'=>$tabla,
+            'bn_sucursal'=>'em_cuenta_bancaria','bn_banco'=>'bn_sucursal','im_clase_riesgo'=>$tabla);
 
         $campos_obligatorios = array('cat_sat_periodicidad_pago_nom_id', 'cat_sat_tipo_contrato_nom_id',
             'cat_sat_tipo_jornada_nom_id','cat_sat_tipo_nomina_id','dp_calle_pertenece_id', 'em_cuenta_bancaria_id',
             'fecha_inicial_pago', 'fecha_final_pago', 'im_registro_patronal_id', 'em_empleado_id','nom_periodo_id',
-            'num_dias_pagados','org_departamento_id','org_puesto_id','im_clase_riesgo_id','em_cuenta_bancaria_id',
+            'num_dias_pagados','org_departamento_id','org_puesto_id','em_clase_riesgo_id','em_cuenta_bancaria_id',
             'fecha_pago');
 
         $columnas_extra = array();
@@ -446,7 +446,7 @@ class nom_nomina extends modelo
 
             $calcula_cuota_obrero_patronal = new calcula_cuota_obrero_patronal();
             $calculos = $calcula_cuota_obrero_patronal->cuota_obrero_patronal(
-                porc_riesgo_trabajo: $registros['im_registro_patronal']->im_clase_riesgo_factor,
+                porc_riesgo_trabajo: $registros['im_registro_patronal']->em_clase_riesgo_factor,
                 fecha: $this->registro['fecha_final_pago'],
                 n_dias: $this->registro['num_dias_pagados'],
                 sbc: $registros['em_empleado']->em_empleado_salario_diario_integrado, link: $this->link);
@@ -1832,6 +1832,7 @@ class nom_nomina extends modelo
         $this->registro['org_departamento_id'] = $registros['em_empleado']->org_departamento_id;
         $this->registro['org_puesto_id'] = $registros['em_empleado']->org_puesto_id;
         $this->registro['im_clase_riesgo_id'] = $registros['im_registro_patronal']->im_clase_riesgo_id;
+        $this->registro['em_clase_riesgo_id'] = $this->registro['im_clase_riesgo_id'];
 
         return $this->registro;
     }

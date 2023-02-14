@@ -128,6 +128,13 @@ class calculo_isrTest extends test {
             exit;
         }
 
+        $del = (new base_test())->del_com_cliente($this->link);
+        if(errores::$error){
+            $error = (new errores())->error('Error al eliminar', $del);
+            print_r($error);
+            exit;
+        }
+
         $alta = (new base_test())->alta_cat_sat_isr(link: $this->link);
         if(errores::$error){
             $error = (new errores())->error('Error al insertar', $alta);
@@ -143,7 +150,7 @@ class calculo_isrTest extends test {
         }
 
 
-        $alta = (new base_test())->alta_nom_nomina($this->link);
+        $alta = (new base_test())->alta_nom_nomina($this->link, em_empleado_codigo: 7);
         if(errores::$error){
             $error = (new errores())->error(mensaje: 'Error al insertar', data: $alta);
             print_r($error);

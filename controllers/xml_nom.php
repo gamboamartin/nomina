@@ -545,7 +545,7 @@ class xml_nom{
         $keys = array('em_empleado_curp','em_empleado_nss','em_empleado_fecha_inicio_rel_laboral',
             'nom_nomina_fecha_final_pago','cat_sat_tipo_contrato_nom_codigo','cat_sat_tipo_jornada_nom_codigo',
             'cat_sat_tipo_regimen_nom_codigo','em_empleado_codigo','org_departamento_descripcion',
-            'org_puesto_descripcion','im_clase_riesgo_codigo','cat_sat_periodicidad_pago_nom_codigo',
+            'org_puesto_descripcion','em_clase_riesgo_codigo','cat_sat_periodicidad_pago_nom_codigo',
             'em_cuenta_bancaria_clabe','bn_banco_codigo','em_empleado_salario_diario_integrado',
             'em_empleado_salario_diario_integrado','dp_estado_codigo');
         $valida = $this->validacion->valida_existencia_keys(keys: $keys,registro:  $nom_nomina);
@@ -572,7 +572,7 @@ class xml_nom{
         $nomina->receptor->num_empleado = $nom_nomina->em_empleado_codigo;
         $nomina->receptor->departamento = $nom_nomina->org_departamento_descripcion;
         $nomina->receptor->puesto = $nom_nomina->org_puesto_descripcion;
-        $nomina->receptor->riesgo_puesto = $nom_nomina->im_clase_riesgo_codigo;
+        $nomina->receptor->riesgo_puesto = $nom_nomina->em_clase_riesgo_codigo;
         $nomina->receptor->periodicidad_pago = $nom_nomina->cat_sat_periodicidad_pago_nom_codigo;
         $nomina->receptor->cuenta_bancaria = $nom_nomina->em_cuenta_bancaria_clabe;
         $nomina->receptor->banco = $nom_nomina->bn_banco_codigo;

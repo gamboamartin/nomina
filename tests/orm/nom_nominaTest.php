@@ -88,6 +88,13 @@ class nom_nominaTest extends test {
             exit;
         }
 
+        $del = (new base_test())->del_com_cliente($this->link);
+        if(errores::$error){
+            $error = (new errores())->error('Error al eliminar', $del);
+            print_r($error);
+            exit;
+        }
+
 
         $alta = (new base_test())->alta_nom_periodo(link: $this->link);
         if(errores::$error){
@@ -96,7 +103,7 @@ class nom_nominaTest extends test {
             exit;
         }
 
-        $alta = (new base_test())->alta_em_empleado(link: $this->link);
+        $alta = (new base_test())->alta_em_empleado(link: $this->link, codigo: '8');
         if(errores::$error){
             $error = (new errores())->error('Error al insertar', $alta);
             print_r($error);
@@ -205,37 +212,7 @@ class nom_nominaTest extends test {
 
         $nomina = new nom_nomina($this->link);
 
-        $del = (new base_test())->del_org_clasificacion_dep($this->link);
-        if(errores::$error){
-            $error = (new errores())->error('Error al eliminar', $del);
-            print_r($error);
-            exit;
-        }
-        $del = (new base_test())->del_cat_sat_tipo_nomina($this->link);
-        if(errores::$error){
-            $error = (new errores())->error('Error al eliminar', $del);
-            print_r($error);
-            exit;
-        }
-        $del = (new base_test())->del_com_producto($this->link);
-        if(errores::$error){
-            $error = (new errores())->error('Error al eliminar', $del);
-            print_r($error);
-            exit;
-        }
-        $del = (new base_test())->del_com_sucursal($this->link);
-        if(errores::$error){
-            $error = (new errores())->error('Error al eliminar', $del);
-            print_r($error);
-            exit;
-        }
 
-        $del = (new base_test())->del_org_empresa($this->link);
-        if(errores::$error){
-            $error = (new errores())->error('Error al eliminar', $del);
-            print_r($error);
-            exit;
-        }
 
         $del = (new base_test())->del_cat_sat_isr(link: $this->link);
         if(errores::$error){
@@ -244,12 +221,14 @@ class nom_nominaTest extends test {
             exit;
         }
 
-        $del = (new base_test())->del_nom_percepcion($this->link);
+        $del = (new base_test())->del_fc_factura(link: $this->link);
         if(errores::$error){
             $error = (new errores())->error('Error al eliminar', $del);
             print_r($error);
             exit;
         }
+
+
 
         $alta = (new base_test())->alta_cat_sat_isr(link: $this->link, cuota_fija: 10.57, fecha_fin: '9999-01-01',
             fecha_inicio: '1900-01-01', limite_inferior: 179.97, limite_superior: 316.27, porcentaje_excedente: 10.88);
@@ -259,7 +238,7 @@ class nom_nominaTest extends test {
             exit;
         }
 
-        $alta = (new base_test())->alta_nom_nomina($this->link);
+        $alta = (new base_test())->alta_nom_nomina($this->link, em_empleado_codigo: '9');
         if(errores::$error){
             $error = (new errores())->error('Error al insertar', $alta);
             print_r($error);
@@ -640,51 +619,20 @@ class nom_nominaTest extends test {
         $nomina = new nom_nomina($this->link);
 
 
-        $del = (new base_test())->del_org_clasificacion_dep($this->link);
-        if(errores::$error){
-            $error = (new errores())->error('Error al eliminar', $del);
-            print_r($error);
-            exit;
-        }
-        $del = (new base_test())->del_cat_sat_tipo_nomina($this->link);
-        if(errores::$error){
-            $error = (new errores())->error('Error al eliminar', $del);
-            print_r($error);
-            exit;
-        }
-        $del = (new base_test())->del_com_producto($this->link);
-        if(errores::$error){
-            $error = (new errores())->error('Error al eliminar', $del);
-            print_r($error);
-            exit;
-        }
-        $del = (new base_test())->del_com_sucursal($this->link);
-        if(errores::$error){
-            $error = (new errores())->error('Error al eliminar', $del);
-            print_r($error);
-            exit;
-        }
-
-        $del = (new base_test())->del_org_empresa($this->link);
-        if(errores::$error){
-            $error = (new errores())->error('Error al eliminar', $del);
-            print_r($error);
-            exit;
-        }
-
-        $del = (new base_test())->del_im_uma($this->link);
-        if(errores::$error){
-            $error = (new errores())->error('Error al eliminar', $del);
-            print_r($error);
-            exit;
-        }
-
         $del = (new base_test())->del_cat_sat_isr(link: $this->link);
         if(errores::$error){
             $error = (new errores())->error('Error al eliminar', $del);
             print_r($error);
             exit;
         }
+
+        $del = (new base_test())->del_fc_factura(link: $this->link);
+        if(errores::$error){
+            $error = (new errores())->error('Error al eliminar', $del);
+            print_r($error);
+            exit;
+        }
+
 
         $alta = (new base_test())->alta_cat_sat_isr(link: $this->link, cuota_fija:10.57, fecha_fin: '9999-01-01',
             fecha_inicio: '1900-01-01', limite_inferior:179.97, limite_superior: 316.27, porcentaje_excedente: 10.88);
@@ -853,6 +801,20 @@ class nom_nominaTest extends test {
             exit;
         }
 
+        $del = (new base_test())->del_em_empleado(link: $this->link);
+        if(errores::$error){
+            $error = (new errores())->error('Error al eliminar', $del);
+            print_r($error);
+            exit;
+        }
+
+        $del = (new base_test())->del_com_cliente(link: $this->link);
+        if(errores::$error){
+            $error = (new errores())->error('Error al eliminar', $del);
+            print_r($error);
+            exit;
+        }
+
         $alta = (new base_test())->alta_cat_sat_isr(link: $this->link, cuota_fija:10.57, fecha_fin: '9999-01-01',
             fecha_inicio: '1900-01-01', limite_inferior:179.97, limite_superior: 316.27, porcentaje_excedente:10.88);
         if(errores::$error){
@@ -861,7 +823,7 @@ class nom_nominaTest extends test {
             exit;
         }
 
-        $alta = (new base_test())->alta_nom_nomina($this->link);
+        $alta = (new base_test())->alta_nom_nomina(link: $this->link, em_empleado_codigo: 9);
         if(errores::$error){
             $error = (new errores())->error(mensaje: 'Error al insertar', data: $alta);
             print_r($error);
@@ -872,6 +834,8 @@ class nom_nominaTest extends test {
         $nom_nomina_id = 1;
 
         $resultado = $nomina->total_percepciones_gravado($nom_nomina_id);
+
+
         $this->assertIsFloat($resultado);
         $this->assertNotTrue(errores::$error);
         $this->assertEquals(250, $resultado);

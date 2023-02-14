@@ -128,6 +128,13 @@ class nom_par_percepcionTest extends test {
             exit;
         }
 
+        $del = (new base_test())->del_com_cliente(link: $this->link);
+        if(errores::$error){
+            $error = (new errores())->error('Error al eliminar', $del);
+            print_r($error);
+            exit;
+        }
+
         $alta = (new base_test())->alta_cat_sat_isr(link: $this->link, cuota_fija:10.57, fecha_fin: '9999-01-01',
             fecha_inicio: '1900-01-01', limite_inferior:179.97, limite_superior:316.27, porcentaje_excedente:10.88);
         if(errores::$error){
@@ -137,7 +144,7 @@ class nom_par_percepcionTest extends test {
         }
 
 
-        $alta = (new base_test())->alta_nom_nomina($this->link);
+        $alta = (new base_test())->alta_nom_nomina(link: $this->link, em_empleado_codigo: 11);
         if(errores::$error){
             $error = (new errores())->error(mensaje: 'Error al insertar', data: $alta);
             print_r($error);

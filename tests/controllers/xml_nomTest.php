@@ -227,6 +227,20 @@ class xml_nomTest extends test {
             exit;
         }
 
+        $del = (new base_test())->del_com_cliente($this->link);
+        if(errores::$error){
+            $error = (new errores())->error('Error al eliminar', $del);
+            print_r($error);
+            exit;
+        }
+
+        $del = (new base_test())->del_em_rel_empleado_sucursal($this->link);
+        if(errores::$error){
+            $error = (new errores())->error('Error al eliminar', $del);
+            print_r($error);
+            exit;
+        }
+
         $alta = (new base_test())->alta_cat_sat_subsidio($this->link);
         if(errores::$error){
             $error = (new errores())->error('Error al insertar', $alta);
@@ -236,8 +250,9 @@ class xml_nomTest extends test {
 
 
 
-        $alta = (new base_test())->alta_nom_nomina(link: $this->link, nom_percepcion_codigo: 3,
-            nom_percepcion_codigo_bis: '3', nom_percepcion_descripcion: 3, nom_percepcion_id: 3);
+
+        $alta = (new base_test())->alta_nom_nomina(link: $this->link, em_empleado_codigo: '5',
+            nom_percepcion_codigo: 3, nom_percepcion_codigo_bis: '3', nom_percepcion_descripcion: 3, nom_percepcion_id: 3);
         if(errores::$error){
             $error = (new errores())->error('Error al dar de alta', $alta);
             print_r($error);
@@ -475,7 +490,7 @@ class xml_nomTest extends test {
         $nom_nomina->em_empleado_codigo = '1';
         $nom_nomina->org_departamento_descripcion = '1';
         $nom_nomina->org_puesto_descripcion = '1';
-        $nom_nomina->im_clase_riesgo_codigo = '1';
+        $nom_nomina->em_clase_riesgo_codigo = '1';
         $nom_nomina->cat_sat_periodicidad_pago_nom_codigo = '1';
         $nom_nomina->em_cuenta_bancaria_clabe = '1';
         $nom_nomina->bn_banco_codigo = '1';

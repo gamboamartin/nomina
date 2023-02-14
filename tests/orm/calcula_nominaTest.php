@@ -126,9 +126,16 @@ class calcula_nominaTest extends test {
             exit;
         }
 
+        $del = (new base_test())->del_com_cliente($this->link);
+        if(errores::$error){
+            $error = (new errores())->error('Error al eliminar', $del);
+            print_r($error);
+            exit;
+        }
+
         $alta = (new base_test())->alta_nom_nomina(
             link: $this->link, cat_sat_isr_cuota_fija:10.57 , cat_sat_isr_limite_inferior: 179.97,
-            cat_sat_isr_porcentaje_excedente: 10.89);
+            cat_sat_isr_porcentaje_excedente: 10.89, em_empleado_codigo: '6');
         if(errores::$error){
             $error = (new errores())->error('Error al dar de alta', $alta);
             print_r($error);

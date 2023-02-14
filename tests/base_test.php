@@ -78,6 +78,11 @@ class base_test{
 
     public function alta_com_sucursal(PDO $link, int $id = 1): array|\stdClass
     {
+        $del = $this->del_em_rel_empleado_sucursal($link);
+        if(errores::$error){
+            return (new errores())->error('Error al eliminar', $del);
+
+        }
 
         $alta = (new \gamboamartin\comercial\test\base_test())->alta_com_sucursal(link: $link, id: $id);
         if(errores::$error){
@@ -112,13 +117,13 @@ class base_test{
         return $alta;
     }
 
-    public function alta_em_empleado(PDO $link, string $fecha_inicio_rel_laboral = '2020-01-01', int $id = 1,
+    public function alta_em_empleado(PDO $link, string $codigo = '1', string $fecha_inicio_rel_laboral = '2020-01-01', int $id = 1,
                                      float $salario_diario = 180, float  $salario_diario_integrado = 180): array|\stdClass
     {
 
         $alta = (new \gamboamartin\empleado\test\base_test())->alta_em_empleado(link: $link,
-            fecha_inicio_rel_laboral: $fecha_inicio_rel_laboral, id: $id, salario_diario: $salario_diario,
-            salario_diario_integrado: $salario_diario_integrado);
+            codigo: $codigo, fecha_inicio_rel_laboral: $fecha_inicio_rel_laboral, id: $id,
+            salario_diario: $salario_diario, salario_diario_integrado: $salario_diario_integrado);
         if(errores::$error){
             return (new errores())->error('Error al dar de alta', $alta);
 
@@ -456,9 +461,9 @@ class base_test{
 
     public function alta_nom_nomina(PDO $link, float $cat_sat_isr_cuota_fija =0,
                                     float $cat_sat_isr_limite_inferior = 0.01, $cat_sat_isr_porcentaje_excedente = 1.92,
-                                    float $cat_sat_subsidio_porcentaje_excedente = 1.92, int $em_empleado_id = 1,
-                                    int $im_uma_id = 1, int $nom_conf_empleado_id = 1,
-                                    string $nom_percepcion_aplica_subsidio = 'activo',
+                                    float $cat_sat_subsidio_porcentaje_excedente = 1.92,
+                                    string $em_empleado_codigo = '1', int $em_empleado_id = 1, int $im_uma_id = 1,
+                                    int $nom_conf_empleado_id = 1, string $nom_percepcion_aplica_subsidio = 'activo',
                                     string $nom_percepcion_codigo = '1', string $nom_percepcion_codigo_bis = '1',
                                     string $nom_percepcion_descripcion = '1', int $nom_percepcion_id = 1,
                                     int $nom_periodo_id = 1, int $nom_rel_empleado_sucursal_id = 1,
@@ -486,8 +491,8 @@ class base_test{
 
         }
         if(!$existe) {
-            $alta = $this->alta_em_empleado(link: $link, id:$em_empleado_id, salario_diario: $salario_diario,
-                salario_diario_integrado: $salario_diario_integrado);
+            $alta = $this->alta_em_empleado(link: $link, codigo: $em_empleado_codigo, id: $em_empleado_id,
+                salario_diario: $salario_diario, salario_diario_integrado: $salario_diario_integrado);
             if(errores::$error){
                 return (new errores())->error('Error al dar de alta', $alta);
 
@@ -949,6 +954,18 @@ class base_test{
         }
 
         $del = (new \gamboamartin\empleado\test\base_test())->del_em_empleado($link);
+        if(errores::$error){
+            return (new errores())->error('Error al eliminar', $del);
+
+        }
+
+        return $del;
+    }
+
+    public function del_em_rel_empleado_sucursal(PDO $link): array
+    {
+
+        $del = (new \gamboamartin\empleado\test\base_test())->del_em_rel_empleado_sucursal(link: $link);
         if(errores::$error){
             return (new errores())->error('Error al eliminar', $del);
 
