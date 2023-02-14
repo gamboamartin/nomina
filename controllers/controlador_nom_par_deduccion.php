@@ -98,4 +98,16 @@ class controlador_nom_par_deduccion extends system {
         return $data;
     }
 
+    public function get_deducciones(bool $header, bool $ws = true): array|stdClass
+    {
+        $keys['nom_nomina'] = array('id', 'descripcion', 'codigo', 'codigo_bis');
+
+        $salida = $this->get_out(header: $header, keys: $keys, ws: $ws);
+        if (errores::$error) {
+            return $this->retorno_error(mensaje: 'Error al generar salida', data: $salida, header: $header, ws: $ws);
+        }
+
+        return $salida;
+    }
+
 }
