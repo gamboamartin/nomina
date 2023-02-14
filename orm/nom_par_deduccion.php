@@ -13,7 +13,7 @@ class nom_par_deduccion extends nominas{
     public function __construct(PDO $link){
         $tabla = 'nom_par_deduccion';
         $columnas = array($tabla=>false, 'nom_nomina'=>$tabla, 'nom_deduccion'=>$tabla,'fc_factura'=>'nom_nomina',
-            'cat_sat_tipo_deduccion_nom'=>'nom_deduccion');
+            'cat_sat_tipo_deduccion_nom'=>'nom_deduccion', 'em_empleado'=>'nom_nomina');
         $campos_obligatorios = array('nom_deduccion_id','importe_gravado','importe_exento');
 
         parent::__construct(link: $link,tabla:  $tabla, campos_obligatorios: $campos_obligatorios,
