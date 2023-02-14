@@ -9,14 +9,10 @@
 
 namespace gamboamartin\nomina\controllers;
 
-use base\orm\modelo;
-use config\generales;
 use gamboamartin\errores\errores;
 use gamboamartin\system\actions;
 use gamboamartin\system\links_menu;
 use gamboamartin\template\html;
-use gamboamartin\validacion\validacion;
-use gamboamartin\xml_cfdi_4\timbra;
 use html\nom_nomina_html;
 use html\nom_par_deduccion_html;
 use html\nom_par_otro_pago_html;

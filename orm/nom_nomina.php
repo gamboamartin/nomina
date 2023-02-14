@@ -44,7 +44,7 @@ class nom_nomina extends modelo
             'nom_periodo'=>$tabla, 'cat_sat_tipo_nomina'=>$tabla,'cat_sat_tipo_jornada_nom'=>$tabla,
             'cat_sat_tipo_regimen_nom'=>'em_empleado','org_departamento'=>$tabla,'org_puesto'=>$tabla,
             'em_clase_riesgo'=>'im_registro_patronal','em_cuenta_bancaria'=>$tabla,
-            'bn_sucursal'=>'em_cuenta_bancaria','bn_banco'=>'bn_sucursal','im_clase_riesgo'=>$tabla);
+            'bn_sucursal'=>'em_cuenta_bancaria','bn_banco'=>'bn_sucursal');
 
         $campos_obligatorios = array('cat_sat_periodicidad_pago_nom_id', 'cat_sat_tipo_contrato_nom_id',
             'cat_sat_tipo_jornada_nom_id','cat_sat_tipo_nomina_id','dp_calle_pertenece_id', 'em_cuenta_bancaria_id',
@@ -1831,8 +1831,8 @@ class nom_nomina extends modelo
         $this->registro['dp_calle_pertenece_id'] = $registros['fc_csd']->dp_calle_pertenece_id;
         $this->registro['org_departamento_id'] = $registros['em_empleado']->org_departamento_id;
         $this->registro['org_puesto_id'] = $registros['em_empleado']->org_puesto_id;
-        $this->registro['im_clase_riesgo_id'] = $registros['im_registro_patronal']->im_clase_riesgo_id;
-        $this->registro['em_clase_riesgo_id'] = $this->registro['im_clase_riesgo_id'];
+        $this->registro['em_clase_riesgo_id'] = $registros['im_registro_patronal']->em_clase_riesgo_id;
+
 
         return $this->registro;
     }
