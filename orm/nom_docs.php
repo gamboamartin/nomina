@@ -11,7 +11,7 @@ class nom_docs extends modelo{
     public function __construct(PDO $link){
         $tabla = 'nom_docs';
         $columnas = array($tabla=>false,'nom_nomina'=>$tabla,'em_empleado'=>'nom_nomina',
-            'im_registro_patronal'=>'nom_nomina','nom_periodo'=>'nom_nomina','fc_csd'=>'im_registro_patronal',
+            'em_registro_patronal'=>'nom_nomina','nom_periodo'=>'nom_nomina','fc_csd'=>'em_registro_patronal',
             'org_sucursal'=>'fc_csd','org_empresa'=>'org_sucursal','doc_documento'=>'doc_tipo_documento',
             'doc_extension'=>'doc_documento');
 

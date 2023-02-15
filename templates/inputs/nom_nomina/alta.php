@@ -11,5 +11,5 @@
 <?php echo $controlador->inputs->select->cat_sat_tipo_nomina_id; ?>
 <?php echo $controlador->inputs->select->fc_factura_id; ?>
 <?php echo $controlador->inputs->select->dp_calle_pertenece_id; ?>
-<?php echo $controlador->inputs->select->im_registro_patronal_id; ?>
+<?php echo $controlador->inputs->select->em_registro_patronal_id; ?>
 <?php include (new views())->ruta_templates.'botons/submit/alta_bd_otro.php';?>

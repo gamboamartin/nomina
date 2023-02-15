@@ -70,7 +70,7 @@ class nominas extends modelo {
     private function asigna_codigo_partida(array $registro): array
     {
         $keys_registro = array('nom_nomina_id');
-        $keys_row = array('cat_sat_periodicidad_pago_nom_id','em_empleado_rfc','im_registro_patronal_id');
+        $keys_row = array('cat_sat_periodicidad_pago_nom_id','em_empleado_rfc','em_registro_patronal_id');
 
         $valida = $this->validacion->valida_ids(keys: $keys_registro, registro: $registro);
         if(errores::$error){

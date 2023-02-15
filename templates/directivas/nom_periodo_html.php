@@ -22,7 +22,7 @@ class nom_periodo_html extends html_controler {
         $controler->inputs->select = new stdClass();
         $controler->inputs->select->nom_conf_nomina_id = $inputs->selects->nom_conf_nomina_id;
         $controler->inputs->select->cat_sat_periodicidad_pago_nom_id = $inputs->selects->cat_sat_periodicidad_pago_nom_id;
-        $controler->inputs->select->im_registro_patronal_id = $inputs->selects->im_registro_patronal_id;
+        $controler->inputs->select->em_registro_patronal_id = $inputs->selects->em_registro_patronal_id;
         $controler->inputs->select->nom_tipo_periodo_id = $inputs->selects->nom_tipo_periodo_id;
         $controler->inputs->select->cat_sat_tipo_nomina_id = $inputs->selects->cat_sat_tipo_nomina_id;
         $controler->inputs->fecha_inicial_pago = $inputs->texts->fecha_inicial_pago;
@@ -69,7 +69,7 @@ class nom_periodo_html extends html_controler {
     private function genera_inputs_modifica(controlador_nom_periodo $controler,PDO $link,
                                             stdClass $params = new stdClass()): array|stdClass
     {
-        $keys = array('cat_sat_periodicidad_pago_nom_id','im_registro_patronal_id','cat_sat_tipo_nomina_id',
+        $keys = array('cat_sat_periodicidad_pago_nom_id','em_registro_patronal_id','cat_sat_tipo_nomina_id',
             'nom_tipo_periodo_id');
 
         $valida = (new validacion())->valida_existencia_keys(keys: $keys, registro: $controler->row_upd);
@@ -160,7 +160,7 @@ class nom_periodo_html extends html_controler {
 
     private function init_modifica(PDO $link, stdClass $row_upd, stdClass $params = new stdClass()): array|stdClass
     {
-        $keys = array('cat_sat_periodicidad_pago_nom_id','im_registro_patronal_id','cat_sat_tipo_nomina_id',
+        $keys = array('cat_sat_periodicidad_pago_nom_id','em_registro_patronal_id','cat_sat_tipo_nomina_id',
             'nom_tipo_periodo_id');
 
         $valida = (new validacion())->valida_existencia_keys(keys: $keys, registro: $row_upd);
@@ -189,7 +189,7 @@ class nom_periodo_html extends html_controler {
                                        stdClass $params = new stdClass()): array|stdClass
     {
 
-        $keys = array('cat_sat_periodicidad_pago_nom_id','im_registro_patronal_id','cat_sat_tipo_nomina_id',
+        $keys = array('cat_sat_periodicidad_pago_nom_id','em_registro_patronal_id','cat_sat_tipo_nomina_id',
             'nom_tipo_periodo_id');
 
         $valida = (new validacion())->valida_existencia_keys(keys: $keys, registro: $controlador->row_upd);
@@ -223,12 +223,12 @@ class nom_periodo_html extends html_controler {
     }
     $selects->cat_sat_periodicidad_pago_nom_id = $select;
 
-    $select = (new im_registro_patronal_html(html:$this->html_base))->select_im_registro_patronal_id(
+    $select = (new em_registro_patronal_html(html:$this->html_base))->select_em_registro_patronal_id(
     cols: 12, con_registros:true, id_selected:-1,link: $link,required: true);
     if(errores::$error){
     return $this->error->error(mensaje: 'Error al generar select',data:  $select);
     }
-    $selects->im_registro_patronal_id = $select;
+    $selects->em_registro_patronal_id = $select;
 
     $select = (new nom_tipo_periodo_html(html:$this->html_base))->select_nom_tipo_periodo_id(
     cols: 6, con_registros:true, id_selected:-1,link: $link);
@@ -250,7 +250,7 @@ class nom_periodo_html extends html_controler {
     private function selects_modifica(PDO $link, stdClass $row_upd): array|stdClass
     {
 
-        $keys = array('cat_sat_periodicidad_pago_nom_id','im_registro_patronal_id','cat_sat_tipo_nomina_id',
+        $keys = array('cat_sat_periodicidad_pago_nom_id','em_registro_patronal_id','cat_sat_tipo_nomina_id',
             'nom_tipo_periodo_id');
 
         $valida = (new validacion())->valida_existencia_keys(keys: $keys, registro: $row_upd);
@@ -274,12 +274,12 @@ class nom_periodo_html extends html_controler {
         }
         $selects->cat_sat_periodicidad_pago_nom_id = $select;
 
-        $select = (new im_registro_patronal_html(html:$this->html_base))->select_im_registro_patronal_id(
-            cols: 12, con_registros:true, id_selected:$row_upd->im_registro_patronal_id,link: $link);
+        $select = (new em_registro_patronal_html(html:$this->html_base))->select_em_registro_patronal_id(
+            cols: 12, con_registros:true, id_selected:$row_upd->em_registro_patronal_id,link: $link);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al generar select',data:  $select);
         }
-        $selects->im_registro_patronal_id = $select;
+        $selects->em_registro_patronal_id = $select;
 
         $select = (new nom_tipo_periodo_html(html:$this->html_base))->select_nom_tipo_periodo_id(
             cols: 6, con_registros:true, id_selected:$row_upd->nom_tipo_periodo_id,link: $link);

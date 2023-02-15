@@ -72,7 +72,7 @@ class nom_par_percepcionTest extends test {
             exit;
         }
 
-        $del = (new \gamboamartin\facturacion\tests\base_test())->del_fc_csd($this->link);
+        $del = (new base_test())->del_fc_csd($this->link);
         if(errores::$error){
             $error = (new errores())->error(mensaje: 'Error al eliminar', data: $del);
             print_r($error);

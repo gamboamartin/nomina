@@ -501,14 +501,14 @@ class xml_nom{
 
     private function nomina_emisor(stdClass $emisor, stdClass $nom_nomina, stdClass $nomina): stdClass
     {
-        $keys = array('im_registro_patronal_descripcion');
+        $keys = array('em_registro_patronal_descripcion');
         $valida = $this->validacion->valida_existencia_keys(keys: $keys,registro:  $nom_nomina);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al valida nom_nomina', data: $valida);
         }
 
         $nomina->emisor = new stdClass();
-        $nomina->emisor->registro_patronal = $nom_nomina->im_registro_patronal_descripcion;
+        $nomina->emisor->registro_patronal = $nom_nomina->em_registro_patronal_descripcion;
         $nomina->emisor->rfc_patron_origen =  $emisor->rfc;
         return $nomina;
     }
@@ -702,7 +702,7 @@ class xml_nom{
     {
         $keys = array('cat_sat_tipo_nomina_codigo','nom_nomina_fecha_pago','nom_nomina_fecha_inicial_pago',
             'nom_nomina_fecha_final_pago','nom_nomina_num_dias_pagados','nom_nomina_id',
-            'im_registro_patronal_descripcion','em_empleado_curp','em_empleado_nss',
+            'em_registro_patronal_descripcion','em_empleado_curp','em_empleado_nss',
             'em_empleado_fecha_inicio_rel_laboral');
         $valida = $this->validacion->valida_existencia_keys(keys: $keys, registro: $nom_nomina);
         if (errores::$error) {

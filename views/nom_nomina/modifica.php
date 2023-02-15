@@ -12,7 +12,7 @@
                     <form method="post" action="<?php echo $controlador->link_nom_nomina_modifica_bd; ?>" class="form-additional">
                         <?php echo $controlador->inputs->id; ?>
                         <?php echo $controlador->inputs->select->em_empleado_id; ?>
-                        <?php echo $controlador->inputs->select->im_registro_patronal_id; ?>
+                        <?php echo $controlador->inputs->select->em_registro_patronal_id; ?>
                         <?php echo $controlador->inputs->select->nom_periodo_id; ?>
 
                         <?php echo $controlador->inputs->select->em_cuenta_bancaria_id; ?>

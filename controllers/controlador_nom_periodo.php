@@ -157,7 +157,7 @@ class controlador_nom_periodo extends system {
             return $this->errores->error(mensaje: 'Error al generar template',data:  $r_modifica);
         }
 
-        $keys = array('cat_sat_periodicidad_pago_nom_id','im_registro_patronal_id','cat_sat_tipo_nomina_id',
+        $keys = array('cat_sat_periodicidad_pago_nom_id','em_registro_patronal_id','cat_sat_tipo_nomina_id',
             'nom_tipo_periodo_id');
 
         foreach ($keys as $key){

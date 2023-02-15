@@ -77,7 +77,7 @@ class nom_periodoTest extends test {
 
         errores::$error = false;
 
-        $em_empleado['im_registro_patronal_id'] = 1;
+        $em_empleado['em_registro_patronal_id'] = 1;
         $em_empleado['em_empleado_id'] = 1;
 
         $nom_periodo = array();
@@ -86,6 +86,9 @@ class nom_periodoTest extends test {
 
         $resultado = $periodo->genera_registro_nomina_empleado(em_empleado: $em_empleado, nom_periodo: $nom_periodo,
             nom_conf_empleado: $nom_conf_empleado);
+
+
+
         $this->assertIsArray($resultado);
         $this->assertTrue(errores::$error);
         $this->assertStringContainsStringIgnoringCase('Error al validar nom_periodo',

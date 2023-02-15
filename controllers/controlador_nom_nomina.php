@@ -235,9 +235,9 @@ class controlador_nom_nomina extends base_nom
         $keys_selects['cat_sat_tipo_nomina']->label = 'Tipo Nomina';
         $keys_selects['cat_sat_tipo_nomina']->cols = 6;
 
-        $keys_selects['im_registro_patronal'] = new stdClass();
-        $keys_selects['im_registro_patronal']->label = 'Registro Patronal';
-        $keys_selects['im_registro_patronal']->cols = 6;
+        $keys_selects['em_registro_patronal'] = new stdClass();
+        $keys_selects['em_registro_patronal']->label = 'Registro Patronal';
+        $keys_selects['em_registro_patronal']->cols = 6;
 
 
         $inputs = (new nom_nomina_html(html: $this->html_base))->genera_inputs_alta(controler: $this,
@@ -297,7 +297,7 @@ class controlador_nom_nomina extends base_nom
             return $this->errores->error(mensaje: 'Error al generar template', data: $r_modifica);
         }
 
-        $keys = array('cat_sat_tipo_nomina_id','em_empleado_id','im_registro_patronal_id','nom_conf_empleado_id',
+        $keys = array('cat_sat_tipo_nomina_id','em_empleado_id','em_registro_patronal_id','nom_conf_empleado_id',
             'nom_periodo_id','org_puesto_id','cat_sat_tipo_contrato_nom_id');
 
         foreach ($keys as $key){

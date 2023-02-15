@@ -10,7 +10,7 @@ class nom_periodo extends nominas_confs {
     public function __construct(PDO $link){
         $tabla = 'nom_periodo';
         $columnas = array($tabla=>false, 'cat_sat_periodicidad_pago_nom'=>$tabla);
-        $campos_obligatorios = array('cat_sat_periodicidad_pago_nom_id','im_registro_patronal_id','nom_tipo_periodo_id',
+        $campos_obligatorios = array('cat_sat_periodicidad_pago_nom_id','em_registro_patronal_id','nom_tipo_periodo_id',
             'descripcion','descripcion_select');
 
         parent::__construct(link: $link,tabla:  $tabla, campos_obligatorios: $campos_obligatorios,
@@ -97,24 +97,24 @@ class nom_periodo extends nominas_confs {
 
     /**
      * Obtiene un conjunto de empleados de un registro patronal
-     * @param int $im_registro_patronal_id Registro patronal integrado
+     * @param int $em_registro_patronal_id Registro patronal integrado
      * @param int $cat_sat_periodicidad_pago_nom_id
      * @return array
      * @version 0.242.7
      */
-    public function get_empleados(int $cat_sat_periodicidad_pago_nom_id, int $im_registro_patronal_id): array
+    public function get_empleados(int $cat_sat_periodicidad_pago_nom_id, int $em_registro_patronal_id): array
     {
         if($cat_sat_periodicidad_pago_nom_id<=0){
-            return $this->error->error(mensaje: 'Error $im_registro_patronal_id debe ser mayor a 0',
-                data: $im_registro_patronal_id);
+            return $this->error->error(mensaje: 'Error $em_registro_patronal_id debe ser mayor a 0',
+                data: $em_registro_patronal_id);
         }
 
-        if($im_registro_patronal_id<=0){
-            return $this->error->error(mensaje: 'Error $im_registro_patronal_id debe ser mayor a 0',
-                data: $im_registro_patronal_id);
+        if($em_registro_patronal_id<=0){
+            return $this->error->error(mensaje: 'Error $em_registro_patronal_id debe ser mayor a 0',
+                data: $em_registro_patronal_id);
         }
 
-        $filtro['im_registro_patronal.id'] = $im_registro_patronal_id;
+        $filtro['em_registro_patronal.id'] = $em_registro_patronal_id;
         $r_empleados = (new em_empleado($this->link))->filtro_and(filtro: $filtro);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al obtener registros', data: $r_empleados);
@@ -146,7 +146,7 @@ class nom_periodo extends nominas_confs {
 
         $empleados = array();
         foreach ($empleados_excel as $empleado_excel){
-            $filtro['im_registro_patronal.id'] = $nom_periodo['nom_periodo_im_registro_patronal_id'];
+            $filtro['em_registro_patronal.id'] = $nom_periodo['nom_periodo_em_registro_patronal_id'];
             $filtro['em_empleado.codigo'] = $empleado_excel->codigo;
             $registro = (new em_empleado($this->link))->filtro_and(filtro: $filtro);
             if (errores::$error) {
@@ -204,7 +204,7 @@ class nom_periodo extends nominas_confs {
 
         $registros_empleados = $this->get_empleados(
             cat_sat_periodicidad_pago_nom_id: $nom_periodo['cat_sat_periodicidad_pago_nom_id'],
-            im_registro_patronal_id: $nom_periodo['nom_periodo_im_registro_patronal_id']);
+            em_registro_patronal_id: $nom_periodo['nom_periodo_em_registro_patronal_id']);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al generar registros de factura', data: $registros_empleados);
         }
@@ -248,7 +248,7 @@ class nom_periodo extends nominas_confs {
     }
 
     private function genera_registro_nomina_empleado(mixed $em_empleado, mixed $nom_periodo, mixed $nom_conf_empleado) : array{
-        $keys = array('im_registro_patronal_id','em_empleado_id');
+        $keys = array('em_registro_patronal_id','em_empleado_id');
         $valida = $this->validacion->valida_existencia_keys(keys:$keys ,registro:  $em_empleado);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al validar em_empleado', data: $valida);
@@ -269,7 +269,7 @@ class nom_periodo extends nominas_confs {
         }
 
 
-        $registros['im_registro_patronal_id'] = $em_empleado['im_registro_patronal_id'];
+        $registros['em_registro_patronal_id'] = $em_empleado['em_registro_patronal_id'];
         $registros['em_empleado_id'] = $em_empleado['em_empleado_id'];
         $registros['nom_conf_empleado_id'] = $nom_conf_empleado['nom_conf_empleado_id'];
         $registros['em_cuenta_bancaria_id'] = $nom_conf_empleado['em_cuenta_bancaria_id'];

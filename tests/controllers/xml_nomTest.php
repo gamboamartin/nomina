@@ -459,6 +459,34 @@ class xml_nomTest extends test {
             exit;
         }
 
+        $del = (new base_test())->del_cat_sat_isr($this->link);
+        if(errores::$error){
+            $error = (new errores())->error('Error al eliminar', $del);
+            print_r($error);
+            exit;
+        }
+
+        $del = (new base_test())->del_cat_sat_subsidio($this->link);
+        if(errores::$error){
+            $error = (new errores())->error('Error al eliminar', $del);
+            print_r($error);
+            exit;
+        }
+
+        $alta = (new base_test())->alta_cat_sat_isr($this->link);
+        if(errores::$error){
+            $error = (new errores())->error('Error al insertar', $alta);
+            print_r($error);
+            exit;
+        }
+
+        $alta = (new base_test())->alta_cat_sat_subsidio($this->link);
+        if(errores::$error){
+            $error = (new errores())->error('Error al insertar', $alta);
+            print_r($error);
+            exit;
+        }
+
         $alta = (new base_test())->alta_nom_nomina($this->link);
         if(errores::$error){
             $error = (new errores())->error('Error al insertar', $alta);
@@ -481,7 +509,7 @@ class xml_nomTest extends test {
         $nom_nomina->nom_nomina_fecha_final_pago = '2022-01-01';
         $nom_nomina->em_empleado_fecha_inicio_rel_laboral = '2022-01-01';
         $nom_nomina->nom_nomina_num_dias_pagados = '1';
-        $nom_nomina->im_registro_patronal_descripcion = '1';
+        $nom_nomina->em_registro_patronal_descripcion = '1';
         $nom_nomina->em_empleado_nss = '1';
         $nom_nomina->em_empleado_curp = '1';
         $nom_nomina->cat_sat_tipo_contrato_nom_codigo = '1';

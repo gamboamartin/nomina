@@ -12,6 +12,7 @@ use gamboamartin\comercial\models\com_sucursal;
 use gamboamartin\comercial\models\com_tipo_cambio;
 use gamboamartin\empleado\models\em_cuenta_bancaria;
 use gamboamartin\empleado\models\em_empleado;
+use gamboamartin\empleado\models\em_registro_patronal;
 use gamboamartin\errores\errores;
 use gamboamartin\nomina\models\nom_conf_empleado;
 use gamboamartin\nomina\models\nom_conf_factura;
@@ -618,6 +619,7 @@ class base_test{
         $registro['cat_sat_tipo_jornada_nom_id'] = 1;
         $registro['dp_calle_pertenece_id'] = 1;
         $registro['cat_sat_tipo_nomina_id'] = 1;
+        $registro['em_registro_patronal_id'] = 1;
 
 
         $alta = (new nom_nomina($link))->alta_registro($registro);
@@ -652,9 +654,22 @@ class base_test{
         return $alta;
     }
 
-    public function alta_nom_periodo(PDO $link, int $id = 1, int $im_registro_patronal_id = 1): array|\stdClass
+    public function alta_nom_periodo(PDO $link, int $em_registro_patronal_id = 1, int $id = 1, int $im_registro_patronal_id = 1): array|\stdClass
     {
         $existe = (new im_registro_patronal($link))->existe_by_id(registro_id: $im_registro_patronal_id);
+        if(errores::$error){
+            return (new errores())->error('Error al verificar si existe', $existe);
+
+        }
+        if(!$existe) {
+            $alta = $this->alta_im_registro_patronal(link: $link, id: $im_registro_patronal_id);
+            if(errores::$error){
+                return (new errores())->error('Error al dar de alta', $alta);
+
+            }
+        }
+
+        $existe = (new em_registro_patronal($link))->existe_by_id(registro_id: $em_registro_patronal_id);
         if(errores::$error){
             return (new errores())->error('Error al verificar si existe', $existe);
 
@@ -676,6 +691,7 @@ class base_test{
         $nom_periodo['cat_sat_periodicidad_pago_nom_id'] = 1;
         $nom_periodo['im_registro_patronal_id'] = $im_registro_patronal_id;
         $nom_periodo['nom_tipo_periodo_id'] = 1;
+        $nom_periodo['em_registro_patronal_id'] = 1;
 
 
         $alta = (new nom_periodo($link))->alta_registro($nom_periodo);
@@ -962,6 +978,18 @@ class base_test{
         return $del;
     }
 
+    public function del_em_registro_patronal(PDO $link): array
+    {
+
+        $del = (new \gamboamartin\empleado\test\base_test())->del_em_registro_patronal(link: $link);
+        if(errores::$error){
+            return (new errores())->error('Error al eliminar', $del);
+
+        }
+
+        return $del;
+    }
+
     public function del_em_rel_empleado_sucursal(PDO $link): array
     {
 
@@ -978,6 +1006,11 @@ class base_test{
     {
 
         $del = (new base_test())->del_im_registro_patronal($link);
+        if(errores::$error){
+            return (new errores())->error('Error al eliminar', $del);
+
+        }
+        $del = (new base_test())->del_em_registro_patronal($link);
         if(errores::$error){
             return (new errores())->error('Error al eliminar', $del);
 

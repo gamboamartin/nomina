@@ -177,7 +177,7 @@ class nom_nominaTest extends test {
 
         $nom_nomina_ins = array();
         $nom_nomina_ins['id'] = 1;
-        $nom_nomina_ins['im_registro_patronal_id'] = 1;
+        $nom_nomina_ins['em_registro_patronal_id'] = 1;
         $nom_nomina_ins['em_empleado_id'] = 1;
         $nom_nomina_ins['folio'] = 1;
         $nom_nomina_ins['fecha'] = '2022-01-01';
@@ -197,6 +197,7 @@ class nom_nominaTest extends test {
         $nomina->registro = $nom_nomina_ins;
 
         $resultado = $nomina->alta_bd();
+
         $this->assertIsObject($resultado);
         $this->assertNotTrue(errores::$error);
         $this->assertEquals('1',$resultado->registro_id);
@@ -477,15 +478,52 @@ class nom_nominaTest extends test {
     {
         errores::$error = false;
 
+        $del = (new base_test())->del_em_empleado(link: $this->link);
+        if(errores::$error){
+            $error = (new errores())->error('Error al eliminar',$del);
+            print_r($error);
+            exit;
+        }
+
+        $del = (new base_test())->del_com_cliente(link: $this->link);
+        if(errores::$error){
+            $error = (new errores())->error('Error al eliminar',$del);
+            print_r($error);
+            exit;
+        }
+
+
+        $alta = (new base_test())->alta_em_empleado(link: $this->link, codigo: '2');
+        if(errores::$error){
+            $error = (new errores())->error('Error al insertar',$alta);
+            print_r($error);
+            exit;
+        }
+
+        $alta = (new base_test())->alta_nom_conf_empleado(link: $this->link);
+        if(errores::$error){
+            $error = (new errores())->error('Error al insertar',$alta);
+            print_r($error);
+            exit;
+        }
+
+        $alta = (new base_test())->alta_nom_rel_empleado_sucursal(link: $this->link);
+        if(errores::$error){
+            $error = (new errores())->error('Error al insertar',$alta);
+            print_r($error);
+            exit;
+        }
+
 
         $nomina = new nom_nomina($this->link);
-        $nomina->registro['im_registro_patronal_id'] = 1;
+        $nomina->registro['em_registro_patronal_id'] = 1;
         $nomina->registro['em_empleado_id'] = 1;
         $nomina->registro['nom_conf_empleado_id'] = 1;
         $nomina = new liberator($nomina);
 
-
         $resultado = $nomina->genera_registros_alta_bd();
+
+
         $this->assertIsArray($resultado);
         $this->assertNotTrue(errores::$error);
         errores::$error = false;
