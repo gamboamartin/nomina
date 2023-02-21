@@ -1,13 +1,13 @@
 <?php
-namespace gamboamartin\cobranza\models;
+namespace gamboamartin\nomina\models;
 use base\orm\_modelo_parent;
 use PDO;
 
-class cob_pago extends _modelo_parent {
+class nom_clasificacion extends _modelo_parent {
 
     public function __construct(PDO $link){
-        $tabla = 'cob_pago';
-        $columnas = array($tabla=>false,'cob_deuda'=>$tabla,'bn_cuenta'=>$tabla,'cat_sat_forma_pago'=>$tabla,'cob_caja'=>$tabla);
+        $tabla = 'nom_clasificacion';
+        $columnas = array($tabla=>false);
         $campos_obligatorios[] = 'descripcion';
         $campos_obligatorios[] = 'descripcion_select';
 
