@@ -14,6 +14,7 @@ use gamboamartin\empleado\models\em_cuenta_bancaria;
 use gamboamartin\empleado\models\em_empleado;
 use gamboamartin\empleado\models\em_registro_patronal;
 use gamboamartin\errores\errores;
+use gamboamartin\im_registro_patronal\models\im_rcv;
 use gamboamartin\nomina\models\nom_conf_empleado;
 use gamboamartin\nomina\models\nom_conf_factura;
 use gamboamartin\nomina\models\nom_conf_nomina;
@@ -176,6 +177,19 @@ class base_test{
 
         $alta = (new \gamboamartin\im_registro_patronal\test\base_test())->alta_im_uma(link: $link,
             fecha_fin: $fecha_fin, fecha_inicio: $fecha_inicio, monto: $monto);
+        if(errores::$error){
+            return (new errores())->error('Error al dar de alta', $alta);
+
+        }
+
+        return $alta;
+    }    
+    public function alta_im_rcv(PDO $link, float $monto_inicial = 0, float $monto_final = 999999999,
+                                float $factor = 0.0): array|\stdClass
+    {
+
+        $alta = (new \gamboamartin\im_registro_patronal\test\base_test())->alta_im_rcv(link: $link,
+            monto_inicial: $monto_inicial, monto_final: $monto_final, factor: $factor);
         if(errores::$error){
             return (new errores())->error('Error al dar de alta', $alta);
 
@@ -550,6 +564,19 @@ class base_test{
             $alta = $this->alta_im_uma(link: $link, monto: 100);
             if (errores::$error) {
                 return (new errores())->error('Error al dar de alta', $alta);
+
+            }
+        }
+
+        $existe = (new im_rcv($link))->existe_by_id(registro_id: $im_uma_id);
+        if(errores::$error){
+            return (new errores())->error('Error al verificar si existe', $existe);
+
+        }
+        if(!$existe) {
+            $alta = $this->alta_im_rcv(link: $link);
+            if (errores::$error) {
+                return (new errores())->error('Error al dar de rcv', $alta);
 
             }
         }

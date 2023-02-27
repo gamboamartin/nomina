@@ -42,8 +42,28 @@ class nom_data_subsidioTest extends test {
         $_GET['session_id'] = '1';
         $data = new nom_data_subsidio($this->link);
 
+        $nom_par_otro_pago_id = 1;
+        $resultado = $data->get_data_by_otro_pago($nom_par_otro_pago_id);
+
+        $this->assertIsArray($resultado);
+        $this->assertNotTrue(errores::$error);
+
+        errores::$error = false;
+    }
+
+    public function test_get_data_by_deduccion(): void
+    {
+        errores::$error = false;
+
+        $_GET['seccion'] = 'cat_sat_tipo_persona';
+        $_GET['accion'] = 'lista';
+        $_SESSION['grupo_id'] = 1;
+        $_SESSION['usuario_id'] = 2;
+        $_GET['session_id'] = '1';
+        $data = new nom_data_subsidio($this->link);
+
         $nom_par_deduccion_id = 1;
-        $resultado = $data->get_data_by_otro_pago($nom_par_deduccion_id);
+        $resultado = $data->get_data_by_deduccion($nom_par_deduccion_id);
 
         $this->assertIsArray($resultado);
         $this->assertNotTrue(errores::$error);

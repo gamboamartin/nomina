@@ -1,21 +1,10 @@
 <?php
 namespace gamboamartin\nomina\tests\orm;
 
-use gamboamartin\empleado\models\em_cuenta_bancaria;
 use gamboamartin\errores\errores;
-use gamboamartin\facturacion\models\fc_factura;
-use gamboamartin\facturacion\models\fc_partida;
-use gamboamartin\test\liberator;
 use gamboamartin\test\test;
 
-use gamboamartin\nomina\models\doc_documento;
-use gamboamartin\nomina\models\nom_conf_empleado;
-use gamboamartin\nomina\models\nom_data_subsidio;
-use gamboamartin\nomina\models\nom_docs;
-use gamboamartin\nomina\models\nom_nomina;
-use gamboamartin\nomina\models\nom_par_deduccion;
-use gamboamartin\nomina\models\nom_par_otro_pago;
-use gamboamartin\nomina\models\nom_par_percepcion;
+use gamboamartin\documento\models\doc_documento;
 use stdClass;
 use gamboamartin\nomina\tests\base_test;
 
