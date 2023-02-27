@@ -20,6 +20,7 @@ use gamboamartin\nomina\models\nom_conf_factura;
 use gamboamartin\nomina\models\nom_conf_nomina;
 use gamboamartin\nomina\models\nom_conf_percepcion;
 use gamboamartin\nomina\models\nom_nomina;
+use gamboamartin\nomina\models\nom_par_percepcion;
 use gamboamartin\nomina\models\nom_percepcion;
 use gamboamartin\nomina\models\nom_periodo;
 use gamboamartin\nomina\models\nom_rel_empleado_sucursal;
@@ -674,6 +675,51 @@ class base_test{
 
 
         $alta = (new nom_percepcion($link))->alta_registro($registro);
+        if(errores::$error){
+            return (new errores())->error(mensaje: 'Error al insertar', data: $alta);
+
+        }
+        return $alta;
+    }
+    public function alta_nom_par_percepcion(PDO $link, string $codigo = '1', string $codigo_bis = '1', string $descripcion = '1',
+                                        int $id = 1,int $nom_nomina_id = 1,int $nom_percepcion_id = 1): array|\stdClass
+    {
+
+        $existe = (new nom_nomina($link))->existe_by_id(registro_id: $nom_nomina_id);
+        if(errores::$error){
+            return (new errores())->error('Error al verificar si existe', $existe);
+
+        }
+        if(!$existe) {
+            $alta = $this->alta_nom_nomina(link: $link);
+            if (errores::$error) {
+                return (new errores())->error('Error al dar de alta', $alta);
+
+            }
+        }
+
+        $existe = (new nom_percepcion($link))->existe_by_id(registro_id: $nom_percepcion_id);
+        if(errores::$error){
+            return (new errores())->error('Error al verificar si existe', $existe);
+
+        }
+        if(!$existe) {
+            $alta = $this->alta_nom_percepcion(link: $link);
+            if (errores::$error) {
+                return (new errores())->error('Error al dar de alta', $alta);
+
+            }
+        }
+
+        $registro = array();
+        $registro['id'] = $id;
+        $registro['codigo'] = $codigo;
+        $registro['codigo_bis'] = $codigo_bis;
+        $registro['descripcion'] = $descripcion;
+        $registro['nom_nomina_id'] = $nom_nomina_id;
+        $registro['nom_percepcion_id'] = $nom_percepcion_id;
+
+        $alta = (new nom_par_percepcion($link))->alta_registro($registro);
         if(errores::$error){
             return (new errores())->error(mensaje: 'Error al insertar', data: $alta);
 

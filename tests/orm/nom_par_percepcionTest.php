@@ -180,7 +180,58 @@ class nom_par_percepcionTest extends test {
     }
 
 
+    public function test_get_by_percepcion(): void
+    {
+        errores::$error = false;
 
+        $_GET['seccion'] = 'cat_sat_tipo_persona';
+        $_GET['accion'] = 'lista';
+        $_SESSION['grupo_id'] = 1;
+        $_SESSION['usuario_id'] = 2;
+        $_GET['session_id'] = '1';
+        $percepcion = new nom_par_percepcion($this->link);
+
+        $nom_nomina_id = 0;
+        $nom_percepcion_id = 1;
+        $resultado = $percepcion->get_by_percepcion(nom_nomina_id: $nom_nomina_id,nom_percepcion_id: $nom_percepcion_id);
+        $this->assertIsArray($resultado);
+        $this->assertTrue(errores::$error);
+        $this->assertStringContainsStringIgnoringCase('Error nomina_id no puede ser menor a 0',$resultado['mensaje']);
+
+        errores::$error = false;
+
+        $nom_nomina_id = 1;
+        $nom_percepcion_id = 0;
+        $resultado = $percepcion->get_by_percepcion(nom_nomina_id: $nom_nomina_id,nom_percepcion_id: $nom_percepcion_id);
+        $this->assertIsArray($resultado);
+        $this->assertTrue(errores::$error);
+        $this->assertStringContainsStringIgnoringCase('Error nom_percepcion_id no puede ser menor a 0',$resultado['mensaje']);
+
+        errores::$error = false;
+
+        $del = (new base_test())->del_nom_par_percepcion(link: $this->link);
+        if(errores::$error){
+            $error = (new errores())->error('Error al eliminar', $del);
+            print_r($error);
+            exit;
+        }
+
+        $alta = (new base_test())->alta_nom_par_percepcion(link: $this->link);
+        if(errores::$error){
+            $error = (new errores())->error('Error al insertar', $alta);
+            print_r($error);
+            exit;
+        }
+
+        $nom_nomina_id = 1;
+        $nom_percepcion_id = 1;
+        $resultado = $percepcion->get_by_percepcion(nom_nomina_id: $nom_nomina_id,nom_percepcion_id: $nom_percepcion_id);
+
+        $this->assertIsObject($resultado);
+        $this->assertNotTrue(errores::$error);
+
+        errores::$error = false;
+    }
 
 
 }

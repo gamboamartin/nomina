@@ -44,6 +44,14 @@ class nom_par_percepcion extends nominas{
     }
 
     public function get_by_percepcion(int $nom_nomina_id, int $nom_percepcion_id){
+        if($nom_nomina_id <= 0){
+            return $this->error->error(mensaje: 'Error nomina_id no puede ser menor a 0', data: $nom_nomina_id);
+        }
+        if($nom_percepcion_id <= 0){
+            return $this->error->error(mensaje: 'Error nom_percepcion_id no puede ser menor a 0',
+                data: $nom_percepcion_id);
+        }
+
         $filtro['nom_nomina.id'] = $nom_nomina_id;
         $filtro['nom_percepcion.id'] = $nom_percepcion_id;
 
