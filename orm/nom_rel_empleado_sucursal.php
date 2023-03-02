@@ -54,4 +54,17 @@ class nom_rel_empleado_sucursal extends modelo{
         }
         return $r_alta_bd;
     }
+
+    public function em_empleado_by_nom_rel_empleado_sucursal(int $com_sucursal_id): array
+    {
+
+        $filtro['com_sucursal.id'] = $com_sucursal_id;
+        $r_tg_em_empleado_sucursal = (new nom_rel_empleado_sucursal($this->link))->filtro_and(filtro: $filtro);
+        if (errores::$error) {
+
+            return $this->error->error(mensaje: 'Error al limpiar datos', data: $r_tg_em_empleado_sucursal);
+        }
+        return $r_tg_em_empleado_sucursal->registros;
+
+    }
 }
