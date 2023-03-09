@@ -86,10 +86,10 @@ class controlador_em_empleado extends \gamboamartin\empleado\controllers\control
 
             $registro = array();
             $keys = array('codigo', 'nombre', 'ap', 'am', 'telefono', 'curp', 'rfc', 'nss', 'fecha_inicio_rel_laboral',
-                'salario_diario', 'salario_diario_integrado');
+                'salario_diario', 'salario_diario_integrado','num_cuenta', 'clabe');
             foreach ($keys as $key) {
                 if (isset($empleado->$key)) {
-                    $registro[$key] = $empleado->$key;
+                    $registro[$key] = str_replace("'","",$empleado->$key);
                 }
             }
 
