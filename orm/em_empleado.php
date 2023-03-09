@@ -9,6 +9,10 @@ use Throwable;
 
 class em_empleado extends \gamboamartin\empleado\models\em_empleado {
 
+
+
+
+
     public function calcula_sdi(int $em_empleado_id, string $fecha_inicio_rel, float $salario_diario): float|array
     {
         $factor = $this->obten_factor(em_empleado_id: $em_empleado_id, fecha_inicio_rel: $fecha_inicio_rel);
