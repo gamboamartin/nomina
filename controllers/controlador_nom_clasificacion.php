@@ -8,7 +8,7 @@
  */
 namespace gamboamartin\nomina\controllers;
 use gamboamartin\errores\errores;
-use gamboamartin\nomina\html\nom_clasificacion_html;
+use html\nom_clasificacion_html;
 use gamboamartin\nomina\models\nom_clasificacion;
 use gamboamartin\system\_ctl_base;
 use gamboamartin\system\links_menu;

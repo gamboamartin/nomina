@@ -1,5 +1,5 @@
 <?php
-namespace gamboamartin\nomina\html;
+namespace html;
 
 use gamboamartin\nomina\controllers\controlador_nom_clasificacion;
 
