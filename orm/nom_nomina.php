@@ -53,6 +53,8 @@ class nom_nomina extends modelo
             'fecha_pago');
 
         $columnas_extra = array();
+        $columnas_extra['em_empleado_nombre_completo'] = 'CONCAT (IFNULL(em_empleado.nombre,"")," ",IFNULL(em_empleado.ap, "")," ",IFNULL(em_empleado.am,""))';
+
         $columnas_extra['nom_nomina_total_percepcion_gravado'] =
             "IFNULL ((SELECT SUM(nom_par_percepcion.importe_gravado) 
             FROM  nom_par_percepcion WHERE nom_par_percepcion.nom_nomina_id = nom_nomina.id),0)";
