@@ -1,4 +1,4 @@
-<?php /** @var  \gamboamartin\cobranza\controllers\controlador_cob_deuda $controlador  controlador en ejecucion */ ?>
+<?php /** @var  \gamboamartin\nomina\controllers\controlador_nom_clasificacion $controlador  controlador en ejecucion */ ?>
 <?php use config\views; ?>
 
 <?php echo $controlador->inputs->cob_concepto_id; ?>
