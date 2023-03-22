@@ -931,6 +931,206 @@ class nom_nomina extends modelo
         return $codigo;
     }
 
+
+    public function crea_pdf_recibo_nomina(int $nom_nomina_id, Mpdf $pdf){
+        $nomina = $this->registro(registro_id: $nom_nomina_id);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al obtener registro de nomina', data: $nomina);
+        }
+
+        $percepciones = (new nom_par_percepcion($this->link))->get_by_nomina(nom_nomina_id: $nom_nomina_id);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al obtener registro percepciones', data: $percepciones);
+        }
+
+        $otros_pagos = (new nom_par_otro_pago($this->link))->get_by_nomina(nom_nomina_id: $nom_nomina_id);
+        if (errores::$error) {
+            return $this->error->error('Error al obtener registros de otros pagos', $otros_pagos);
+        }
+
+        $deducciones = (new nom_par_deduccion($this->link))->get_by_nomina(nom_nomina_id: $nom_nomina_id);
+        if (errores::$error) {
+            return $this->error->error('Error al obtener registros de deducciones', $deducciones);
+        }
+
+        $pdf->AddPage();
+        $pdf->SetFont('Arial');
+        $pdf->setSourceFile((new generales())->path_base . 'archivos/plantillas/nomina.pdf'); // Sin extensión
+        $template = $pdf->importPage(1);
+        $pdf->useTemplate($template);
+
+
+        $pdf->SetXY(18.7, 14);
+        $pdf->Cell(0, 0, $nomina['org_empresa_razon_social']);
+
+        $pdf->SetXY(165, 14);
+        $pdf->Cell(0, 0, explode(' ', $nomina['nom_nomina_fecha_pago'])[0]);
+
+        $pdf->SetXY(26, 19);
+        $pdf->Cell(0, 0, $nomina['org_empresa_rfc']);
+
+        $pdf->SetXY(77, 19);
+        $pdf->Cell(0, 0, $nomina['em_registro_patronal_descripcion']);
+
+        $pdf->SetXY(165, 17.5);
+        $pdf->Cell(0, 0, date('h:i:s'));
+
+        $pdf->SetXY(35, 22.6);
+        $pdf->Cell(0, 0, $nomina['cat_sat_regimen_fiscal_descripcion']);
+
+        $pdf->SetXY(47, 27.5);
+        $pdf->Cell(0, 0, $nomina['dp_cp_descripcion']);
+
+        $nombre_receptor = $nomina['em_empleado_nombre'] . ' ' . $nomina['em_empleado_ap'] . ' ' . $nomina['em_empleado_am'];
+
+        $pdf->SetXY(18, 40);
+        $pdf->Cell(0, 0, $nombre_receptor);
+
+        $pdf->SetXY(25, 44);
+        $pdf->Cell(0, 0, $nomina['em_empleado_rfc']);
+
+        $pdf->SetXY(27, 47.5);
+        $pdf->Cell(0, 0, $nomina['em_empleado_curp']);
+
+        $pdf->SetXY(49, 52.5);
+        $pdf->Cell(0, 0, $nomina['em_empleado_fecha_inicio_rel_laboral']);
+
+        $pdf->SetXY(31, 57);
+        $pdf->Cell(0, 0, $nomina['cat_sat_tipo_jornada_nom_descripcion']);
+
+        $pdf->SetXY(25, 61);
+        $pdf->Cell(0, 0, $nomina['em_empleado_nss']);
+
+        $pdf->SetXY(127, 39.5);
+        $pdf->Cell(0, 0, explode('-', $nomina['nom_nomina_fecha_final_pago'])[0]);
+
+        $periodo = $nomina['cat_sat_periodicidad_pago_nom_descripcion'] . ' ' . $nomina['nom_nomina_fecha_inicial_pago'];
+        $periodo .= ' a ' . $nomina['nom_nomina_fecha_final_pago'];
+
+        $pdf->SetXY(125, 44.5);
+        $pdf->Cell(0, 0, $periodo);
+
+        $pdf->SetXY(131, 48.5);
+        $pdf->Cell(0, 0, $nomina['nom_nomina_num_dias_pagados']);
+
+        $pdf->SetXY(129, 52.5);
+        $pdf->Cell(0, 0, $nomina['nom_nomina_fecha_pago']);
+
+        $pdf->SetXY(125, 57);
+        $pdf->Cell(0, 0, $nomina['org_puesto_descripcion']);
+
+        $pdf->SetXY(125, 61);
+        $pdf->Cell(0, 0, $nomina['org_departamento_descripcion']);
+
+        $pdf->SetXY(125, 65);
+        $pdf->Cell(0, 0, "$" . number_format($nomina['em_empleado_salario_diario'], 2));
+
+        $pdf->SetFont('Arial', '', 6);
+
+        $y = 87;
+        foreach ($percepciones as $percepcion) {
+            $pdf->SetXY(18, $y);
+            $pdf->Cell(0, 0, $percepcion['cat_sat_tipo_percepcion_nom_codigo']);
+
+            $y -= 1;
+            $pdf->SetXY(30, $y);
+            $pdf->MultiCell(w: 45, h: 2.5, txt: $percepcion['nom_percepcion_descripcion'], maxrows: 9);
+
+            $y++;
+
+            $pdf->SetXY(75, $y);
+            $pdf->Cell(0, 0, "$" . number_format($percepcion['nom_par_percepcion_importe_gravado'], 2));
+
+            $pdf->SetXY(95, $y);
+            $pdf->Cell(0, 0, "$" . number_format($percepcion['nom_par_percepcion_importe_exento'], 2));
+
+            $total = $percepcion['nom_par_percepcion_importe_gravado'] +
+                $percepcion['nom_par_percepcion_importe_exento'];
+
+            $pdf->SetXY(110, $y);
+            $pdf->Cell(0, 0, "$" . number_format($total, 2));
+
+            $y += 4;
+        }
+
+        foreach ($otros_pagos as $otros_pago) {
+            $pdf->SetXY(18, $y);
+            $pdf->Cell(0, 0, $otros_pago['cat_sat_tipo_otro_pago_nom_codigo']);
+
+            $y -= 1;
+            $pdf->SetXY(30, $y);
+            $pdf->MultiCell(w: 50, h: 2.5, txt: $otros_pago['nom_otro_pago_descripcion'], maxrows: 10);
+
+            $y++;
+
+            $pdf->SetXY(75, $y);
+            $pdf->Cell(0, 0, "$" . number_format($otros_pago['nom_par_otro_pago_importe_gravado'], 2));
+
+            $pdf->SetXY(95, $y);
+            $pdf->Cell(0, 0, "$" . number_format($otros_pago['nom_par_otro_pago_importe_exento'], 2));
+
+            $total = $otros_pago['nom_par_otro_pago_importe_gravado'] +
+                $otros_pago['nom_par_otro_pago_importe_exento'];
+
+            $pdf->SetXY(110, $y);
+            $pdf->Cell(0, 0, "$" . number_format($total, 2));
+
+            $y += 4;
+        }
+
+        $y = 87;
+        foreach ($deducciones as $deduccion) {
+            // print_r($percepcion);exit;
+            $pdf->SetXY(130, $y);
+            $pdf->Cell(0, 0, $deduccion['cat_sat_tipo_deduccion_nom_codigo']);
+
+
+            $y -= 1;
+            $pdf->SetXY(150, $y);
+            $pdf->MultiCell(w: 40, h: 2.5, txt: $deduccion['nom_deduccion_descripcion'], maxrows: 5);
+
+            $y++;
+
+            $total_deduccion = $deduccion['nom_par_deduccion_importe_gravado'] +
+                $deduccion['nom_par_deduccion_importe_exento'];
+
+            $pdf->SetXY(188, $y);
+            $pdf->Cell(0, 0, "$" . number_format($total_deduccion, 2));
+
+            $y += 5;
+        }
+
+        $pdf->SetXY(185, 134.5);
+        $pdf->Cell(0, 0, "$" . number_format($nomina['nom_nomina_total_percepcion_total'], 2));
+
+        $pdf->SetXY(185, 138.5);
+        $pdf->Cell(0, 0, "$" . number_format($nomina['nom_nomina_total_deduccion_descuento'], 2));
+
+        $pdf->SetXY(185, 142.3);
+        $pdf->Cell(0, 0, "$" . number_format($nomina['nom_nomina_total_deduccion_retenido'], 2));
+
+        $pdf->SetXY(185, 146);
+        $pdf->Cell(0, 0, "$" . number_format($nomina['nom_nomina_total'], 2));
+
+        $pdf->SetXY(110, 134.5);
+        $pdf->Cell(0, 0, "$" . number_format($nomina['nom_nomina_total_percepcion_total'], 2));
+
+        $total = $nomina['nom_nomina_total'];
+
+        $total_letra = (new numero_texto())->to_word($total, 'MXN');
+
+        $pdf->SetFont('Arial', '', 6);
+        $pdf->SetXY(130, 155);
+        $pdf->Cell(0, 0, $total_letra);
+
+
+        $pdf->SetFont('Arial', '', 8);
+        $pdf->SetXY(115, 177);
+        $pdf->Cell(0, 0, '99 Por Definir');
+    }
+
+
+
     private function deduccion_isr(int $nom_nomina_id){
 
         $existe_deduccion_isr = $this->existe_deduccion_isr(nom_nomina_id: $nom_nomina_id);
@@ -1028,26 +1228,6 @@ class nom_nomina extends modelo
 
     public function descarga_recibo_nomina(int $nom_nomina_id): bool|array
     {
-        $nomina = $this->registro(registro_id: $nom_nomina_id);
-        if(errores::$error){
-            return $this->error->error(mensaje: 'Error al obtener registro de nomina', data: $nomina);
-        }
-
-        $percepciones = (new nom_par_percepcion($this->link))->get_by_nomina(nom_nomina_id: $nom_nomina_id);
-        if(errores::$error){
-            return $this->error->error(mensaje: 'Error al obtener registro percepciones', data: $percepciones);
-        }
-
-        $otros_pagos = (new nom_par_otro_pago($this->link))->get_by_nomina(nom_nomina_id: $nom_nomina_id);
-        if(errores::$error) {
-            return $this->error->error('Error al obtener registros de otros pagos', $otros_pagos);
-        }
-
-        $deducciones = (new nom_par_deduccion($this->link))->get_by_nomina(nom_nomina_id: $nom_nomina_id);
-        if(errores::$error) {
-            return $this->error->error('Error al obtener registros de deducciones', $deducciones);
-        }
-
         try {
             $temporales = (new generales())->path_base . "archivos/tmp/";
             $pdf = new Mpdf(['tempDir' => $temporales]);
@@ -1055,181 +1235,14 @@ class nom_nomina extends modelo
         catch (Throwable $e){
             return $this->error->error('Error al generar objeto de pdf', $e);
         }
-        $pdf->AddPage();
-        $pdf->SetFont('Arial');
-        $pdf->setSourceFile((new generales())->path_base.'archivos/plantillas/nomina.pdf'); // Sin extensión
-        $template = $pdf->importPage(1);
-        $pdf->useTemplate($template);
 
-
-        $pdf->SetXY( 18.7,14);
-        $pdf->Cell(0,0, $nomina['org_empresa_razon_social']);
-
-        $pdf->SetXY( 165,14);
-        $pdf->Cell(0,0, explode(' ', $nomina['nom_nomina_fecha_pago'])[0]);
-
-        $pdf->SetXY( 26,19);
-        $pdf->Cell(0,0, $nomina['org_empresa_rfc']);
-
-        $pdf->SetXY( 77,19);
-        $pdf->Cell(0,0, $nomina['em_registro_patronal_descripcion']);
-
-        $pdf->SetXY( 165,17.5);
-        $pdf->Cell(0,0, date('h:i:s'));
-
-        $pdf->SetXY( 35,22.6);
-        $pdf->Cell(0,0, $nomina['cat_sat_regimen_fiscal_descripcion']);
-
-        $pdf->SetXY( 47,27.5);
-        $pdf->Cell(0,0, $nomina['dp_cp_descripcion']);
-
-        $nombre_receptor = $nomina['em_empleado_nombre'].' '.$nomina['em_empleado_ap'].' '.$nomina['em_empleado_am'];
-
-        $pdf->SetXY( 18,40);
-        $pdf->Cell(0,0, $nombre_receptor);
-
-        $pdf->SetXY( 25,44);
-        $pdf->Cell(0,0, $nomina['em_empleado_rfc']);
-
-        $pdf->SetXY( 27,47.5);
-        $pdf->Cell(0,0, $nomina['em_empleado_curp']);
-
-        $pdf->SetXY( 49,52.5);
-        $pdf->Cell(0,0, $nomina['em_empleado_fecha_inicio_rel_laboral']);
-
-        $pdf->SetXY( 31,57);
-        $pdf->Cell(0,0, $nomina['cat_sat_tipo_jornada_nom_descripcion']);
-
-        $pdf->SetXY( 25,61);
-        $pdf->Cell(0,0, $nomina['em_empleado_nss']);
-
-        $pdf->SetXY( 127,39.5);
-        $pdf->Cell(0,0, explode('-',$nomina['nom_nomina_fecha_final_pago'])[0]);
-
-        $periodo = $nomina['cat_sat_periodicidad_pago_nom_descripcion'].' '.$nomina['nom_nomina_fecha_inicial_pago'];
-        $periodo .= ' a '.$nomina['nom_nomina_fecha_final_pago'];
-
-        $pdf->SetXY( 125,44.5);
-        $pdf->Cell(0,0, $periodo);
-
-        $pdf->SetXY( 131,48.5);
-        $pdf->Cell(0,0, $nomina['nom_nomina_num_dias_pagados']);
-
-        $pdf->SetXY( 129,52.5);
-        $pdf->Cell(0,0, $nomina['nom_nomina_fecha_pago']);
-
-        $pdf->SetXY( 125,57);
-        $pdf->Cell(0,0, $nomina['org_puesto_descripcion']);
-
-        $pdf->SetXY( 125,61);
-        $pdf->Cell(0,0, $nomina['org_departamento_descripcion']);
-
-        $pdf->SetXY( 125,65);
-        $pdf->Cell(0,0, "$".number_format($nomina['em_empleado_salario_diario'],2));
-
-        $pdf->SetFont('Arial','',6);
-
-        $y = 87;
-        foreach($percepciones as $percepcion){
-            $pdf->SetXY( 18,$y);
-            $pdf->Cell(0,0, $percepcion['cat_sat_tipo_percepcion_nom_codigo']);
-
-            $y-=1;
-            $pdf->SetXY( 30,$y);
-            $pdf->MultiCell(w:45,h:2.5, txt: $percepcion['nom_percepcion_descripcion'],maxrows: 9);
-
-            $y++;
-
-            $pdf->SetXY( 75,$y);
-            $pdf->Cell(0,0, "$".number_format($percepcion['nom_par_percepcion_importe_gravado'],2));
-
-            $pdf->SetXY( 95,$y);
-            $pdf->Cell(0,0, "$".number_format($percepcion['nom_par_percepcion_importe_exento'],2));
-
-            $total = $percepcion['nom_par_percepcion_importe_gravado'] +
-                $percepcion['nom_par_percepcion_importe_exento'];
-
-            $pdf->SetXY( 110,$y);
-            $pdf->Cell(0,0, "$".number_format($total,2));
-
-            $y+=4;
+        $nomina = $this->registro(registro_id: $nom_nomina_id);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al obtener registro de nomina', data: $nomina);
         }
+        $nombre_receptor = $nomina['em_empleado_nombre'] . ' ' . $nomina['em_empleado_ap'] . ' ' . $nomina['em_empleado_am'];
 
-        foreach($otros_pagos as $otros_pago){
-            $pdf->SetXY( 18,$y);
-            $pdf->Cell(0,0, $otros_pago['cat_sat_tipo_otro_pago_nom_codigo']);
-
-            $y-=1;
-            $pdf->SetXY( 30,$y);
-            $pdf->MultiCell(w:50,h:2.5, txt: $otros_pago['nom_otro_pago_descripcion'],maxrows: 10);
-
-            $y++;
-
-            $pdf->SetXY( 75,$y);
-            $pdf->Cell(0,0, "$".number_format($otros_pago['nom_par_otro_pago_importe_gravado'],2));
-
-            $pdf->SetXY( 95,$y);
-            $pdf->Cell(0,0, "$".number_format($otros_pago['nom_par_otro_pago_importe_exento'],2));
-
-            $total = $otros_pago['nom_par_otro_pago_importe_gravado'] +
-                $otros_pago['nom_par_otro_pago_importe_exento'];
-
-            $pdf->SetXY( 110,$y);
-            $pdf->Cell(0,0, "$".number_format($total,2));
-
-            $y+=4;
-        }
-
-        $y = 87;
-        foreach($deducciones as $deduccion){
-            // print_r($percepcion);exit;
-            $pdf->SetXY( 130,$y);
-            $pdf->Cell(0,0, $deduccion['cat_sat_tipo_deduccion_nom_codigo']);
-
-
-            $y-=1;
-            $pdf->SetXY( 150,$y);
-            $pdf->MultiCell(w:40,h:2.5, txt: $deduccion['nom_deduccion_descripcion'],maxrows: 5);
-
-            $y++;
-
-            $total_deduccion = $deduccion['nom_par_deduccion_importe_gravado'] +
-                $deduccion['nom_par_deduccion_importe_exento'];
-
-            $pdf->SetXY( 188,$y);
-            $pdf->Cell(0,0,"$". number_format($total_deduccion,2));
-
-            $y+=5;
-        }
-
-        $pdf->SetXY( 185,134.5);
-        $pdf->Cell(0,0,"$". number_format($nomina['nom_nomina_total_percepcion_total'],2));
-
-        $pdf->SetXY( 185,138.5);
-        $pdf->Cell(0,0,"$". number_format($nomina['nom_nomina_total_deduccion_descuento'],2));
-
-        $pdf->SetXY( 185,142.3);
-        $pdf->Cell(0,0,"$". number_format($nomina['nom_nomina_total_deduccion_retenido'],2));
-
-        $pdf->SetXY( 185,146);
-        $pdf->Cell(0,0,"$". number_format($nomina['nom_nomina_total'],2));
-
-        $pdf->SetXY( 110,134.5);
-        $pdf->Cell(0,0,"$". number_format($nomina['nom_nomina_total_percepcion_total'],2));
-
-        $total = $nomina['nom_nomina_total'];
-
-        $total_letra = (new numero_texto())->to_word($total,'MXN');
-
-        $pdf->SetFont('Arial','',6);
-        $pdf->SetXY( 130,155);
-        $pdf->Cell(0,0,$total_letra);
-
-
-        $pdf->SetFont('Arial','',8);
-        $pdf->SetXY( 115,177);
-        $pdf->Cell(0,0,'99 Por Definir');
-
+        $r_pdf = $this->crea_pdf_recibo_nomina(nom_nomina_id: $nom_nomina_id, pdf: $pdf);
         $pdf->Output($nombre_receptor.'-'.$nomina['nom_nomina_fecha_final_pago'].'.pdf','D');
 
         return true;
@@ -1245,202 +1258,11 @@ class nom_nomina extends modelo
         }
 
         foreach ($nom_nominas->registros as $r_nomina) {
-            $nomina = $this->registro(registro_id: $r_nomina['nom_nomina_id']);
-            if (errores::$error) {
-                return $this->error->error(mensaje: 'Error al obtener registro de nomina', data: $nomina);
-            }
-
-            $percepciones = (new nom_par_percepcion($this->link))->get_by_nomina(nom_nomina_id: $r_nomina['nom_nomina_id']);
-            if (errores::$error) {
-                return $this->error->error(mensaje: 'Error al obtener registro percepciones', data: $percepciones);
-            }
-
-            $otros_pagos = (new nom_par_otro_pago($this->link))->get_by_nomina(nom_nomina_id: $r_nomina['nom_nomina_id']);
-            if (errores::$error) {
-                return $this->error->error('Error al obtener registros de otros pagos', $otros_pagos);
-            }
-
-            $deducciones = (new nom_par_deduccion($this->link))->get_by_nomina(nom_nomina_id: $r_nomina['nom_nomina_id']);
-            if (errores::$error) {
-                return $this->error->error('Error al obtener registros de deducciones', $deducciones);
-            }
-
-            $pdf->AddPage();
-            $pdf->SetFont('Arial');
-            $pdf->setSourceFile((new generales())->path_base . 'archivos/plantillas/nomina.pdf'); // Sin extensión
-            $template = $pdf->importPage(1);
-            $pdf->useTemplate($template);
-
-
-            $pdf->SetXY(18.7, 14);
-            $pdf->Cell(0, 0, $nomina['org_empresa_razon_social']);
-
-            $pdf->SetXY(165, 14);
-            $pdf->Cell(0, 0, explode(' ', $nomina['nom_nomina_fecha_pago'])[0]);
-
-            $pdf->SetXY(26, 19);
-            $pdf->Cell(0, 0, $nomina['org_empresa_rfc']);
-
-            $pdf->SetXY(77, 19);
-            $pdf->Cell(0, 0, $nomina['em_registro_patronal_descripcion']);
-
-            $pdf->SetXY(165, 17.5);
-            $pdf->Cell(0, 0, date('h:i:s'));
-
-            $pdf->SetXY(35, 22.6);
-            $pdf->Cell(0, 0, $nomina['cat_sat_regimen_fiscal_descripcion']);
-
-            $pdf->SetXY(47, 27.5);
-            $pdf->Cell(0, 0, $nomina['dp_cp_descripcion']);
-
-            $nombre_receptor = $nomina['em_empleado_nombre'] . ' ' . $nomina['em_empleado_ap'] . ' ' . $nomina['em_empleado_am'];
-
-            $pdf->SetXY(18, 40);
-            $pdf->Cell(0, 0, $nombre_receptor);
-
-            $pdf->SetXY(25, 44);
-            $pdf->Cell(0, 0, $nomina['em_empleado_rfc']);
-
-            $pdf->SetXY(27, 47.5);
-            $pdf->Cell(0, 0, $nomina['em_empleado_curp']);
-
-            $pdf->SetXY(49, 52.5);
-            $pdf->Cell(0, 0, $nomina['em_empleado_fecha_inicio_rel_laboral']);
-
-            $pdf->SetXY(31, 57);
-            $pdf->Cell(0, 0, $nomina['cat_sat_tipo_jornada_nom_descripcion']);
-
-            $pdf->SetXY(25, 61);
-            $pdf->Cell(0, 0, $nomina['em_empleado_nss']);
-
-            $pdf->SetXY(127, 39.5);
-            $pdf->Cell(0, 0, explode('-', $nomina['nom_nomina_fecha_final_pago'])[0]);
-
-            $periodo = $nomina['cat_sat_periodicidad_pago_nom_descripcion'] . ' ' . $nomina['nom_nomina_fecha_inicial_pago'];
-            $periodo .= ' a ' . $nomina['nom_nomina_fecha_final_pago'];
-
-            $pdf->SetXY(125, 44.5);
-            $pdf->Cell(0, 0, $periodo);
-
-            $pdf->SetXY(131, 48.5);
-            $pdf->Cell(0, 0, $nomina['nom_nomina_num_dias_pagados']);
-
-            $pdf->SetXY(129, 52.5);
-            $pdf->Cell(0, 0, $nomina['nom_nomina_fecha_pago']);
-
-            $pdf->SetXY(125, 57);
-            $pdf->Cell(0, 0, $nomina['org_puesto_descripcion']);
-
-            $pdf->SetXY(125, 61);
-            $pdf->Cell(0, 0, $nomina['org_departamento_descripcion']);
-
-            $pdf->SetXY(125, 65);
-            $pdf->Cell(0, 0, "$" . number_format($nomina['em_empleado_salario_diario'], 2));
-
-            $pdf->SetFont('Arial', '', 6);
-
-            $y = 87;
-            foreach ($percepciones as $percepcion) {
-                $pdf->SetXY(18, $y);
-                $pdf->Cell(0, 0, $percepcion['cat_sat_tipo_percepcion_nom_codigo']);
-
-                $y -= 1;
-                $pdf->SetXY(30, $y);
-                $pdf->MultiCell(w: 45, h: 2.5, txt: $percepcion['nom_percepcion_descripcion'], maxrows: 9);
-
-                $y++;
-
-                $pdf->SetXY(75, $y);
-                $pdf->Cell(0, 0, "$" . number_format($percepcion['nom_par_percepcion_importe_gravado'], 2));
-
-                $pdf->SetXY(95, $y);
-                $pdf->Cell(0, 0, "$" . number_format($percepcion['nom_par_percepcion_importe_exento'], 2));
-
-                $total = $percepcion['nom_par_percepcion_importe_gravado'] +
-                    $percepcion['nom_par_percepcion_importe_exento'];
-
-                $pdf->SetXY(110, $y);
-                $pdf->Cell(0, 0, "$" . number_format($total, 2));
-
-                $y += 4;
-            }
-
-            foreach ($otros_pagos as $otros_pago) {
-                $pdf->SetXY(18, $y);
-                $pdf->Cell(0, 0, $otros_pago['cat_sat_tipo_otro_pago_nom_codigo']);
-
-                $y -= 1;
-                $pdf->SetXY(30, $y);
-                $pdf->MultiCell(w: 50, h: 2.5, txt: $otros_pago['nom_otro_pago_descripcion'], maxrows: 10);
-
-                $y++;
-
-                $pdf->SetXY(75, $y);
-                $pdf->Cell(0, 0, "$" . number_format($otros_pago['nom_par_otro_pago_importe_gravado'], 2));
-
-                $pdf->SetXY(95, $y);
-                $pdf->Cell(0, 0, "$" . number_format($otros_pago['nom_par_otro_pago_importe_exento'], 2));
-
-                $total = $otros_pago['nom_par_otro_pago_importe_gravado'] +
-                    $otros_pago['nom_par_otro_pago_importe_exento'];
-
-                $pdf->SetXY(110, $y);
-                $pdf->Cell(0, 0, "$" . number_format($total, 2));
-
-                $y += 4;
-            }
-
-            $y = 87;
-            foreach ($deducciones as $deduccion) {
-                // print_r($percepcion);exit;
-                $pdf->SetXY(130, $y);
-                $pdf->Cell(0, 0, $deduccion['cat_sat_tipo_deduccion_nom_codigo']);
-
-
-                $y -= 1;
-                $pdf->SetXY(150, $y);
-                $pdf->MultiCell(w: 40, h: 2.5, txt: $deduccion['nom_deduccion_descripcion'], maxrows: 5);
-
-                $y++;
-
-                $total_deduccion = $deduccion['nom_par_deduccion_importe_gravado'] +
-                    $deduccion['nom_par_deduccion_importe_exento'];
-
-                $pdf->SetXY(188, $y);
-                $pdf->Cell(0, 0, "$" . number_format($total_deduccion, 2));
-
-                $y += 5;
-            }
-
-            $pdf->SetXY(185, 134.5);
-            $pdf->Cell(0, 0, "$" . number_format($nomina['nom_nomina_total_percepcion_total'], 2));
-
-            $pdf->SetXY(185, 138.5);
-            $pdf->Cell(0, 0, "$" . number_format($nomina['nom_nomina_total_deduccion_descuento'], 2));
-
-            $pdf->SetXY(185, 142.3);
-            $pdf->Cell(0, 0, "$" . number_format($nomina['nom_nomina_total_deduccion_retenido'], 2));
-
-            $pdf->SetXY(185, 146);
-            $pdf->Cell(0, 0, "$" . number_format($nomina['nom_nomina_total'], 2));
-
-            $pdf->SetXY(110, 134.5);
-            $pdf->Cell(0, 0, "$" . number_format($nomina['nom_nomina_total_percepcion_total'], 2));
-
-            $total = $nomina['nom_nomina_total'];
-
-            $total_letra = (new numero_texto())->to_word($total, 'MXN');
-
-            $pdf->SetFont('Arial', '', 6);
-            $pdf->SetXY(130, 155);
-            $pdf->Cell(0, 0, $total_letra);
-
-
-            $pdf->SetFont('Arial', '', 8);
-            $pdf->SetXY(115, 177);
-            $pdf->Cell(0, 0, '99 Por Definir');
+            $r_pdf = $this->crea_pdf_recibo_nomina(nom_nomina_id: $r_nomina['nom_nomina_id'] ,pdf: $pdf);
         }
-        $pdf->Output($nombre_receptor.'-'.$nomina['nom_nomina_fecha_final_pago'].'.pdf','D');
+
+        $nombre_archivo = "Nominas por periodo";
+        $pdf->Output($nombre_archivo.'.pdf','D');
 
         return true;
     }
