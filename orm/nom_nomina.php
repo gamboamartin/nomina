@@ -29,6 +29,7 @@ use SoapClient;
 use SoapFault;
 use stdClass;
 use Throwable;
+use ZipArchive;
 
 class nom_nomina extends modelo
 {
@@ -1265,6 +1266,36 @@ class nom_nomina extends modelo
         $pdf->Output($nombre_archivo.'.pdf','D');
 
         return true;
+    }
+
+    public function descarga_recibo_nomina_zip(array|stdClass $nom_nominas)
+    {
+        $zip = new ZipArchive();
+        $nombreZip = 'Recibos por periodo.zip';
+        $zip->open($nombreZip, ZipArchive::CREATE);
+
+        $contador = 1;
+
+        foreach ($nom_nominas->registros as $nomina) {
+            try {
+                $temporales = (new generales())->path_base . "archivos/tmp/";
+                $pdf = new Mpdf(['tempDir' => $temporales]);
+            } catch (Throwable $e) {
+                return $this->error->error('Error al generar objeto de pdf', $e);
+            }
+
+            $r_pdf = $this->crea_pdf_recibo_nomina(nom_nomina_id: $nomina['nom_nomina_id'] ,pdf: $pdf);
+            $archivo = $pdf->Output('','S');
+            $zip->addFromString($nomina['nom_nomina_descripcion'].$contador.'.pdf', $archivo);
+            $contador ++;
+        }
+
+        $zip->close();
+
+        header('Content-Type: application/zip');
+        header('Content-disposition: attachment; filename=' . $nombreZip);
+        header('Content-Length: ' . filesize($nombreZip));
+        readfile($nombreZip);
     }
 
     private function descripcion_nomina(int $em_empleado_id, array $registro): array|string

@@ -193,12 +193,13 @@ class controlador_nom_periodo extends system {
             return $this->errores->error(mensaje: 'Error al obtener nominas', data: $nominas);
         }
 
-            $r_nomina = (new nom_nomina($this->link))->descarga_recibo_nomina_foreach(nom_nominas: $nominas);
-            if (errores::$error) {
-                $error = $this->errores->error(mensaje: 'Error al obtener recibo de nomina', data: $r_nomina);
-                print_r($error);
-                die('Error');
-            }
+        $r_nomina = (new nom_nomina($this->link))->descarga_recibo_nomina_foreach(nom_nominas: $nominas);
+        if (errores::$error) {
+            $error = $this->errores->error(mensaje: 'Error al obtener recibo de nomina', data: $r_nomina);
+            print_r($error);
+            die('Error');
+        }
+        exit;
     }
 
     public function lista(bool $header, bool $ws = false): array
