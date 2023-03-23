@@ -1,5 +1,6 @@
 <?php
 namespace gamboamartin\nomina\models;
+use base\orm\_modelo_parent;
 use base\orm\modelo;
 use gamboamartin\empleado\models\em_cuenta_bancaria;
 use gamboamartin\empleado\models\em_empleado;
@@ -7,7 +8,7 @@ use gamboamartin\errores\errores;
 use PDO;
 use stdClass;
 
-class nom_conf_empleado extends modelo{
+class nom_conf_empleado extends _modelo_parent{
 
     public function __construct(PDO $link){
         $tabla = 'nom_conf_empleado';
@@ -16,52 +17,34 @@ class nom_conf_empleado extends modelo{
             'cat_sat_periodicidad_pago_nom'=>'nom_conf_nomina', 'em_registro_patronal'=>'em_empleado');
         $campos_obligatorios = array('em_cuenta_bancaria_id','nom_conf_nomina_id','codigo','descripcion');
 
-        $campos_view['em_cuenta_bancaria_id'] = array('type' => 'selects', 'model' => new em_cuenta_bancaria($link));
-        $campos_view['nom_conf_nomina_id'] = array('type' => 'selects', 'model' => new nom_conf_nomina($link));
-        $campos_view['em_empleado_id'] = array('type' => 'selects', 'model' => new em_empleado($link));
-        $campos_view['codigo'] = array('type' => 'inputs');
-        $campos_view['codigo_bis'] = array('type' => 'inputs');
 
         parent::__construct(link: $link,tabla:  $tabla, campos_obligatorios: $campos_obligatorios,
-            columnas: $columnas,campos_view: $campos_view);
+            columnas: $columnas);
 
         $this->NAMESPACE = __NAMESPACE__;
     }
 
-    public function alta_bd(): array|stdClass
+    public function alta_bd(array $keys_integra_ds = array('codigo', 'descripcion')): array|stdClass
     {
-        $keys = array('codigo','descripcion');
-
-        $valida = $this->validacion->valida_existencia_keys(keys: $keys, registro: $this->registro);
-        if(errores::$error){
-            return $this->error->error(mensaje: 'Error al validar registro', data: $valida);
+        if (!isset($this->registro['codigo'])) {
+            $codigo = $this->get_codigo_aleatorio();
+            if (errores::$error) {
+                return $this->error->error(mensaje: 'Error al generar codigo', data: $codigo);
+            }
         }
 
-        if(!isset($this->registro['codigo_bis'])){
-            $this->registro['codigo_bis'] = strtoupper($this->registro['codigo']);
-        }
-
-        if(!isset($this->registro['descripcion_select'])){
-            $this->registro['descripcion_select'] = strtoupper($this->registro['descripcion']);
-        }
-
-        $this->registro = $this->limpia_campos(registro: $this->registro,
+        $this->registro = $this->limpia_campos_extras(registro: $this->registro,
             campos_limpiar: array('em_empleado_id'));
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al limpiar campos', data: $this->registro);
         }
 
-        return parent::alta_bd();
-    }
-
-    private function limpia_campos(array $registro, array $campos_limpiar): array
-    {
-        foreach ($campos_limpiar as $valor) {
-            if (isset($registro[$valor])) {
-                unset($registro[$valor]);
-            }
+        $r_alta_bd = parent::alta_bd($keys_integra_ds);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al insertar conf. empleado', data: $r_alta_bd);
         }
-        return $registro;
+
+        return $r_alta_bd;
     }
 
     public function get_configuraciones_empleado(int $em_cuenta_bancaria_id): array|stdClass
@@ -77,6 +60,22 @@ class nom_conf_empleado extends modelo{
         }
 
         return $registros;
+    }
+
+    public function modifica_bd(array $registro, int $id, bool $reactiva = false,
+                                array $keys_integra_ds = array('codigo', 'descripcion')): array|stdClass
+    {
+        $this->registro = $this->limpia_campos_extras(registro: $registro, campos_limpiar: array('em_empleado_id'));
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al limpiar campos', data: $registro);
+        }
+
+        $r_modifica_bd = parent::modifica_bd($registro, $id, $reactiva, $keys_integra_ds);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al modificar conf. empleado',data: $r_modifica_bd);
+        }
+
+        return $r_modifica_bd;
     }
 
     public function nom_conf_empleado(int $em_empleado_id, int $nom_conf_nomina_id){

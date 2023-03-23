@@ -6,61 +6,43 @@
  * @final En proceso
  *
  */
+
 namespace gamboamartin\nomina\controllers;
 
+use base\controller\controler;
 use gamboamartin\empleado\models\em_cuenta_bancaria;
 use gamboamartin\errores\errores;
+use gamboamartin\system\_ctl_base;
 use gamboamartin\system\links_menu;
-use gamboamartin\system\system;
 use gamboamartin\template\html;
-use html\cat_sat_moneda_html;
-use html\com_cliente_html;
-use html\com_producto_html;
-use html\com_sucursal_html;
-use html\em_empleado_html;
 use html\nom_conf_empleado_html;
-use html\nom_conf_factura_html;
-use html\nom_percepcion_html;
-use gamboamartin\nomina\models\com_cliente;
-use gamboamartin\nomina\models\com_producto;
-use gamboamartin\nomina\models\com_sucursal;
-use gamboamartin\nomina\models\em_empleado;
 use gamboamartin\nomina\models\nom_conf_empleado;
-use gamboamartin\nomina\models\nom_conf_factura;
-use gamboamartin\nomina\models\nom_percepcion;
 use PDO;
 use stdClass;
 
-class controlador_nom_conf_empleado extends system {
+class controlador_nom_conf_empleado extends _ctl_base
+{
 
-    public stdClass|array $keys_selects = array();
-
-    public function __construct(PDO $link, html $html = new \gamboamartin\template_1\html(),
-                                stdClass $paths_conf = new stdClass()){
+    public function __construct(PDO      $link, html $html = new \gamboamartin\template_1\html(),
+                                stdClass $paths_conf = new stdClass())
+    {
         $modelo = new nom_conf_empleado(link: $link);
         $html_ = new nom_conf_empleado_html(html: $html);
-        $obj_link = new links_menu(link: $link,registro_id: $this->registro_id);
+        $obj_link = new links_menu(link: $link, registro_id: $this->registro_id);
 
-        $columns["nom_conf_empleado_id"]["titulo"] = "Id";
-        $columns["nom_conf_empleado_descripcion"]["titulo"] = "Descripcion";
-        $columns["em_cuenta_bancaria_descripcion"]["titulo"] = "Cuenta Bancaria";
-        $columns["nom_conf_nomina_descripcion"]["titulo"] = "Conf. Nomina";
+        $datatables = $this->init_datatable();
+        if (errores::$error) {
+            $error = $this->errores->error(mensaje: 'Error al inicializar datatable', data: $datatables);
+            print_r($error);
+            die('Error');
+        }
 
-        $filtro = array("nom_conf_empleado.id","nom_conf_empleado.descripcion", "nom_conf_empleado.descripcion",
-            "em_cuenta_bancaria.descripcion","nom_conf_nomina.descripcion");
-
-        $datatables = new stdClass();
-        $datatables->columns = $columns;
-        $datatables->filtro = $filtro;
-
-        parent::__construct(html:$html_, link: $link,modelo:  $modelo, obj_link: $obj_link, datatables: $datatables,
+        parent::__construct(html: $html_, link: $link, modelo: $modelo, obj_link: $obj_link, datatables: $datatables,
             paths_conf: $paths_conf);
 
-        $this->titulo_lista = 'Configuracion Empleado';
-
-        $propiedades = $this->inicializa_priedades();
-        if(errores::$error){
-            $error = $this->errores->error(mensaje: 'Error al inicializar propiedades',data:  $propiedades);
+        $configuraciones = $this->init_configuraciones();
+        if (errores::$error) {
+            $error = $this->errores->error(mensaje: 'Error al inicializar configuraciones', data: $configuraciones);
             print_r($error);
             die('Error');
         }
@@ -68,119 +50,150 @@ class controlador_nom_conf_empleado extends system {
 
     public function alta(bool $header, bool $ws = false): array|string
     {
-        $r_alta =  parent::alta(header: false);
-        if(errores::$error){
-            return $this->retorno_error(mensaje: 'Error al generar template',data:  $r_alta, header: $header,ws:$ws);
+        $r_alta = $this->init_alta();
+        if (errores::$error) {
+            return $this->retorno_error(mensaje: 'Error al inicializar alta', data: $r_alta, header: $header, ws: $ws);
         }
 
-        $inputs = $this->genera_inputs(keys_selects:  $this->keys_selects);
-        if(errores::$error){
-            $error = $this->errores->error(mensaje: 'Error al generar inputs',data:  $inputs);
-            print_r($error);
-            die('Error');
+        $keys_selects = $this->init_selects_inputs();
+        if (errores::$error) {
+            return $this->retorno_error(mensaje: 'Error al inicializar selects', data: $keys_selects, header: $header,
+                ws: $ws);
+        }
+
+        $inputs = $this->inputs(keys_selects: $keys_selects);
+        if (errores::$error) {
+            return $this->retorno_error(
+                mensaje: 'Error al obtener inputs', data: $inputs, header: $header, ws: $ws);
         }
 
         return $r_alta;
     }
 
-    private function base(): array|stdClass
+    protected function campos_view(): array
     {
-        $r_modifica =  parent::modifica(header: false, ws: false);
-        if(errores::$error){
-            return $this->errores->error(mensaje: 'Error al generar template',data:  $r_modifica);
-        }
+        $keys = new stdClass();
+        $keys->inputs = array('codigo', 'descripcion');
+        $keys->selects = array();
 
-        $em_empleado = (new em_cuenta_bancaria($this->link))->get_empleado(
-            em_cuenta_bancaria_id: $this->row_upd->em_cuenta_bancaria_id);
+        $init_data = array();
+        $init_data['em_empleado'] = "gamboamartin\\empleado";
+        $init_data['em_cuenta_bancaria'] = "gamboamartin\\empleado";
+        $init_data['nom_conf_nomina'] = "gamboamartin\\nomina";
+
+        $campos_view = $this->campos_view_base(init_data: $init_data, keys: $keys);
         if (errores::$error) {
-            $error = $this->errores->error(mensaje: 'Error al obtener al empleado', data: $em_empleado);
-            print_r($error);
-            die('Error');
+            return $this->errores->error(mensaje: 'Error al inicializar campo view', data: $campos_view);
         }
 
-        $this->asignar_propiedad(identificador:'em_empleado_id',
-            propiedades: ["id_selected"=> $em_empleado["em_cuenta_bancaria_em_empleado_id"],"disabled" => true,
-                "filtro" => array('em_empleado.id' => $em_empleado["em_cuenta_bancaria_em_empleado_id"])]);
-        if (errores::$error) {
-            $error = $this->errores->error(mensaje: 'Error al asignar propiedad', data: $this);
-            print_r($error);
-            die('Error');
-        }
-
-        $this->asignar_propiedad(identificador:'em_cuenta_bancaria_id',
-            propiedades: ["id_selected"=>$this->row_upd->em_cuenta_bancaria_id,"con_registros" => true,
-                "filtro" => array('em_empleado.id' => $em_empleado["em_cuenta_bancaria_em_empleado_id"])]);
-        if (errores::$error) {
-            $error = $this->errores->error(mensaje: 'Error al asignar propiedad', data: $this);
-            print_r($error);
-            die('Error');
-        }
-
-        $this->asignar_propiedad(identificador:'nom_conf_nomina_id',
-            propiedades: ["id_selected"=>$this->row_upd->nom_conf_nomina_id]);
-        if (errores::$error) {
-            $error = $this->errores->error(mensaje: 'Error al asignar propiedad', data: $this);
-            print_r($error);
-            die('Error');
-        }
-
-        $inputs = $this->genera_inputs(keys_selects:  $this->keys_selects);
-        if(errores::$error){
-            return $this->errores->error(mensaje: 'Error al inicializar inputs',data:  $inputs);
-        }
-
-        $data = new stdClass();
-        $data->template = $r_modifica;
-        $data->inputs = $inputs;
-
-        return $data;
-    }
-
-    private function inicializa_priedades(): array
-    {
-        $identificador = "em_cuenta_bancaria_id";
-        $propiedades = array("label" => "Cuenta Bancaria","con_registros" => false);
-        $this->asignar_propiedad(identificador:$identificador, propiedades: $propiedades);
-
-        $identificador = "nom_conf_nomina_id";
-        $propiedades = array("label" => "Conf. Nomina");
-        $this->asignar_propiedad(identificador:$identificador, propiedades: $propiedades);
-
-        $identificador = "em_empleado_id";
-        $propiedades = array("label" => "Empleado");
-        $this->asignar_propiedad(identificador:$identificador, propiedades: $propiedades);
-
-        $identificador = "codigo";
-        $propiedades = array("place_holder" => "Codigo");
-        $this->asignar_propiedad(identificador:$identificador, propiedades: $propiedades);
-
-        $identificador = "codigo_bis";
-        $propiedades = array("place_holder" => "Codigo BIS");
-        $this->asignar_propiedad(identificador:$identificador, propiedades: $propiedades);
-
-        return $this->keys_selects;
-    }
-
-    public function modifica(bool $header, bool $ws = false): array|stdClass
-    {
-        $base = $this->base();
-        if(errores::$error){
-            return $this->retorno_error(mensaje: 'Error al maquetar datos',data:  $base,
-                header: $header,ws:$ws);
-        }
-
-        return $base->template;
+        return $campos_view;
     }
 
     public function get_configuraciones_empleado(bool $header, bool $ws = true): array|stdClass
     {
         $keys['em_empleado'] = array("id");
 
-        $salida = $this->get_out(header: $header,keys: $keys, ws: $ws);
-        if(errores::$error){
-            return $this->retorno_error(mensaje: 'Error al generar salida',data:  $salida,header: $header,ws: $ws);
+        $salida = $this->get_out(header: $header, keys: $keys, ws: $ws);
+        if (errores::$error) {
+            return $this->retorno_error(mensaje: 'Error al generar salida', data: $salida, header: $header, ws: $ws);
         }
         return $salida;
     }
+
+    protected function init_configuraciones(): controler
+    {
+        $this->seccion_titulo = 'Configuraciones';
+        $this->titulo_lista = 'Configuracion de Empleados';
+
+        $this->lista_get_data = true;
+
+        return $this;
+    }
+
+    protected function init_datatable(): stdClass
+    {
+        $columns["nom_conf_empleado_id"]["titulo"] = "Id";
+        $columns["em_empleado_nombre"]["titulo"] = "Empleado";
+        $columns["em_empleado_nombre"]["campos"] = array("em_empleado_ap", "em_empleado_am");
+        $columns["em_cuenta_bancaria_num_cuenta"]["titulo"] = "Num. Cuenta";
+        $columns["nom_conf_nomina_id"]["titulo"] = "Nómina";
+
+        $filtro = array("nom_conf_empleado.id");
+
+        $datatables = new stdClass();
+        $datatables->columns = $columns;
+        $datatables->filtro = $filtro;
+
+        return $datatables;
+    }
+
+    protected function init_selects(array $keys_selects, string $key, string $label, int $id_selected = -1, int $cols = 6,
+                                    bool  $con_registros = true, array $filtro = array()): array
+    {
+        $keys_selects = $this->key_select(cols: $cols, con_registros: $con_registros, filtro: $filtro, key: $key,
+            keys_selects: $keys_selects, id_selected: $id_selected, label: $label);
+        if (errores::$error) {
+            return $this->errores->error(mensaje: 'Error al maquetar key_selects', data: $keys_selects);
+        }
+
+        return $keys_selects;
+    }
+
+    public function init_selects_inputs(): array
+    {
+        $keys_selects = $this->init_selects(keys_selects: array(), key: "em_empleado_id", label: "Empleado",
+            cols: 12);
+        $keys_selects = $this->init_selects(keys_selects: $keys_selects, key: "em_cuenta_bancaria_id", label: "Cuenta Bancaria",
+            con_registros: false);
+        return $this->init_selects(keys_selects: $keys_selects, key: "nom_conf_nomina_id", label: "Conf. Nomina");
+    }
+
+    protected function key_selects_txt(array $keys_selects): array
+    {
+        $keys_selects = (new \base\controller\init())->key_select_txt(cols: 12, key: 'descripcion',
+            keys_selects: $keys_selects, place_holder: 'Descripción');
+        if (errores::$error) {
+            return $this->errores->error(mensaje: 'Error al maquetar key_selects', data: $keys_selects);
+        }
+
+        return $keys_selects;
+    }
+
+    public function modifica(bool $header, bool $ws = false): array|stdClass
+    {
+        $r_modifica = $this->init_modifica();
+        if (errores::$error) {
+            return $this->retorno_error(
+                mensaje: 'Error al generar salida de template', data: $r_modifica, header: $header, ws: $ws);
+        }
+
+        $keys_selects = $this->init_selects_inputs();
+        if (errores::$error) {
+            return $this->retorno_error(mensaje: 'Error al inicializar selects', data: $keys_selects, header: $header,
+                ws: $ws);
+        }
+
+        $em_cuenta_bancaria = (new em_cuenta_bancaria($this->link))->registro(registro_id: $this->registro['em_cuenta_bancaria_id']);
+        if (errores::$error) {
+            return $this->retorno_error(mensaje: 'Error al obtener cuenta bancaria', data: $keys_selects, header: $header,
+                ws: $ws);
+        }
+
+        $keys_selects['em_empleado_id']->id_selected = $em_cuenta_bancaria['em_empleado_id'];
+
+        $keys_selects['em_cuenta_bancaria_id']->con_registros = true;
+        $keys_selects['em_cuenta_bancaria_id']->filtro = array("em_empleado.id" => $em_cuenta_bancaria['em_empleado_id']);
+        $keys_selects['em_cuenta_bancaria_id']->id_selected = $this->registro['em_cuenta_bancaria_id'];
+
+        $keys_selects['nom_conf_nomina_id']->id_selected = $this->registro['nom_conf_nomina_id'];
+
+        $base = $this->base_upd(keys_selects: $keys_selects, params: array(), params_ajustados: array());
+        if (errores::$error) {
+            return $this->retorno_error(mensaje: 'Error al integrar base', data: $base, header: $header, ws: $ws);
+        }
+
+        return $r_modifica;
+    }
+
 
 }
