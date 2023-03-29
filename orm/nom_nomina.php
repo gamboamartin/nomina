@@ -2788,17 +2788,14 @@ class nom_nomina extends modelo
 
         file_put_contents(filename: $xml->doc_documento_ruta_absoluta, data: $xml_timbrado->xml_sellado);
 
-        $alta_qr = $this->guarda_documento(directorio: "codigos_qr", extension: "jpg", contenido: $xml_timbrado->qr_code);
+        $alta_qr = $this->guarda_documento(directorio: "codigos_qr", extension: "jpg", contenido: $xml_timbrado->qr_code,
+            nom_nomina_id: $nom_nomina_id);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al guardar QR', data: $alta_qr);
         }
 
-        $alta_qr = $this->guarda_documento(directorio: "codigos_qr", extension: "jpg", contenido: $xml_timbrado->qr_code);
-        if (errores::$error) {
-            return $this->error->error(mensaje: 'Error al guardar QR', data: $alta_qr);
-        }
-
-        $alta_txt = $this->guarda_documento(directorio: "textos", extension: "txt", contenido: $xml_timbrado->txt);
+        $alta_txt = $this->guarda_documento(directorio: "textos", extension: "txt", contenido: $xml_timbrado->txt,
+            nom_nomina_id: $nom_nomina_id);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al guardar TXT', data: $alta_txt);
         }
@@ -2858,7 +2855,7 @@ class nom_nomina extends modelo
         }
         return $xml_data;
     }
-    private function guarda_documento(string $directorio, string $extension, string $contenido): array|stdClass
+    private function guarda_documento(string $directorio, string $extension, string $contenido, int $nom_nomina_id): array|stdClass
     {
         $ruta_archivos = $this->ruta_archivos(directorio: $directorio);
         if (errores::$error) {
@@ -2889,6 +2886,13 @@ class nom_nomina extends modelo
         $documento = $doc_documento_modelo->alta_bd(file: $file);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al guardar jpg', data: $documento);
+        }
+
+        $registro['nom_nomina_id'] = $nom_nomina_id;
+        $registro['doc_documento_id'] = $documento->registro_id;
+        $nomina_documento = (new nom_nomina_documento($this->link))->alta_registro(registro: $registro);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al guardar relacion nomina con documento', data: $nomina_documento);
         }
 
         return $documento;
