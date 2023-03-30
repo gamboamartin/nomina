@@ -52,7 +52,7 @@ class nom_nomina_documento extends _modelo_parent {
         $ruta_archivo = "";
 
         if ($documento->n_registros > 0){
-            $ruta_archivo = $documento->registros[0]['doc_documento_ruta_absoluta'];
+            $ruta_archivo = $documento->registros[0]['doc_documento_ruta_relativa'];
         }
 
         return $ruta_archivo;
