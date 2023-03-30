@@ -15,6 +15,7 @@ use gamboamartin\errores\errores;
 use gamboamartin\facturacion\models\fc_cfdi_sellado;
 use gamboamartin\facturacion\models\fc_csd;
 use gamboamartin\facturacion\models\fc_factura;
+use gamboamartin\facturacion\models\fc_factura_documento;
 use gamboamartin\facturacion\models\fc_partida;
 use gamboamartin\im_registro_patronal\models\calcula_cuota_obrero_patronal;
 use gamboamartin\nomina\controllers\xml_nom;
@@ -939,6 +940,12 @@ class nom_nomina extends modelo
             return $this->error->error(mensaje: 'Error al obtener registro de nomina', data: $nomina);
         }
 
+        $filtro["nom_nomina_id"] = $nom_nomina_id;
+        $cfdi_sellado = (new fc_cfdi_sellado($this->link))->filtro_and(filtro: $filtro);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al obtener cfdi_sellado', data:  $cfdi_sellado);
+        }
+
         $percepciones = (new nom_par_percepcion($this->link))->get_by_nomina(nom_nomina_id: $nom_nomina_id);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al obtener registro percepciones', data: $percepciones);
@@ -1128,6 +1135,42 @@ class nom_nomina extends modelo
         $pdf->SetFont('Arial', '', 8);
         $pdf->SetXY(115, 177);
         $pdf->Cell(0, 0, '99 Por Definir');
+
+
+        if($cfdi_sellado->n_registros > 0){
+            $ruta_qr = (new nom_nomina_documento(link: $this->link))->get_nomina_documento(nom_nomina_id: $nom_nomina_id,
+                tipo_documento: "qr_cfdi");
+            if(errores::$error){
+                return $this->error->error(mensaje: 'Error al obtener QR',data:  $ruta_qr);
+            }
+            
+            $pdf->SetFont('Arial','',8);
+            $pdf->SetXY( 145,205);
+            $pdf->Cell(0,0,$cfdi_sellado->registros[0]['fc_cfdi_sellado_comprobante_no_certificado']);
+
+            $pdf->SetXY( 145,208);
+            $pdf->Cell(0,0,$cfdi_sellado->registros[0]['fc_cfdi_sellado_uuid']);
+
+            $pdf->SetXY( 145,212);
+            $pdf->Cell(0,0,$cfdi_sellado->registros[0]['fc_cfdi_sellado_complemento_tfd_no_certificado_sat']);
+
+            $pdf->SetXY(145, 216);
+            $pdf->Cell(0, 0,$cfdi_sellado->registros[0]['fc_cfdi_sellado_complemento_tfd_fecha_timbrado']);
+
+            $pdf->SetFont('Arial', '', 6);
+            $pdf->SetXY(18, 222);
+            $pdf->MultiCell(w: 185, h: 3, txt: $cfdi_sellado->registros[0]['fc_cfdi_sellado_complemento_tfd_sello_cfd'], maxrows: 10);
+
+            $pdf->SetXY(18, 238);
+            $pdf->MultiCell(w: 185, h: 3, txt: $cfdi_sellado->registros[0]['fc_cfdi_sellado_complemento_tfd_sello_sat'], maxrows: 10);
+
+            $pdf->SetFont('Arial', '', 4);
+            $pdf->SetXY(18, 252);
+            $pdf->MultiCell(w: 185, h: 3, txt: $cfdi_sellado->registros[0]['fc_cfdi_sellado_cadena_complemento_sat'], maxrows: 10);
+
+            $pdf->Image($ruta_qr, 18, 176, 40);
+        }
+
     }
 
 
