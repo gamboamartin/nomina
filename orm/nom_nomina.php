@@ -1168,7 +1168,7 @@ class nom_nomina extends modelo
             $pdf->SetXY(18, 252);
             $pdf->MultiCell(w: 185, h: 3, txt: $cfdi_sellado->registros[0]['fc_cfdi_sellado_cadena_complemento_sat'], maxrows: 10);
 
-            $pdf->Image($ruta_qr, 18, 176, 40);
+            //$pdf->Image($ruta_qr, 18, 176, 40);
         }
 
     }
