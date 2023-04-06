@@ -4,6 +4,7 @@ namespace html;
 
 use gamboamartin\empleado\models\em_empleado;
 use gamboamartin\errores\errores;
+use gamboamartin\facturacion\html\fc_factura_html;
 use gamboamartin\facturacion\models\fc_factura;
 use gamboamartin\nomina\controllers\controlador_nom_nomina;
 use gamboamartin\organigrama\html\org_puesto_html;
