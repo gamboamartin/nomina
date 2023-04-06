@@ -477,4 +477,24 @@ class controlador_nom_periodo extends system {
 
 
     }
+
+    public function timbra_masivo(bool $header, bool $ws = false){
+        $nom_periodo_id = $this->registro_id; /** Id del periodo */
+
+        $filtro_nomina['nom_nomina.nom_periodo_id'] = $nom_periodo_id;
+        $nominas = (new nom_nomina($this->link))->filtro_and(filtro: $filtro_nomina);
+        if (errores::$error) {
+            return $this->errores->error(mensaje: 'Error al obtener nominas', data: $nominas);
+        }
+        #print_r($nominas);
+
+        foreach ($nominas->registros as $nomina) {
+            $timbre = (new nom_nomina(link: $this->link))->timbra_xml(nom_nomina_id: $nomina['nom_nomina_id']);
+            if(errores::$error){
+                return $this->retorno_error(mensaje: 'Error al timbrar XML',data:  $timbre, header: $header,ws:$ws);
+            }
+        }
+
+        exit;
+    }
 }
