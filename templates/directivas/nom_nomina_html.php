@@ -1,7 +1,6 @@
 <?php
 
 namespace html;
-
 use gamboamartin\empleado\models\em_empleado;
 use gamboamartin\errores\errores;
 use gamboamartin\facturacion\html\fc_factura_html;
