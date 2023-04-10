@@ -1167,5 +1167,15 @@ class controlador_nom_nomina extends base_nom
         return $timbre;
     }
 
+    public function descarga_recibo_xml(bool $header, bool $ws = false): array|stdClass
+    {
+        $timbre = (new nom_nomina(link: $this->link))->descarga_recibo_xml(nom_nomina_id: $this->registro_id);
+        if(errores::$error){
+            return $this->retorno_error(mensaje: 'Error al timbrar XML',data:  $timbre, header: $header,ws:$ws);
+        }
+
+        return $timbre;
+    }
+
 
 }

@@ -1339,6 +1339,44 @@ class nom_nomina extends modelo
         header('Content-disposition: attachment; filename=' . $nombreZip);
         header('Content-Length: ' . filesize($nombreZip));
         readfile($nombreZip);
+
+        exit;
+    }
+
+    public function descarga_recibo_xml(int $nom_nomina_id): bool|array
+    {
+
+        $nomina = $this->registro(registro_id: $nom_nomina_id);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al obtener registro de nomina', data: $nomina);
+        }
+
+        $xml = $this->genera_xml(nom_nomina_id: $nom_nomina_id);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al generar XML', data: $xml);
+        }
+
+        $xml_contenido = file_get_contents($xml->doc_documento_ruta_absoluta);
+
+        $xml_timbrado = (new timbra())->timbra(contenido_xml: $xml_contenido);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al timbrar XML', data: $xml_timbrado);
+        }
+
+        file_put_contents(filename: $xml->doc_documento_ruta_absoluta, data: $xml_timbrado->xml_sellado);
+
+        $alta_txt = $this->guarda_documento(directorio: "textos", extension: "txt", contenido: $xml_timbrado->txt,
+            nom_nomina_id: $nom_nomina_id);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al guardar TXT', data: $alta_txt);
+        }
+
+        $datos_xml = $this->get_datos_xml(ruta_xml: $xml->doc_documento_ruta_absoluta);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al obtener datos del XML', data: $datos_xml);
+        }
+
+        exit;
     }
 
     private function descripcion_nomina(int $em_empleado_id, array $registro): array|string
