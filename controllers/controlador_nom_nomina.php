@@ -207,8 +207,7 @@ class controlador_nom_nomina extends base_nom
         $this->keys_row_lista = $keys_rows_lista;
 
         $this->cuotas_obrero_patronales = new stdClass();
-
-
+        $this->lista_get_data = true;
     }
 
     public function alta(bool $header, bool $ws = false): array|string
