@@ -1346,35 +1346,30 @@ class nom_nomina extends modelo
     public function descarga_recibo_xml(int $nom_nomina_id): bool|array
     {
 
-        $nomina = $this->registro(registro_id: $nom_nomina_id);
+        $nom_nomina = $this->registro(registro_id: $nom_nomina_id, retorno_obj: true);
         if (errores::$error) {
-            return $this->error->error(mensaje: 'Error al obtener registro de nomina', data: $nomina);
+            return $this->error->error(mensaje: 'Error al obtener registro de nomina', data: $nom_nomina);
         }
 
-        $xml = $this->genera_xml(nom_nomina_id: $nom_nomina_id);
+        $xml = (new xml_nom())->xml(link: $this->link, nom_nomina: $nom_nomina);
         if (errores::$error) {
-            return $this->error->error(mensaje: 'Error al generar XML', data: $xml);
+            return $this->error->error(mensaje: 'Error al generar xml', data: $xml);
         }
 
-        $xml_contenido = file_get_contents($xml->doc_documento_ruta_absoluta);
-
-        $xml_timbrado = (new timbra())->timbra(contenido_xml: $xml_contenido);
+        $ruta_archivos_tmp = $this->genera_ruta_archivo_tmp();
         if (errores::$error) {
-            return $this->error->error(mensaje: 'Error al timbrar XML', data: $xml_timbrado);
+            return $this->error->error(mensaje: 'Error al generar ruta de archivos', data: $ruta_archivos_tmp);
         }
 
-        file_put_contents(filename: $xml->doc_documento_ruta_absoluta, data: $xml_timbrado->xml_sellado);
+        $file_xml_st = $ruta_archivos_tmp.'/'.$this->registro_id.'.nom.xml';
+        file_put_contents($file_xml_st, $xml);
 
-        $alta_txt = $this->guarda_documento(directorio: "textos", extension: "txt", contenido: $xml_timbrado->txt,
-            nom_nomina_id: $nom_nomina_id);
+        $existe = (new nom_nomina_documento(link: $this->link))->existe(array('nom_nomina.id' => $this->registro_id));
         if (errores::$error) {
-            return $this->error->error(mensaje: 'Error al guardar TXT', data: $alta_txt);
+            return $this->error->error(mensaje: 'Error al validar si existe documento', data: $existe);
         }
 
-        $datos_xml = $this->get_datos_xml(ruta_xml: $xml->doc_documento_ruta_absoluta);
-        if (errores::$error) {
-            return $this->error->error(mensaje: 'Error al obtener datos del XML', data: $datos_xml);
-        }
+        print_r($ruta_archivos_tmp);
 
         exit;
     }
