@@ -56,9 +56,11 @@ class controlador_nom_par_otro_pago extends system
         $keys_selects['nom_nomina'] = new stdClass();
         $keys_selects['nom_nomina']->cols = 12;
         $keys_selects['nom_nomina']->disabled = false;
+        $keys_selects['nom_nomina']->namespace_model = 'gamboamartin\\nomina\\models';
 
         $keys_selects['nom_otro_pago'] = new stdClass();
         $keys_selects['nom_otro_pago']->cols = 12;
+        $keys_selects['nom_otro_pago']->namespace_model = 'gamboamartin\\nomina\\models';
 
 
         $inputs = (new nom_par_otro_pago_html(html: $this->html_base))->genera_inputs_alta(
