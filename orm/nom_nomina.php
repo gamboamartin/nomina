@@ -1369,7 +1369,15 @@ class nom_nomina extends modelo
             return $this->error->error(mensaje: 'Error al validar si existe documento', data: $existe);
         }
 
-        print_r($ruta_archivos_tmp);
+        $file_name = $nom_nomina->nom_nomina_descripcion;
+
+        header("Cache-Control: public");
+        header("Content-Description: File Transfer");
+        header("Content-Disposition: attachment; filename=$file_name");
+        header("Content-Type: application/xml");
+        header("Content-Transfer-Encoding: binary");
+
+        readfile($file_xml_st);
 
         exit;
     }
