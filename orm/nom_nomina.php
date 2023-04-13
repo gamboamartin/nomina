@@ -1351,23 +1351,19 @@ class nom_nomina extends modelo
             return $this->error->error(mensaje: 'Error al obtener registro de nomina', data: $nom_nomina);
         }
 
-        $xml = (new xml_nom())->xml(link: $this->link, nom_nomina: $nom_nomina);
+        $r_nom_nomina_documento = (new nom_nomina_documento(link: $this->link))->filtro_and(
+            filtro: array('nom_nomina.id' => $this->registro_id));
         if (errores::$error) {
-            return $this->error->error(mensaje: 'Error al generar xml', data: $xml);
+            return $this->error->error(mensaje: 'Error al obtener documento nomina', data: $r_nom_nomina_documento);
         }
 
-        $ruta_archivos_tmp = $this->genera_ruta_archivo_tmp();
+        $r_doc_documento = (new doc_documento(link: $this->link))->filtro_and(
+            filtro: array('doc_documento.id' => $r_nom_nomina_documento->registros[0]['nom_nomina_documento_doc_documento_id']));
         if (errores::$error) {
-            return $this->error->error(mensaje: 'Error al generar ruta de archivos', data: $ruta_archivos_tmp);
+            return $this->error->error(mensaje: 'Error al obtener documento nomina', data: $r_nom_nomina_documento);
         }
 
-        $file_xml_st = $ruta_archivos_tmp.'/'.$this->registro_id.'.nom.xml';
-        file_put_contents($file_xml_st, $xml);
-
-        $existe = (new nom_nomina_documento(link: $this->link))->existe(array('nom_nomina.id' => $this->registro_id));
-        if (errores::$error) {
-            return $this->error->error(mensaje: 'Error al validar si existe documento', data: $existe);
-        }
+        $ruta_archivo = $r_doc_documento->registros[0]['doc_documento_ruta_absoluta']; /** Ruta */
 
         $file_name = $nom_nomina->nom_nomina_descripcion;
 
@@ -1377,7 +1373,7 @@ class nom_nomina extends modelo
         header("Content-Type: application/xml");
         header("Content-Transfer-Encoding: binary");
 
-        readfile($file_xml_st);
+        readfile($ruta_archivo);
 
         exit;
     }
