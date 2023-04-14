@@ -52,6 +52,8 @@ class controlador_nom_deduccion extends system {
 
         $keys_selects['cat_sat_tipo_deduccion_nom'] = new stdClass();
         $keys_selects['cat_sat_tipo_deduccion_nom']->label = 'Tipo Deduccion';
+        $keys_selects['cat_sat_tipo_deduccion_nom']->namespace_model = 'gamboamartin\\cat_sat\\models';
+
 
 
         $inputs = (new nom_deduccion_html(html: $this->html_base))->genera_inputs_alta(controler: $this,

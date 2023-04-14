@@ -52,9 +52,13 @@ class controlador_nom_par_percepcion extends system {
         $keys_selects['nom_nomina']->cols = 12;
         $keys_selects['nom_nomina']->disabled = false;
         $keys_selects['nom_nomina']->filtro = array();
+        $keys_selects['nom_nomina']->namespace_model = 'gamboamartin\\nomina\\models';
+
 
         $keys_selects['nom_percepcion'] = new stdClass();
         $keys_selects['nom_percepcion']->cols = 12;
+        $keys_selects['nom_percepcion']->namespace_model = 'gamboamartin\\nomina\\models';
+
 
         $inputs = (new nom_par_percepcion_html(html: $this->html_base))->genera_inputs_alta(controler: $this, keys_selects: $keys_selects, link: $this->link);
         if(errores::$error){

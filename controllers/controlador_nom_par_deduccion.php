@@ -53,10 +53,14 @@ class controlador_nom_par_deduccion extends system {
         $keys_selects['nom_nomina'] = new stdClass();
         $keys_selects['nom_nomina']->cols = 12;
         $keys_selects['nom_nomina']->disabled = false;
+        $keys_selects['nom_nomina']->namespace_model = 'gamboamartin\\nomina\\models';
+
 
 
         $keys_selects['nom_deduccion'] = new stdClass();
         $keys_selects['nom_deduccion']->cols = 12;
+        $keys_selects['nom_deduccion']->namespace_model = 'gamboamartin\\nomina\\models';
+
         $inputs = (new nom_par_deduccion_html(html: $this->html_base))->genera_inputs_alta(
             controler: $this, keys_selects: $keys_selects, link: $this->link);
         if(errores::$error){

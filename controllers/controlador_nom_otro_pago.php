@@ -45,6 +45,8 @@ class controlador_nom_otro_pago extends base_nom
         $keys_selects = array();
         $keys_selects['cat_sat_tipo_otro_pago_nom'] = new stdClass();
         $keys_selects['cat_sat_tipo_otro_pago_nom']->label = 'Tipo Otro Pago';
+        $keys_selects['cat_sat_tipo_otro_pago_nom']->namespace_model = 'gamboamartin\\cat_sat\\models';
+
 
         $inputs = (new nom_otro_pago_html(html: $this->html_base))->genera_inputs_alta(
             controler: $this, keys_selects: $keys_selects, link: $this->link);
