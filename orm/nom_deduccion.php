@@ -13,6 +13,9 @@ class nom_deduccion extends nominas_confs {
 
         parent::__construct(link: $link,tabla:  $tabla, campos_obligatorios: $campos_obligatorios,
             columnas: $columnas);
+
+        $this->NAMESPACE = __NAMESPACE__;
+
     }
 
     public function nom_deduccion_imss_id(): array|int

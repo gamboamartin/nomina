@@ -20,6 +20,8 @@ class nom_par_deduccion extends nominas{
             columnas: $columnas);
 
         $this->tabla_nom_conf = 'nom_deduccion';
+
+        $this->NAMESPACE = __NAMESPACE__;
     }
 
 

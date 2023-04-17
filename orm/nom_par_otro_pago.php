@@ -23,6 +23,8 @@ class nom_par_otro_pago extends nominas
             columnas: $columnas);
 
         $this->tabla_nom_conf = 'nom_otro_pago';
+
+        $this->NAMESPACE = __NAMESPACE__;
     }
 
     public function alta_bd(): array|stdClass

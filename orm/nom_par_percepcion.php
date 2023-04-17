@@ -20,6 +20,8 @@ class nom_par_percepcion extends nominas{
             columnas: $columnas);
 
         $this->tabla_nom_conf = 'nom_percepcion';
+
+        $this->NAMESPACE = __NAMESPACE__;
     }
 
 

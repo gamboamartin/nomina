@@ -17,6 +17,8 @@ class nom_otro_pago extends nominas_confs
 
         parent::__construct(link: $link, tabla: $tabla, campos_obligatorios: $campos_obligatorios,
             columnas: $columnas);
+
+        $this->NAMESPACE = __NAMESPACE__;
     }
 
     /**
