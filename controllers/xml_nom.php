@@ -156,6 +156,7 @@ class xml_nom{
         $comprobante->lugar_expedicion = $fc_factura->dp_cp_descripcion;
         $comprobante->folio = $fc_factura->fc_factura_folio;
         $comprobante->metodo_pago = $fc_factura->cat_sat_metodo_pago_codigo;
+        $comprobante->fecha = $fc_factura->fecha;
 
         $total = (new fc_factura($link))->total(fc_factura_id:$fc_factura->fc_factura_id );
         if(errores::$error){
