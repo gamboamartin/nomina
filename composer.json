@@ -59,10 +59,10 @@
       "gamboa.martin/cat_sat": "^8.0.0",
       "gamboa.martin/js_base": "^2.0.0",
       "gamboa.martin/im_registro_patronal": "^2.0.0",
-      "gamboa.martin/facturacion": "^7.0.0",
+      "gamboa.martin/facturacion": "^6.0.0",
       "gamboa.martin/banco": "^2.0.0",
       "gamboa.martin/empleado": "^2.0.0",
-      "gamboa.martin/comercial": "^7.0.0",
+      "gamboa.martin/comercial": "^6.0.0",
       "gamboa.martin/documento": "^6.0.0",
       "gamboa.martin/proceso":"^7.0.0",
       "gamboa.martin/xml_cfdi_4":"^2.0.0"
