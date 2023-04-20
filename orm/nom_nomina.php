@@ -1359,9 +1359,9 @@ class nom_nomina extends modelo
             return $this->error->error(mensaje: 'Error al obtener documento nomina', data: $r_nom_nomina_documento);
         }
 
-        $ruta_archivo = $r_nom_nomina_documento->registros[0]['doc_documento_ruta_absoluta'].".xml"; /** Ruta */
+        $ruta_archivo = $r_nom_nomina_documento->registros[0]['doc_documento_ruta_absoluta']; /** Ruta */
 
-        $file_name = $nom_nomina->nom_nomina_descripcion;
+        $file_name = $nom_nomina->nom_nomina_descripcion.".xml";
 
         header("Cache-Control: public");
         header("Content-Description: File Transfer");
