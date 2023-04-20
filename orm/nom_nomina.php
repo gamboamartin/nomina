@@ -1351,19 +1351,15 @@ class nom_nomina extends modelo
             return $this->error->error(mensaje: 'Error al obtener registro de nomina', data: $nom_nomina);
         }
 
+        $filtro['doc_tipo_documento.id'] = '2';
+        $filtro['nom_nomina.id'] = $this->registro_id;
         $r_nom_nomina_documento = (new nom_nomina_documento(link: $this->link))->filtro_and(
-            filtro: array('nom_nomina.id' => $this->registro_id));
+            filtro: $filtro);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al obtener documento nomina', data: $r_nom_nomina_documento);
         }
 
-        $r_doc_documento = (new doc_documento(link: $this->link))->filtro_and(
-            filtro: array('doc_documento.id' => $r_nom_nomina_documento->registros[0]['nom_nomina_documento_doc_documento_id']));
-        if (errores::$error) {
-            return $this->error->error(mensaje: 'Error al obtener documento nomina', data: $r_nom_nomina_documento);
-        }
-
-        $ruta_archivo = $r_doc_documento->registros[0]['doc_documento_ruta_absoluta']; /** Ruta */
+        $ruta_archivo = $r_nom_nomina_documento->registros[0]['doc_documento_ruta_absoluta']; /** Ruta */
 
         $file_name = $nom_nomina->nom_nomina_descripcion;
 
