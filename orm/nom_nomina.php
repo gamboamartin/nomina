@@ -1340,6 +1340,7 @@ class nom_nomina extends modelo
         header('Content-Length: ' . filesize($nombreZip));
         readfile($nombreZip);
 
+        unlink($nombreZip);
         exit;
     }
 
