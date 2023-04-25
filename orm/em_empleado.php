@@ -71,6 +71,11 @@ class em_empleado extends \gamboamartin\empleado\models\em_empleado
             return $this->error->error(mensaje: 'Error al obtener empresa perteneciente', data: $empresa);
         }
 
+        if (count($empresa) <= 0){
+            return $this->error->error(mensaje: "Error no existe una conf. de im_conf_pres_empresa para el empleado $em_empleado_id",
+                data: $empresa);
+        }
+
         $im_conf_prestaciones_id = $empresa[0]['im_conf_prestaciones_id'];
         $detalle_conf = (new im_detalle_conf_prestaciones($this->link))->obten_detalle_conf
         (im_conf_prestaciones_id: $im_conf_prestaciones_id);
