@@ -1280,35 +1280,83 @@ class nom_nomina extends modelo
             return $this->error->error('Error al generar objeto de pdf', $e);
         }
 
+        $doc_tipo_documento_id = $this->doc_tipo_documento_id(extension: "pdf");
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al validar extension del documento', data: $doc_tipo_documento_id);
+        }
+
+        $existe = (new nom_nomina_documento(link: $this->link))->existe(array('nom_nomina.id' => $this->registro_id,
+            'doc_tipo_documento.id'=>$doc_tipo_documento_id));
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al validar si existe documento', data: $existe);
+        }
+
         $nomina = $this->registro(registro_id: $nom_nomina_id);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al obtener registro de nomina', data: $nomina);
         }
         $nombre_receptor = $nomina['em_empleado_nombre'] . ' ' . $nomina['em_empleado_ap'] . ' ' . $nomina['em_empleado_am'];
 
-        $r_pdf = $this->crea_pdf_recibo_nomina(nom_nomina_id: $nom_nomina_id, pdf: $pdf);
+        if(!$existe) {
+            $r_pdf = $this->crea_pdf_recibo_nomina(nom_nomina_id: $nom_nomina_id, pdf: $pdf);
 
-        $pdf->Output($nombre_receptor.'-'.$nomina['nom_nomina_fecha_final_pago'].'.pdf','F');
+            $pdf->Output($nombre_receptor . '-' . $nomina['nom_nomina_fecha_final_pago'] . '.pdf', 'F');
 
-        $file['name'] = $nombre_receptor.'-'.$nomina['nom_nomina_fecha_final_pago'].'.pdf';
-        $file['tmp_name'] = $nombre_receptor.'-'.$nomina['nom_nomina_fecha_final_pago'].'.pdf';
-        $doc_documento_ins['doc_tipo_documento_id'] = 5;
+            $file['name'] = $nombre_receptor . '-' . $nomina['nom_nomina_fecha_final_pago'] . '.pdf';
+            $file['tmp_name'] = $nombre_receptor . '-' . $nomina['nom_nomina_fecha_final_pago'] . '.pdf';
+            $doc_documento_ins['doc_tipo_documento_id'] = 5;
 
-        $r_doc_documento = (new doc_documento(link: $this->link))->alta_documento(registro: $doc_documento_ins,file: $file);
-        if(errores::$error){
-            return $this->error->error(mensaje: 'Error al al insertar documento',data:  $r_doc_documento);
+            $r_doc_documento = (new doc_documento(link: $this->link))->alta_documento(registro: $doc_documento_ins, file: $file);
+            if (errores::$error) {
+                return $this->error->error(mensaje: 'Error al al insertar documento', data: $r_doc_documento);
+            }
+
+            $nom_nomina_documento = array();
+            $nom_nomina_documento['nom_nomina_id'] = $nom_nomina_id;
+            $nom_nomina_documento['doc_documento_id'] = $r_doc_documento->registro_id;
+
+            $nom_nomina_documento = (new nom_nomina_documento(link: $this->link))->alta_registro(registro: $nom_nomina_documento);
+            if (errores::$error) {
+                return $this->error->error(mensaje: 'Error al dar de alta factura documento', data: $nom_nomina_documento);
+            }
+
+            $pdf->Output($nombre_receptor . '-' . $nomina['nom_nomina_fecha_final_pago'] . '.pdf', 'D');
+        }else{
+            $r_nom_nomina_documento = (new nom_nomina_documento(link: $this->link))->filtro_and(
+                filtro: array('nom_nomina.id' => $this->registro_id,'doc_tipo_documento.id'=>$doc_tipo_documento_id));
+            if (errores::$error) {
+                return $this->error->error(mensaje: 'Error al obtener factura documento', data: $r_nom_nomina_documento);
+            }
+
+            if ($r_nom_nomina_documento->n_registros > 1) {
+                return $this->error->error(mensaje: 'Error solo debe existir una factura_documento', data: $r_nom_nomina_documento);
+            }
+            if ($r_nom_nomina_documento->n_registros === 0) {
+                return $this->error->error(mensaje: 'Error  debe existir al menos una factura_documento', data: $r_nom_nomina_documento);
+            }
+            $nom_nomina_documento = $r_nom_nomina_documento->registros[0];
+
+            $documento = (new doc_documento(link: $this->link))->registro(registro_id: $nom_nomina_documento['doc_documento_id']);
+            if (errores::$error) {
+                return $this->error->error(mensaje: 'Error  al obtener documento', data: $documento);
+            }
+
+            $ruta_archivo = $documento->registros[0]['doc_documento_ruta_absoluta']; /** Ruta */
+
+            $file_name = $nombre_receptor . '-' . $nomina['nom_nomina_fecha_final_pago'] . '.pdf';
+
+            header("Cache-Control: public");
+            header("Content-Description: File Transfer");
+            header("Content-Disposition: attachment; filename=$file_name");
+            header("Content-Type: application/xml");
+            header("Content-Transfer-Encoding: binary");
+
+            readfile($ruta_archivo);
+
+            exit;
         }
 
-        $nom_nomina_documento = array();
-        $nom_nomina_documento['nom_nomina_id'] = $nom_nomina_id;
-        $nom_nomina_documento['doc_documento_id'] = $r_doc_documento->registro_id;
 
-        $nom_nomina_documento = (new nom_nomina_documento(link: $this->link))->alta_registro(registro: $nom_nomina_documento);
-        if (errores::$error) {
-            return $this->error->error(mensaje: 'Error al dar de alta factura documento', data: $nom_nomina_documento);
-        }
-
-        $pdf->Output($nombre_receptor.'-'.$nomina['nom_nomina_fecha_final_pago'].'.pdf','D');
 
         return true;
     }
@@ -1776,14 +1824,15 @@ class nom_nomina extends modelo
         $file_xml_st = $ruta_archivos_tmp.'/'.$this->registro_id.'.nom.xml';
         file_put_contents($file_xml_st, $xml);
 
-        $existe = (new nom_nomina_documento(link: $this->link))->existe(array('nom_nomina.id' => $this->registro_id));
-        if (errores::$error) {
-            return $this->error->error(mensaje: 'Error al validar si existe documento', data: $existe);
-        }
-
         $doc_tipo_documento_id = $this->doc_tipo_documento_id(extension: "xml");
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al validar extension del documento', data: $doc_tipo_documento_id);
+        }
+
+        $existe = (new nom_nomina_documento(link: $this->link))->existe(array('nom_nomina.id' => $this->registro_id,
+            'doc_tipo_documento.id'=>$doc_tipo_documento_id));
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al validar si existe documento', data: $existe);
         }
 
         if (!$existe) {
