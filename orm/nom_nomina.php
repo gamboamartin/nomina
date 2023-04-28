@@ -1289,8 +1289,27 @@ class nom_nomina extends modelo
         $r_pdf = $this->crea_pdf_recibo_nomina(nom_nomina_id: $nom_nomina_id, pdf: $pdf);
         $pdf->Output($nombre_receptor.'-'.$nomina['nom_nomina_fecha_final_pago'].'.pdf','D');
 
+        $file['name'] = $nombre_receptor.'-'.$nomina['nom_nomina_fecha_final_pago'].'.pdf';
+        $file['tmp_name'] = $r_pdf;
+        $doc_documento_ins['doc_tipo_documento_id'] = 5;
+
+        $r_doc_documento = (new doc_documento(link: $this->link))->alta_documento(registro: $doc_documento_ins,file: $file);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al al insertar documento',data:  $r_doc_documento);
+        }
+
+        $nom_nomina_documento = array();
+        $nom_nomina_documento['nom_nomina_id'] = $nom_nomina_id;
+        $nom_nomina_documento['doc_documento_id'] = $r_doc_documento->registro_id;
+
+        $nom_nomina_documento = (new nom_nomina_documento(link: $this->link))->alta_registro(registro: $nom_nomina_documento);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al dar de alta factura documento', data: $nom_nomina_documento);
+        }
+
         return true;
     }
+
 
     public function descarga_recibo_nomina_foreach(array|stdClass $nom_nominas): bool|array
     {
