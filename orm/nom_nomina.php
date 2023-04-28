@@ -1287,7 +1287,7 @@ class nom_nomina extends modelo
 
         $filtro['nom_nomina.id'] = $nom_nomina_id;
         $filtro['doc_tipo_documento.id'] = $doc_tipo_documento_id;
-        $existe = (new nom_nomina_documento(link: $this->link))->filtro_and(filtro: $filtro);
+        $existe = (new nom_nomina_documento(link: $this->link))->existe(filtro: $filtro);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al validar si existe documento', data: $existe);
         }
