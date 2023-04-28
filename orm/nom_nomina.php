@@ -1285,8 +1285,9 @@ class nom_nomina extends modelo
             return $this->error->error(mensaje: 'Error al validar extension del documento', data: $doc_tipo_documento_id);
         }
 
-        $existe = (new nom_nomina_documento(link: $this->link))->existe(array('nom_nomina.id' => $this->registro_id,
-            'doc_tipo_documento.id'=>$doc_tipo_documento_id));
+        $filtro['nom_nomina.id'] = $nom_nomina_id;
+        $filtro['doc_tipo_documento.id'] = $doc_tipo_documento_id;
+        $existe = (new nom_nomina_documento(link: $this->link))->filtro_and(filtro: $filtro);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al validar si existe documento', data: $existe);
         }
@@ -1323,14 +1324,11 @@ class nom_nomina extends modelo
             $pdf->Output($nombre_receptor . '-' . $nomina['nom_nomina_fecha_final_pago'] . '.pdf', 'D');
         }else{
             $r_nom_nomina_documento = (new nom_nomina_documento(link: $this->link))->filtro_and(
-                filtro: array('nom_nomina.id' => $this->registro_id,'doc_tipo_documento.id'=>$doc_tipo_documento_id));
+                filtro: array('nom_nomina.id' => $nom_nomina_id,'doc_tipo_documento.id'=>$doc_tipo_documento_id));
             if (errores::$error) {
                 return $this->error->error(mensaje: 'Error al obtener factura documento', data: $r_nom_nomina_documento);
             }
 
-            if ($r_nom_nomina_documento->n_registros > 1) {
-                return $this->error->error(mensaje: 'Error solo debe existir una factura_documento', data: $r_nom_nomina_documento);
-            }
             if ($r_nom_nomina_documento->n_registros === 0) {
                 return $this->error->error(mensaje: 'Error  debe existir al menos una factura_documento', data: $r_nom_nomina_documento);
             }
@@ -1341,7 +1339,7 @@ class nom_nomina extends modelo
                 return $this->error->error(mensaje: 'Error  al obtener documento', data: $documento);
             }
 
-            $ruta_archivo = $documento->registros[0]['doc_documento_ruta_absoluta']; /** Ruta */
+            $ruta_archivo = $documento['doc_documento_ruta_absoluta']; /** Ruta */
 
             $file_name = $nombre_receptor . '-' . $nomina['nom_nomina_fecha_final_pago'] . '.pdf';
 
@@ -1360,7 +1358,6 @@ class nom_nomina extends modelo
 
         return true;
     }
-
 
     public function descarga_recibo_nomina_foreach(array|stdClass $nom_nominas): bool|array
     {
