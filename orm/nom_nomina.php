@@ -933,11 +933,15 @@ class nom_nomina extends modelo
         return $codigo;
     }
 
-
     public function crea_pdf_recibo_nomina(int $nom_nomina_id, Mpdf $pdf){
         $nomina = $this->registro(registro_id: $nom_nomina_id);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al obtener registro de nomina', data: $nomina);
+        }
+
+        $org_empresa = (new org_empresa($this->link))->registro(registro_id: $nomina['org_empresa_id']);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al obtener registro de empresa', data:  $org_empresa);
         }
 
         $filtro["fc_factura_id"] = $nomina['nom_nomina_fc_factura_id'];
@@ -987,7 +991,7 @@ class nom_nomina extends modelo
         $pdf->Cell(0, 0, $nomina['cat_sat_regimen_fiscal_descripcion']);
 
         $pdf->SetXY(47, 27.5);
-        $pdf->Cell(0, 0, $nomina['dp_cp_descripcion']);
+        $pdf->Cell(0, 0, $org_empresa['dp_cp_descripcion']);
 
         $nombre_receptor = $nomina['em_empleado_nombre'] . ' ' . $nomina['em_empleado_ap'] . ' ' . $nomina['em_empleado_am'];
 
@@ -1143,7 +1147,7 @@ class nom_nomina extends modelo
             if(errores::$error){
                 return $this->error->error(mensaje: 'Error al obtener QR',data:  $ruta_qr);
             }
-            
+
             $pdf->SetFont('Arial','',8);
             $pdf->SetXY( 145,205);
             $pdf->Cell(0,0,$cfdi_sellado->registros[0]['fc_cfdi_sellado_comprobante_no_certificado']);
@@ -1172,8 +1176,6 @@ class nom_nomina extends modelo
         }
 
     }
-
-
 
     private function deduccion_isr(int $nom_nomina_id){
 
