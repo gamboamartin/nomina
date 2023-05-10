@@ -3,6 +3,7 @@ namespace gamboamartin\nomina\controllers;
 use gamboamartin\comercial\models\com_sucursal;
 use gamboamartin\errores\errores;
 use gamboamartin\facturacion\models\fc_factura;
+use gamboamartin\nomina\models\nom_clasificacion_nomina;
 use gamboamartin\validacion\validacion;
 use gamboamartin\xml_cfdi_4\cfdis;
 use gamboamartin\nomina\models\calcula_nomina;
@@ -748,11 +749,29 @@ class xml_nom{
             return $this->error->error(mensaje: 'Error al asignar xml nomina', data: $nomina);
         }
 
+        $filtro['nom_nomina.id'] = $nom_nomina->nom_nomina_id;
+        $nom_clasificacion_nomina = (new nom_clasificacion_nomina($link))->filtro_and(filtro:$filtro);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al obtener clsificacion', data: $nom_clasificacion_nomina);
+        }
+
+        if($nom_clasificacion_nomina->n_registros > 0){
+            if($nom_clasificacion_nomina[0]->registros['nom_clasificacion_descripcion'] === 'haberes'){
+                $xml = (new cfdis())->complemento_nomina_haberes(comprobante: $data_cfdi->comprobante,emisor:  $data_cfdi->emisor,
+                    nomina: $nomina,receptor:  $data_cfdi->receptor);
+                if (errores::$error) {
+                    return $this->error->error(mensaje: 'Error al generar xml', data: $xml);
+                }
+                return $xml;
+            }
+        }
+
         $xml = (new cfdis())->complemento_nomina(comprobante: $data_cfdi->comprobante,emisor:  $data_cfdi->emisor,
             nomina: $nomina,receptor:  $data_cfdi->receptor);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al generar xml', data: $xml);
         }
+
         return $xml;
     }
 
