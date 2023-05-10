@@ -756,7 +756,7 @@ class xml_nom{
         }
 
         if($nom_clasificacion_nomina->n_registros > 0){
-            if($nom_clasificacion_nomina[0]->registros['nom_clasificacion_descripcion'] === 'haberes'){
+            if($nom_clasificacion_nomina->registros[0]['nom_clasificacion_descripcion'] === 'haberes'){
                 $xml = (new cfdis())->complemento_nomina_haberes(comprobante: $data_cfdi->comprobante,emisor:  $data_cfdi->emisor,
                     nomina: $nomina,receptor:  $data_cfdi->receptor);
                 if (errores::$error) {
