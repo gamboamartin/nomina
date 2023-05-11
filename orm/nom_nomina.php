@@ -1336,13 +1336,11 @@ class nom_nomina extends modelo
                 return $this->error->error(mensaje: 'Error  debe existir al menos una factura_documento', data: $r_nom_nomina_documento);
             }
             $nom_nomina_documento = $r_nom_nomina_documento->registros[0];
-
-            $documento = (new doc_documento(link: $this->link))->registro(registro_id: $nom_nomina_documento['doc_documento_id']);
-            if (errores::$error) {
-                return $this->error->error(mensaje: 'Error  al obtener documento', data: $documento);
-            }
-
+            
             $r_pdf = $this->crea_pdf_recibo_nomina(nom_nomina_id: $nom_nomina_id, pdf: $pdf);
+            if (errores::$error) {
+                return $this->error->error(mensaje: 'Error  al maquetar doc', data: $r_pdf);
+            }
 
             $pdf->Output($nombre_receptor . '-' . $nomina['nom_nomina_fecha_final_pago'] . '.pdf', 'F');
 
@@ -1354,7 +1352,7 @@ class nom_nomina extends modelo
                 return $this->error->error(mensaje: 'Error  al modificar documento', data: $documento_mod);
             }
 
-            $documento->registro = (new doc_documento(link: $this->link))->registro(registro_id: $documento->registro_id);
+            $documento = (new doc_documento(link: $this->link))->registro(registro_id: $nom_nomina_documento['doc_documento_id']);
             if (errores::$error) {
                 return $this->error->error(mensaje: 'Error  al obtener documento', data: $documento);
             }
