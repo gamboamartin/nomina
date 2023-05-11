@@ -1342,6 +1342,23 @@ class nom_nomina extends modelo
                 return $this->error->error(mensaje: 'Error  al obtener documento', data: $documento);
             }
 
+            $r_pdf = $this->crea_pdf_recibo_nomina(nom_nomina_id: $nom_nomina_id, pdf: $pdf);
+
+            $pdf->Output($nombre_receptor . '-' . $nomina['nom_nomina_fecha_final_pago'] . '.pdf', 'F');
+
+            $registro['doc_tipo_documento_id'] = $doc_tipo_documento_id;
+            $_FILES['name'] = $nombre_receptor . '-' . $nomina['nom_nomina_fecha_final_pago'] . '.pdf';
+            $_FILES['tmp_name'] = $nombre_receptor . '-' . $nomina['nom_nomina_fecha_final_pago'] . '.pdf';
+            $documento_mod = (new doc_documento(link: $this->link))->modifica_bd(registro: $registro, id: $documento->registro_id);
+            if (errores::$error) {
+                return $this->error->error(mensaje: 'Error  al modificar documento', data: $documento_mod);
+            }
+
+            $documento->registro = (new doc_documento(link: $this->link))->registro(registro_id: $documento->registro_id);
+            if (errores::$error) {
+                return $this->error->error(mensaje: 'Error  al obtener documento', data: $documento);
+            }
+
             $ruta_archivo = $documento['doc_documento_ruta_absoluta']; /** Ruta */
 
             $file_name = $nombre_receptor . '-' . $nomina['nom_nomina_fecha_final_pago'] . '.pdf';
@@ -1357,9 +1374,103 @@ class nom_nomina extends modelo
             exit;
         }
 
-
-
         return true;
+    }
+
+    public function genera_xml_temp(int $nom_nomina_id){
+
+        $nom_nomina = $this->registro(registro_id: $nom_nomina_id, retorno_obj: true);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al obtener nomina', data: $nom_nomina);
+        }
+
+        $xml = (new xml_nom())->xml(link: $this->link, nom_nomina: $nom_nomina);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al generar xml', data: $xml);
+        }
+
+        $ruta_archivos_tmp = $this->genera_ruta_archivo_tmp();
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al generar ruta de archivos', data: $ruta_archivos_tmp);
+        }
+
+        $documento = array();
+        $file = array();
+        $file_xml_st = $ruta_archivos_tmp.'/'.$this->registro_id.'.nom.xml';
+        file_put_contents($file_xml_st, $xml);
+
+        $doc_tipo_documento_id = $this->doc_tipo_documento_id(extension: "xml");
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al validar extension del documento', data: $doc_tipo_documento_id);
+        }
+
+        $existe = (new nom_nomina_documento(link: $this->link))->existe(array('nom_nomina.id' => $this->registro_id,
+            'doc_tipo_documento.id'=>$doc_tipo_documento_id));
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al validar si existe documento', data: $existe);
+        }
+
+        if (!$existe) {
+
+            $doc_documento_modelo = new doc_documento(link: $this->link);
+
+            $file['name'] = $file_xml_st;
+            $file['tmp_name'] = $file_xml_st;
+
+            $doc_documento_modelo->registro['doc_tipo_documento_id'] = $doc_tipo_documento_id;
+            $doc_documento_modelo->registro['descripcion'] = $ruta_archivos_tmp;
+
+            $documento = $doc_documento_modelo->alta_bd(file: $file);
+            if (errores::$error) {
+                return $this->error->error(mensaje: 'Error al guardar xml', data: $documento);
+            }
+
+            $nom_nomina_documento = array();
+            $nom_nomina_documento['nom_nomina_id'] = $this->registro_id;
+            $nom_nomina_documento['doc_documento_id'] = $documento->registro_id;
+
+            $nom_nomina_documento = (new nom_nomina_documento(link: $this->link))->alta_registro(registro: $nom_nomina_documento);
+            if (errores::$error) {
+                return $this->error->error(mensaje: 'Error al dar de alta factura documento', data: $nom_nomina_documento);
+            }
+        } else {
+            $r_nom_nomina_documento = (new nom_nomina_documento(link: $this->link))->filtro_and(
+                filtro: array('nom_nomina.id' => $this->registro_id));
+            if (errores::$error) {
+                return $this->error->error(mensaje: 'Error al obtener factura documento', data: $r_nom_nomina_documento);
+            }
+
+            if ($r_nom_nomina_documento->n_registros > 1) {
+                return $this->error->error(mensaje: 'Error solo debe existir una factura_documento', data: $r_nom_nomina_documento);
+            }
+            if ($r_nom_nomina_documento->n_registros === 0) {
+                return $this->error->error(mensaje: 'Error  debe existir al menos una factura_documento', data: $r_nom_nomina_documento);
+            }
+            $nom_nomina_documento = $r_nom_nomina_documento->registros[0];
+
+            $doc_documento_id = $nom_nomina_documento['doc_documento_id'];
+
+            $registro['descripcion'] = $ruta_archivos_tmp;
+            $registro['doc_tipo_documento_id'] = $doc_tipo_documento_id;
+            $_FILES['name'] = $file_xml_st;
+            $_FILES['tmp_name'] = $file_xml_st;
+
+            $documento = (new doc_documento(link: $this->link))->modifica_bd(registro: $registro, id: $doc_documento_id);
+            if (errores::$error) {
+                return $this->error->error(mensaje: 'Error  al modificar documento', data: $r_nom_nomina_documento);
+            }
+
+            $documento->registro = (new doc_documento(link: $this->link))->registro(registro_id: $documento->registro_id);
+            if (errores::$error) {
+                return $this->error->error(mensaje: 'Error  al obtener documento', data: $documento);
+            }
+        }
+
+        $rutas = new stdClass();
+        $rutas->file_xml_st = $file_xml_st;
+        $rutas->doc_documento_ruta_absoluta = $documento->registro['doc_documento_ruta_absoluta'];
+
+        return $rutas;
     }
 
     public function descarga_recibo_nomina_foreach(array|stdClass $nom_nominas): bool|array
