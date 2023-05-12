@@ -769,7 +769,7 @@ class xml_nom{
         }
 
         if(isset($nom_nomina->nom_nomina_uuid_relacionado) && (string)$nom_nomina->nom_nomina_uuid_relacionado !== ''){
-            $relacionados['tipo_relacion'] = '02';
+            $relacionados['tipo_relacion'] = '04';
             $relacionados['relaciones'] = array();
             $relacionados['relaciones'][0] = new stdClass();
             $relacionados['relaciones'][0]->uuid = $nom_nomina->nom_nomina_uuid_relacionado;
