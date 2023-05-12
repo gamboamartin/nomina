@@ -768,11 +768,11 @@ class xml_nom{
             }
         }
 
-        if(isset($nom_nomina->uuid_relacionado) && (string)$nom_nomina->uuid_relacionado !== ''){
+        if(isset($nom_nomina->nom_nomina_uuid_relacionado) && (string)$nom_nomina->nom_nomina_uuid_relacionado !== ''){
             $relacionados['tipo_relacion'] = '02';
             $relacionados['relaciones'] = array();
             $relacionados['relaciones'][0] = new stdClass();
-            $relacionados['relaciones'][0]->uuid = $nom_nomina->uuid_relacionado;
+            $relacionados['relaciones'][0]->uuid = $nom_nomina->nom_nomina_uuid_relacionado;
             //$nomina->uuid_relacionado = $nom_nomina->uuid_relacionado;
         }
 
