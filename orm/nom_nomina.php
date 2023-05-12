@@ -1513,35 +1513,21 @@ class nom_nomina extends modelo
                 return $this->error->error('Error al generar objeto de pdf', $e);
             }
 
-            $doc_tipo_documento_id = $this->doc_tipo_documento_id(extension: "pdf");
-            if (errores::$error) {
-                return $this->error->error(mensaje: 'Error al validar extension del documento', data: $doc_tipo_documento_id);
-            }
+            $r_pdf = $this->crea_pdf_recibo_nomina(nom_nomina_id: $nomina['nom_nomina_id'] ,pdf: $pdf);
+            $archivo = $pdf->Output('','S');
+            $nombre_receptor = $nomina['em_empleado_nombre'] . ' ' . $nomina['em_empleado_ap'] . ' ' . $nomina['em_empleado_am'];
+            $zip->addFromString($nombre_receptor . '-' . $nomina['nom_nomina_fecha_final_pago'].$contador.'.pdf', $archivo);
 
-            $filtro['doc_tipo_documento.id'] = $doc_tipo_documento_id;
-            $filtro['nom_nomina.id'] = $nomina['nom_nomina_id'];
-            $r_nom_nomina_documento_recibo = (new nom_nomina_documento(link: $this->link))->filtro_and(
-                filtro: $filtro);
-            if (errores::$error) {
-                return $this->error->error(mensaje: 'Error al obtener documento nomina', data: $r_nom_nomina_documento_recibo);
-            }
-
-            if($r_nom_nomina_documento_recibo->n_registros > 0){
-                $r_pdf = $this->crea_pdf_recibo_nomina(nom_nomina_id: $nomina['nom_nomina_id'] ,pdf: $pdf);
-                $archivo = $pdf->Output('','S');
-                $nombre_receptor = $nomina['em_empleado_nombre'] . ' ' . $nomina['em_empleado_ap'] . ' ' . $nomina['em_empleado_am'];
-                $zip->addFromString($nombre_receptor . '-' . $nomina['nom_nomina_fecha_final_pago'].$contador.'.pdf', $archivo);
-            }
 
             $nom_nomina = $this->registro(registro_id:  $nomina['nom_nomina_id'], retorno_obj: true);
             if (errores::$error) {
                 return $this->error->error(mensaje: 'Error al obtener registro de nomina', data: $nom_nomina);
             }
 
-            $filtro_xml['doc_tipo_documento.id'] = '2';
-            $filtro_xml['nom_nomina.id'] = $nomina['nom_nomina_id'];
+            $filtro['doc_tipo_documento.id'] = '2';
+            $filtro['nom_nomina.id'] = $nomina['nom_nomina_id'];
             $r_nom_nomina_documento = (new nom_nomina_documento(link: $this->link))->filtro_and(
-                filtro: $filtro_xml);
+                filtro: $filtro);
             if (errores::$error) {
                 return $this->error->error(mensaje: 'Error al obtener documento nomina', data: $r_nom_nomina_documento);
             }
