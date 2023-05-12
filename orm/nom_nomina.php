@@ -1533,8 +1533,9 @@ class nom_nomina extends modelo
             }
 
             $ruta_archivo = $r_nom_nomina_documento->registros[0]['doc_documento_ruta_absoluta']; /** Ruta */
-
-            $zip->addFromString($nom_nomina->nom_nomina_descripcion.'.xml', file_get_contents($ruta_archivo));
+            if(file_exists($ruta_archivo)) {
+                $zip->addFromString($nom_nomina->nom_nomina_descripcion . '.xml', file_get_contents($ruta_archivo));
+            }
 
             $contador ++;
         }
