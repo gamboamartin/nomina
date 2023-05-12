@@ -1538,10 +1538,10 @@ class nom_nomina extends modelo
                 return $this->error->error(mensaje: 'Error al obtener registro de nomina', data: $nom_nomina);
             }
 
-            $filtro['doc_tipo_documento.id'] = '2';
-            $filtro['nom_nomina.id'] = $nomina['nom_nomina_id'];
+            $filtro_xml['doc_tipo_documento.id'] = '2';
+            $filtro_xml['nom_nomina.id'] = $nomina['nom_nomina_id'];
             $r_nom_nomina_documento = (new nom_nomina_documento(link: $this->link))->filtro_and(
-                filtro: $filtro);
+                filtro: $filtro_xml);
             if (errores::$error) {
                 return $this->error->error(mensaje: 'Error al obtener documento nomina', data: $r_nom_nomina_documento);
             }
