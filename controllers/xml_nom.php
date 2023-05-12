@@ -108,6 +108,10 @@ class xml_nom{
             return $this->error->error(mensaje: 'Error al obtener nomina base', data: $nomina);
         }
 
+        if(isset($nom_nomina->uuid_relacionado) && (string)$nom_nomina->uuid_relacionado !== ''){
+            $nomina->uuid_relacionado = $nom_nomina->uuid_relacionado;
+        }
+
         $nomina = $this->percepciones(link: $link,nomina:  $nomina,nom_nomina_id:  $nom_nomina->nom_nomina_id);
         if (errores::$error) {
             return $this->error->error(
