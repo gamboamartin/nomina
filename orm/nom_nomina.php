@@ -1974,10 +1974,7 @@ class nom_nomina extends modelo
             if (errores::$error) {
                 return $this->error->error(mensaje: 'Error al obtener factura documento', data: $r_nom_nomina_documento);
             }
-
-            if ($r_nom_nomina_documento->n_registros > 1) {
-                return $this->error->error(mensaje: 'Error solo debe existir una factura_documento', data: $r_nom_nomina_documento);
-            }
+            
             if ($r_nom_nomina_documento->n_registros === 0) {
                 return $this->error->error(mensaje: 'Error  debe existir al menos una factura_documento', data: $r_nom_nomina_documento);
             }
