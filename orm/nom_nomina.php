@@ -1508,7 +1508,8 @@ class nom_nomina extends modelo
 
             $r_pdf = $this->crea_pdf_recibo_nomina(nom_nomina_id: $nomina['nom_nomina_id'] ,pdf: $pdf);
             $archivo = $pdf->Output('','S');
-            $zip->addFromString($nomina['nom_nomina_descripcion'].$contador.'.pdf', $archivo);
+            $nombre_receptor = $nomina['em_empleado_nombre'] . ' ' . $nomina['em_empleado_ap'] . ' ' . $nomina['em_empleado_am'];
+            $zip->addFromString($nombre_receptor . '-' . $nomina['nom_nomina_fecha_final_pago'].$contador.'.pdf', $archivo);
             $contador ++;
         }
 
