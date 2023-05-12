@@ -108,9 +108,7 @@ class xml_nom{
             return $this->error->error(mensaje: 'Error al obtener nomina base', data: $nomina);
         }
 
-        if(isset($nom_nomina->uuid_relacionado) && (string)$nom_nomina->uuid_relacionado !== ''){
-            $nomina->uuid_relacionado = $nom_nomina->uuid_relacionado;
-        }
+
 
         $nomina = $this->percepciones(link: $link,nomina:  $nomina,nom_nomina_id:  $nom_nomina->nom_nomina_id);
         if (errores::$error) {
@@ -770,8 +768,16 @@ class xml_nom{
             }
         }
 
+        if(isset($nom_nomina->uuid_relacionado) && (string)$nom_nomina->uuid_relacionado !== ''){
+            $relacionados['tipo_relacion'] = '02';
+            $relacionados['relaciones'] = array();
+            $relacionados['relaciones'][0] = new stdClass();
+            $relacionados['relaciones'][0]->uuid = $nom_nomina->uuid_relacionado;
+            //$nomina->uuid_relacionado = $nom_nomina->uuid_relacionado;
+        }
+
         $xml = (new cfdis())->complemento_nomina(comprobante: $data_cfdi->comprobante,emisor:  $data_cfdi->emisor,
-            nomina: $nomina,receptor:  $data_cfdi->receptor);
+            nomina: $nomina,receptor:  $data_cfdi->receptor,relacionados: $relacionados);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al generar xml', data: $xml);
         }
