@@ -1532,9 +1532,11 @@ class nom_nomina extends modelo
                 return $this->error->error(mensaje: 'Error al obtener documento nomina', data: $r_nom_nomina_documento);
             }
 
-            $ruta_archivo = $r_nom_nomina_documento->registros[0]['doc_documento_ruta_absoluta']; /** Ruta */
-            if(file_exists($ruta_archivo)) {
-                $zip->addFromString($nom_nomina->nom_nomina_descripcion . '.xml', file_get_contents($ruta_archivo));
+            if($r_nom_nomina_documento->n_registros > 0){
+                $ruta_archivo = $r_nom_nomina_documento->registros[0]['doc_documento_ruta_absoluta']; /** Ruta */
+                if(file_exists($ruta_archivo)) {
+                    $zip->addFromString($nom_nomina->nom_nomina_descripcion . '.xml', file_get_contents($ruta_archivo));
+                }
             }
 
             $contador ++;
