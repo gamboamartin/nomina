@@ -1517,6 +1517,26 @@ class nom_nomina extends modelo
             $archivo = $pdf->Output('','S');
             $nombre_receptor = $nomina['em_empleado_nombre'] . ' ' . $nomina['em_empleado_ap'] . ' ' . $nomina['em_empleado_am'];
             $zip->addFromString($nombre_receptor . '-' . $nomina['nom_nomina_fecha_final_pago'].$contador.'.pdf', $archivo);
+
+
+            $nom_nomina = $this->registro(registro_id:  $nomina['nom_nomina_id'], retorno_obj: true);
+            if (errores::$error) {
+                return $this->error->error(mensaje: 'Error al obtener registro de nomina', data: $nom_nomina);
+            }
+
+            $filtro['doc_tipo_documento.id'] = '2';
+            $filtro['nom_nomina.id'] = $nomina['nom_nomina_id'];
+            $r_nom_nomina_documento = (new nom_nomina_documento(link: $this->link))->filtro_and(
+                filtro: $filtro);
+            if (errores::$error) {
+                return $this->error->error(mensaje: 'Error al obtener documento nomina', data: $r_nom_nomina_documento);
+            }
+
+            $ruta_archivo = $r_nom_nomina_documento->registros[0]['doc_documento_ruta_absoluta']; /** Ruta */
+
+            $file_name = $nom_nomina->nom_nomina_descripcion.".xml";
+            $zip->addFromString($nom_nomina->nom_nomina_descripcion.'.xml', $file_name);
+            
             $contador ++;
         }
 
