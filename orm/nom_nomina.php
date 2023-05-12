@@ -972,6 +972,13 @@ class nom_nomina extends modelo
         $template = $pdf->importPage(1);
         $pdf->useTemplate($template);
 
+        if(isset($nomina['nom_nomina_uuid_relacionado']) && (string)$nomina['nom_nomina_uuid_relacionado'] !== ''){
+            $pdf->SetXY(18, 145);
+            $pdf->MultiCell(w: 185, h: 3, txt: "Tipo Relacion: 04 Sustitución de los CFDI Previos", maxrows: 10);
+
+            $pdf->SetXY(18, 150);
+            $pdf->MultiCell(w: 185, h: 3, txt: "UUID: ".$nomina['nom_nomina_uuid_relacionado'], maxrows: 10);
+        }
 
         $pdf->SetXY(18.7, 14);
         $pdf->Cell(0, 0, $nomina['org_empresa_razon_social']);
@@ -1974,7 +1981,7 @@ class nom_nomina extends modelo
             if (errores::$error) {
                 return $this->error->error(mensaje: 'Error al obtener factura documento', data: $r_nom_nomina_documento);
             }
-            
+
             if ($r_nom_nomina_documento->n_registros === 0) {
                 return $this->error->error(mensaje: 'Error  debe existir al menos una factura_documento', data: $r_nom_nomina_documento);
             }
