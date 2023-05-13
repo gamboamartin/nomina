@@ -145,6 +145,16 @@ class nom_par_deduccion extends nominas{
 
     }
 
+    public function modifica_bd(array $registro, int $id, bool $reactiva = false): array|stdClass
+    {
+        $r_modifica_bd = $this->modifica_bd_deduccion(registro: $registro,id:  $id);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al modificar registro',data:  $r_modifica_bd);
+        }
+        return $r_modifica_bd;
+
+    }
+
     public function modifica_bd_deduccion(array $registro, int $id, bool $reactiva = false, $es_subsidio = false): array|stdClass
     {
         $nom_deduccion = $this->registro(registro_id:$id, retorno_obj: true);
