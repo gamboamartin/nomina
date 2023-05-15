@@ -768,6 +768,7 @@ class xml_nom{
             }
         }
 
+        $relacionados = array();
         if(isset($nom_nomina->nom_nomina_uuid_relacionado) && (string)$nom_nomina->nom_nomina_uuid_relacionado !== ''){
             $relacionados['tipo_relacion'] = '04';
             $relacionados['relaciones'] = array();
