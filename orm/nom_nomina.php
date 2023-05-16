@@ -2684,6 +2684,7 @@ class nom_nomina extends modelo
         /*Otros pagos*/
 
         $datos['base_gravable'] = $suma_base_gravable;
+        $datos['subsidio'] = $subsidio;
 
         /*Deducciones*/
         foreach ($conceptos_nomina->deducciones as $nom_deduccion_id => $descripcion) {
