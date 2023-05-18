@@ -1513,33 +1513,65 @@ class nom_nomina extends modelo
                 return $this->error->error('Error al generar objeto de pdf', $e);
             }
 
-            $r_pdf = $this->crea_pdf_recibo_nomina(nom_nomina_id: $nomina['nom_nomina_id'] ,pdf: $pdf);
-            $archivo = $pdf->Output('','S');
-            $nombre_receptor = $nomina['em_empleado_nombre'] . ' ' . $nomina['em_empleado_ap'] . ' ' . $nomina['em_empleado_am'];
-            $zip->addFromString($nombre_receptor . '-' . $nomina['nom_nomina_fecha_final_pago'].$contador.'.pdf', $archivo);
-
-
-            $nom_nomina = $this->registro(registro_id:  $nomina['nom_nomina_id'], retorno_obj: true);
+            $doc_tipo_documento_id = $this->doc_tipo_documento_id(extension: "pdf");
             if (errores::$error) {
-                return $this->error->error(mensaje: 'Error al obtener registro de nomina', data: $nom_nomina);
+                return $this->error->error(mensaje: 'Error al validar extension del documento', data: $doc_tipo_documento_id);
             }
 
-            $filtro['doc_tipo_documento.id'] = '2';
-            $filtro['nom_nomina.id'] = $nomina['nom_nomina_id'];
-            $r_nom_nomina_documento = (new nom_nomina_documento(link: $this->link))->filtro_and(
-                filtro: $filtro);
+            $filtro['nom_nomina.id'] = $nom_nomina_id;
+            $filtro['doc_tipo_documento.id'] = $doc_tipo_documento_id;
+            $existe = (new nom_nomina_documento(link: $this->link))->existe(filtro: $filtro);
             if (errores::$error) {
-                return $this->error->error(mensaje: 'Error al obtener documento nomina', data: $r_nom_nomina_documento);
+                return $this->error->error(mensaje: 'Error al validar si existe documento', data: $existe);
             }
 
-            if($r_nom_nomina_documento->n_registros > 0){
-                $ruta_archivo = $r_nom_nomina_documento->registros[0]['doc_documento_ruta_absoluta']; /** Ruta */
-                if(file_exists($ruta_archivo)) {
-                    $zip->addFromString($nom_nomina->nom_nomina_descripcion . '.xml', file_get_contents($ruta_archivo));
+            if(!$existe) {
+                $r_pdf = $this->crea_pdf_recibo_nomina(nom_nomina_id: $nom_nomina_id, pdf: $pdf);
+
+                $pdf->Output($nomina['nom_nomina_descripcion'].$contador. '.pdf', 'F');
+
+                $file['name'] = $nomina['nom_nomina_descripcion'].$contador. '.pdf';
+                $file['tmp_name'] = $nomina['nom_nomina_descripcion'].$contador. '.pdf';
+                $doc_documento_ins['doc_tipo_documento_id'] = 5;
+
+                $r_doc_documento = (new doc_documento(link: $this->link))->alta_documento(registro: $doc_documento_ins, file: $file);
+                if (errores::$error) {
+                    return $this->error->error(mensaje: 'Error al al insertar documento', data: $r_doc_documento);
                 }
-            }
 
-            $contador ++;
+                $nom_nomina_documento = array();
+                $nom_nomina_documento['nom_nomina_id'] = $nom_nomina_id;
+                $nom_nomina_documento['doc_documento_id'] = $r_doc_documento->registro_id;
+
+                $nom_nomina_documento = (new nom_nomina_documento(link: $this->link))->alta_registro(registro: $nom_nomina_documento);
+                if (errores::$error) {
+                    return $this->error->error(mensaje: 'Error al dar de alta factura documento', data: $nom_nomina_documento);
+                }
+
+                $archivo = $pdf->Output('','S');
+                $zip->addFromString($nomina['nom_nomina_descripcion'].$contador.'.pdf', $archivo);
+                $contador ++;
+            }else{
+                $r_nom_nomina_documento = (new nom_nomina_documento(link: $this->link))->filtro_and(
+                    filtro: array('nom_nomina.id' => $nom_nomina_id,'doc_tipo_documento.id'=>$doc_tipo_documento_id));
+                if (errores::$error) {
+                    return $this->error->error(mensaje: 'Error al obtener factura documento', data: $r_nom_nomina_documento);
+                }
+
+                if ($r_nom_nomina_documento->n_registros === 0) {
+                    return $this->error->error(mensaje: 'Error  debe existir al menos una factura_documento', data: $r_nom_nomina_documento);
+                }
+                $nom_nomina_documento = $r_nom_nomina_documento->registros[0];
+
+                $documento = (new doc_documento(link: $this->link))->registro(registro_id: $nom_nomina_documento['doc_documento_id']);
+                if (errores::$error) {
+                    return $this->error->error(mensaje: 'Error  al obtener documento', data: $documento);
+                }
+
+                $ruta_archivo = $documento['doc_documento_ruta_absoluta']; /** Ruta */
+                $zip->addFromString($nomina['nom_nomina_descripcion'].$contador.'.pdf', file_get_contents($ruta_archivo));
+                $contador ++;
+            }
         }
 
         $zip->close();
@@ -1817,7 +1849,7 @@ class nom_nomina extends modelo
 
     public function get_sub_total_nomina(int $fc_factura_id): float|array
     {
-        $subtotal = (new fc_factura($this->link))->get_factura_sub_total(fc_factura_id: $fc_factura_id);
+        $subtotal = (new fc_factura($this->link))->get_factura_sub_total(registro_id: $fc_factura_id);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al obtener el subtotal de la partida',
                 data: $subtotal);
