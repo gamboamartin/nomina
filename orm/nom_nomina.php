@@ -1518,7 +1518,7 @@ class nom_nomina extends modelo
                 return $this->error->error(mensaje: 'Error al validar extension del documento', data: $doc_tipo_documento_id);
             }
 
-            $filtro['nom_nomina.id'] = $nom_nomina_id;
+            $filtro['nom_nomina.id'] = $nomina['nom_nomina_id'];
             $filtro['doc_tipo_documento.id'] = $doc_tipo_documento_id;
             $existe = (new nom_nomina_documento(link: $this->link))->existe(filtro: $filtro);
             if (errores::$error) {
@@ -1526,7 +1526,7 @@ class nom_nomina extends modelo
             }
 
             if(!$existe) {
-                $r_pdf = $this->crea_pdf_recibo_nomina(nom_nomina_id: $nom_nomina_id, pdf: $pdf);
+                $r_pdf = $this->crea_pdf_recibo_nomina(nom_nomina_id: $nomina['nom_nomina_id'], pdf: $pdf);
 
                 $pdf->Output($nomina['nom_nomina_descripcion'].$contador. '.pdf', 'F');
 
@@ -1540,7 +1540,7 @@ class nom_nomina extends modelo
                 }
 
                 $nom_nomina_documento = array();
-                $nom_nomina_documento['nom_nomina_id'] = $nom_nomina_id;
+                $nom_nomina_documento['nom_nomina_id'] = $nomina['nom_nomina_id'];
                 $nom_nomina_documento['doc_documento_id'] = $r_doc_documento->registro_id;
 
                 $nom_nomina_documento = (new nom_nomina_documento(link: $this->link))->alta_registro(registro: $nom_nomina_documento);
@@ -1553,7 +1553,7 @@ class nom_nomina extends modelo
                 $contador ++;
             }else{
                 $r_nom_nomina_documento = (new nom_nomina_documento(link: $this->link))->filtro_and(
-                    filtro: array('nom_nomina.id' => $nom_nomina_id,'doc_tipo_documento.id'=>$doc_tipo_documento_id));
+                    filtro: array('nom_nomina.id' => $nomina['nom_nomina_id'],'doc_tipo_documento.id'=>$doc_tipo_documento_id));
                 if (errores::$error) {
                     return $this->error->error(mensaje: 'Error al obtener factura documento', data: $r_nom_nomina_documento);
                 }
