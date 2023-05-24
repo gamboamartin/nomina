@@ -32,6 +32,39 @@ class nom_nomina_html extends base_nominas
         return $controler->inputs;
     }
 
+    private function asigna_inputs_empleado(controlador_nom_nomina $controler, stdClass $inputs): array|stdClass
+    {
+        $controler->inputs->select = new stdClass();
+
+        $controler->inputs->select->dp_pais_id = $inputs->selects->dp_pais_id;
+        $controler->inputs->select->dp_estado_id = $inputs->selects->dp_estado_id;
+        $controler->inputs->select->dp_municipio_id = $inputs->selects->dp_municipio_id;
+        $controler->inputs->select->dp_cp_id = $inputs->selects->dp_cp_id;
+        $controler->inputs->select->dp_colonia_postal_id = $inputs->selects->dp_colonia_postal_id;
+        $controler->inputs->select->dp_calle_pertenece_id = $inputs->selects->dp_calle_pertenece_id;
+        $controler->inputs->select->cat_sat_tipo_regimen_nom_id = $inputs->selects->cat_sat_tipo_regimen_nom_id;
+        $controler->inputs->select->org_puesto_id = $inputs->selects->org_puesto_id;
+        $controler->inputs->select->cat_sat_tipo_jornada_nom_id = $inputs->selects->cat_sat_tipo_jornada_nom_id;
+        $controler->inputs->select->em_registro_patronal_id = $inputs->selects->em_registro_patronal_id;
+        $controler->inputs->select->cat_sat_regimen_fiscal_id = $inputs->selects->cat_sat_regimen_fiscal_id;
+        $controler->inputs->select->em_centro_costo_id = $inputs->selects->em_centro_costo_id;
+
+        $controler->inputs->ap = $inputs->texts->ap;
+        $controler->inputs->am = $inputs->texts->am;
+        $controler->inputs->nombre = $inputs->texts->nombre;
+        $controler->inputs->telefono = $inputs->texts->telefono;
+        $controler->inputs->fecha_inicio_rel_laboral = $inputs->texts->fecha_inicio_rel_laboral;
+        $controler->inputs->rfc = $inputs->texts->rfc;
+        $controler->inputs->curp = $inputs->texts->curp;
+        $controler->inputs->nss = $inputs->texts->nss;
+        $controler->inputs->salario_diario = $inputs->texts->salario_diario;
+        $controler->inputs->salario_diario_integrado = $inputs->texts->salario_diario_integrado;
+        $controler->inputs->salario_total = $inputs->texts->salario_total;
+
+        return $controler->inputs;
+
+    }
+
     private function asigna_inputs_nueva_percepcion(controlador_nom_nomina $controler, stdClass $inputs): array|stdClass
     {
 
@@ -139,6 +172,21 @@ class nom_nomina_html extends base_nominas
 
         }
         $inputs_asignados = $this->asigna_inputs_nueva_percepcion(controler: $controler, inputs: $inputs);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al asignar inputs', data: $inputs_asignados);
+        }
+
+        return $inputs_asignados;
+    }
+
+    public function genera_inputs_empleado(controlador_nom_nomina $controler, array $keys_selects, PDO $link): array|stdClass
+    {
+        $inputs = (new em_empleado_html(html: $this->html_base))->init_alta(keys_selects: $keys_selects, link: $link);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al generar inputs', data: $inputs);
+
+        }
+        $inputs_asignados = $this->asigna_inputs_empleado(controler: $controler, inputs: $inputs);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al asignar inputs', data: $inputs_asignados);
         }
