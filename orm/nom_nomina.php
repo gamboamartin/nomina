@@ -1849,7 +1849,7 @@ class nom_nomina extends modelo
 
     public function get_sub_total_nomina(int $fc_factura_id): float|array
     {
-        $subtotal = (new fc_factura($this->link))->get_factura_sub_total(registro_id: $fc_factura_id);
+        $subtotal = (new fc_factura($this->link))->get_factura_sub_total(fc_factura_id: $fc_factura_id);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al obtener el subtotal de la partida',
                 data: $subtotal);
