@@ -276,26 +276,31 @@ class controlador_nom_nomina extends base_nom
 
         $keys_selects['dp_estado'] = new stdClass();
         $keys_selects['dp_estado']->label = 'Estado';
+        $keys_selects['dp_estado']->con_registros = false;
         $keys_selects['dp_estado']->cols = 6;
         $keys_selects['dp_estado']->namespace_model = 'gamboamartin\\direccion_postal\\models';
 
         $keys_selects['dp_municipio'] = new stdClass();
         $keys_selects['dp_municipio']->label = 'Municipio';
+        $keys_selects['dp_municipio']->con_registros = false;
         $keys_selects['dp_municipio']->cols = 6;
         $keys_selects['dp_municipio']->namespace_model = 'gamboamartin\\direccion_postal\\models';
 
         $keys_selects['dp_cp'] = new stdClass();
         $keys_selects['dp_cp']->label = 'CP';
+        $keys_selects['dp_cp']->con_registros = false;
         $keys_selects['dp_cp']->cols = 6;
         $keys_selects['dp_cp']->namespace_model = 'gamboamartin\\direccion_postal\\models';
 
         $keys_selects['dp_colonia_postal'] = new stdClass();
         $keys_selects['dp_colonia_postal']->label = 'Colonia Postal';
+        $keys_selects['dp_colonia_postal']->con_registros = false;
         $keys_selects['dp_colonia_postal']->cols = 6;
         $keys_selects['dp_colonia_postal']->namespace_model = 'gamboamartin\\direccion_postal\\models';
 
         $keys_selects['dp_calle_pertenece'] = new stdClass();
         $keys_selects['dp_calle_pertenece']->label = 'Calle Pertenece';
+        $keys_selects['dp_calle_pertenece']->con_registros = false;
         $keys_selects['dp_calle_pertenece']->cols = 6;
         $keys_selects['dp_calle_pertenece']->namespace_model = 'gamboamartin\\direccion_postal\\models';
 
