@@ -40,6 +40,8 @@ class em_empleado extends \gamboamartin\empleado\models\em_empleado
 
         $registro_em_cta_banc['codigo'] = $this->registro['codigo'];
         $registro_em_cta_banc['descripcion'] = $this->registro['descripcion'];
+        $registro_em_cta_banc['clabe'] = rand();
+        $registro_em_cta_banc['num_cuenta'] = rand();
         $registro_em_cta_banc['em_empleado_id'] = $r_alta->registro_id;
         $registro_em_cta_banc['bn_sucursal_id'] = $id_predeterminado;
         $alta_em_cta_ban = (new em_cuenta_bancaria(link: $this->link))->alta_registro(registro: $registro_em_cta_banc);

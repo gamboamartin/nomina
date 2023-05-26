@@ -59,7 +59,6 @@ class nom_nomina_html extends base_nominas
         $controler->inputs->nss = $inputs->texts->nss;
         $controler->inputs->salario_diario = $inputs->texts->salario_diario;
         $controler->inputs->salario_diario_integrado = $inputs->texts->salario_diario_integrado;
-        $controler->inputs->salario_total = $inputs->texts->salario_total;
 
         return $controler->inputs;
 

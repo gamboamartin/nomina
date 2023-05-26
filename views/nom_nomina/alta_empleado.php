@@ -36,7 +36,6 @@
 
                         <?php echo $controlador->inputs->salario_diario; ?>
                         <?php echo $controlador->inputs->salario_diario_integrado; ?>
-                        <?php echo $controlador->inputs->salario_total; ?>
                         <?php include (new views())->ruta_templates.'botons/submit/alta_bd.php';?>
                     </form>
                 </div>
