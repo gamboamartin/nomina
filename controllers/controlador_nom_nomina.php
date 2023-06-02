@@ -64,40 +64,12 @@ class controlador_nom_nomina extends base_nom
         $obj_link = new links_menu(link: $link, registro_id: $this->registro_id);
 
 
-        $columns = array();
-        $columns['nom_nomina_id']['titulo'] = 'Id';
-
-        $columns['em_empleado_rfc']['titulo'] = 'RFC';
-
-
-        $columns['em_empleado_nombre']['titulo'] = 'Nombre';
-
-        $columns['em_empleado_ap']['titulo'] = 'AP';
-        $columns['em_empleado_am']['titulo'] = 'AM';
-        $columns['nom_nomina_fecha_inicial_pago']['titulo'] = 'F Ini';
-        $columns['nom_nomina_fecha_final_pago']['titulo'] = 'F Ini';
-        $columns['nom_nomina_fecha_pago']['titulo'] = 'F Pago';
-        $columns['nom_nomina_total_percepcion_total']['titulo'] = 'Percepcion Total';
-        $columns['nom_nomina_total_otro_pago_total']['titulo'] = 'Otro Pago Total';
-        $columns['nom_nomina_total_deduccion_total']['titulo'] = 'Deduccion Total';
-        $columns['nom_nomina_total']['titulo'] = 'Total';
-        $columns['cat_sat_tipo_nomina_descripcion']['titulo'] = 'Tipo Nom';
-        $columns['org_empresa_rfc']['titulo'] = 'RFC Empresa';
-
-
-        $filtro = array();
-        $filtro[] = 'em_empleado.rfc';
-        $filtro[] = 'em_empleado.nombre';
-        $filtro[] = 'nom_nomina.fecha_inicial_pago';
-        $filtro[] = 'nom_nomina.fecha_final_pago';
-        $filtro[] = 'nom_nomina.fecha_pago';
-        $filtro[] = 'nom_periodo.codigo';
-        $filtro[] = 'cat_sat_tipo_nomina.descripcion';
-        $filtro[] = 'org_empresa.rfc';
-
-        $datatables = new stdClass();
-        $datatables->filtro = $filtro;
-        $datatables->columns = $columns;
+        $datatables = $this->init_datatable();
+        if (errores::$error) {
+            $error = $this->errores->error(mensaje: 'Error al inicializar datatable', data: $datatables);
+            print_r($error);
+            die('Error');
+        }
 
         parent::__construct(html: $html_, link: $link, modelo: $modelo, obj_link: $obj_link, datatables: $datatables,
             paths_conf: $paths_conf);
@@ -610,6 +582,34 @@ class controlador_nom_nomina extends base_nom
         $retorno = $_SERVER['HTTP_REFERER'];
         header('Location:'.$retorno);
         exit;
+    }
+
+    protected function init_datatable(): stdClass
+    {
+        $columns = array();
+        $columns['nom_nomina_id']['titulo'] = 'Id';
+        $columns['em_empleado_rfc']['titulo'] = 'RFC';
+        $columns['em_empleado_nombre']['titulo'] = 'Nombre';
+        $columns['em_empleado_ap']['titulo'] = 'AP';
+        $columns['em_empleado_am']['titulo'] = 'AM';
+        $columns['nom_nomina_fecha_inicial_pago']['titulo'] = 'F Ini';
+        $columns['nom_nomina_fecha_final_pago']['titulo'] = 'F Ini';
+        $columns['nom_nomina_fecha_pago']['titulo'] = 'F Pago';
+        $columns['nom_nomina_total_percepcion_total']['titulo'] = 'Percepcion Total';
+        $columns['nom_nomina_total_otro_pago_total']['titulo'] = 'Otro Pago Total';
+        $columns['nom_nomina_total_deduccion_total']['titulo'] = 'Deduccion Total';
+        $columns['nom_nomina_total']['titulo'] = 'Total';
+        $columns['cat_sat_tipo_nomina_descripcion']['titulo'] = 'Tipo Nom';
+        $columns['org_empresa_rfc']['titulo'] = 'RFC Empresa';
+
+        $filtro = array("em_empleado.rfc", "em_empleado.nombres", "nom_nomina.fecha_inicial_pago", "nom_nomina.fecha_final_pago",
+            "nom_nomina.fecha_pago", "nom_periodo.codigo", "cat_sat_tipo_nomina.descripcion", "org_empresa.rfc");
+
+        $datatables = new stdClass();
+        $datatables->columns = $columns;
+        $datatables->filtro = $filtro;
+
+        return $datatables;
     }
 
     private function init_partidas_ids(): array
