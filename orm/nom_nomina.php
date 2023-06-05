@@ -1807,7 +1807,7 @@ class nom_nomina extends modelo
 
     public function get_descuento_nomina(int $fc_factura_id): float
     {
-        $descuento = (new fc_factura($this->link))->get_factura_descuento( fc_factura_id: $fc_factura_id);
+        $descuento = (new fc_factura($this->link))->get_factura_descuento(registro_id: $fc_factura_id);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al obtener el descuento  de la partida',
                 data: $descuento);
@@ -3121,15 +3121,16 @@ class nom_nomina extends modelo
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al obtener datos del XML', data: $datos_xml);
         }
-
+        $key_entidad_id = 'fc_factura_id';
         $cfdi_sellado = (new fc_cfdi_sellado($this->link))->maqueta_datos(codigo: $datos_xml['cfdi_comprobante']['NoCertificado'],
-            descripcion: $datos_xml['cfdi_comprobante']['NoCertificado'], fc_factura_id: $nom_nomina->fc_factura_id,
+            descripcion: $datos_xml['cfdi_comprobante']['NoCertificado'],
             comprobante_sello: $datos_xml['cfdi_comprobante']['Sello'], comprobante_certificado: $datos_xml['cfdi_comprobante']['Certificado'],
             comprobante_no_certificado: $datos_xml['cfdi_comprobante']['NoCertificado'], complemento_tfd_sl: "",
             complemento_tfd_fecha_timbrado: $datos_xml['tfd']['FechaTimbrado'],
             complemento_tfd_no_certificado_sat: $datos_xml['tfd']['NoCertificadoSAT'], complemento_tfd_rfc_prov_certif: $datos_xml['tfd']['RfcProvCertif'],
             complemento_tfd_sello_cfd: $datos_xml['tfd']['SelloCFD'], complemento_tfd_sello_sat: $datos_xml['tfd']['SelloSAT'],
-            uuid: $datos_xml['tfd']['UUID'], complemento_tfd_tfd: "",cadena_complemento_sat: $xml_timbrado->txt);
+            uuid: $datos_xml['tfd']['UUID'], complemento_tfd_tfd: "",cadena_complemento_sat: $xml_timbrado->txt,
+            key_entidad_id: $key_entidad_id, registro_id: $nom_nomina->fc_factura_id);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al maquetar datos para cfdi sellado', data: $cfdi_sellado);
         }
