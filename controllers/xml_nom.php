@@ -3,6 +3,7 @@ namespace gamboamartin\nomina\controllers;
 use gamboamartin\comercial\models\com_sucursal;
 use gamboamartin\errores\errores;
 use gamboamartin\facturacion\models\fc_factura;
+use gamboamartin\facturacion\models\fc_partida;
 use gamboamartin\nomina\models\nom_clasificacion_nomina;
 use gamboamartin\validacion\validacion;
 use gamboamartin\xml_cfdi_4\cfdis;
@@ -161,14 +162,17 @@ class xml_nom{
         $comprobante->metodo_pago = $fc_factura->cat_sat_metodo_pago_codigo;
         $comprobante->fecha = $fc_factura->fc_factura_fecha;
 
-        $total = (new fc_factura($link))->total(fc_factura_id:$fc_factura->fc_factura_id );
+        $modelo_partida = new fc_partida(link: $link);
+        $name_entidad = 'fc_factura';
+
+        $total = (new fc_factura($link))->total(modelo_partida: $modelo_partida, name_entidad: $name_entidad, registro_id:$fc_factura->fc_factura_id );
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al obtener total', data: $total);
         }
 
         $comprobante->total = number_format((float)$total, 2, '.', '');
 
-        $sub_total = (new fc_factura($link))->sub_total(fc_factura_id:$fc_factura->fc_factura_id );
+        $sub_total = (new fc_factura($link))->sub_total(modelo_partida: $modelo_partida, name_entidad: $name_entidad, registro_id:$fc_factura->fc_factura_id );
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al obtener sub_total', data: $sub_total);
         }
@@ -176,7 +180,7 @@ class xml_nom{
         $comprobante->sub_total = number_format((float)$sub_total, 2, '.', '');
 
         $descuento = (
-        new fc_factura($link))->get_factura_descuento(fc_factura_id:$fc_factura->fc_factura_id );
+        new fc_factura($link))->get_factura_descuento(registro_id:$fc_factura->fc_factura_id );
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al obtener descuento', data: $descuento);
         }
