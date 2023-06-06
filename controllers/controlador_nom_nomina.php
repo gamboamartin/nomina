@@ -602,7 +602,7 @@ class controlador_nom_nomina extends base_nom
         $columns['cat_sat_tipo_nomina_descripcion']['titulo'] = 'Tipo Nom';
         $columns['org_empresa_rfc']['titulo'] = 'RFC Empresa';
 
-        $filtro = array("em_empleado.rfc", "em_empleado.nombres", "nom_nomina.fecha_inicial_pago", "nom_nomina.fecha_final_pago",
+        $filtro = array("em_empleado.rfc", "em_empleado.nombre", "nom_nomina.fecha_inicial_pago", "nom_nomina.fecha_final_pago",
             "nom_nomina.fecha_pago", "nom_periodo.codigo", "cat_sat_tipo_nomina.descripcion", "org_empresa.rfc");
 
         $datatables = new stdClass();
