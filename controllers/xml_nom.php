@@ -265,6 +265,7 @@ class xml_nom{
         $comprobante->folio = $fc_factura->fc_factura_folio;
         $comprobante->metodo_pago = $fc_factura->cat_sat_metodo_pago_codigo;
         $comprobante->fecha = $fc_factura->fc_factura_fecha;
+        $comprobante->forma_pago = '99';
 
         $modelo_partida = new fc_partida(link: $link);
         $name_entidad = 'fc_factura';
