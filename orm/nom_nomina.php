@@ -940,6 +940,15 @@ class nom_nomina extends modelo
             return $this->error->error(mensaje: 'Error al obtener registro de nomina', data: $nomina);
         }
 
+        $filtro_inc['em_empleado.id'] = $nomina['nom_nomina_em_empleado_id'];
+        $filtro_rango_inc['nom_incidencia.fecha_incidencia']['valor1'] = $nomina['nom_periodo_fecha_inicial_pago'];
+        $filtro_rango_inc['nom_incidencia.fecha_incidencia']['valor2'] = $nomina['nom_periodo_fecha_final_pago'];
+        $nom_incidencias = (new nom_incidencia($this->link))->filtro_and(filtro: $filtro_inc,
+            filtro_rango: $filtro_rango_inc);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al obtener incidencias', data:  $nom_incidencias);
+        }
+
         $org_empresa = (new org_empresa($this->link))->registro(registro_id: $nomina['org_empresa_id']);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al obtener registro de empresa', data:  $org_empresa);
@@ -979,6 +988,22 @@ class nom_nomina extends modelo
             $pdf->SetXY(18, 150);
             $pdf->MultiCell(w: 185, h: 3, txt: "UUID: ".$nomina['nom_nomina_uuid_relacionado'], maxrows: 10);
         }
+
+        if($nom_incidencias->n_registros > 0){
+            $pdf->SetFont('Arial', '', 10);
+            foreach ($nom_incidencias->registros as $registro_in){
+                if($registro_in['nom_tipo_incidencia_es_falta'] === 'activo'){
+                    $pdf->SetXY(18, 64);
+                    $pdf->MultiCell(w: 185, h: 2, txt: "Faltas: ".$registro_in['nom_incidencia_n_dias'], maxrows: 10);
+                }
+                if($registro_in['nom_tipo_incidencia_es_incapacidad'] === 'activo') {
+                    $pdf->SetXY(18, 70);
+                    $pdf->MultiCell(w: 185, h: 2, txt: "Incapacidad: " . $registro_in['nom_incidencia_n_dias'], maxrows: 10);
+                }
+            }
+        }
+        
+        $pdf->SetFont('Arial', '', 12);
 
         $pdf->SetXY(18.7, 14);
         $pdf->Cell(0, 0, $nomina['org_empresa_razon_social']);

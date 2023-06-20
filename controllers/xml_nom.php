@@ -790,5 +790,58 @@ class xml_nom{
         return $xml;
     }
 
+    public function xml_v33(PDO $link, stdClass $nom_nomina): bool|array|string
+    {
+        $valida = $this->valida_data_nomina(nom_nomina: $nom_nomina);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al valida nom_nomina', data: $valida);
+        }
+
+        $data_cfdi = $this->data_cfdi_base(fc_factura_id:  $nom_nomina->fc_factura_id,link: $link);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al obtener data cfdi', data: $data_cfdi);
+        }
+
+
+        $nomina = $this->data_cfdi_base_nomina(data_cfdi: $data_cfdi,link:  $link, nom_nomina: $nom_nomina);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al asignar xml nomina', data: $nomina);
+        }
+
+        $filtro['nom_nomina.id'] = $nom_nomina->nom_nomina_id;
+        $nom_clasificacion_nomina = (new nom_clasificacion_nomina($link))->filtro_and(filtro:$filtro);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al obtener clsificacion', data: $nom_clasificacion_nomina);
+        }
+
+        if($nom_clasificacion_nomina->n_registros > 0){
+            if($nom_clasificacion_nomina->registros[0]['nom_clasificacion_descripcion'] === 'haberes'){
+                $xml = (new cfdis())->complemento_nomina_haberes(comprobante: $data_cfdi->comprobante,emisor:  $data_cfdi->emisor,
+                    nomina: $nomina,receptor:  $data_cfdi->receptor);
+                if (errores::$error) {
+                    return $this->error->error(mensaje: 'Error al generar xml', data: $xml);
+                }
+                return $xml;
+            }
+        }
+
+        $relacionados = array();
+        if(isset($nom_nomina->nom_nomina_uuid_relacionado) && (string)$nom_nomina->nom_nomina_uuid_relacionado !== ''){
+            $relacionados['tipo_relacion'] = '04';
+            $relacionados['relaciones'] = array();
+            $relacionados['relaciones'][0] = new stdClass();
+            $relacionados['relaciones'][0]->uuid = $nom_nomina->nom_nomina_uuid_relacionado;
+            //$nomina->uuid_relacionado = $nom_nomina->uuid_relacionado;
+        }
+
+        $xml = (new cfdis())->complemento_nomina_v33(comprobante: $data_cfdi->comprobante,emisor:  $data_cfdi->emisor,
+            nomina: $nomina,receptor:  $data_cfdi->receptor,relacionados: $relacionados);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al generar xml', data: $xml);
+        }
+
+        return $xml;
+    }
+
 
 }
