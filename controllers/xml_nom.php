@@ -47,6 +47,24 @@ class xml_nom{
         return $comprobante;
     }
 
+    private function comprobante_v33(int $fc_factura_id, PDO $link): array|stdClass
+    {
+
+        if($fc_factura_id <= 0){
+            return $this->error->error(mensaje: 'Error fc_factura_id debe ser mayor a 0', data: $fc_factura_id);
+        }
+        $fc_factura = (new fc_factura($link))->registro(registro_id:$fc_factura_id, retorno_obj: true );
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al obtener factura', data: $fc_factura);
+        }
+
+        $comprobante = $this->data_comprobante_v33(fc_factura: $fc_factura, link: $link);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al crear comprobante', data: $comprobante);
+        }
+        return $comprobante;
+    }
+
     /**
      * Genera un xml base
      * @param int $fc_factura_id Factura identificador
@@ -78,6 +96,44 @@ class xml_nom{
         }
 
         $receptor = $this->receptor(com_sucursal_id:$fc_factura->com_sucursal_id ,
+            fc_factura_id: $fc_factura->fc_factura_id, link: $link);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al crear receptor', data: $receptor);
+        }
+
+        $data = new stdClass();
+        $data->fc_factura = $fc_factura;
+        $data->comprobante = $comprobante;
+        $data->emisor = $emisor;
+        $data->receptor = $receptor;
+
+        return $data;
+    }
+
+    private function data_cfdi_base_v33(int $fc_factura_id, PDO $link): array|stdClass
+    {
+        if($fc_factura_id <= 0){
+            return $this->error->error(mensaje: 'Error fc_factura_id debe ser mayor a 0', data: $fc_factura_id);
+        }
+        $fc_factura = (new fc_factura($link))->registro(
+            registro_id:$fc_factura_id, retorno_obj: true );
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al obtener factura', data: $fc_factura);
+        }
+
+
+        $comprobante = $this->comprobante_v33(fc_factura_id: $fc_factura_id, link: $link);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al crear comprobante', data: $comprobante);
+        }
+
+
+        $emisor = $this->emisor_v33(fc_factura_id: $fc_factura_id, link: $link);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al crear emisor', data: $emisor);
+        }
+
+        $receptor = $this->receptor_v33(com_sucursal_id:$fc_factura->com_sucursal_id ,
             fc_factura_id: $fc_factura->fc_factura_id, link: $link);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al crear receptor', data: $receptor);
@@ -142,6 +198,54 @@ class xml_nom{
      * @version 0.394.21
      */
     private function data_comprobante(stdClass $fc_factura, PDO $link): array|stdClass
+    {
+
+        $keys = array('dp_cp_descripcion','fc_factura_folio','fc_factura_id','cat_sat_metodo_pago_codigo');
+        $valida = $this->validacion->valida_existencia_keys(keys:$keys ,registro:  $fc_factura);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al validar fc_factura', data: $valida);
+        }
+
+        $keys = array('fc_factura_id');
+        $valida = $this->validacion->valida_ids(keys:$keys ,registro:  $fc_factura);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al validar fc_factura', data: $valida);
+        }
+
+        $comprobante = new stdClass();
+        $comprobante->lugar_expedicion = $fc_factura->dp_cp_descripcion;
+        $comprobante->folio = $fc_factura->fc_factura_folio;
+        $comprobante->metodo_pago = $fc_factura->cat_sat_metodo_pago_codigo;
+        $comprobante->fecha = $fc_factura->fc_factura_fecha;
+
+        $modelo_partida = new fc_partida(link: $link);
+        $name_entidad = 'fc_factura';
+
+        $total = (new fc_factura($link))->total(modelo_partida: $modelo_partida, name_entidad: $name_entidad, registro_id:$fc_factura->fc_factura_id );
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al obtener total', data: $total);
+        }
+
+        $comprobante->total = number_format((float)$total, 2, '.', '');
+
+        $sub_total = (new fc_factura($link))->sub_total(modelo_partida: $modelo_partida, name_entidad: $name_entidad, registro_id:$fc_factura->fc_factura_id );
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al obtener sub_total', data: $sub_total);
+        }
+
+        $comprobante->sub_total = number_format((float)$sub_total, 2, '.', '');
+
+        $descuento = (
+        new fc_factura($link))->get_factura_descuento(registro_id:$fc_factura->fc_factura_id );
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al obtener descuento', data: $descuento);
+        }
+
+        $comprobante->descuento = number_format((float)$descuento, 2, '.', '');
+        return $comprobante;
+    }
+
+    private function data_comprobante_v33(stdClass $fc_factura, PDO $link): array|stdClass
     {
 
         $keys = array('dp_cp_descripcion','fc_factura_folio','fc_factura_id','cat_sat_metodo_pago_codigo');
@@ -395,6 +499,28 @@ class xml_nom{
         return $receptor;
     }
 
+    PUBLIC function data_receptor_v33(stdClass $com_sucursal, stdClass $fc_factura): stdClass|array
+    {
+
+        $keys = array('com_cliente_rfc','com_cliente_razon_social');
+        $valida = $this->validacion->valida_existencia_keys(keys:$keys,registro:  $fc_factura);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al validar factura', data: $valida);
+        }
+
+        $keys = array('com_cliente_rfc');
+        $valida = $this->validacion->valida_rfcs(keys:$keys,registro:  $fc_factura);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al validar factura', data: $valida);
+        }
+
+        $receptor = new stdClass();
+        $receptor->rfc = $fc_factura->com_cliente_rfc;
+        $receptor->nombre = $fc_factura->com_cliente_razon_social;
+
+        return $receptor;
+    }
+
     private function deducciones(PDO $link, stdClass $nomina, int $nom_nomina_id): array|stdClass
     {
 
@@ -443,6 +569,24 @@ class xml_nom{
      * @version 0.458.25
      */
     private function emisor(int $fc_factura_id, PDO $link): array|stdClass
+    {
+        if($fc_factura_id<=0){
+            return $this->error->error(mensaje: 'Error fc_factura_id debe ser mayor a 0', data: $fc_factura_id);
+        }
+        $fc_factura = (new fc_factura($link))->registro(registro_id:$fc_factura_id, retorno_obj: true );
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al obtener factura', data: $fc_factura);
+        }
+
+        $emisor = $this->data_emisor(fc_factura: $fc_factura);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al crear emisor', data: $emisor);
+        }
+
+        return $emisor;
+    }
+
+    private function emisor_v33(int $fc_factura_id, PDO $link): array|stdClass
     {
         if($fc_factura_id<=0){
             return $this->error->error(mensaje: 'Error fc_factura_id debe ser mayor a 0', data: $fc_factura_id);
@@ -706,6 +850,30 @@ class xml_nom{
         return $receptor;
     }
 
+    private function receptor_v33(int $com_sucursal_id, int $fc_factura_id, PDO $link): array|stdClass
+    {
+        if($com_sucursal_id<=0){
+            return $this->error->error(mensaje: 'Error com_sucursal_id debe ser mayor a 0', data: $com_sucursal_id);
+        }
+        if($fc_factura_id<=0){
+            return $this->error->error(mensaje: 'Error fc_factura_id debe ser mayor a 0', data: $fc_factura_id);
+        }
+        $com_sucursal = (new com_sucursal($link))->registro(registro_id:$com_sucursal_id, retorno_obj: true );
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al obtener sucursal', data: $com_sucursal);
+        }
+        $fc_factura = (new fc_factura($link))->registro(registro_id:$fc_factura_id, retorno_obj: true );
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al obtener factura', data: $fc_factura);
+        }
+
+        $receptor = $this->data_receptor_v33(com_sucursal: $com_sucursal, fc_factura: $fc_factura);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al crear receptor', data: $receptor);
+        }
+        return $receptor;
+    }
+
     private function valida_data_nomina(stdClass|array $nom_nomina): bool|array
     {
         $keys = array('cat_sat_tipo_nomina_codigo','nom_nomina_fecha_pago','nom_nomina_fecha_inicial_pago',
@@ -797,7 +965,7 @@ class xml_nom{
             return $this->error->error(mensaje: 'Error al valida nom_nomina', data: $valida);
         }
 
-        $data_cfdi = $this->data_cfdi_base(fc_factura_id:  $nom_nomina->fc_factura_id,link: $link);
+        $data_cfdi = $this->data_cfdi_base_v33(fc_factura_id:  $nom_nomina->fc_factura_id,link: $link);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al obtener data cfdi', data: $data_cfdi);
         }
