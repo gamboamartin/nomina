@@ -2090,6 +2090,98 @@ class nom_nomina extends modelo
 
         return $rutas;
     }
+    public function genera_xml_v33(int $nom_nomina_id){
+
+        $nom_nomina = $this->registro(registro_id: $nom_nomina_id, retorno_obj: true);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al obtener nomina', data: $nom_nomina);
+        }
+
+        $xml = (new xml_nom())->xml_v33(link: $this->link, nom_nomina: $nom_nomina);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al generar xml', data: $xml);
+        }
+
+        $ruta_archivos_tmp = $this->genera_ruta_archivo_tmp();
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al generar ruta de archivos', data: $ruta_archivos_tmp);
+        }
+
+        $documento = array();
+        $file = array();
+        $file_xml_st = $ruta_archivos_tmp.'/'.$this->registro_id.'.nom.xml';
+        file_put_contents($file_xml_st, $xml);
+
+        $doc_tipo_documento_id = $this->doc_tipo_documento_id(extension: "xml");
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al validar extension del documento', data: $doc_tipo_documento_id);
+        }
+
+        $existe = (new nom_nomina_documento(link: $this->link))->existe(array('nom_nomina.id' => $this->registro_id,
+            'doc_tipo_documento.id'=>$doc_tipo_documento_id));
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al validar si existe documento', data: $existe);
+        }
+
+        if (!$existe) {
+
+            $doc_documento_modelo = new doc_documento(link: $this->link);
+
+            $file['name'] = $file_xml_st;
+            $file['tmp_name'] = $file_xml_st;
+
+            $doc_documento_modelo->registro['doc_tipo_documento_id'] = $doc_tipo_documento_id;
+            $doc_documento_modelo->registro['descripcion'] = $ruta_archivos_tmp;
+
+            $documento = $doc_documento_modelo->alta_bd(file: $file);
+            if (errores::$error) {
+                return $this->error->error(mensaje: 'Error al guardar xml', data: $documento);
+            }
+
+            $nom_nomina_documento = array();
+            $nom_nomina_documento['nom_nomina_id'] = $this->registro_id;
+            $nom_nomina_documento['doc_documento_id'] = $documento->registro_id;
+
+            $nom_nomina_documento = (new nom_nomina_documento(link: $this->link))->alta_registro(registro: $nom_nomina_documento);
+            if (errores::$error) {
+                return $this->error->error(mensaje: 'Error al dar de alta factura documento', data: $nom_nomina_documento);
+            }
+        } else {
+            $r_nom_nomina_documento = (new nom_nomina_documento(link: $this->link))->filtro_and(
+                filtro: array('nom_nomina.id' => $this->registro_id));
+            if (errores::$error) {
+                return $this->error->error(mensaje: 'Error al obtener factura documento', data: $r_nom_nomina_documento);
+            }
+
+            if ($r_nom_nomina_documento->n_registros === 0) {
+                return $this->error->error(mensaje: 'Error  debe existir al menos una factura_documento', data: $r_nom_nomina_documento);
+            }
+            $nom_nomina_documento = $r_nom_nomina_documento->registros[0];
+
+            $doc_documento_id = $nom_nomina_documento['doc_documento_id'];
+
+            $registro['descripcion'] = $ruta_archivos_tmp;
+            $registro['doc_tipo_documento_id'] = $doc_tipo_documento_id;
+            $_FILES['name'] = $file_xml_st;
+            $_FILES['tmp_name'] = $file_xml_st;
+
+            $documento = (new doc_documento(link: $this->link))->modifica_bd(registro: $registro, id: $doc_documento_id);
+            if (errores::$error) {
+                return $this->error->error(mensaje: 'Error  al modificar documento', data: $r_nom_nomina_documento);
+            }
+
+            $documento->registro = (new doc_documento(link: $this->link))->registro(registro_id: $documento->registro_id);
+            if (errores::$error) {
+                return $this->error->error(mensaje: 'Error  al obtener documento', data: $documento);
+            }
+        }
+
+        $rutas = new stdClass();
+        $rutas->file_xml_st = $file_xml_st;
+        $rutas->doc_documento_ruta_absoluta = $documento->registro['doc_documento_ruta_absoluta'];
+
+        return $rutas;
+    }
     public function doc_tipo_documento_id(string $extension)
     {
         $filtro['doc_extension.descripcion'] = $extension;
@@ -3117,6 +3209,75 @@ class nom_nomina extends modelo
         }
 
         $xml = $this->genera_xml(nom_nomina_id: $nom_nomina_id);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al generar XML', data: $xml);
+        }
+
+        $xml_contenido = file_get_contents($xml->doc_documento_ruta_absoluta);
+
+        $xml_timbrado = (new timbra())->timbra(contenido_xml: $xml_contenido);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al timbrar XML', data: $xml_timbrado);
+        }
+
+        file_put_contents(filename: $xml->doc_documento_ruta_absoluta, data: $xml_timbrado->xml_sellado);
+
+        $alta_qr = $this->guarda_documento(directorio: "codigos_qr", extension: "jpg", contenido: $xml_timbrado->qr_code,
+            nom_nomina_id: $nom_nomina_id);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al guardar QR', data: $alta_qr);
+        }
+
+        $alta_txt = $this->guarda_documento(directorio: "textos", extension: "txt", contenido: $xml_timbrado->txt,
+            nom_nomina_id: $nom_nomina_id);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al guardar TXT', data: $alta_txt);
+        }
+
+        $datos_xml = $this->get_datos_xml(ruta_xml: $xml->doc_documento_ruta_absoluta);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al obtener datos del XML', data: $datos_xml);
+        }
+        $key_entidad_id = 'fc_factura_id';
+        $cfdi_sellado = (new fc_cfdi_sellado($this->link))->maqueta_datos(codigo: $datos_xml['cfdi_comprobante']['NoCertificado'],
+            descripcion: $datos_xml['cfdi_comprobante']['NoCertificado'],
+            comprobante_sello: $datos_xml['cfdi_comprobante']['Sello'], comprobante_certificado: $datos_xml['cfdi_comprobante']['Certificado'],
+            comprobante_no_certificado: $datos_xml['cfdi_comprobante']['NoCertificado'], complemento_tfd_sl: "",
+            complemento_tfd_fecha_timbrado: $datos_xml['tfd']['FechaTimbrado'],
+            complemento_tfd_no_certificado_sat: $datos_xml['tfd']['NoCertificadoSAT'], complemento_tfd_rfc_prov_certif: $datos_xml['tfd']['RfcProvCertif'],
+            complemento_tfd_sello_cfd: $datos_xml['tfd']['SelloCFD'], complemento_tfd_sello_sat: $datos_xml['tfd']['SelloSAT'],
+            uuid: $datos_xml['tfd']['UUID'], complemento_tfd_tfd: "",cadena_complemento_sat: $xml_timbrado->txt,
+            key_entidad_id: $key_entidad_id, registro_id: $nom_nomina->fc_factura_id);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al maquetar datos para cfdi sellado', data: $cfdi_sellado);
+        }
+
+        $alta = (new fc_cfdi_sellado($this->link))->alta_registro(registro: $cfdi_sellado);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al dar de alta cfdi sellado', data: $alta);
+        }
+
+        return $cfdi_sellado;
+    }
+
+    public function timbra_xml_v33(int $nom_nomina_id): array|stdClass
+    {
+        $nom_nomina = $this->registro(registro_id: $nom_nomina_id,retorno_obj: true);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al obtener nomina', data: $nom_nomina);
+        }
+
+        $filtro['fc_factura.id'] = $nom_nomina->fc_factura_id;
+        $timbrada = (new fc_cfdi_sellado($this->link))->existe(filtro: $filtro);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al validar si la factura esta timbrado', data: $timbrada);
+        }
+
+        if ($timbrada) {
+            return $this->error->error(mensaje: 'Error: la factura ya ha sido timbrada', data: $timbrada);
+        }
+
+        $xml = $this->genera_xml_v33(nom_nomina_id: $nom_nomina_id);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al generar XML', data: $xml);
         }

@@ -584,6 +584,20 @@ class controlador_nom_nomina extends base_nom
         exit;
     }
 
+    public function genera_xml_v33(bool $header, bool $ws = false): array|stdClass
+    {
+        $xml = (new nom_nomina(link: $this->link))->genera_xml_v33(nom_nomina_id: $this->registro_id);
+        if(errores::$error){
+            return $this->retorno_error(mensaje: 'Error al generar XML',data:  $xml, header: $header,ws:$ws);
+        }
+
+        unlink($xml->file_xml_st);
+        ob_clean();
+        $retorno = $_SERVER['HTTP_REFERER'];
+        header('Location:'.$retorno);
+        exit;
+    }
+
     protected function init_datatable(): stdClass
     {
         $columns = array();
@@ -1265,6 +1279,42 @@ class controlador_nom_nomina extends base_nom
     public function timbra_xml(bool $header, bool $ws = false): array|stdClass
     {
         $timbre = (new nom_nomina(link: $this->link))->timbra_xml(nom_nomina_id: $this->registro_id);
+        if(errores::$error){
+            return $this->retorno_error(mensaje: 'Error al timbrar XML',data:  $timbre, header: $header,ws:$ws);
+        }
+
+        $this->link->beginTransaction();
+
+        $siguiente_view = (new actions())->init_alta_bd();
+        if(errores::$error){
+            $this->link->rollBack();
+            return $this->retorno_error(mensaje: 'Error al obtener siguiente view', data: $siguiente_view,
+                header:  $header, ws: $ws);
+        }
+
+        if($header){
+
+            $retorno = (new actions())->retorno_alta_bd(link: $this->link, registro_id: $this->registro_id,
+                seccion: $this->tabla, siguiente_view: "lista");
+            if(errores::$error){
+                return $this->retorno_error(mensaje: 'Error cambiar de view', data: $retorno,
+                    header:  true, ws: $ws);
+            }
+            header('Location:'.$retorno);
+            exit;
+        }
+        if($ws){
+            header('Content-Type: application/json');
+            echo json_encode($timbre, JSON_THROW_ON_ERROR);
+            exit;
+        }
+
+        return $timbre;
+    }
+
+    public function timbra_xml_v33(bool $header, bool $ws = false): array|stdClass
+    {
+        $timbre = (new nom_nomina(link: $this->link))->timbra_xml_v33(nom_nomina_id: $this->registro_id);
         if(errores::$error){
             return $this->retorno_error(mensaje: 'Error al timbrar XML',data:  $timbre, header: $header,ws:$ws);
         }
