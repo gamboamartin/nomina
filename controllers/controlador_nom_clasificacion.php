@@ -27,21 +27,15 @@ class controlador_nom_clasificacion extends _ctl_base {
         $html_ = new nom_clasificacion_html(html: $html);
         $obj_link = new links_menu(link: $link, registro_id:$this->registro_id);
 
+        $datatables = $this->init_datatable();
+        if (errores::$error) {
+            $error = $this->errores->error(mensaje: 'Error al inicializar datatable', data: $datatables);
+            print_r($error);
+            die('Error');
+        }
 
-        $datatables = new stdClass();
-        $datatables->columns = array();
-        $datatables->columns['nom_clasificacion_id']['titulo'] = 'Id';
-        $datatables->columns['nom_clasificacion_codigo']['titulo'] = 'Cod';
-        $datatables->columns['nom_clasificacion_descripcion']['titulo'] = 'Observaciones';
-
-        $datatables->filtro = array();
-        $datatables->filtro[] = 'nom_clasificacion.id';
-        $datatables->filtro[] = 'nom_clasificacioncodigo';
-        $datatables->filtro[] = 'nom_clasificacion.descripcion';
-
-
-        parent::__construct(html:$html_, link: $link,modelo:  $modelo, obj_link: $obj_link,
-            datatables: $datatables, paths_conf: $paths_conf);
+        parent::__construct(html: $html_, link: $link, modelo: $modelo, obj_link: $obj_link, datatables: $datatables,
+            paths_conf: $paths_conf);
 
         $this->titulo_lista = 'Clasificacion';
 
@@ -95,6 +89,21 @@ class controlador_nom_clasificacion extends _ctl_base {
 
 
         return $campos_view;
+    }
+
+    private function init_datatable(): stdClass
+    {
+        $columns["nom_clasificacion_id"]["titulo"] = "Id";
+        $columns["nom_clasificacion_codigo"]["titulo"] = "Cod";
+        $columns["nom_clasificacion_descripcion"]["titulo"] = "Observaciones";
+
+        $filtro = array("nom_clasificacion.id", "nom_clasificacion.codigo", "nom_clasificacion.descripcion");
+
+        $datatables = new stdClass();
+        $datatables->columns = $columns;
+        $datatables->filtro = $filtro;
+
+        return $datatables;
     }
 
     protected function inputs_children(stdClass $registro): stdClass|array
