@@ -91,7 +91,7 @@ class controlador_nom_clasificacion extends _ctl_base {
         return $campos_view;
     }
 
-    private function init_datatable(): stdClass
+    protected function init_datatable(): stdClass
     {
         $columns["nom_clasificacion_id"]["titulo"] = "Id";
         $columns["nom_clasificacion_codigo"]["titulo"] = "Cod";
