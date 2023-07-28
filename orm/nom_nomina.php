@@ -3040,7 +3040,7 @@ class nom_nomina extends modelo
         return $nom_conf_percepcion;
     }
 
-    private function obten_infonavit(int $nom_nomina_id){
+    public function obten_infonavit(int $nom_nomina_id){
         $campos = array();
         $campos['total_infonavit'] = 'nom_concepto_imss.monto';
         $filtro['nom_nomina.id'] = $nom_nomina_id;
@@ -3055,7 +3055,7 @@ class nom_nomina extends modelo
 
     }
 
-    private function obten_rcv(int $nom_nomina_id){
+    public function obten_rcv(int $nom_nomina_id){
         $campos = array();
         $campos['total_rcv'] = 'nom_concepto_imss.monto';
         $filtro['nom_nomina.id'] = $nom_nomina_id;
@@ -3070,7 +3070,7 @@ class nom_nomina extends modelo
 
     }
 
-    private function obten_sumatoria_imss(int $nom_nomina_id){
+    public function obten_sumatoria_imss(int $nom_nomina_id){
         $campos = array();
         $campos['total_imss'] = 'nom_concepto_imss.monto';
         $filtro['nom_nomina.id'] = $nom_nomina_id;
