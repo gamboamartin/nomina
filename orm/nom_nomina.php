@@ -453,7 +453,7 @@ class nom_nomina extends modelo
             $calculos = $calcula_cuota_obrero_patronal->cuota_obrero_patronal(
                 porc_riesgo_trabajo: $registros['em_registro_patronal']->em_clase_riesgo_factor,
                 fecha: $this->registro['fecha_final_pago'],
-                n_dias: $this->registro['num_dias_pagados'],
+                n_dias: $dias->dias_pagados_reales_sep,
                 sbc: $registros['em_empleado']->em_empleado_salario_diario_integrado, link: $this->link);
             if (errores::$error) {
                 return $this->error->error(mensaje: 'Error al generar calculos', data: $calculos);
@@ -883,6 +883,7 @@ class nom_nomina extends modelo
         $this->registro['num_dias_pagados'] -= $dias_incidencia;
         $dias->dias_pagados_periodo -= $dias_incidencia;
         $dias->dias_pagados_reales = $this->registro['num_dias_pagados'] + $dias_vacaciones;
+        $dias->dias_pagados_reales_sep =  ($dias->dias_pagados_periodo + $dias_vacaciones) - $dias_incidencia;
 
         return $dias;
     }
