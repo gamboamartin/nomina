@@ -459,6 +459,19 @@ class nom_nomina extends modelo
                 return $this->error->error(mensaje: 'Error al generar calculos', data: $calculos);
             }
 
+            $cat_sat_periodicidad_pago_nom_id = $registros['em_empleado']->cat_sat_periodicidad_pago_nom_id;
+            $em_salario_diario = $registros['em_empleado']->em_empleado_salario_diario;
+            $em_empleado_salario_diario_integrado = $registros['em_empleado']->em_empleado_salario_diario_integrado;
+            $nom_nomina_fecha_final_pago = $this->registro['fecha_final_pago'];
+            $nom_nomina_num_dias_pagados = $dias->dias_pagados_reales_sep;
+
+            $imss = (new calcula_imss())->imss(cat_sat_periodicidad_pago_nom_id: $cat_sat_periodicidad_pago_nom_id,
+                fecha: $nom_nomina_fecha_final_pago, n_dias: $nom_nomina_num_dias_pagados,
+                sbc: $em_empleado_salario_diario_integrado, sd: $em_salario_diario);
+            if (errores::$error) {
+                return $this->error->error(mensaje: 'Error al obtener imss', data: $imss);
+            }
+
             $r_conceptos = $this->inserta_conceptos(conceptos: $conceptos, cuotas: $calcula_cuota_obrero_patronal->cuotas,
                 nom_nomina_id: $r_alta_bd->registro_id);
             if (errores::$error) {
