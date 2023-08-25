@@ -465,7 +465,7 @@ class nom_nomina extends modelo
             }
 
             $imss = (new calcula_imss())->imss_sin_excep(cat_sat_periodicidad_pago_nom_id: $r_nom_nomina['cat_sat_periodicidad_pago_nom_id'],
-                fecha: $r_nom_nomina['nom_nomina_fecha_final_pago'], n_dias: $r_nom_nomina['nom_nomina_num_dias_pagados'],
+                fecha: $r_nom_nomina['nom_nomina_fecha_final_pago'], n_dias: $dias->dias_pagados_reales_sep,
                 sbc: $r_nom_nomina['em_empleado_salario_diario_integrado'], sd: $r_nom_nomina['em_empleado_salario_diario']);
             if (errores::$error) {
                 return $this->error->error(mensaje: 'Error al obtener imss', data: $imss);
