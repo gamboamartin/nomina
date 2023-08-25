@@ -35,6 +35,8 @@ use ZipArchive;
 
 class nom_nomina extends modelo
 {
+    public array $salario_minimo = array(2020=>123.22,2021=>141.70,2022=>172.87,2023=>207.44);
+
     public function __construct(PDO $link)
     {
         $tabla = 'nom_nomina';
@@ -460,15 +462,25 @@ class nom_nomina extends modelo
             }
 
             $r_nom_nomina = $this->registro(registro_id: $r_alta_bd->registro_id);
-            if(errores::$error){
+            if (errores::$error) {
                 return $this->error->error(mensaje: 'Error al obtener regsitro de nomina', data: $r_nom_nomina);
             }
 
-            $imss = (new calcula_imss())->imss_sin_excep(cat_sat_periodicidad_pago_nom_id: $r_nom_nomina['cat_sat_periodicidad_pago_nom_id'],
-                fecha: $r_nom_nomina['nom_nomina_fecha_final_pago'], n_dias: $dias->dias_pagados_reales_sep,
-                sbc: $r_nom_nomina['em_empleado_salario_diario_integrado'], sd: $r_nom_nomina['em_empleado_salario_diario']);
-            if (errores::$error) {
-                return $this->error->error(mensaje: 'Error al obtener imss', data: $imss);
+            $year = date('Y', strtotime($r_nom_nomina['nom_nomina_fecha_final_pago']));
+
+            if($r_nom_nomina['em_empleado_salario_diario'] <= (float)$this->salario_minimo[$year]){
+                $imss = (new calcula_imss())->imss_sin_excep(cat_sat_periodicidad_pago_nom_id: $r_nom_nomina['cat_sat_periodicidad_pago_nom_id'],
+                    fecha: $r_nom_nomina['nom_nomina_fecha_final_pago'], n_dias: $dias->dias_pagados_reales_sep,
+                    sbc: $r_nom_nomina['em_empleado_salario_diario_integrado'], sd: $r_nom_nomina['em_empleado_salario_diario']);
+                if (errores::$error) {
+                    return $this->error->error(mensaje: 'Error al obtener imss', data: $imss);
+                }
+
+                $calcula_cuota_obrero_patronal->cuotas->enf_mat_cuota_fija = $imss['pensionados_beneficiarios'];
+                $calcula_cuota_obrero_patronal->cuotas->invalidez_vida = $imss['invalidez_vida'];
+                $calcula_cuota_obrero_patronal->cuotas->enf_mat_pres_dinero = $imss['prestaciones_en_dinero_trabajador'];
+                $calcula_cuota_obrero_patronal->cuotas->ceav = $imss['cesantia'];
+                $calcula_cuota_obrero_patronal->cuotas->cuota_enf_mat_cuota_adicional = $imss['excedente'];
             }
 
             $r_conceptos = $this->inserta_conceptos(conceptos: $conceptos, cuotas: $calcula_cuota_obrero_patronal->cuotas,
