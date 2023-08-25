@@ -476,11 +476,11 @@ class nom_nomina extends modelo
                     return $this->error->error(mensaje: 'Error al obtener imss', data: $imss);
                 }
 
-                $calcula_cuota_obrero_patronal->cuotas->enf_mat_cuota_fija = $imss['pensionados_beneficiarios'];
-                $calcula_cuota_obrero_patronal->cuotas->invalidez_vida = $imss['invalidez_vida'];
-                $calcula_cuota_obrero_patronal->cuotas->enf_mat_pres_dinero = $imss['prestaciones_en_dinero_trabajador'];
-                $calcula_cuota_obrero_patronal->cuotas->ceav = $imss['cesantia'];
-                $calcula_cuota_obrero_patronal->cuotas->cuota_enf_mat_cuota_adicional = $imss['excedente'];
+                $calcula_cuota_obrero_patronal->cuotas->enf_mat_cuota_fija += $imss['pensionados_beneficiarios'];
+                $calcula_cuota_obrero_patronal->cuotas->invalidez_vida += $imss['invalidez_vida'];
+                $calcula_cuota_obrero_patronal->cuotas->enf_mat_pres_dinero += $imss['prestaciones_en_dinero_trabajador'];
+                $calcula_cuota_obrero_patronal->cuotas->ceav += $imss['cesantia'];
+                $calcula_cuota_obrero_patronal->cuotas->cuota_enf_mat_cuota_adicional += $imss['excedente'];
             }
 
             $r_conceptos = $this->inserta_conceptos(conceptos: $conceptos, cuotas: $calcula_cuota_obrero_patronal->cuotas,
