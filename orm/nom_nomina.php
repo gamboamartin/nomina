@@ -2883,9 +2883,6 @@ class nom_nomina extends modelo
 
         $datos['suma_deduccion'] = $suma_deduccion;
         $datos['neto_a_pagar'] = $suma_percepcion - $suma_deduccion;
-        $datos['imss'] = $suma_imss;
-        $datos['rcv'] = $suma_rcv;
-        $datos['infonavit'] = $suma_infonavit;
         $datos['cuenta'] = $registro['em_cuenta_bancaria_num_cuenta'];
         $datos['clabe'] = $registro['em_cuenta_bancaria_clabe'];
         $datos['banco'] = $registro['bn_banco_descripcion'];
