@@ -471,6 +471,7 @@ class nom_nomina extends modelo
             if (errores::$error) {
                 return $this->error->error(mensaje: 'Error al obtener imss', data: $imss);
             }
+            
 
             $r_conceptos = $this->inserta_conceptos(conceptos: $conceptos, cuotas: $calcula_cuota_obrero_patronal->cuotas,
                 nom_nomina_id: $r_alta_bd->registro_id);
