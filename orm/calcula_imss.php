@@ -178,6 +178,32 @@ class calcula_imss{
         return $this->total;
     }
 
+    private function genera_imss_sin_excep(int $cat_sat_periodicidad_pago_nom_id, string $fecha, float $n_dias, float $sbc,
+                                 float $sd): array|float
+    {
+        $valida = $this->valida_imss(fecha: $fecha,n_dias:  $n_dias, sbc: $sbc,sd:  $sd);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al validar', data: $valida);
+        }
+        if($cat_sat_periodicidad_pago_nom_id<=0){
+            return $this->error->error(mensaje: 'Error $cat_sat_periodicidad_pago_nom_id en menor a 0',
+                data: $cat_sat_periodicidad_pago_nom_id);
+        }
+
+        $init = $this->init_data_base(cat_sat_periodicidad_pago_nom_id: $cat_sat_periodicidad_pago_nom_id,
+            fecha: $fecha, n_dias: $n_dias, sbc: $sbc, sd: $sd);
+        if(errores::$error){
+            return $this->error->error('Error al inicializar', $init);
+        }
+
+        $calcula = $this->calcula();
+        if(errores::$error){
+            return $this->error->error('Error al calcular', $calcula);
+        }
+
+        return $this->total;
+    }
+
     /**
      * @param int $cat_sat_periodicidad_pago_nom_id Identificador de periodicidad
      * @param string $fecha Fecha de nomina
@@ -199,6 +225,29 @@ class calcula_imss{
 
 
         $init = $this->genera_imss(cat_sat_periodicidad_pago_nom_id: $cat_sat_periodicidad_pago_nom_id,
+            fecha: $fecha, n_dias: $n_dias, sbc: $sbc, sd: $sd);
+        if(errores::$error){
+            return $this->error->error('Error al generar imss', $init);
+        }
+        $data = $this->data_array();
+        if(errores::$error){
+            return $this->error->error('Error al asignar datos', $data);
+        }
+        return $data;
+    }
+
+    public function imss_sin_excep(int $cat_sat_periodicidad_pago_nom_id, string $fecha, float $n_dias, float $sbc, float $sd): array
+    {
+        $valida = $this->valida_imss(fecha: $fecha,n_dias:  $n_dias,sbc:  $sbc,sd:  $sd);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al validar imss', data: $valida);
+        }
+        if($cat_sat_periodicidad_pago_nom_id<=0){
+            return $this->error->error(mensaje: 'Error $cat_sat_periodicidad_pago_nom_id en menor a 0',
+                data:  $cat_sat_periodicidad_pago_nom_id);
+        }
+
+        $init = $this->genera_imss_sin_excep(cat_sat_periodicidad_pago_nom_id: $cat_sat_periodicidad_pago_nom_id,
             fecha: $fecha, n_dias: $n_dias, sbc: $sbc, sd: $sd);
         if(errores::$error){
             return $this->error->error('Error al generar imss', $init);
