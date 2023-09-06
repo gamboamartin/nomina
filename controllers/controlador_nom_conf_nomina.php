@@ -129,7 +129,7 @@ class controlador_nom_conf_nomina extends _ctl_base {
         return $contenido_table;
     }
 
-    private function init_configuraciones(): controler
+    public function init_configuraciones(): controler
     {
         $this->seccion_titulo = 'Configuración de Nominas';
         $this->titulo_lista = 'Registros de configuraciones de Nomina';
@@ -137,7 +137,7 @@ class controlador_nom_conf_nomina extends _ctl_base {
         return $this;
     }
 
-    private function init_controladores(stdClass $paths_conf): controler
+    public function init_controladores(stdClass $paths_conf): controler
     {
         $this->controlador_nom_conf_percepcion = new controlador_nom_conf_percepcion(link: $this->link,
             paths_conf: $paths_conf);
@@ -145,7 +145,7 @@ class controlador_nom_conf_nomina extends _ctl_base {
         return $this;
     }
 
-    private function init_datatable(): stdClass
+    public function init_datatable(): stdClass
     {
         $columns["nom_conf_nomina_id"]["titulo"] = "Id";
         $columns["nom_conf_factura_descripcion"]["titulo"] = "Conf. Factura";
@@ -163,7 +163,7 @@ class controlador_nom_conf_nomina extends _ctl_base {
         return $datatables;
     }
 
-    private function init_links(): array|string
+    public function init_links(): array|string
     {
         $this->link_nom_conf_percepcion_alta_bd = $this->obj_link->link_alta_bd(link: $this->link,
             seccion: 'nom_conf_percepcion');
@@ -177,7 +177,7 @@ class controlador_nom_conf_nomina extends _ctl_base {
         return $this->link_nom_conf_percepcion_alta_bd;
     }
 
-    private function init_selects(array $keys_selects, string $key, string $label, int $id_selected = -1, int $cols = 6,
+    public function init_selects(array $keys_selects, string $key, string $label, int $id_selected = -1, int $cols = 6,
                                   bool  $con_registros = true, array $filtro = array()): array
     {
         $keys_selects = $this->key_select(cols: $cols, con_registros: $con_registros, filtro: $filtro, key: $key,
