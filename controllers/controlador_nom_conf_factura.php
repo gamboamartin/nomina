@@ -90,7 +90,7 @@ class controlador_nom_conf_factura extends _ctl_base {
         return $campos_view;
     }
 
-    private function init_configuraciones(): controler
+    public function init_configuraciones(): controler
     {
         $this->seccion_titulo = 'Configuración de Factura';
         $this->titulo_lista = 'Registros de configuraciones de Factura';
@@ -98,7 +98,7 @@ class controlador_nom_conf_factura extends _ctl_base {
         return $this;
     }
 
-    private function init_datatable(): stdClass
+    public function init_datatable(): stdClass
     {
         $columns["nom_conf_factura_id"]["titulo"] = "Id";
         $columns["cat_sat_forma_pago_descripcion"]["titulo"] = "Forma Pago";
@@ -120,7 +120,7 @@ class controlador_nom_conf_factura extends _ctl_base {
         return $datatables;
     }
 
-    private function init_selects(array $keys_selects, string $key, string $label, int $id_selected = -1, int $cols = 6,
+    public function init_selects(array $keys_selects, string $key, string $label, int $id_selected = -1, int $cols = 6,
                                   bool  $con_registros = true, array $filtro = array()): array
     {
         $keys_selects = $this->key_select(cols: $cols, con_registros: $con_registros, filtro: $filtro, key: $key,
