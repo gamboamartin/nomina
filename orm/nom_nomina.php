@@ -864,6 +864,7 @@ class nom_nomina extends modelo
         $dias->dias_vacaciones = $dias_vacaciones;
 
         $dias->dias_septimo_dia = 0;
+        $dias_periodo = $this->registro['num_dias_pagados'];
         $dias->dias_pagados_periodo = $this->registro['num_dias_pagados'];
         if($nom_conf_empleado->nom_conf_nomina_aplica_septimo_dia === 'activo'){
             $res = $this->registro['num_dias_pagados'] / 7;
@@ -907,7 +908,7 @@ class nom_nomina extends modelo
         $this->registro['num_dias_pagados'] -= $dias_incidencia;
         $dias->dias_pagados_periodo -= $dias_incidencia;
         $dias->dias_pagados_reales = $this->registro['num_dias_pagados'] + $dias_vacaciones;
-        $dias->dias_pagados_reales_sep = $dias->dias_pagados_periodo + $dias_vacaciones;
+        $dias->dias_pagados_reales_sep = $dias_periodo;
 
         return $dias;
     }
