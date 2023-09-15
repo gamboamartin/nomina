@@ -77,11 +77,12 @@ class nom_incidencia extends modelo
         }
 
         $filtro['nom_incidencia.em_empleado_id'] = $em_empleado_id;
+        $filtro['nom_incidencia.nom_periodo_id'] = $nom_periodo_id;
         $filtro['nom_tipo_incidencia.es_falta'] = 'activo';
-        $filtro_rango['nom_incidencia.fecha_incidencia']['valor1'] = $periodo['nom_periodo_fecha_inicial_pago'];
-        $filtro_rango['nom_incidencia.fecha_incidencia']['valor2'] = $periodo['nom_periodo_fecha_final_pago'];
+        /*$filtro_rango['nom_incidencia.fecha_incidencia']['valor1'] = $periodo['nom_periodo_fecha_inicial_pago'];
+        $filtro_rango['nom_incidencia.fecha_incidencia']['valor2'] = $periodo['nom_periodo_fecha_final_pago'];*/
 
-        $incidencias = $this->filtro_and(filtro: $filtro, filtro_rango: $filtro_rango);
+        $incidencias = $this->filtro_and(filtro: $filtro);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al obtener el las incidencias', data: $incidencias);
         }
@@ -105,11 +106,12 @@ class nom_incidencia extends modelo
         }
 
         $filtro['nom_incidencia.em_empleado_id'] = $em_empleado_id;
+        $filtro['nom_incidencia.nom_periodo_id'] = $nom_periodo_id;
         $filtro['nom_tipo_incidencia.es_prima_dominical'] = 'activo';
-        $filtro_rango['nom_incidencia.fecha_incidencia']['valor1'] = $periodo['nom_periodo_fecha_inicial_pago'];
-        $filtro_rango['nom_incidencia.fecha_incidencia']['valor2'] = $periodo['nom_periodo_fecha_final_pago'];
+        /*$filtro_rango['nom_incidencia.fecha_incidencia']['valor1'] = $periodo['nom_periodo_fecha_inicial_pago'];
+        $filtro_rango['nom_incidencia.fecha_incidencia']['valor2'] = $periodo['nom_periodo_fecha_final_pago'];*/
 
-        $incidencias = $this->filtro_and(filtro: $filtro, filtro_rango: $filtro_rango);
+        $incidencias = $this->filtro_and(filtro: $filtro);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al obtener el las incidencias', data: $incidencias);
         }
@@ -133,11 +135,12 @@ class nom_incidencia extends modelo
         }
 
         $filtro['nom_incidencia.em_empleado_id'] = $em_empleado_id;
+        $filtro['nom_incidencia.nom_periodo_id'] = $nom_periodo_id;
         $filtro['nom_tipo_incidencia.es_dia_festivo_laborado'] = 'activo';
-        $filtro_rango['nom_incidencia.fecha_incidencia']['valor1'] = $periodo['nom_periodo_fecha_inicial_pago'];
-        $filtro_rango['nom_incidencia.fecha_incidencia']['valor2'] = $periodo['nom_periodo_fecha_final_pago'];
+        /*$filtro_rango['nom_incidencia.fecha_incidencia']['valor1'] = $periodo['nom_periodo_fecha_inicial_pago'];
+        $filtro_rango['nom_incidencia.fecha_incidencia']['valor2'] = $periodo['nom_periodo_fecha_final_pago'];*/
 
-        $incidencias = $this->filtro_and(filtro: $filtro, filtro_rango: $filtro_rango);
+        $incidencias = $this->filtro_and(filtro: $filtro);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al obtener el las incidencias', data: $incidencias);
         }
@@ -161,11 +164,12 @@ class nom_incidencia extends modelo
         }
 
         $filtro['nom_incidencia.em_empleado_id'] = $em_empleado_id;
+        $filtro['nom_incidencia.nom_periodo_id'] = $nom_periodo_id;
         $filtro['nom_tipo_incidencia.es_dia_descanso'] = 'activo';
-        $filtro_rango['nom_incidencia.fecha_incidencia']['valor1'] = $periodo['nom_periodo_fecha_inicial_pago'];
-        $filtro_rango['nom_incidencia.fecha_incidencia']['valor2'] = $periodo['nom_periodo_fecha_final_pago'];
+        /*$filtro_rango['nom_incidencia.fecha_incidencia']['valor1'] = $periodo['nom_periodo_fecha_inicial_pago'];
+        $filtro_rango['nom_incidencia.fecha_incidencia']['valor2'] = $periodo['nom_periodo_fecha_final_pago'];*/
 
-        $incidencias = $this->filtro_and(filtro: $filtro, filtro_rango: $filtro_rango);
+        $incidencias = $this->filtro_and(filtro: $filtro);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al obtener el las incidencias', data: $incidencias);
         }
@@ -189,11 +193,12 @@ class nom_incidencia extends modelo
         }
 
         $filtro['nom_incidencia.em_empleado_id'] = $em_empleado_id;
+        $filtro['nom_incidencia.nom_periodo_id'] = $nom_periodo_id;
         $filtro['nom_tipo_incidencia.es_incapacidad'] = 'activo';
-        $filtro_rango['nom_incidencia.fecha_incidencia']['valor1'] = $periodo['nom_periodo_fecha_inicial_pago'];
-        $filtro_rango['nom_incidencia.fecha_incidencia']['valor2'] = $periodo['nom_periodo_fecha_final_pago'];
+        /*$filtro_rango['nom_incidencia.fecha_incidencia']['valor1'] = $periodo['nom_periodo_fecha_inicial_pago'];
+        $filtro_rango['nom_incidencia.fecha_incidencia']['valor2'] = $periodo['nom_periodo_fecha_final_pago'];*/
 
-        $incidencias = $this->filtro_and(filtro: $filtro, filtro_rango: $filtro_rango);
+        $incidencias = $this->filtro_and(filtro: $filtro);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al obtener el las incidencias', data: $incidencias);
         }
@@ -217,11 +222,12 @@ class nom_incidencia extends modelo
         }
 
         $filtro['nom_incidencia.em_empleado_id'] = $em_empleado_id;
+        $filtro['nom_incidencia.nom_periodo_id'] = $nom_periodo_id;
         $filtro['nom_tipo_incidencia.es_vacaciones'] = 'activo';
-        $filtro_rango['nom_incidencia.fecha_incidencia']['valor1'] = $periodo['nom_periodo_fecha_inicial_pago'];
-        $filtro_rango['nom_incidencia.fecha_incidencia']['valor2'] = $periodo['nom_periodo_fecha_final_pago'];
+        /*$filtro_rango['nom_incidencia.fecha_incidencia']['valor1'] = $periodo['nom_periodo_fecha_inicial_pago'];
+        $filtro_rango['nom_incidencia.fecha_incidencia']['valor2'] = $periodo['nom_periodo_fecha_final_pago'];*/
 
-        $incidencias = $this->filtro_and(filtro: $filtro, filtro_rango: $filtro_rango);
+        $incidencias = $this->filtro_and(filtro: $filtro);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al obtener el las incidencias', data: $incidencias);
         }
