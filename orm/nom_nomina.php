@@ -2757,6 +2757,12 @@ class nom_nomina extends modelo
                 data: $registro);
         }
 
+        $suma_otro = $this->total_ingreso_bruto(nom_nomina_id: $nom_nomina_id);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al obtener el calculo ingreso bruto',
+                data: $registro);
+        }
+
         $suma_deduccion =$this->total_deducciones_monto(nom_nomina_id: $nom_nomina_id);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al obtener la suma de deducciones',
@@ -2883,7 +2889,7 @@ class nom_nomina extends modelo
         /*Deducciones*/
 
         $datos['suma_deduccion'] = $suma_deduccion;
-        $datos['neto_a_pagar'] = $suma_percepcion - $suma_deduccion;
+        $datos['neto_a_pagar'] = $suma_otro - $suma_deduccion;
         $datos['cuenta'] = $registro['em_cuenta_bancaria_num_cuenta'];
         $datos['clabe'] = $registro['em_cuenta_bancaria_clabe'];
         $datos['banco'] = $registro['bn_banco_descripcion'];
