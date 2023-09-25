@@ -455,7 +455,7 @@ class nom_nomina extends modelo
             $calculos = $calcula_cuota_obrero_patronal->cuota_obrero_patronal(
                 porc_riesgo_trabajo: $registros['em_registro_patronal']->em_clase_riesgo_factor,
                 fecha: $this->registro['fecha_final_pago'],
-                n_dias: $dias->dias_pagados_reales_sep,
+                n_dias: $dias->dias_pagados_periodo,
                 sbc: $registros['em_empleado']->em_empleado_salario_diario_integrado, link: $this->link);
             if (errores::$error) {
                 return $this->error->error(mensaje: 'Error al generar calculos', data: $calculos);
@@ -470,7 +470,7 @@ class nom_nomina extends modelo
 
             if($r_nom_nomina['em_empleado_salario_diario'] <= (float)$this->salario_minimo[$year]){
                 $imss = (new calcula_imss())->imss_sin_excep(cat_sat_periodicidad_pago_nom_id: $r_nom_nomina['cat_sat_periodicidad_pago_nom_id'],
-                    fecha: $r_nom_nomina['nom_nomina_fecha_final_pago'], n_dias: $dias->dias_pagados_reales_sep,
+                    fecha: $r_nom_nomina['nom_nomina_fecha_final_pago'], n_dias: $dias->dias_pagados_periodo,
                     sbc: $r_nom_nomina['em_empleado_salario_diario_integrado'], sd: $r_nom_nomina['em_empleado_salario_diario']);
                 if (errores::$error) {
                     return $this->error->error(mensaje: 'Error al obtener imss', data: $imss);
