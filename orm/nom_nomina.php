@@ -376,6 +376,22 @@ class nom_nomina extends modelo
             return $this->error->error(mensaje: 'Error al calcular los dias pagados', data: $dias);
         }
 
+        $incidencias = (new nom_incidencia($this->link))->get_incidencias_faltas(em_empleado_id: $this->registro['em_empleado_id'],
+            nom_periodo_id: $this->registro['nom_periodo_id']);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al obtener las incidencias', data: $incidencias);
+        }
+
+        $total = 0;
+
+        if ($incidencias->n_registros > 0){
+            foreach ($incidencias->registros as $incidencia){
+                $total += $incidencia['nom_incidencia_n_dias'];
+            }
+        }
+
+        $dias_periodo = $dias->dias_pagados_reales_sep - $total;
+
         $registros_factura = $this->genera_registro_factura(registros: $registros['fc_csd'],
             empleado_sucursal: $registros['nom_rel_empleado_sucursal'],cat_sat: $registros['nom_conf_empleado'],
             em_registro_patronal: $registros['em_registro_patronal']);
@@ -455,7 +471,7 @@ class nom_nomina extends modelo
             $calculos = $calcula_cuota_obrero_patronal->cuota_obrero_patronal(
                 porc_riesgo_trabajo: $registros['em_registro_patronal']->em_clase_riesgo_factor,
                 fecha: $this->registro['fecha_final_pago'],
-                n_dias: $dias->dias_pagados_periodo,
+                n_dias: $dias_periodo,
                 sbc: $registros['em_empleado']->em_empleado_salario_diario_integrado, link: $this->link);
             if (errores::$error) {
                 return $this->error->error(mensaje: 'Error al generar calculos', data: $calculos);
@@ -470,7 +486,7 @@ class nom_nomina extends modelo
 
             if($r_nom_nomina['em_empleado_salario_diario'] <= (float)$this->salario_minimo[$year]){
                 $imss = (new calcula_imss())->imss_sin_excep(cat_sat_periodicidad_pago_nom_id: $r_nom_nomina['cat_sat_periodicidad_pago_nom_id'],
-                    fecha: $r_nom_nomina['nom_nomina_fecha_final_pago'], n_dias: $dias->dias_pagados_periodo,
+                    fecha: $r_nom_nomina['nom_nomina_fecha_final_pago'], n_dias: $dias_periodo,
                     sbc: $r_nom_nomina['em_empleado_salario_diario_integrado'], sd: $r_nom_nomina['em_empleado_salario_diario']);
                 if (errores::$error) {
                     return $this->error->error(mensaje: 'Error al obtener imss', data: $imss);
